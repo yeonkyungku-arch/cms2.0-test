@@ -1,0 +1,231 @@
+.device-table td:nth-child(5),
+.device-table td:nth-child(6),
+.device-table td:nth-child(7),
+.device-table td:nth-child(8),
+.device-table td:nth-child(9) {
+  width: 10%;
+}
+
+.status-table td {
+  width: 8%;
+}
+
+.status-table td:first-child {
+  width: 12%;
+}
+
+.management-table select {
+  margin-right: 8px;
+}
+
+.management-table td:nth-child(3),
+.management-table td:nth-child(4),
+.management-table td:nth-child(5),
+.management-table td:nth-child(6) {
+  width: 12%;
+}
+
+.management-table .td-setting {
+  padding: 0;
+}
+
+.management-table .inner-table tr:first-child td {
+  border-top: 0;
+}
+
+.management-table .inner-table tr:last-child td,
+.management-table .inner-table td[rowspan="2"] {
+  border-bottom: 0;
+}
+
+.management-table .inner-table td {
+  text-align: center;
+}
+
+.management-table .inner-table td:nth-child(1) {
+  width: 50%;
+}
+
+.management-table .inner-table td:nth-child(2) {
+  width: 20%;
+}
+
+.management-table .inner-table td:nth-child(3) {
+  width: 30%;
+}
+
+.management-table .inner-table select {
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.management-table .inner-table a {
+  text-decoration: none;
+}
+
+.device-info .highlight {
+  margin-bottom: 24px;
+}
+
+.device-info .highlight img {
+  margin-right: 12px;
+}
+
+.device-info table {
+  background-color: #FFFFFF;
+}
+
+.device-info table th {
+  width: 40%;
+}
+
+.device-info table td {
+  font-size: 14px;
+}
+
+.device-info table select,
+.device-info table input {
+  width: 100%;
+  height: 34px;
+  font-size: 14px;
+  background-color: #FFFFFF;
+  text-align: center;
+}
+
+.device-info table .input-search input,
+.device-info table #address {
+  text-align: left;
+}
+
+.device-info table .input-search input {
+  background-size: 14px;
+}
+
+.device-info table .bg-primary {
+  margin-left: 4px;
+  padding: 0 12px;
+}
+
+.device-info .sensor-list {
+  flex-wrap: wrap;
+}
+
+.device-info .sensor-list li {
+  margin-right: 12px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+
+.device-info .item-delete {
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+
+.device-info.modal .fixed-info {
+  margin-top: 12px;
+}
+
+.device-info.modal .fixed-info li {
+  margin-bottom: 6px;
+}
+
+.device-info.modal .modal-content {
+  padding: 20px 14px 12px 23px;
+  width: 50%;
+}
+
+.device-info.modal .modal-footer .btn {
+  margin-top: 12px;
+  margin-left: 9px;
+}
+
+
+.device-info.modal table .input-search input {
+  background-size: 14px;
+}
+
+.device-info.modal .sensor-list li {
+  color: #909399;
+}
+
+.device-info .btn-input {
+  height: 33px;
+}
+
+
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .management-table select {
+    margin-right: 6px;
+  }
+
+  .management-table .inner-table select {
+    font-size: 10px;
+    line-height: 11px;
+  }
+
+  .device-info .highlight {
+    margin-bottom: 17px;
+  }
+
+  .device-info .highlight img {
+    margin-right: 8px;
+  }
+
+  .device-info table td {
+    font-size: 11px;
+  }
+
+  .device-info table select,
+  .device-info table input {
+    height: 25px;
+    font-size: 11px;
+  }
+
+  .device-info table .input-search input {
+    background-position: right 5px center;
+    background-size: 11px;
+  }
+
+  .device-info table .bg-primary {
+    margin-left: 3px;
+    padding: 0 8px;
+  }
+
+  .device-info .sensor-list li {
+    margin-right: 8px;
+    margin-bottom: 6px;
+  }
+
+  .device-info .item-delete {
+    margin-left: 6px;
+  }
+
+  .device-info.modal .fixed-info {
+    margin-top: 9px;
+  }
+
+  .device-info.modal .fixed-info li {
+    margin-bottom: 5px;
+  }
+
+  .device-info.modal .modal-content {
+    padding: 15px 11px 9px 18px;
+  }
+
+  .device-info.modal table .input-search input {
+    background-position: right 5px center;
+    background-size: 11px;
+  }
+
+  .device-info.modal .modal-footer .btn {
+    margin-top: 9px;
+    margin-left: 7px;
+  }
+
+  .device-info .btn-input {
+    height: 25px;
+  }
+}

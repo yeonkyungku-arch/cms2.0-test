@@ -1,0 +1,367 @@
+/* Admin Page Styles */
+/* Admin/Members/Members Styles */
+.list-option {
+  text-align: right;
+}
+
+.list-option label,
+.list-option .btn {
+  margin-left: 12px;
+}
+.list-option .btn-green {
+  margin-left: 45px;
+}
+
+.option-cat {
+  margin-left: auto;
+}
+
+.option-search {
+  margin-right: -30px;
+}
+
+.option-search input {
+  width: 133px;
+}
+
+.option-search button {
+  position: relative;
+  top: 1px;
+  left: -30px;
+}
+
+#option-show {
+  margin: 12px auto;
+  padding-left: 18px;
+  width: 76px;
+}
+
+.modal .modal-content {
+  width: 532px;
+}
+
+.modal .modal-header {
+  margin-bottom: 12px;
+}
+
+.modal .modal-footer button {
+  margin-top: 12px;
+}
+
+.modal table {
+  margin-bottom: 15px;
+}
+
+.modal td {
+  padding-left: 26px;
+  text-align: left;
+}
+
+.modal label {
+  margin-left: 5px;
+}
+
+.modal .deactivate-wrap {
+  margin-bottom: 16px;
+}
+
+.modal input[type="radio"] {
+  margin-left: 13px;
+}
+
+.modal .deactivate-wrap label {
+  color: #000000;
+}
+
+.modal #reservation-time {
+  margin-left: 20px;
+  width: 306px;
+  height: 36px;
+  background-image: url('../images/icon_calendar.svg');
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  background-size: 15px;
+  text-align: center;
+  opacity: 0;
+}
+
+.modal #reservation-time.active {
+  opacity: 1;
+}
+
+.modal th {
+  width: 166px;
+}
+
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+
+  .list-option label,
+  .list-option .btn {
+    margin-left: 8px;
+  }
+  .list-option .btn-green {
+    margin-left: 32px;
+  }
+
+  .option-search {
+    margin-right: -25px;
+  }
+
+  .option-search input {
+    width: 95px;
+  }
+
+  .option-search button {
+    left: -25px;
+  }
+
+  .option-search button img {
+    width: 10px;
+  }
+
+  #option-show {
+    margin: 8px auto;
+    padding-left: 15px;
+    width: 54px;
+  }
+
+  .modal .modal-content {
+    width: 384px;
+  }
+
+  .modal .modal-header {
+    margin-bottom: 8px;
+  }
+
+  .modal .modal-footer button {
+    margin-top: 8px;
+  }
+
+  .modal table {
+    margin-bottom: 15px;
+  }
+
+  .modal td {
+    padding-left: 18px;
+  }
+
+  .modal label {
+    margin-left: 5px;
+  }
+
+  .modal .deactivate-wrap {
+    margin-bottom: 11px;
+  }
+
+  .modal input[type="radio"] {
+    margin-left: 10px;
+  }
+
+  .modal #reservation-time {
+    margin-left: 14px;
+    width: 221px;
+    height: 26px;
+    background-size: 11px;
+    background-position: 8px center;
+  }
+
+  .modal th {
+    width: 120px;
+  }
+}
+
+
+
+
+/* Admin/SW update Styles */
+.option-keep {
+  margin-bottom: 9px;
+}
+
+.update-list .cell-center {
+  width: 14%;
+}
+
+.update-list .cell-center input {
+  display: block;
+  margin: auto;
+}
+
+.update-list td:nth-child(2) {
+  width: 38%;
+}
+
+.update-submit {
+  margin-top: 12px;
+}
+
+.update-submit p {
+  font-size: 14px;
+  line-height: 23px;
+  color: #0277EF;
+}
+
+.update-submit p img {
+  margin-right: 12px;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .option-keep {
+    margin-bottom: 5px;
+  }
+
+  .option-keep .toggle-switch {
+    margin-top: 1px;
+  }
+
+  .update-list td.cell-center {
+    width: 18%;
+  }
+
+  .update-list td:nth-child(2) {
+    width: 36%;
+  }
+
+  .update-submit {
+    margin-top: 9px;
+  }
+
+  .update-submit p {
+    font-size: 10px;
+    line-height: 16px;
+  }
+
+  .update-submit p img {
+    margin-right: 8px;
+    width: 11px;
+  }
+}
+
+
+/* Admin/Notice registration Styles */
+.notice-create th.align-top {
+  vertical-align: top;
+}
+
+.notice-create label {
+  margin-left: 5px;
+  margin-right: 18px;
+}
+
+.notice-create input[type='text'] {
+  width: 100%;
+  height: 36px;
+  position: relative;
+}
+
+#input-reservationDate {
+  margin-left: 18px;
+  background-image: url('../images/icon_calendar.svg');
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  background-size: 15px;
+  text-align: center;
+  opacity: 0;
+}
+
+#input-reservationDate.active {
+  opacity: 1;
+}
+
+#input-reservationDate::placeholder {
+  color: #DCDFE6;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .notice-create label {
+    margin-left: 4px;
+    margin-right: 12px;
+  }
+
+  .notice-create input[type='text'] {
+    height: 25px;
+  }
+
+  #input-reservationDate {
+    margin-left: 12px;
+    background-size: 11px;
+    background-position: 8px center;
+  }
+}
+
+
+
+
+/* Admin/Send Mail Styles */
+.send-mail .result-body {
+  padding-top: 44px;
+  padding-bottom: 29px;
+}
+
+.send-mail .result-body table {
+  margin: 0;
+}
+
+.send-mail .result-body .fromTo-cells {
+  border: 3px solid #EBEEF5;
+}
+
+.send-mail .result-body th {
+  vertical-align: top;
+  padding: 12px 9px 13px;
+}
+
+.send-mail .result-body th.th-bg {
+  vertical-align: middle;
+  padding: 11px;
+  width: 12%;
+  background: #F5F7FA;
+}
+
+.send-mail .result-body td {
+  padding: 12px 16px 13px;
+  width: 70%;
+  text-align: left;
+}
+
+.send-mail .result-body input {
+  width: 100%;
+  height: 30px;
+  font-weight: bold;
+}
+
+.send-mail .result-body .td-contents {
+  min-height: 270px;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .send-mail .result-body {
+    padding-top: 32px;
+    padding-bottom: 20px;
+  }
+
+  .send-mail .result-body th {
+    padding: 8px 7px;
+  }
+
+  .send-mail .result-body th.th-bg {
+    padding: 7px;
+  }
+
+  .send-mail .result-body td {
+    padding: 8px 11px;
+  }
+
+  .send-mail .result-body input {
+    height: 22px;
+  }
+
+  .send-mail .result-body .td-contents {
+    min-height: 192px;
+  }
+}
