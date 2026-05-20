@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>운영 현황 — CMS</title>
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    /* 지도 플레이스홀더 */
+    .map-placeholder {
+      width: 100%; height: 439px;
+      background: #e8eaed;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid #D6D6D6;
+      color: #909399; font-size: 13px; position: relative;
+    }
+    .map-placeholder::before {
+      content: '';
+      position: absolute; width: 20px; height: 20px;
+      background: #58C65D; border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      top: 50%; left: 50%; margin-top: -20px; margin-left: -10px;
+    }
+    /* 그래프 플레이스홀더 */
+    .chart-placeholder {
+      width: 100%; height: 220px;
+      background: #fafafa; border: 1px dashed #DCDFE6;
+      display: flex; align-items: center; justify-content: center;
+      color: #909399; font-size: 13px; border-radius: 4px;
+      position: relative; overflow: hidden;
+    }
+    .chart-bar {
+      position: absolute; bottom: 30px;
+      width: 28px; border-radius: 3px 3px 0 0;
+      background: #59A0E9; opacity: 0.8;
+    }
+    .chart-x-label {
+      position: absolute; bottom: 8px;
+      font-size: 10px; color: #909399;
+    }
+    /* 서브스테이트 레이아웃 */
+    .dashboard-body { display: flex; gap: 12px; }
+    .map-area { flex: 1; }
+    /* 사용자 드롭다운 숨김 */
+    .user-menu { display: none; }
+    .user-menu.active { display: block !important; }
+  </style>
+</head>
+<body>
+
+  <!-- 사이드바 네비게이션 -->
+  <nav>
+    <div class="logo" style="text-align:center;">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="8" fill="rgba(255,255,255,0.15)"/>
+        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">CMS</text>
+      </svg>
+    </div>
+    <ul class="nav-wrap">
+      <li class="active">
+        <a href="dashboard.html">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="contents.html">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="device.html">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="schedule.html">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/>
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="admin.html">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 1.5c-5.33 0-8 2.17-8 3.5V19h16v-2c0-1.33-2.67-3.5-8-3.5z"/>
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- 헤더 -->
+  <header>
+    <div class="flex flex-between header-ui">
+      <!-- 검색 -->
+      <div class="search-wrap flex input-search">
+        <input type="text" placeholder="검색" style="width:195px; height:22px; border-radius:30px; background:#F4F4F4; border:none; padding:0 15px;">
+      </div>
+      <!-- 유저 영역 -->
+      <ul class="flex user-wrap" style="gap:0;">
+        <li class="user-noti active" style="margin-right:4px;">
+          <a href="#">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M11 2a7 7 0 00-7 7v4l-1.5 2.5h17L18 13V9a7 7 0 00-7-7zm0 18a2 2 0 002-2H9a2 2 0 002 2z" stroke="#000" stroke-width="1.2" fill="none"/>
+            </svg>
+          </a>
+        </li>
+        <li class="user-error" style="margin-right:16px;">
+          <a href="#">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <circle cx="11" cy="11" r="8.5" stroke="#000" stroke-width="1.2"/>
+              <line x1="11" y1="7" x2="11" y2="12" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="11" cy="14.5" r="0.8" fill="#000"/>
+            </svg>
+          </a>
+        </li>
+        <li style="position:relative;">
+          <a href="#" onclick="toggleDropdown(event)">관리자
+            <svg width="10" height="6" viewBox="0 0 10 6" style="margin-left:4px; vertical-align:middle;">
+              <path d="M0 0l5 6 5-6z" fill="#0FB716"/>
+            </svg>
+          </a>
+          <ul class="user-menu" id="userMenu" style="opacity:0; position:absolute; top:48px; right:0; padding:12px 14px 6px; width:144px; box-shadow:0 0 4px rgba(0,0,0,0.25); background:#fff; border-radius:4px; z-index:100;">
+            <li><a href="#">내 정보</a></li>
+            <li><a href="#">비밀번호 변경</a></li>
+            <li class="logout"><a href="login.html">로그아웃</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="header-title">운영 현황</div>
+
+    <ul class="flex header-nav">
+      <li class="active">
+        <a href="dashboard.html">운영 현황</a>
+        <div class="header-subnav flex">
+          <a href="#" class="active">전체</a>
+          <a href="#">서울</a>
+          <a href="#">경기</a>
+          <a href="#">지방</a>
+        </div>
+      </li>
+      <li><a href="device.html">기기 현황</a></li>
+      <li><a href="schedule.html">일정</a></li>
+      <li><a href="contents.html">콘텐츠</a></li>
+      <li><a href="admin.html">관리자</a></li>
+    </ul>
+  </header>
+
+  <!-- 메인 콘텐츠 -->
+  <section>
+
+    <!-- State Panel -->
+    <div class="state-wrap">
+      <ul class="flex">
+        <li class="active">
+          <span>전체</span>
+          <h1>128</h1>
+        </li>
+        <li>
+          <span>운영중</span>
+          <h1>115</h1>
+        </li>
+        <li>
+          <span>유지보수</span>
+          <h1>8</h1>
+        </li>
+        <li>
+          <span>비운영</span>
+          <h1>5</h1>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 지도 + 서브스테이트 -->
+    <div class="dashboard-body" style="margin-bottom: 50px;">
+      <!-- 지도 영역 -->
+      <article class="article-60" style="margin-bottom:0;">
+        <div class="article-header flex flex-between">
+          <span class="article-title">
+            <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right:8px; vertical-align:middle;">
+              <path d="M9 1a6 6 0 00-6 6c0 4.5 6 10 6 10s6-5.5 6-10a6 6 0 00-6-6zm0 8a2 2 0 110-4 2 2 0 010 4z" fill="#409EFF"/>
+            </svg>
+            미디어 사이트 위치
+          </span>
+          <div class="flex" style="gap:8px;">
+            <button class="btn btn-plain btn-sm">목록 보기</button>
+          </div>
+        </div>
+        <div class="article-inner" style="padding:0; overflow:hidden; border-radius:0;">
+          <div class="map-placeholder">
+            <span style="position:relative; z-index:1; margin-top: 30px;">지도 영역 (Google Maps)</span>
+            <!-- 더미 마커들 -->
+            <div style="position:absolute; width:12px; height:12px; background:#58C65D; border-radius:50%; top:40%; left:30%;"></div>
+            <div style="position:absolute; width:12px; height:12px; background:#58C65D; border-radius:50%; top:55%; left:45%;"></div>
+            <div style="position:absolute; width:12px; height:12px; background:#58C65D; border-radius:50%; top:35%; left:60%;"></div>
+            <div style="position:absolute; width:12px; height:12px; background:#EB6A4E; border-radius:50%; top:60%; left:25%;"></div>
+            <div style="position:absolute; width:12px; height:12px; background:#58C65D; border-radius:50%; top:70%; left:55%;"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 서브스테이트 -->
+      <article class="article-40" style="margin-bottom:0;">
+        <div class="article-header">
+          <span class="article-title">기기 상태 현황</span>
+        </div>
+        <div class="article-inner">
+          <div class="subState-wrap">
+            <ul class="flex" style="flex-wrap:wrap; gap:8px;">
+              <li>
+                <a href="#">
+                  <span>디스플레이</span>
+                  <h1>115</h1>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <span>PC</span>
+                  <h1>112</h1>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <span>네트워크</span>
+                  <h1>118</h1>
+                </a>
+              </li>
+              <li class="active">
+                <a href="#">
+                  <span>전원</span>
+                  <h1>128</h1>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="subState-wrap error-wrap" style="margin-top:24px;">
+            <div class="article-title" style="font-size:13px; margin-bottom:8px; color:#EB6A4E;">⚠ 오류 현황</div>
+            <ul class="flex" style="flex-wrap:wrap; gap:8px;">
+              <li>
+                <a href="#">
+                  <span>디스플레이</span>
+                  <h1>3</h1>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <span>PC</span>
+                  <h1>5</h1>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <span>네트워크</span>
+                  <h1>2</h1>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- 일정/스케줄 그래프 -->
+    <article>
+      <div class="article-header flex flex-between">
+        <span class="article-title">
+          <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right:8px; vertical-align:middle;">
+            <rect x="1" y="1" width="16" height="16" rx="2" stroke="#409EFF" stroke-width="1.5" fill="none"/>
+            <line x1="1" y1="6" x2="17" y2="6" stroke="#409EFF" stroke-width="1.2"/>
+            <line x1="5" y1="0" x2="5" y2="3.5" stroke="#409EFF" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="0" x2="13" y2="3.5" stroke="#409EFF" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          콘텐츠 집행 현황
+        </span>
+        <div class="flex" style="gap:8px; align-items:center;">
+          <div class="flex input-wrap" style="align-items:center; gap:0;">
+            <a href="#" class="year-prev btn btn-sm" style="width:23px; height:23px; text-align:center; line-height:21px; border:1px solid #DDDDDD; border-radius:2px 0 0 2px; font-size:16px; display:flex; align-items:center; justify-content:center;">‹</a>
+            <input type="number" id="year-input" value="2024" style="width:58px; height:23px; border:1px solid #DDDDDD; border-radius:0; text-align:center; font-size:14px;">
+            <a href="#" class="year-next btn btn-sm" style="width:23px; height:23px; text-align:center; line-height:21px; border:1px solid #DDDDDD; border-radius:0 2px 2px 0; font-size:16px; display:flex; align-items:center; justify-content:center;">›</a>
+          </div>
+          <div class="btn-wrap flex">
+            <button class="btn active">월별</button>
+            <button class="btn">주별</button>
+            <button class="btn">일별</button>
+          </div>
+        </div>
+      </div>
+      <div class="article-inner" style="padding:24px;">
+        <div class="chart-placeholder" id="chart">
+          <span class="graph-legend">집행 건수</span>
+          <!-- 바 차트 더미 -->
+          <div class="chart-bar" style="height:80px; left:7%;"></div>
+          <div class="chart-bar" style="height:120px; left:14%;"></div>
+          <div class="chart-bar" style="height:95px; left:21%;"></div>
+          <div class="chart-bar" style="height:150px; left:28%;"></div>
+          <div class="chart-bar" style="height:110px; left:35%;"></div>
+          <div class="chart-bar" style="height:175px; left:42%;"></div>
+          <div class="chart-bar" style="height:130px; left:49%;"></div>
+          <div class="chart-bar" style="height:160px; left:56%;"></div>
+          <div class="chart-bar" style="height:90px; left:63%;"></div>
+          <div class="chart-bar" style="height:140px; left:70%;"></div>
+          <div class="chart-bar" style="height:100px; left:77%;"></div>
+          <div class="chart-bar" style="height:70px; left:84%;"></div>
+          <!-- X 레이블 -->
+          <span class="chart-x-label" style="left:6%;">1월</span>
+          <span class="chart-x-label" style="left:13%;">2월</span>
+          <span class="chart-x-label" style="left:20%;">3월</span>
+          <span class="chart-x-label" style="left:27%;">4월</span>
+          <span class="chart-x-label" style="left:34%;">5월</span>
+          <span class="chart-x-label" style="left:41%;">6월</span>
+          <span class="chart-x-label" style="left:48%;">7월</span>
+          <span class="chart-x-label" style="left:55%;">8월</span>
+          <span class="chart-x-label" style="left:62%;">9월</span>
+          <span class="chart-x-label" style="left:69%;">10월</span>
+          <span class="chart-x-label" style="left:76%;">11월</span>
+          <span class="chart-x-label" style="left:83%;">12월</span>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <script>
+    function toggleDropdown(e) {
+      e.preventDefault();
+      const menu = document.getElementById('userMenu');
+      const isActive = menu.classList.toggle('active');
+      menu.style.opacity = isActive ? '1' : '0';
+    }
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('userMenu');
+      if (!e.target.closest('.user-wrap')) {
+        menu.classList.remove('active');
+        menu.style.opacity = '0';
+      }
+    });
+    // btn-wrap 토글
+    document.querySelectorAll('.btn-wrap .btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.closest('.btn-wrap').querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

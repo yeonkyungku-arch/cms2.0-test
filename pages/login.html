@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 — CMS</title>
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/auth.css">
+  <style>
+    body { background-color: #ffffff; justify-content: center; }
+    .login-wrap { width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .logo-text { font-size: 28px; font-weight: 700; color: #58C65D; letter-spacing: -0.5px; }
+    .logo-sub { font-size: 12px; color: #909399; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+
+    <!-- 로고 -->
+    <div class="logo" style="text-align:center; margin-bottom: 8px;">
+      <div class="logo-text">CMS 2.0</div>
+      <div class="logo-sub">Content Management System</div>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <form onsubmit="return false;">
+      <div style="margin-bottom: 20px;">
+        <div class="input-wrap" id="wrap-id">
+          <input type="text" id="input-id" placeholder="아이디" autocomplete="off"
+            oninput="toggleClear('wrap-id', this)">
+          <span class="clear-input" onclick="clearInput('input-id', 'wrap-id')"></span>
+        </div>
+        <div class="input-wrap" id="wrap-pw">
+          <input type="password" id="input-password" placeholder="비밀번호"
+            oninput="toggleClear('wrap-pw', this)">
+          <span class="clear-input" onclick="clearInput('input-password', 'wrap-pw')"></span>
+        </div>
+      </div>
+
+      <div class="option-wrap flex flex-between">
+        <label class="flex" style="align-items:center; cursor:pointer; color:#000; font-size:14px;">
+          <input type="checkbox" class="switch-hidden" id="stay-signin" style="display:none;">
+          <span class="toggle-switch">
+            <span class="toggle-button"></span>
+          </span>
+          <span style="margin-left: 8px; font-size: 13px; color: #606266;">로그인 상태 유지</span>
+        </label>
+      </div>
+
+      <button type="submit">로그인</button>
+    </form>
+
+    <!-- 링크 -->
+    <div class="link-wrap flex">
+      <a href="find-id.html">아이디 찾기</a>
+      <span>|</span>
+      <a href="find-pw.html">비밀번호 찾기</a>
+      <span>|</span>
+      <a href="signup.html">회원가입</a>
+    </div>
+
+    <p class="copyright">© 2024 CMS. All rights reserved.</p>
+  </div>
+
+  <script>
+    function toggleClear(wrapId, input) {
+      const wrap = document.getElementById(wrapId);
+      if (input.value.length > 0) wrap.classList.add('active');
+      else wrap.classList.remove('active');
+    }
+    function clearInput(inputId, wrapId) {
+      document.getElementById(inputId).value = '';
+      document.getElementById(wrapId).classList.remove('active');
+    }
+    document.getElementById('stay-signin').addEventListener('change', function() {
+      const sw = this.nextElementSibling;
+      /* toggle handled by CSS :checked */
+    });
+  </script>
+</body>
+</html>
