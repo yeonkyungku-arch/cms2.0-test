@@ -1,0 +1,66 @@
+.tab-panel {
+  padding: 17px 30px 30px;
+}
+
+.grid-container {
+  grid-template-columns: min-content repeat(3, auto);
+  row-gap: 28px;
+}
+
+.grid-container .input-wrap:nth-child(2),
+.grid-container .input-wrap:nth-child(3),
+.grid-container .input-wrap:nth-child(6) {
+  margin: 0 auto;
+}
+
+.grid-container .input-wrap:nth-child(6) label {
+  margin-left: 10px;
+}
+
+.checkbox-wrap .input-wrap label {
+  margin-right: 33px;
+}
+
+.checkbox-wrap .input-wrap.check-all label {
+  margin-right: 23px;
+}
+
+.input-wrap:last-child label {
+  margin-left: auto;
+}
+
+td {
+  text-align: center;
+}
+
+td:nth-child(7),
+td:nth-child(8) {
+  width: 12%;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .tab-panel {
+    padding: 12px 21px 22px;
+  }
+
+  .tab-nav li a {
+    padding: 0;
+  }
+
+  .grid-container {
+    row-gap: 20px;
+  }
+
+  .grid-container .input-wrap:nth-child(6) label {
+    margin-left: 8px;
+  }
+
+  .checkbox-wrap .input-wrap label {
+    margin-right: 23px;
+  }
+
+  .checkbox-wrap .input-wrap.check-all label {
+    margin-right: 16px;
+  }
+}

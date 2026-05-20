@@ -1,0 +1,611 @@
+/* Main Index Styles */
+.main-view .grid-container {
+  grid-template-columns: min-content repeat(5, auto);
+}
+
+.main-view .search-wrap .article-inner {
+  padding: 20px 30px 20px 14px;
+}
+
+.main-view .search-wrap label {
+  margin-right: 5px;
+}
+
+.main-view .search-wrap select {
+  margin-right: 15px;
+  min-width: 119px;
+}
+
+
+.main-view .map-wrap #googleMap {
+  width: 100%;
+  height: 439px;
+}
+
+.main-view .map-inner {
+  position: relative;
+  margin-right: 12px;
+}
+
+.main-view .map-inner .btn-fullscreen {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  width: 20px;
+  height: 20px;
+}
+
+.main-view .map-lowerDetail.active,
+.main-view .map-detail.active {
+  display: flex;
+}
+
+.main-view .map-lowerDetail,
+.main-view .map-detail {
+  display: none;
+  align-items: flex-end;
+}
+
+.main-view .map-lowerDetail .state-wrap {
+  margin-bottom: 0;
+}
+
+.main-view .map-lowerDetail .subState-wrap {
+  margin-top: 24px;
+}
+
+#googleMap .gm-style .gm-style-iw-c {
+  border-radius: 0;
+}
+
+#googleMap .map-modal {
+  padding: 12px 6px 0 12px;
+  width: 292px;
+  height: 138px;
+  text-align: right;
+}
+
+#googleMap .map-modal th,
+#googleMap .map-modal td {
+  padding: 4px 8px 3px;
+  width: 50%;
+}
+
+#googleMap .map-modal td {
+  text-align: center;
+}
+
+#googleMap .btn {
+  margin-top: 7px;
+}
+
+#googleMap .gm-ui-hover-effect span {
+  position: relative;
+  top: 6px;
+  right: 4px;
+  transform: scale(1.2);
+}
+
+#googleMap .gmnoprint,
+#googleMap .gm-style-iw-tc,
+#googleMap a img[alt="Google"] {
+  display: none;
+}
+
+
+.state-wrap {
+  margin-bottom: 60px;
+}
+
+.state-wrap ul {
+  display: inline-flex;
+  padding: 11px 7px 13px;
+  background: rgba(132, 132, 132, 0.2);
+  border-radius: 10px;
+}
+
+.state-wrap li {
+  margin: 0 5px;
+  padding: 10px 18px 16px;
+  width: 177px;
+  background: #FFFFFF;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.state-wrap li span {
+  padding-bottom: 4px;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+  border-bottom: 1px solid #878787;
+}
+
+.state-wrap li h1 {
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 43px;
+  color: #000000;
+  text-align: center;
+}
+
+.subState-wrap li.active span,
+.state-wrap li.active span {
+  color: #0277EF;
+  border-bottom: 1px solid #0277EF;
+}
+
+.subState-wrap li.active h1,
+.state-wrap li.active h1 {
+  color: #0277EF;
+}
+
+.subState-wrap {
+  margin: 89px 5px 0;
+}
+
+.subState-wrap .article-inner {
+  padding: 12px 8px;
+}
+
+.subState-wrap ul {
+  padding: 0;
+  background: none;
+}
+
+.subState-wrap li {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin: 0 4px;
+  padding: 30px 10px;
+  width: 100px;
+  height: 134px;
+  border: 1px solid #E3E3E3;
+  box-shadow: none;
+}
+
+.subState-wrap.error-wrap li {
+  border: 1px solid #EB6A4E;
+}
+
+.subState-wrap li a {
+  width: 100%;
+}
+
+.subState-wrap li span {
+  display: inline-block;
+  padding-bottom: 4px;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 17px;
+  color: #000000;
+  border-bottom: 1px solid #878787;
+}
+
+.subState-wrap li h1 {
+  margin-top: 12px;
+  width: 100%;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 43px;
+  color: #000000;
+  text-align: center;
+}
+
+.map-lowerDetail .subState-wrap li {
+  height: 98px;
+  padding: 10px;
+}
+
+.map-lowerDetail .subState-wrap li h1 {
+  margin-top: 5px;
+}
+
+.map-lowerDetail .subState-wrap.error-wrap li:nth-child(2) h1 {
+  margin-top: 0;
+}
+
+
+.main-view .toggle-schedule {
+  margin-bottom: 18px;
+}
+
+.main-view .schedule-graph {
+  position: relative;
+  margin-top: 6px;
+  padding: 0;
+}
+
+.main-view .schedule-graph .graph-legend {
+  position: absolute;
+  top: 15px;
+  right: 21px;
+  z-index: 1;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 13px;
+  letter-spacing: 1px;
+  color: #949494;
+}
+
+.main-view .schedule-graph .graph-legend::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: -15px;
+  width: 6px;
+  height: 6px;
+  background-color: #59A0E9;
+}
+
+.main-view .input-wrap a {
+  width: 23px;
+  height: 23px;
+  line-height: 21px;
+  border: 1px solid #DDDDDD;
+  background-color: #FFFFFF;
+  text-align: center;
+}
+
+.main-view .input-wrap .year-prev {
+  margin-left: auto;
+  border-radius: 2px 0px 0px 2px;
+}
+
+.main-view .input-wrap #year-input {
+  width: 58px;
+  height: 23px;
+  line-height: 21px;
+  font-size: 14px;
+  border: 1px solid #DDDDDD;
+  border-radius: 0;
+  text-align: center;
+}
+
+#year-input::-webkit-outer-spin-button,
+#year-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.main-view .input-wrap .year-next {
+  border-radius: 0px 2px 2px 0px;
+}
+
+.main-view .input-wrap .year-next img {
+  transform: rotate(180deg);
+}
+
+section .calendar-wrap {
+  position: relative;
+  padding-top: 34px;
+}
+
+.article-header .article-50 {
+  display: none;
+}
+
+.article-header .article-50.active {
+  display: flex;
+}
+
+.article-header .article-50 .highlight {
+  font-size: 12px;
+}
+
+.article-header .article-50 .highlight:first-child {
+  margin-left: 6px;
+}
+
+.schedule-wrap .ad-list {
+  display: none;
+  margin-left: 12px;
+  margin-bottom: auto;
+}
+
+.schedule-wrap .ad-list.active {
+  display: block;
+}
+
+.schedule-wrap .ad-list th,
+.schedule-wrap .ad-list td {
+  padding: 5px;
+  font-size: 10px;
+}
+
+.schedule-wrap .ad-list td {
+  background-color: #FFFFFF;
+}
+
+.schedule-wrap .ad-list td .btn {
+  font-size: 10px;
+}
+
+.schedule-wrap .ad-list td img {
+  width: 69px;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+
+  /* Main Index Styles */
+  .main-view .search-wrap .article-inner {
+    padding: 12px 21px 12px 9px;
+  }
+
+  .main-view .search-wrap label {
+    margin-right: 4px;
+  }
+
+  .main-view .search-wrap select {
+    margin-right: 8px;
+    min-width: 87px;
+  }
+
+  .main-view .map-wrap #googleMap {
+    height: 329px;
+  }
+
+  .main-view .map-inner {
+    margin-right: 8px;
+  }
+
+  .main-view .map-inner .btn-fullscreen {
+    right: 18px;
+    bottom: 16px;
+    width: 20px;
+    height: 20px;
+  }
+
+  #googleMap .map-modal {
+    padding: 3px 0px 0 4px;
+    width: 199px;
+    height: 93px;
+  }
+
+  #googleMap .map-modal th,
+  #googleMap .map-modal td {
+    padding: 3px 6px 2px;
+  }
+
+  #googleMap .btn {
+    margin-top: 5px;
+  }
+
+  #googleMap .gm-ui-hover-effect span {
+    top: 0px;
+    right: 1px;
+    transform: scale(1);
+  }
+
+  .state-wrap {
+    margin-bottom: 60px;
+  }
+
+  .state-wrap ul {
+    padding: 8px 4px;
+    border-radius: 7px;
+  }
+
+  .state-wrap li {
+    margin: 0 4px;
+    padding: 6px 12px 11px;
+    width: 125px;
+  }
+
+  .state-wrap li span {
+    padding-bottom: 3px;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .state-wrap li h1 {
+    margin-top: 9px;
+    font-size: 21px;
+    line-height: 31px;
+  }
+
+  .subState-wrap {
+    margin: 56px 3px 0;
+  }
+
+  .subState-wrap .article-inner {
+    padding: 9px 4px;
+  }
+
+  .subState-wrap li {
+    margin: 0 3px;
+    padding: 21px 7px;
+    width: 72px;
+    height: 95px;
+  }
+
+  .subState-wrap li span {
+    padding-bottom: 3px;
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .subState-wrap li h1 {
+    margin-top: 7px;
+    font-size: 21px;
+    line-height: 31px;
+  }
+
+  .map-lowerDetail .subState-wrap li {
+    height: 69px;
+    padding: 7px;
+  }
+
+  .map-lowerDetail .subState-wrap li h1 {
+    margin-top: 3px;
+  }
+
+  .main-view .toggle-schedule {
+    margin-bottom: 8px;
+  }
+
+  .main-view .schedule-graph {
+    margin-top: 4px;
+  }
+
+  .main-view .schedule-graph .graph-legend {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 10px;
+  }
+
+  .main-view .input-wrap a {
+    width: 16px;
+    height: 16px;
+    line-height: 14px;
+  }
+
+  .main-view .input-wrap #year-input {
+    width: 42px;
+    height: 16px;
+    line-height: 14px;
+    font-size: 10px;
+  }
+
+  .article-header .article-50 .highlight {
+    font-size: 10px;
+  }
+
+  section .article-50.calendar-wrap {
+    padding: 4px;
+  }
+
+  .schedule-wrap .ad-list {
+    margin-left: 4px;
+    padding: 4px;
+  }
+
+  .schedule-wrap .ad-list td img {
+    width: 50px;
+  }
+}
+
+
+
+
+/* Main State Styles */
+.state-view .title-wrap .btn {
+  margin-bottom: 12px;
+}
+
+.state-view .category-wrap {
+  margin-bottom: 12px;
+}
+
+.state-view .category-wrap .span-label {
+  margin-left: auto;
+}
+
+.state-view .category-wrap select {
+  margin-left: 14px;
+  width: 76px;
+}
+
+.tag {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.tag:hover {
+  color: #0277EF;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+
+  /* Main State Styles */
+  .state-view .title-wrap .btn {
+    margin-bottom: 8px;
+  }
+
+  .state-view .category-wrap {
+    margin-bottom: 8px;
+  }
+
+  .state-view .category-wrap select {
+    margin-left: 10px;
+    width: 54px;
+  }
+}
+
+
+
+
+/* Main Modal Styles */
+.main-view .modal-content {
+  padding: 20px 24px 22px;
+}
+
+.main-view .modal-header h1 {
+  margin-left: -4px;
+  font-weight: 400;
+}
+
+.main-view .modal-header .modal-close {
+  margin-right: -8px;
+}
+
+.main-view .modal-body table {
+  margin: 15px 0 12px;
+  width: 483px;
+}
+
+.main-view .modal-body th {
+  width: 155px;
+}
+
+.main-view .modal-body td {
+  width: 328px;
+  text-align: center;
+}
+
+.main-view .modal-footer .btn {
+  margin-left: 12px;
+}
+
+.main-view .modal-footer .btn:first-child {
+  margin-left: auto;
+}
+
+
+@media (min-width: 768px) and (max-width: 1439px) {
+
+  /* Main Modal Styles */
+  .main-view .modal-content {
+    padding: 18px 21px 20px;
+  }
+
+  .main-view .modal-header h1 {
+    margin-left: -3px;
+  }
+
+  .main-view .modal-header .modal-close {
+    margin-right: -6px;
+  }
+
+  .main-view .modal-body table {
+    margin: 13px 0 11px;
+    width: 452px;
+  }
+
+  .main-view .modal-body th {
+    width: 144px;
+  }
+
+  .main-view .modal-body td {
+    width: 306px;
+  }
+
+  .main-view .modal-footer .btn {
+    margin-left: 11px;
+  }
+}
