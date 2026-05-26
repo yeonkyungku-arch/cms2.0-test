@@ -956,25 +956,9 @@
             </div>
           </div>
 
-          <!-- OS -->
-          <div class="form-row">
-            <label class="form-label">운영체제 (OS)<span class="req">*</span></label>
-            <div class="form-control">
-              <select class="sel sel-md">
-                <option value="">OS 선택</option>
-                <option>Android</option>
-                <option>Windows</option>
-                <option>Linux</option>
-                <option>Tizen (Samsung)</option>
-                <option>webOS (LG)</option>
-              </select>
-              <input type="text" class="inp inp-sm" placeholder="버전 (예: Android 13)">
-            </div>
-          </div>
-
-          <!-- 지원 포맷 -->
+          <!-- 콘텐츠 재생 포맷 -->
           <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:2px;">지원 포맷<span class="req">*</span></label>
+            <label class="form-label" style="padding-top:2px;">콘텐츠 재생 포맷<span class="req">*</span></label>
             <div class="form-control">
               <div class="check-group">
                 <label><input type="checkbox" checked> MP4</label>
@@ -996,6 +980,22 @@
           <h2 class="form-section-title">
             <span class="section-icon"></span>셋탑 (Settop)
           </h2>
+
+          <!-- 셋탑 OS — Android 전용 -->
+          <div class="form-row">
+            <label class="form-label">운영체제 (OS)</label>
+            <div class="form-control">
+              <span style="display:inline-flex; align-items:center; height:40px; padding:0 12px;
+                            background:#F6F7F9; border:1px solid #CED2D6; border-radius:4px;
+                            font-size:14px; color:#24292E; gap:8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#58C65D">
+                  <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-2.5-1C2.67 17 2 17.67 2 18.5v-9C2 8.67 2.67 8 3.5 8S5 8.67 5 9.5v9c0 .83-.67 1.5-1.5 1.5zm17 0c-.83 0-1.5-.67-1.5-1.5v-9c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v9c0 .83-.67 1.5-1.5 1.5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C7.08 3.04 6 4.57 6 6.35V7h12v-.65c0-1.78-1.08-3.31-2.47-4.19zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+                </svg>
+                Android
+              </span>
+              <span class="hint" style="width:auto; margin-top:0;">본 서비스는 Android 운영체제만 지원합니다</span>
+            </div>
+          </div>
 
           <!-- 셋탑 S/N -->
           <div class="form-row" style="align-items:flex-start;">

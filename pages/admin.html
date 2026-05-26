@@ -4,301 +4,447 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>관리자 — CMS</title>
-  <link rel="stylesheet" href="../assets/css/reset.css">
-  <link rel="stylesheet" href="../assets/css/layout.css">
-  <link rel="stylesheet" href="../assets/css/components.css">
-  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    .user-menu { display: none; }
-    .user-menu.active { display: block !important; opacity: 1 !important; }
-    .role-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 10px;
-      font-size: 11px; border: 1px solid #B3D8FF;
-      background: #ecf5ff; color: #409EFF;
+    /* Page-specific overrides */
+
+    /* Modal form table */
+    .modal-form-tbl {
+      width: 100%;
+      border-collapse: collapse;
     }
-    .role-badge.admin { background: #f0f9ee; color: #0FB716; border-color: #b3e4b6; }
-    .role-badge.viewer { background: #f5f5f5; color: #909399; border-color: #DCDFE6; }
-    .online-dot {
-      display: inline-block; width: 7px; height: 7px;
-      border-radius: 50%; background: #0FB716; margin-right: 5px;
+    .modal-form-tbl th {
+      width: 100px;
+      padding: 10px 12px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 400;
+      color: #9EA5AD;
+      vertical-align: middle;
+      white-space: nowrap;
     }
-    .offline-dot {
-      display: inline-block; width: 7px; height: 7px;
-      border-radius: 50%; background: #DCDFE6; margin-right: 5px;
+    .modal-form-tbl td {
+      padding: 10px 0 10px 20px;
+      font-size: 14px;
+      color: #24292E;
+      vertical-align: middle;
+    }
+    .modal-form-tbl tr + tr th,
+    .modal-form-tbl tr + tr td {
+      border-top: 1px solid #F6F7F9;
+    }
+
+    /* Status dot inline layout */
+    .status-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    /* Inactive date input */
+    #inactiveDate {
+      display: none;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
 
-  <!-- 사이드바 -->
-  <nav>
-    <div class="logo" style="text-align:center;">
-      <svg width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="rgba(255,255,255,0.15)"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">CMS</text></svg>
+  <!-- ZONE 1: GNB Sidebar -->
+  <aside class="gnb">
+    <!-- Logo -->
+    <div class="gnb-logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.1)"/>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+              fill="#58C65D" font-size="13" font-weight="700" font-family="inherit">DL</text>
+      </svg>
     </div>
-    <ul class="nav-wrap">
-      <li><a href="dashboard.html"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg></a></li>
-      <li><a href="contents.html"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/></svg></a></li>
-      <li><a href="device.html"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/></svg></a></li>
-      <li><a href="schedule.html"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/></svg></a></li>
-      <li class="active"><a href="admin.html"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 1.5c-5.33 0-8 2.17-8 3.5V19h16v-2c0-1.33-2.67-3.5-8-3.5z"/></svg></a></li>
-    </ul>
-  </nav>
 
-  <!-- 헤더 -->
-  <header>
-    <div class="flex flex-between header-ui">
-      <div class="search-wrap flex input-search">
-        <input type="text" placeholder="검색" style="width:195px; height:22px; border-radius:30px; background:#F4F4F4; border:none; padding:0 15px;">
-      </div>
-      <ul class="flex user-wrap" style="gap:0;">
-        <li class="user-noti" style="margin-right:4px;"><a href="#"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2a7 7 0 00-7 7v4l-1.5 2.5h17L18 13V9a7 7 0 00-7-7zm0 18a2 2 0 002-2H9a2 2 0 002 2z" stroke="#000" stroke-width="1.2" fill="none"/></svg></a></li>
-        <li style="margin-right:16px;"><a href="#"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="#000" stroke-width="1.2"/><line x1="11" y1="7" x2="11" y2="12" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="14.5" r="0.8" fill="#000"/></svg></a></li>
-        <li style="position:relative;">
-          <a href="#" onclick="toggleDropdown(event)">관리자
-            <svg width="10" height="6" viewBox="0 0 10 6" style="margin-left:4px;vertical-align:middle;"><path d="M0 0l5 6 5-6z" fill="#0FB716"/></svg>
-          </a>
-          <ul class="user-menu" id="userMenu" style="position:absolute; top:48px; right:0; padding:12px 14px 6px; width:144px; box-shadow:0 0 4px rgba(0,0,0,0.25); background:#fff; border-radius:4px; z-index:100;">
-            <li><a href="#">내 정보</a></li>
-            <li><a href="#">비밀번호 변경</a></li>
-            <li class="logout"><a href="login.html">로그아웃</a></li>
-          </ul>
-        </li>
-      </ul>
+    <!-- Nav items -->
+    <nav class="gnb-nav">
+      <!-- 대시보드 -->
+      <a href="dashboard.html" title="대시보드">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/>
+        </svg>
+        <span>대시보드</span>
+      </a>
+
+      <!-- 미디어 -->
+      <a href="#" title="미디어">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/>
+        </svg>
+        <span>미디어</span>
+      </a>
+
+      <!-- 미디어그룹 -->
+      <a href="#" title="미디어그룹">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M2 7h20v2H2V7zm2-4h16v2H4V3zm-2 8h20v2H2v-2zm0 4h20v2H2v-2zm0 4h20v2H2v-2z"/>
+        </svg>
+        <span>미디어그룹</span>
+      </a>
+
+      <!-- 콘텐츠 -->
+      <a href="contents.html" title="콘텐츠">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/>
+        </svg>
+        <span>콘텐츠</span>
+      </a>
+
+      <!-- 스케줄 -->
+      <a href="#" title="스케줄">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/>
+        </svg>
+        <span>스케줄</span>
+      </a>
+
+      <!-- 모니터링 -->
+      <a href="#" title="모니터링">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M3 3h18v13H3V3zm1.5 1.5v10h15v-10h-15zM2 17h20v1.5H2V17zm3 3h14v1.5H5V20zM7 8l3 4 3-3 4 5H7V8z"/>
+        </svg>
+        <span>모니터링</span>
+      </a>
+
+      <!-- Divider -->
+      <div class="gnb-divider"></div>
+
+      <!-- 관리자 (active) -->
+      <a href="admin.html" class="active" title="관리자">
+        <svg width="22" height="22" viewBox="0 0 24 24">
+          <path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.33.07-.67.07-1s-.03-.67-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.33-.07.67-.07 1s.03.67.07 1l-2.11 1.63c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.13-.22.07-.49-.12-.64l-2.11-1.63z"/>
+        </svg>
+        <span>관리자</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ZONE 2: Topbar -->
+  <header class="topbar">
+    <!-- Search -->
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 24 24">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" placeholder="검색">
     </div>
-    <div class="header-title">관리자</div>
-    <ul class="flex header-nav">
-      <li><a href="dashboard.html">운영 현황</a></li>
-      <li><a href="device.html">기기 현황</a></li>
-      <li><a href="schedule.html">일정</a></li>
-      <li><a href="contents.html">콘텐츠</a></li>
-      <li class="active">
-        <a href="admin.html">관리자</a>
-        <div class="header-subnav flex">
-          <a href="#" class="active">회원 관리</a>
-          <a href="#">SW 업데이트</a>
-          <a href="#">공지사항</a>
-          <a href="#">메일 발송</a>
+
+    <!-- User area -->
+    <div class="topbar-user">
+      <!-- Profile dropdown -->
+      <div class="topbar-profile" id="profileToggle" onclick="toggleProfile(event)">
+        <div class="topbar-avatar">관</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name">관리자</div>
+          <div class="topbar-profile-org">DOOH Service</div>
         </div>
-      </li>
-    </ul>
+        <span class="topbar-caret">▾</span>
+
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#">내 정보</a>
+          <a href="#">비밀번호 변경</a>
+          <a href="login.html" class="logout">로그아웃</a>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <!-- 콘텐츠 -->
-  <section>
-    <article>
+  <!-- ZONE 3: Breadcrumb Bar -->
+  <div class="bcrumb">
+    <a class="bcrumb-back" href="#">‹</a>
+    <a href="admin.html">관리자</a>
+    <span class="sep">›</span>
+    <span class="cur">회원 관리</span>
+  </div>
 
-      <!-- 탭 -->
-      <ul class="flex tab-nav">
-        <li class="ui-state-active"><a href="#">회원 관리</a></li>
-        <li><a href="#">SW 업데이트</a></li>
-        <li><a href="#">공지사항</a></li>
-        <li><a href="#">메일 발송</a></li>
-      </ul>
+  <!-- ZONE 4: Content -->
+  <main class="content">
+    <div class="content-inner">
 
-      <div class="tab-panel">
+      <!-- Main Card -->
+      <div class="card">
 
-        <!-- 목록 옵션 -->
-        <div class="list-option flex" style="margin-bottom:8px; align-items:center;">
-          <div class="option-cat flex" style="align-items:center; gap:8px;">
-            <select><option>전체 권한</option><option>최고관리자</option><option>운영자</option><option>조회자</option></select>
-            <select><option>전체 상태</option><option>활성</option><option>비활성</option><option>승인대기</option></select>
-          </div>
-          <div class="option-search flex" style="align-items:center; margin-left:auto; margin-right:0; gap:4px;">
-            <input type="text" placeholder="이름 / 아이디 검색" style="width:160px;">
-            <button class="btn btn-plain btn-sm">검색</button>
-          </div>
-          <button class="btn btn-green btn-sm" style="margin-left:45px;">+ 회원 등록</button>
+        <!-- Card Head -->
+        <div class="card-head">
+          <span class="card-title">회원 관리</span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('', '')">＋ 회원 등록</button>
         </div>
 
-        <!-- 테이블 -->
-        <table>
-          <thead>
-            <tr>
-              <th style="width:4%;"><input type="checkbox" onclick="toggleAll(this)"></th>
-              <th style="width:6%;">번호</th>
-              <th style="width:14%;">이름</th>
-              <th style="width:16%;">아이디</th>
-              <th style="width:18%;">이메일</th>
-              <th style="width:10%;">권한</th>
-              <th style="width:9%;">상태</th>
-              <th style="width:11%;">최근 접속</th>
-              <th style="width:12%;">등록일</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>15</td>
-              <td>김민준</td>
-              <td>minjun.kim</td>
-              <td><a href="mailto:minjun@example.com">minjun@example.com</a></td>
-              <td><span class="role-badge admin">최고관리자</span></td>
-              <td><span class="online-dot"></span>온라인</td>
-              <td style="font-size:12px;">방금 전</td>
-              <td style="font-size:12px;">2022.03.14</td>
-              <td>
-                <button class="btn btn-plain btn-sm" onclick="openModal('김민준', 'minjun.kim')">관리</button>
-              </td>
-            </tr>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>14</td>
-              <td>이서연</td>
-              <td>seoyeon.lee</td>
-              <td><a href="mailto:seoyeon@example.com">seoyeon@example.com</a></td>
-              <td><span class="role-badge">운영자</span></td>
-              <td><span class="online-dot"></span>온라인</td>
-              <td style="font-size:12px;">2분 전</td>
-              <td style="font-size:12px;">2022.05.22</td>
-              <td><button class="btn btn-plain btn-sm" onclick="openModal('이서연', 'seoyeon.lee')">관리</button></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>13</td>
-              <td>박도현</td>
-              <td>dohyun.park</td>
-              <td><a href="mailto:dohyun@example.com">dohyun@example.com</a></td>
-              <td><span class="role-badge">운영자</span></td>
-              <td><span class="offline-dot"></span>오프라인</td>
-              <td style="font-size:12px;">2024.09.28</td>
-              <td style="font-size:12px;">2022.08.10</td>
-              <td><button class="btn btn-plain btn-sm" onclick="openModal('박도현', 'dohyun.park')">관리</button></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>12</td>
-              <td>최유진</td>
-              <td>yujin.choi</td>
-              <td><a href="mailto:yujin@example.com">yujin@example.com</a></td>
-              <td><span class="role-badge viewer">조회자</span></td>
-              <td><span class="offline-dot"></span>오프라인</td>
-              <td style="font-size:12px;">2024.10.01</td>
-              <td style="font-size:12px;">2023.01.05</td>
-              <td><button class="btn btn-plain btn-sm" onclick="openModal('최유진', 'yujin.choi')">관리</button></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>11</td>
-              <td>정승훈</td>
-              <td>seunghoon.jung</td>
-              <td><a href="mailto:seunghoon@example.com">seunghoon@example.com</a></td>
-              <td><span class="role-badge viewer">조회자</span></td>
-              <td style="color:#EB6A4E;">
-                <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#EB6A4E; margin-right:5px;"></span>비활성
-              </td>
-              <td style="font-size:12px;">2024.08.15</td>
-              <td style="font-size:12px;">2023.04.18</td>
-              <td><button class="btn btn-plain btn-sm" onclick="openModal('정승훈', 'seunghoon.jung')">관리</button></td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Card Body -->
+        <div class="card-body">
 
-        <div class="flex flex-between article-footer">
-          <button class="btn btn-gray btn-sm">선택 삭제</button>
-          <nav class="pagination flex">
-            <button>«</button>
-            <ul class="flex">
-              <li class="active"><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-            </ul>
-            <button>»</button>
-          </nav>
-          <span style="font-size:12px; color:#909399;">총 15명</span>
-        </div>
+          <!-- Tabs -->
+          <ul class="tab-nav" id="tabNav">
+            <li class="active"><button onclick="switchTab(this)">회원 관리</button></li>
+            <li><button onclick="switchTab(this)">SW 업데이트</button></li>
+            <li><button onclick="switchTab(this)">공지사항</button></li>
+            <li><button onclick="switchTab(this)">메일 발송</button></li>
+          </ul>
 
-      </div><!-- /tab-panel -->
-    </article>
-  </section>
-
-  <!-- 회원 관리 모달 -->
-  <div class="modal active" id="memberModal" style="background:rgba(0,0,0,0.3);">
-    <div class="modal-overlay" onclick="closeModal()"></div>
-    <div class="modal-content" style="width:532px; padding:20px 24px 22px;">
-
-      <div class="modal-header flex flex-between">
-        <h1 id="modalTitle">회원 정보 관리</h1>
-        <button class="modal-close" onclick="closeModal()">
-          <svg width="11" height="11" viewBox="0 0 11 11"><line x1="1" y1="1" x2="10" y2="10" stroke="#606266" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="1" x2="1" y2="10" stroke="#606266" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-
-      <table style="margin-bottom:15px;">
-        <tr>
-          <th>이름</th>
-          <td style="text-align:left; padding-left:26px;" id="modalName">김민준</td>
-        </tr>
-        <tr>
-          <th>아이디</th>
-          <td style="text-align:left; padding-left:26px;" id="modalId">minjun.kim</td>
-        </tr>
-        <tr>
-          <th>권한</th>
-          <td style="text-align:left; padding-left:26px;">
-            <select style="width:160px;">
+          <!-- Filter / Search row -->
+          <div class="list-option" style="margin-bottom:12px;">
+            <select class="sel">
+              <option>전체 권한</option>
               <option>최고관리자</option>
               <option>운영자</option>
               <option>조회자</option>
             </select>
-          </td>
-        </tr>
-        <tr>
-          <th>계정 상태</th>
-          <td style="text-align:left; padding-left:26px;">
-            <div class="deactivate-wrap">
-              <label><input type="radio" name="status" value="active" checked> <label>활성</label></label>
-              <label style="margin-left:16px;"><input type="radio" name="status" value="inactive"> <label>비활성</label></label>
-            </div>
-            <div id="reservation-wrap" style="display:none; margin-top:8px;">
-              <input type="text" id="reservation-time" class="active" placeholder="비활성 예약 일시 선택" style="width:280px; height:36px; border-radius:4px; padding:0 12px;">
-            </div>
-          </td>
-        </tr>
-      </table>
+            <select class="sel">
+              <option>전체 상태</option>
+              <option>활성</option>
+              <option>비활성</option>
+              <option>승인대기</option>
+            </select>
+            <span class="ml-auto" style="display:flex;align-items:center;gap:8px;">
+              <input type="text" class="inp" placeholder="이름 / 아이디 검색" style="width:200px;">
+              <button class="btn btn-ghost btn-sm">검색</button>
+            </span>
+          </div>
 
-      <div class="modal-footer flex" style="justify-content:flex-end; gap:8px;">
-        <button class="btn btn-gray btn-sm" onclick="closeModal()">취소</button>
-        <button class="btn btn-primary btn-sm" onclick="closeModal()">저장</button>
+          <!-- Table -->
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:40px;"><input type="checkbox" id="chkAll" onclick="toggleAll(this)"></th>
+                  <th style="width:56px;">번호</th>
+                  <th style="width:90px;">이름</th>
+                  <th style="width:130px;">아이디</th>
+                  <th>이메일</th>
+                  <th style="width:100px;">권한</th>
+                  <th style="width:90px;">상태</th>
+                  <th style="width:110px;">최근 접속</th>
+                  <th style="width:100px;">등록일</th>
+                  <th style="width:70px;">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>15</td>
+                  <td>김민준</td>
+                  <td>minjun.kim</td>
+                  <td>minjun@example.com</td>
+                  <td><span class="badge badge-admin">최고관리자</span></td>
+                  <td>
+                    <span class="status-cell">
+                      <span class="dot dot-online"></span>온라인
+                    </span>
+                  </td>
+                  <td class="text-sm">방금 전</td>
+                  <td class="text-sm">2022.03.14</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openModal('김민준','minjun.kim')">관리</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>14</td>
+                  <td>이서연</td>
+                  <td>seoyeon.lee</td>
+                  <td>seoyeon@example.com</td>
+                  <td><span class="badge badge-reserved">운영자</span></td>
+                  <td>
+                    <span class="status-cell">
+                      <span class="dot dot-online"></span>온라인
+                    </span>
+                  </td>
+                  <td class="text-sm">2분 전</td>
+                  <td class="text-sm">2022.05.22</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openModal('이서연','seoyeon.lee')">관리</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>13</td>
+                  <td>박도현</td>
+                  <td>dohyun.park</td>
+                  <td>dohyun@example.com</td>
+                  <td><span class="badge badge-reserved">운영자</span></td>
+                  <td>
+                    <span class="status-cell">
+                      <span class="dot dot-offline"></span>오프라인
+                    </span>
+                  </td>
+                  <td class="text-sm">2024.09.28</td>
+                  <td class="text-sm">2022.08.10</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openModal('박도현','dohyun.park')">관리</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>12</td>
+                  <td>최유진</td>
+                  <td>yujin.choi</td>
+                  <td>yujin@example.com</td>
+                  <td><span class="badge badge-viewer">조회자</span></td>
+                  <td>
+                    <span class="status-cell">
+                      <span class="dot dot-offline"></span>오프라인
+                    </span>
+                  </td>
+                  <td class="text-sm">2024.10.01</td>
+                  <td class="text-sm">2023.01.05</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openModal('최유진','yujin.choi')">관리</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>11</td>
+                  <td>정승훈</td>
+                  <td>seunghoon.jung</td>
+                  <td>seunghoon@example.com</td>
+                  <td><span class="badge badge-viewer">조회자</span></td>
+                  <td>
+                    <span class="status-cell" style="color:#E97474;">
+                      <span class="dot dot-error"></span>비활성
+                    </span>
+                  </td>
+                  <td class="text-sm">2024.08.15</td>
+                  <td class="text-sm">2023.04.18</td>
+                  <td>
+                    <button class="btn btn-ghost btn-sm" onclick="openModal('정승훈','seunghoon.jung')">관리</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div><!-- /card-body -->
+
+        <!-- Card Foot -->
+        <div class="card-foot flex flex-between">
+          <button class="btn btn-gray btn-sm">선택 삭제</button>
+          <nav class="pager">
+            <button>«</button>
+            <a href="#" class="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <button>»</button>
+          </nav>
+          <span class="text-muted text-sm">총 15명</span>
+        </div>
+
+      </div><!-- /card -->
+
+    </div><!-- /content-inner -->
+  </main>
+
+  <!-- Modal: 회원 정보 관리 -->
+  <div class="modal-backdrop" id="memberModal">
+    <div class="modal-box" style="width:480px;">
+
+      <!-- Modal Head -->
+      <div class="modal-head">
+        <h2>회원 정보 관리</h2>
+        <button class="modal-close-btn" onclick="closeModal()" aria-label="닫기">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-inner">
+        <table class="modal-form-tbl">
+          <tbody>
+            <tr>
+              <th>이름</th>
+              <td id="modalName">—</td>
+            </tr>
+            <tr>
+              <th>아이디</th>
+              <td id="modalId">—</td>
+            </tr>
+            <tr>
+              <th>권한</th>
+              <td>
+                <select class="sel" style="width:160px;">
+                  <option>최고관리자</option>
+                  <option>운영자</option>
+                  <option>조회자</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>계정 상태</th>
+              <td>
+                <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="radio" name="acctStatus" value="active" checked
+                         onchange="onStatusChange(this)"> 활성
+                </label>
+                <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-left:16px;">
+                  <input type="radio" name="acctStatus" value="inactive"
+                         onchange="onStatusChange(this)"> 비활성
+                </label>
+                <div id="inactiveDate">
+                  <input type="date" class="inp" style="width:200px;" placeholder="비활성 예약 일시">
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal Foot -->
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeModal()">취소</button>
+        <button class="btn btn-primary" onclick="closeModal()">저장</button>
       </div>
 
     </div>
   </div>
 
   <script>
-    // 탭 전환
-    document.querySelectorAll('.tab-nav li').forEach(li => {
-      li.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.tab-nav li').forEach(l => l.classList.remove('ui-state-active'));
-        this.classList.add('ui-state-active');
-      });
-    });
-    // 전체 선택
-    function toggleAll(m) { document.querySelectorAll('tbody input[type=checkbox]').forEach(c => c.checked = m.checked); }
-    // 모달
+    /* ---- Tab switch ---- */
+    function switchTab(btn) {
+      const tabItems = document.querySelectorAll('#tabNav li');
+      tabItems.forEach(li => li.classList.remove('active'));
+      btn.closest('li').classList.add('active');
+    }
+
+    /* ---- Select all checkboxes ---- */
+    function toggleAll(master) {
+      document.querySelectorAll('.tbl tbody input[type="checkbox"]')
+        .forEach(c => c.checked = master.checked);
+    }
+
+    /* ---- Modal open / close ---- */
     function openModal(name, id) {
-      document.getElementById('modalName').textContent = name;
-      document.getElementById('modalId').textContent = id;
-      document.getElementById('memberModal').classList.add('active');
+      document.getElementById('modalName').textContent = name || '—';
+      document.getElementById('modalId').textContent   = id   || '—';
+      // Reset radio to active
+      document.querySelector('input[name="acctStatus"][value="active"]').checked = true;
+      document.getElementById('inactiveDate').style.display = 'none';
+      document.getElementById('memberModal').classList.add('open');
     }
-    function closeModal() { document.getElementById('memberModal').classList.remove('active'); }
-    // 드롭다운
-    function toggleDropdown(e) {
-      e.preventDefault();
-      document.getElementById('userMenu').classList.toggle('active');
+    function closeModal() {
+      document.getElementById('memberModal').classList.remove('open');
     }
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.user-wrap')) document.getElementById('userMenu').classList.remove('active');
+    // Close on backdrop click
+    document.getElementById('memberModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
     });
-    // 상태 라디오 — 예약 시간 표시
-    document.querySelectorAll('input[name=status]').forEach(r => {
-      r.addEventListener('change', function() {
-        document.getElementById('reservation-wrap').style.display = this.value === 'inactive' ? 'block' : 'none';
-      });
+
+    /* ---- Status radio: show date input when inactive ---- */
+    function onStatusChange(radio) {
+      document.getElementById('inactiveDate').style.display =
+        radio.value === 'inactive' ? 'block' : 'none';
+    }
+
+    /* ---- Profile dropdown ---- */
+    function toggleProfile(e) {
+      e.stopPropagation();
+      document.getElementById('profileDropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function() {
+      document.getElementById('profileDropdown').classList.remove('open');
     });
-    // 페이지 로드 시 모달 숨김
-    document.getElementById('memberModal').classList.remove('active');
   </script>
 </body>
 </html>
