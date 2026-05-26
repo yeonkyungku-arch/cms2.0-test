@@ -16,7 +16,49 @@
     .user-menu.active { display: block !important; opacity: 1 !important; }
 
     /* ──────────────────────────────────────────────
-       State Panel — 커스텀 배지
+       design.md 기준 색상 토큰 오버라이드
+       - 기본 기조: green(#58C65D) = 1차 액션 색상
+       - blue(#409EFF) 는 이 페이지에서 사용하지 않음
+    ────────────────────────────────────────────── */
+
+    /* btn-primary: 컴포넌트 CSS의 파란색을 그린으로 재정의 */
+    .btn-primary {
+      background: #58C65D !important;
+      border: 1px solid #58C65D !important;
+      color: #FFFFFF !important;
+    }
+    .btn-primary:hover {
+      background: #FFFFFF !important;
+      color: #58C65D !important;
+      border-color: #58C65D !important;
+    }
+
+    /* btn-plain: 연결확인 / 주소검색 보조 버튼 */
+    .btn-plain {
+      background: #FFFFFF !important;
+      border: 1px solid #C1E9C3 !important;
+      color: #58C65D !important;
+    }
+    .btn-plain:hover {
+      background: #C1E9C3 !important;
+      color: #FFFFFF !important;
+    }
+
+    /* header-nav 활성 탭 밑줄: 파란색 → 그린 */
+    .header-nav li:hover a { color: #58C65D; }
+    .header-nav li.active a { color: #000; border-bottom-color: #58C65D; }
+    .header-nav li.active .header-subnav a.active { background: rgba(88, 198, 93, 0.16); }
+
+    /* State Panel 활성 항목 색상 */
+    .state-wrap li.active span { color: #58C65D; border-bottom-color: #58C65D; }
+    .state-wrap li.active h1  { color: #58C65D; }
+
+    /* article-breadcrumb */
+    section .article-breadcrumb,
+    section .breadcrumb-divider { color: #58C65D; }
+
+    /* ──────────────────────────────────────────────
+       State Panel — 커스텀 상태 점
     ────────────────────────────────────────────── */
     .status-dot {
       display: inline-block;
@@ -25,22 +67,22 @@
       margin-right: 5px;
       vertical-align: middle;
     }
-    .dot-online  { background: #0FB716; }
-    .dot-offline { background: #DCDFE6; }
-    .dot-repair  { background: #EB6A4E; }
+    .dot-online  { background: #58C65D; }   /* 온라인: 브랜드 그린 */
+    .dot-offline { background: #CED2D6; }   /* 오프라인: grayscale-300 */
+    .dot-repair  { background: #E97474; }   /* 점검중: danger */
 
     /* ──────────────────────────────────────────────
-       폼 레이아웃
+       폼 레이아웃 기반
     ────────────────────────────────────────────── */
 
-    /* 섹션 구분 헤더 (디스플레이/셋탑/위치/운영) */
+    /* 섹션 헤더 */
     .form-section-title {
       font-size: 14px;
-      font-weight: 500;          /* article-title weight */
-      color: #000;
+      font-weight: 500;
+      color: #24292E;               /* text-primary */
       padding: 0 0 10px 0;
       margin-bottom: 16px;
-      border-bottom: 1px solid #EBEEF5;
+      border-bottom: 1px solid #E5E7EA;  /* grayscale-200 */
     }
 
     /* 필드 행 */
@@ -57,12 +99,12 @@
       flex: 0 0 140px;
       font-size: 14px;
       font-weight: 400;
-      color: #909399;            /* text-secondary */
-      line-height: 30px;         /* 입력 높이에 맞춤 */
+      color: #9EA5AD;             /* text-secondary */
+      line-height: 30px;
       padding-right: 16px;
     }
     .form-label .required {
-      color: #FF0000;            /* status-danger */
+      color: #E97474;             /* danger */
       margin-left: 2px;
     }
 
@@ -75,18 +117,18 @@
       gap: 8px;
     }
 
-    /* 일반 텍스트 인풋 (design.md input-text) */
+    /* 텍스트 인풋 / select / textarea — focus = green */
     .form-value input[type="text"],
     .form-value input[type="number"],
     .form-value select,
     .form-value textarea {
       padding: 3px 8px;
       background: #FFFFFF;
-      border: 1px solid #D3D4D6; /* border-default */
-      border-radius: 4px;        /* rounded.sm */
+      border: 1px solid #CED2D6;   /* grayscale-300 */
+      border-radius: 4px;
       font-size: 14px;
       font-family: inherit;
-      color: #000;
+      color: #24292E;
       height: 30px;
       box-sizing: border-box;
       transition: all 0.25s ease;
@@ -96,12 +138,12 @@
     .form-value select:focus,
     .form-value textarea:focus {
       outline: none;
-      border-color: #409EFF;
+      border-color: #58C65D;      /* green focus ring */
     }
     .form-value input[type="text"]::placeholder,
     .form-value input[type="number"]::placeholder,
     .form-value textarea::placeholder {
-      color: #D9D9D9;            /* text-placeholder */
+      color: #9EA5AD;             /* text-placeholder */
     }
     .form-value select {
       appearance: none;
@@ -117,7 +159,7 @@
       padding: 6px 8px;
     }
 
-    /* 입력 너비 헬퍼 */
+    /* 인풋 너비 헬퍼 */
     .w-full { width: 100%; }
     .w-half { width: calc(50% - 4px); }
     .w-200  { width: 200px; }
@@ -126,14 +168,20 @@
     .w-80   { width: 80px; }
     .w-60   { width: 60px; }
 
-    /* 서픽스 텍스트 (예: "인치") */
+    /* 단위 서픽스 */
     .input-suffix {
       font-size: 14px;
-      color: #909399;
+      color: #9EA5AD;
       line-height: 30px;
     }
 
-    /* 체크박스 그룹 */
+    /* 인풋 비활성(readonly) */
+    .form-value input[readonly] {
+      background: #F6F7F9;
+      color: #9EA5AD;
+    }
+
+    /* 체크박스 / 라디오 — accent green */
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
@@ -146,16 +194,15 @@
       align-items: center;
       gap: 5px;
       font-size: 14px;
-      color: #000;
+      color: #24292E;
       cursor: pointer;
     }
     .checkbox-group input[type="checkbox"] {
       width: 14px; height: 14px;
-      accent-color: #409EFF;
+      accent-color: #58C65D;      /* green */
       cursor: pointer;
     }
 
-    /* 라디오 그룹 */
     .radio-group {
       display: flex;
       flex-wrap: wrap;
@@ -168,16 +215,19 @@
       align-items: center;
       gap: 5px;
       font-size: 14px;
-      color: #000;
+      color: #24292E;
       cursor: pointer;
     }
     .radio-group input[type="radio"] {
       width: 14px; height: 14px;
-      accent-color: #409EFF;
+      accent-color: #58C65D;      /* green */
       cursor: pointer;
     }
 
-    /* btn-wrap 세그먼트 컨트롤 (design.md) */
+    /* ──────────────────────────────────────────────
+       btn-wrap 세그먼트 컨트롤
+       active = green tint (design.md 기준)
+    ────────────────────────────────────────────── */
     .btn-wrap {
       display: inline-flex;
       height: 30px;
@@ -187,31 +237,63 @@
       padding: 0 16px;
       font-size: 14px;
       font-weight: 400;
-      color: #606266;            /* text-ui-muted */
+      color: #596066;
       background: #FFFFFF;
-      border: 1px solid #D3D4D6;
+      border: 1px solid #CED2D6;
       border-left: none;
       cursor: pointer;
       transition: all 0.25s ease;
       white-space: nowrap;
     }
     .btn-wrap .btn:first-child {
-      border-left: 1px solid #D3D4D6;
+      border-left: 1px solid #CED2D6;
       border-radius: 4px 0 0 4px;
     }
     .btn-wrap .btn:last-child {
       border-radius: 0 4px 4px 0;
     }
+    /* active: green tint bg + green border + green text */
     .btn-wrap .btn.active {
-      background: #ECF5FF;       /* interactive-bg */
-      border-color: #B3D8FF;     /* interactive-light */
-      color: #409EFF;            /* interactive-primary */
+      background: rgba(88, 198, 93, 0.1);
+      border-color: #C1E9C3;
+      color: #58C65D;
     }
     .btn-wrap .btn:hover:not(.active) {
-      background: #F4F4F5;
+      background: #F6F7F9;
     }
 
-    /* 주소 검색 행 */
+    /* ──────────────────────────────────────────────
+       Toggle 스위치
+       ON = green (#58C65D), OFF = grayscale-300
+    ────────────────────────────────────────────── */
+    .toggle-track {
+      display: inline-block;
+      width: 32px; height: 18px;
+      border-radius: 100px;
+      background: #CED2D6;       /* OFF: grayscale-300 */
+      position: relative;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+    .toggle-track.on {
+      background: #58C65D;       /* ON: green */
+    }
+    .toggle-thumb {
+      display: block;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      position: absolute;
+      top: 2px; left: 2px;
+      transition: left 0.25s ease-in;
+    }
+    .toggle-track.on .toggle-thumb {
+      left: calc(100% - 16px);
+    }
+
+    /* ──────────────────────────────────────────────
+       주소 검색 행
+    ────────────────────────────────────────────── */
     .addr-row {
       display: flex;
       gap: 8px;
@@ -220,26 +302,30 @@
     }
     .addr-row input { flex: 1; }
 
-    /* 지도 플레이스홀더 */
+    /* ──────────────────────────────────────────────
+       지도 플레이스홀더
+       핀: green (#58C65D)
+    ────────────────────────────────────────────── */
     .map-placeholder {
       width: 100%;
       height: 200px;
-      background: #e8eaed;
-      border: 1px solid #D6D6D6;
+      background: #EFF0F2;        /* grayscale-150 */
+      border: 1px solid #CED2D6;
       border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #909399;
+      color: #9EA5AD;
       font-size: 13px;
       position: relative;
       overflow: hidden;
     }
+    /* 지도 핀: green */
     .map-placeholder::before {
       content: '';
       position: absolute;
       width: 16px; height: 16px;
-      background: #409EFF;
+      background: #58C65D;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
       top: calc(50% - 16px);
@@ -247,7 +333,9 @@
       margin-left: -8px;
     }
 
-    /* 운영 시간 행 */
+    /* ──────────────────────────────────────────────
+       운영 시간
+    ────────────────────────────────────────────── */
     .time-range {
       display: flex;
       align-items: center;
@@ -258,24 +346,26 @@
       height: 30px;
       padding: 3px 8px;
       background: #FFFFFF;
-      border: 1px solid #D3D4D6;
+      border: 1px solid #CED2D6;
       border-radius: 4px;
       font-size: 14px;
       font-family: inherit;
-      color: #000;
+      color: #24292E;
       box-sizing: border-box;
       transition: all 0.25s ease;
     }
     .time-range input[type="time"]:focus {
       outline: none;
-      border-color: #409EFF;
+      border-color: #58C65D;
     }
     .time-sep {
       font-size: 14px;
-      color: #909399;
+      color: #9EA5AD;
     }
 
-    /* 온라인 상태 표시 뱃지 */
+    /* ──────────────────────────────────────────────
+       연결 상태 뱃지
+    ────────────────────────────────────────────── */
     .conn-badge {
       display: inline-flex;
       align-items: center;
@@ -284,23 +374,30 @@
       padding: 0 10px;
       border-radius: 4px;
       font-size: 13px;
-      background: #f5f5f5;
-      border: 1px solid #DCDFE6;
-      color: #909399;
+      background: #F6F7F9;
+      border: 1px solid #CED2D6;
+      color: #9EA5AD;
     }
     .conn-badge.online {
-      background: #f0f9ee;
-      border-color: #b3e4b6;
-      color: #0FB716;
+      background: rgba(88, 198, 93, 0.1);
+      border-color: #C1E9C3;
+      color: #58C65D;
+    }
+    .conn-badge.checking {
+      background: rgba(88, 198, 93, 0.05);
+      border-color: #C1E9C3;
+      color: #58C65D;
     }
 
-    /* 폼 하단 액션 바 */
+    /* ──────────────────────────────────────────────
+       폼 하단 액션 바
+    ────────────────────────────────────────────── */
     .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
       padding-top: 20px;
-      border-top: 1px solid #EBEEF5;
+      border-top: 1px solid #E5E7EA;
       margin-top: 24px;
     }
 
@@ -310,19 +407,20 @@
     }
     .form-block:last-child { margin-bottom: 0; }
 
-    /* 인풋 힌트 텍스트 */
+    /* 입력 힌트 텍스트 */
     .input-hint {
       font-size: 12px;
-      color: #909399;
+      color: #9EA5AD;
       line-height: 1.4;
       margin-top: 4px;
       width: 100%;
     }
+    .input-hint.green { color: #58C65D; margin-top: 0; }
 
     /* ──────────────────────────────────────────────
        반응형 (768 ~ 1439px)
     ────────────────────────────────────────────── */
-    @media (max-width: 1439px) {
+    @media (min-width: 768px) and (max-width: 1439px) {
       .form-label { flex: 0 0 120px; font-size: 10px; }
       .form-value input[type="text"],
       .form-value input[type="number"],
@@ -336,56 +434,74 @@
 <body>
 
   <!-- ══════════════════════════════════════════════
-       사이드바 네비게이션
+       사이드바 네비게이션 (GNB — green, 96px)
   ══════════════════════════════════════════════ -->
   <nav>
     <div class="logo" style="text-align:center;">
+      <!-- DL 로고 (design.md: Topbar 왼쪽 "DL" in green — 여기선 GNB 상단 로고로) -->
       <svg width="40" height="40" viewBox="0 0 40 40">
-        <rect width="40" height="40" rx="8" fill="rgba(255,255,255,0.15)"/>
+        <rect width="40" height="40" rx="8" fill="rgba(255,255,255,0.20)"/>
         <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
-              fill="#fff" font-size="13" font-weight="700">CMS</text>
+              fill="#fff" font-size="13" font-weight="700">DL</text>
       </svg>
     </div>
     <ul class="nav-wrap">
-      <!-- 운영 현황 -->
+      <!-- 대시보드 -->
       <li>
-        <a href="dashboard.html">
+        <a href="dashboard.html" title="대시보드">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/>
           </svg>
         </a>
       </li>
+      <!-- 미디어 (active) -->
+      <li class="active">
+        <a href="#" title="미디어">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/>
+          </svg>
+        </a>
+        <div class="nav-indicator"></div>
+      </li>
+      <!-- 미디어그룹 -->
+      <li>
+        <a href="#" title="미디어그룹">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+          </svg>
+        </a>
+      </li>
       <!-- 콘텐츠 -->
       <li>
-        <a href="contents.html">
+        <a href="contents.html" title="콘텐츠">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/>
           </svg>
         </a>
       </li>
-      <!-- 미디어 관리 (active) -->
-      <li class="active">
-        <a href="#">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/>
-          </svg>
-        </a>
-        <!-- 네비 활성 다이아몬드 인디케이터 -->
-        <div class="nav-indicator"></div>
-      </li>
-      <!-- 일정 -->
+      <!-- 스케줄 -->
       <li>
-        <a href="schedule.html">
+        <a href="#" title="스케줄">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/>
           </svg>
         </a>
       </li>
-      <!-- 관리자 -->
+      <!-- 모니터링 -->
       <li>
-        <a href="admin.html">
+        <a href="#" title="모니터링">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 1.5c-5.33 0-8 2.17-8 3.5V19h16v-2c0-1.33-2.67-3.5-8-3.5z"/>
+            <path d="M3 3h18v14H3V3zm2 2v10h14V5H5zm-2 12h18v2H3v-2zm5-8h2v5H8v-5zm3-2h2v7h-2V7zm3 3h2v4h-2v-4z"/>
+          </svg>
+        </a>
+      </li>
+      <!-- 구분선 -->
+      <li style="border-top: 1px solid rgba(255,255,255,0.25); padding-top:12px; margin-top:4px; width:24px;"></li>
+      <!-- 태그검색 -->
+      <li>
+        <a href="#" title="태그검색">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/>
           </svg>
         </a>
       </li>
@@ -393,10 +509,10 @@
   </nav>
 
   <!-- ══════════════════════════════════════════════
-       헤더
+       헤더 (Topbar + 탭 네비)
   ══════════════════════════════════════════════ -->
   <header>
-    <!-- 상단 UI 바 -->
+    <!-- 상단 UI 바 (검색 + 유저) -->
     <div class="flex flex-between header-ui">
       <div class="search-wrap flex input-search">
         <input type="text" placeholder="검색"
@@ -423,15 +539,15 @@
         <li style="position:relative;">
           <a href="#" onclick="toggleDropdown(event)">관리자
             <svg width="10" height="6" viewBox="0 0 10 6" style="margin-left:4px;vertical-align:middle;">
-              <path d="M0 0l5 6 5-6z" fill="#0FB716"/>
+              <path d="M0 0l5 6 5-6z" fill="#58C65D"/>
             </svg>
           </a>
           <ul class="user-menu" id="userMenu"
               style="position:absolute;top:48px;right:0;padding:12px 14px 6px;width:144px;
                      box-shadow:0 0 4px rgba(0,0,0,0.25);background:#fff;border-radius:4px;z-index:100;">
-            <li><a href="#">내 정보</a></li>
-            <li><a href="#">비밀번호 변경</a></li>
-            <li class="logout"><a href="login.html">로그아웃</a></li>
+            <li><a href="#" style="color:#000;">내 정보</a></li>
+            <li><a href="#" style="color:#000;">비밀번호 변경</a></li>
+            <li class="logout"><a href="login.html" style="color:#838383;">로그아웃</a></li>
           </ul>
         </li>
       </ul>
@@ -440,14 +556,15 @@
     <!-- 페이지 타이틀 -->
     <div class="header-title">미디어 관리</div>
 
-    <!-- 헤더 탭 네비 -->
+    <!-- 헤더 탭 네비게이션 -->
     <ul class="flex header-nav">
       <li><a href="dashboard.html">운영 현황</a></li>
       <li><a href="#">기기 현황</a></li>
-      <li><a href="schedule.html">일정</a></li>
+      <li><a href="#">스케줄</a></li>
       <li><a href="contents.html">콘텐츠</a></li>
       <li class="active">
         <a href="#">미디어</a>
+        <!-- 서브 네비 (breadcrumb-bar 역할) -->
         <div class="header-subnav flex">
           <a href="#">미디어 목록</a>
           <a href="media-register.html" class="active">미디어 등록</a>
@@ -458,12 +575,13 @@
   </header>
 
   <!-- ══════════════════════════════════════════════
-       콘텐츠 섹션
+       콘텐츠 섹션 (light gray #ECECEC background)
   ══════════════════════════════════════════════ -->
   <section>
 
     <!-- ─────────────────────────────────────────
-         State Panel — 미디어 현황 요약
+         Stat Cards — 미디어 현황 요약
+         (design.md: stat-card on surface-bg)
     ───────────────────────────────────────────── -->
     <div class="state-wrap">
       <ul>
@@ -493,19 +611,20 @@
     </div>
 
     <!-- ─────────────────────────────────────────
-         미디어 등록 폼
+         미디어 등록 폼 (White card on light bg)
     ───────────────────────────────────────────── -->
     <article>
+      <!-- 카드 헤더: 제목 left + 브레드크럼 right -->
       <div class="article-header flex flex-between">
         <h2 class="article-title">미디어 등록</h2>
-        <!-- 브레드크럼 -->
-        <nav style="font-size:12px; color:#409EFF;">
-          <a href="#" style="color:#409EFF;">미디어 목록</a>
-          <span style="color:#909399; margin:0 4px;">/</span>
-          <span style="color:#909399;">미디어 등록</span>
+        <nav style="font-size:12px;">
+          <a href="#" class="article-breadcrumb">미디어 목록</a>
+          <span class="breadcrumb-divider">/</span>
+          <span style="color:#9EA5AD;">미디어 등록</span>
         </nav>
       </div>
 
+      <!-- 화이트 카드 내부 -->
       <div class="article-inner">
 
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -539,20 +658,16 @@
           <div class="form-row">
             <span class="form-label">운영 상태</span>
             <div class="form-value">
-              <label class="flex" style="align-items:center; gap:8px; cursor:pointer;">
-                <span class="toggle-wrap">
-                  <input type="checkbox" id="toggleStatus" checked onchange="syncToggleLabel(this)"
-                         style="display:none;">
-                  <span class="toggle" id="toggleStatusTrack"
-                        onclick="document.getElementById('toggleStatus').click()"
-                        style="display:inline-block; width:26px; height:16px; border-radius:13px;
-                               background:#409EFF; position:relative; cursor:pointer; transition:all 0.25s ease;">
-                    <span style="display:block; width:13px; height:13px; border-radius:50%;
-                                 background:#fff; position:absolute; top:1.5px;
-                                 left:calc(100% - 14px); transition:all 0.25s ease-in;"></span>
-                  </span>
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <!-- 히든 체크박스 -->
+                <input type="checkbox" id="toggleStatus" checked
+                       style="display:none;" onchange="syncToggle(this)">
+                <!-- 토글 트랙 (ON = green, OFF = gray) -->
+                <span class="toggle-track on" id="toggleTrack"
+                      onclick="document.getElementById('toggleStatus').click()">
+                  <span class="toggle-thumb"></span>
                 </span>
-                <span id="toggleStatusLabel" style="font-size:14px; color:#000;">운영 중</span>
+                <span id="toggleLabel" style="font-size:14px; color:#24292E;">운영 중</span>
               </label>
             </div>
           </div>
@@ -560,6 +675,7 @@
 
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
              2. 디스플레이 (Display)
+             design.md: Media = Display + Settop + Location (1:1:1)
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <div class="form-block">
           <p class="form-section-title">디스플레이 (Display)</p>
@@ -568,7 +684,7 @@
           <div class="form-row">
             <span class="form-label">해상도<span class="required">*</span></span>
             <div class="form-value">
-              <select class="w-200">
+              <select class="w-200" id="resSel" onchange="toggleCustomRes(this)">
                 <option value="">해상도 선택</option>
                 <option value="1920x1080">1920 × 1080 (FHD 가로)</option>
                 <option value="1080x1920">1080 × 1920 (FHD 세로)</option>
@@ -576,10 +692,9 @@
                 <option value="2160x3840">2160 × 3840 (4K 세로)</option>
                 <option value="custom">직접 입력</option>
               </select>
-              <!-- 직접 입력 시 노출 -->
               <span id="customResWrap" style="display:none; align-items:center; gap:6px;">
                 <input type="number" class="w-80" placeholder="너비" min="1"> px
-                <span style="color:#909399;">×</span>
+                <span style="color:#9EA5AD;">×</span>
                 <input type="number" class="w-80" placeholder="높이" min="1"> px
               </span>
             </div>
@@ -589,7 +704,7 @@
           <div class="form-row">
             <span class="form-label">화면 방향<span class="required">*</span></span>
             <div class="form-value">
-              <div class="btn-wrap" id="orientWrap">
+              <div class="btn-wrap">
                 <button class="btn active" onclick="toggleBtnWrap(this)">가로</button>
                 <button class="btn" onclick="toggleBtnWrap(this)">세로</button>
               </div>
@@ -617,7 +732,6 @@
                 <option value="tizen">Tizen (Samsung)</option>
                 <option value="webos">webOS (LG)</option>
               </select>
-              <!-- OS 버전 -->
               <input type="text" class="w-160" placeholder="버전 (예: Android 13)">
             </div>
           </div>
@@ -660,15 +774,12 @@
             </div>
           </div>
 
-          <!-- Player 앱 버전 -->
+          <!-- Player 앱 버전 (자동 조회) -->
           <div class="form-row">
             <span class="form-label">Player 버전</span>
             <div class="form-value">
-              <input type="text" class="w-160" placeholder="예: v2.4.1" id="playerVer" readonly
-                     style="background:#F4F4F5; color:#909399;">
-              <span class="input-hint" style="margin-top:0; color:#409EFF; font-size:12px;">
-                연결 확인 후 자동 조회됩니다
-              </span>
+              <input type="text" class="w-160" placeholder="예: v2.4.1" id="playerVer" readonly>
+              <span class="input-hint green">연결 확인 후 자동 조회됩니다</span>
             </div>
           </div>
 
@@ -676,8 +787,7 @@
           <div class="form-row">
             <span class="form-label">Updater 버전</span>
             <div class="form-value">
-              <input type="text" class="w-160" placeholder="예: v1.2.0" id="updaterVer" readonly
-                     style="background:#F4F4F5; color:#909399;">
+              <input type="text" class="w-160" placeholder="예: v1.2.0" id="updaterVer" readonly>
             </div>
           </div>
 
@@ -685,7 +795,7 @@
           <div class="form-row">
             <span class="form-label">연결 방식</span>
             <div class="form-value">
-              <div class="btn-wrap" id="connTypeWrap">
+              <div class="btn-wrap">
                 <button class="btn active" onclick="toggleBtnWrap(this)">유선 (LAN)</button>
                 <button class="btn" onclick="toggleBtnWrap(this)">무선 (Wi-Fi)</button>
               </div>
@@ -721,31 +831,20 @@
               <select class="w-160">
                 <option value="">지역 선택</option>
                 <optgroup label="수도권">
-                  <option>서울</option>
-                  <option>경기</option>
-                  <option>인천</option>
+                  <option>서울</option><option>경기</option><option>인천</option>
                 </optgroup>
                 <optgroup label="충청권">
-                  <option>대전</option>
-                  <option>세종</option>
-                  <option>충북</option>
-                  <option>충남</option>
+                  <option>대전</option><option>세종</option><option>충북</option><option>충남</option>
                 </optgroup>
                 <optgroup label="영남권">
-                  <option>부산</option>
-                  <option>대구</option>
-                  <option>울산</option>
-                  <option>경북</option>
-                  <option>경남</option>
+                  <option>부산</option><option>대구</option><option>울산</option>
+                  <option>경북</option><option>경남</option>
                 </optgroup>
                 <optgroup label="호남권">
-                  <option>광주</option>
-                  <option>전북</option>
-                  <option>전남</option>
+                  <option>광주</option><option>전북</option><option>전남</option>
                 </optgroup>
                 <optgroup label="기타">
-                  <option>강원</option>
-                  <option>제주</option>
+                  <option>강원</option><option>제주</option>
                 </optgroup>
               </select>
             </div>
@@ -755,7 +854,7 @@
           <div class="form-row">
             <span class="form-label">설치 환경</span>
             <div class="form-value">
-              <div class="btn-wrap" id="envWrap">
+              <div class="btn-wrap">
                 <button class="btn active" onclick="toggleBtnWrap(this)">실내</button>
                 <button class="btn" onclick="toggleBtnWrap(this)">실외</button>
                 <button class="btn" onclick="toggleBtnWrap(this)">반실외</button>
@@ -768,12 +867,12 @@
             <span class="form-label">위치 설명</span>
             <div class="form-value">
               <textarea class="w-full" rows="3"
-                        placeholder="미디어 설치 위치에 대한 상세 설명을 입력하세요.&#10;예: 2호선 강남역 2번 출구 앞 기둥, 유동인구 밀집 구역"
+                        placeholder="미디어 설치 위치에 대한 상세 설명을 입력하세요.&#10;예: 2호선 강남역 2번 출구 앞 기둥"
                         style="max-width:480px;"></textarea>
             </div>
           </div>
 
-          <!-- 지도 -->
+          <!-- 지도 (주소 검색 후 표시) -->
           <div class="form-row">
             <span class="form-label">지도</span>
             <div class="form-value" style="width:100%;">
@@ -841,7 +940,7 @@
         </div>
 
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             액션 버튼
+             액션 버튼 (취소 = btn-gray, 등록 = btn-primary green)
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <div class="form-actions">
           <button class="btn btn-gray btn-sm" onclick="history.back()">취소</button>
@@ -851,31 +950,31 @@
       </div><!-- /.article-inner -->
     </article>
 
-  </section><!-- /section -->
+  </section>
 
   <!-- ══════════════════════════════════════════════
-       등록 완료 확인 모달
+       등록 확인 모달 (popup-light — white bg, green CTA)
   ══════════════════════════════════════════════ -->
-  <div class="modal" id="confirmModal" style="display:none; opacity:0; position:fixed; inset:0;
-       display:none; align-items:center; justify-content:center; z-index:200;">
-    <div class="modal-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.5); z-index:20;"
+  <div id="confirmModal" style="display:none; position:fixed; inset:0;
+       align-items:center; justify-content:center; z-index:200;">
+    <div style="position:absolute; inset:0; background:rgba(0,0,0,0.5);"
          onclick="closeModal()"></div>
-    <div class="modal-content" style="position:relative; z-index:30; width:400px; padding:10px;
-         background:#fff; border-radius:2px; box-shadow:0 1px 3px rgba(0,0,0,0.3);">
-      <div class="modal-header flex flex-between" style="margin-bottom:12px;">
-        <h1 style="font-size:17px; color:#303133; font-weight:400;">미디어 등록 확인</h1>
+    <div style="position:relative; z-index:30; width:400px; padding:20px;
+                background:#FFFFFF; border-radius:8px;
+                box-shadow:0 4px 10px rgba(0,0,0,0.15);">
+      <!-- 모달 헤더 -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h1 style="font-size:16px; color:#24292E; font-weight:600; margin:0;">미디어 등록 확인</h1>
         <button onclick="closeModal()"
-                style="width:11px; height:11px; background:none; border:none; cursor:pointer; padding:0;">
-          <svg width="11" height="11" viewBox="0 0 11 11">
-            <line x1="1" y1="1" x2="10" y2="10" stroke="#303133" stroke-width="1.5"/>
-            <line x1="10" y1="1" x2="1" y2="10" stroke="#303133" stroke-width="1.5"/>
-          </svg>
-        </button>
+                style="width:20px; height:20px; background:none; border:none; cursor:pointer;
+                       color:#9EA5AD; font-size:16px; line-height:1; padding:0;">✕</button>
       </div>
-      <p style="font-size:16px; font-weight:300; color:#000; margin-bottom:20px; line-height:1.5;">
+      <!-- 모달 본문 -->
+      <p style="font-size:14px; font-weight:400; color:#9EA5AD; margin-bottom:24px; line-height:1.6;">
         입력한 정보로 미디어를 등록하겠습니까?<br>
         등록 후 미디어 목록에서 확인할 수 있습니다.
       </p>
+      <!-- 모달 액션 -->
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="btn btn-gray btn-sm" onclick="closeModal()">취소</button>
         <button class="btn btn-primary btn-sm" onclick="completeRegister()">확인</button>
@@ -884,25 +983,31 @@
   </div>
 
   <!-- ══════════════════════════════════════════════
-       등록 성공 모달
+       등록 성공 모달 (success — green check icon)
   ══════════════════════════════════════════════ -->
   <div id="successModal" style="display:none; position:fixed; inset:0;
        align-items:center; justify-content:center; z-index:200;">
     <div style="position:absolute; inset:0; background:rgba(0,0,0,0.5);"></div>
-    <div style="position:relative; z-index:30; width:400px; padding:10px;
-                background:#fff; border-radius:2px; box-shadow:0 1px 3px rgba(0,0,0,0.3);">
-      <div style="text-align:center; padding:20px 10px;">
-        <!-- 체크 아이콘 -->
-        <div style="width:48px; height:48px; border-radius:50%; background:#f0f9ee;
-                    display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 13l4 4L19 7" stroke="#0FB716" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <p style="font-size:16px; font-weight:400; color:#000; margin-bottom:8px;">미디어 등록이 완료되었습니다.</p>
-        <p style="font-size:13px; color:#909399; margin-bottom:24px;">미디어 목록 페이지로 이동합니다.</p>
-        <button class="btn btn-primary btn-sm" onclick="goToList()">목록으로 이동</button>
+    <div style="position:relative; z-index:30; width:400px; padding:32px 20px;
+                background:#FFFFFF; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.15);
+                text-align:center;">
+      <!-- 체크 아이콘 (green) -->
+      <div style="width:52px; height:52px; border-radius:50%;
+                  background:rgba(88,198,93,0.12);
+                  display:flex; align-items:center; justify-content:center;
+                  margin:0 auto 20px;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M5 13l4 4L19 7" stroke="#58C65D" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
+      <p style="font-size:16px; font-weight:600; color:#24292E; margin-bottom:8px;">
+        미디어 등록이 완료되었습니다.
+      </p>
+      <p style="font-size:13px; color:#9EA5AD; margin-bottom:28px;">
+        미디어 목록 페이지로 이동합니다.
+      </p>
+      <button class="btn btn-primary btn-sm" onclick="goToList()">목록으로 이동</button>
     </div>
   </div>
 
@@ -913,92 +1018,81 @@
     /* ── 드롭다운 ── */
     function toggleDropdown(e) {
       e.preventDefault();
-      var menu = document.getElementById('userMenu');
-      menu.classList.toggle('active');
+      document.getElementById('userMenu').classList.toggle('active');
     }
     document.addEventListener('click', function(e) {
       var menu = document.getElementById('userMenu');
       if (menu && menu.classList.contains('active') &&
-          !e.target.closest('#userMenu') && !e.target.closest('[onclick="toggleDropdown(event)"]')) {
+          !e.target.closest('#userMenu') &&
+          !e.target.closest('[onclick="toggleDropdown(event)"]')) {
         menu.classList.remove('active');
       }
     });
 
-    /* ── btn-wrap 세그먼트 토글 ── */
+    /* ── btn-wrap 세그먼트 토글 (green active) ── */
     function toggleBtnWrap(btn) {
-      var siblings = btn.parentElement.querySelectorAll('.btn');
-      siblings.forEach(function(b) { b.classList.remove('active'); });
+      btn.parentElement.querySelectorAll('.btn').forEach(function(b) {
+        b.classList.remove('active');
+      });
       btn.classList.add('active');
     }
 
-    /* ── 운영 상태 토글 레이블 싱크 ── */
-    function syncToggleLabel(checkbox) {
-      var label = document.getElementById('toggleStatusLabel');
-      var track = document.getElementById('toggleStatusTrack');
-      var thumb = track.querySelector('span');
-      if (checkbox.checked) {
-        label.textContent = '운영 중';
-        track.style.background = '#409EFF';
-        thumb.style.left = 'calc(100% - 14px)';
-      } else {
-        label.textContent = '운영 중지';
-        track.style.background = '#DCDFE6';
-        thumb.style.left = '1.5px';
-      }
+    /* ── 해상도 직접 입력 토글 ── */
+    function toggleCustomRes(sel) {
+      var wrap = document.getElementById('customResWrap');
+      if (wrap) wrap.style.display = sel.value === 'custom' ? 'flex' : 'none';
     }
 
-    /* ── 해상도 직접 입력 토글 ── */
-    document.querySelector('select').addEventListener('change', function() {
-      // 첫 번째 select (해상도) 변경 감지는 id로 특정하는 것이 더 안전
-    });
-    document.querySelectorAll('select')[0] && (function() {
-      var resSel = document.querySelectorAll('.form-value select')[0];
-      if (!resSel) return;
-      resSel.addEventListener('change', function() {
-        var wrap = document.getElementById('customResWrap');
-        if (wrap) wrap.style.display = this.value === 'custom' ? 'flex' : 'none';
-      });
-    })();
+    /* ── 토글 스위치 — ON=green, OFF=gray ── */
+    function syncToggle(checkbox) {
+      var track = document.getElementById('toggleTrack');
+      var label = document.getElementById('toggleLabel');
+      if (checkbox.checked) {
+        track.classList.add('on');
+        label.textContent = '운영 중';
+      } else {
+        track.classList.remove('on');
+        label.textContent = '운영 중지';
+      }
+    }
 
     /* ── 셋탑 연결 확인 (시뮬레이션) ── */
     function checkConnection() {
       var sn = document.getElementById('settopSN').value.trim();
-      if (!sn) {
-        alert('셋탑 S/N을 입력하세요.');
-        return;
-      }
+      if (!sn) { alert('셋탑 S/N을 입력하세요.'); return; }
+
       var badge = document.getElementById('connBadge');
-      badge.innerHTML = '<i class="status-dot" style="background:#409EFF; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px;"></i>확인 중...';
-      badge.className = 'conn-badge';
-      badge.style.color = '#409EFF';
-      badge.style.borderColor = '#B3D8FF';
+      badge.className = 'conn-badge checking';
+      badge.innerHTML =
+        '<i style="display:inline-block;width:7px;height:7px;border-radius:50%;' +
+        'background:#58C65D;margin-right:5px;opacity:0.6;"></i>확인 중...';
 
       /* 실제 API 연동 전 시뮬레이션 */
       setTimeout(function() {
-        badge.innerHTML = '<i class="status-dot dot-online" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#0FB716; margin-right:5px;"></i>온라인';
         badge.className = 'conn-badge online';
-        document.getElementById('playerVer').value = 'v2.4.1';
+        badge.innerHTML =
+          '<i class="status-dot dot-online"></i>온라인';
+        document.getElementById('playerVer').value  = 'v2.4.1';
         document.getElementById('updaterVer').value = 'v1.2.0';
       }, 1200);
     }
 
-    /* ── 주소 검색 (시뮬레이션) ── */
+    /* ── 주소 검색 (시뮬레이션 — 실제: Kakao 우편번호 API) ── */
     function searchAddr() {
-      /* 실제 구현 시 Kakao/Naver 우편번호 API 연동 */
       document.getElementById('zipCode').value = '06141';
-      document.getElementById('addr1').value = '서울특별시 강남구 테헤란로 212';
+      document.getElementById('addr1').value   = '서울특별시 강남구 테헤란로 212';
     }
 
     /* ── 폼 유효성 검사 ── */
     function validateForm() {
       var errors = [];
-      if (!document.getElementById('mediaName').value.trim()) errors.push('미디어명을 입력하세요.');
-      if (!document.getElementById('settopSN').value.trim()) errors.push('셋탑 S/N을 입력하세요.');
-      if (!document.getElementById('addr1').value.trim()) errors.push('주소를 검색하여 입력하세요.');
-      if (errors.length) {
-        alert(errors.join('\n'));
-        return false;
-      }
+      if (!document.getElementById('mediaName').value.trim())
+        errors.push('미디어명을 입력하세요.');
+      if (!document.getElementById('settopSN').value.trim())
+        errors.push('셋탑 S/N을 입력하세요.');
+      if (!document.getElementById('addr1').value.trim())
+        errors.push('주소를 검색하여 입력하세요.');
+      if (errors.length) { alert(errors.join('\n')); return false; }
       return true;
     }
 
@@ -1007,23 +1101,19 @@
       if (!validateForm()) return;
       var modal = document.getElementById('confirmModal');
       modal.style.display = 'flex';
-      setTimeout(function() { modal.style.opacity = '1'; modal.style.transition = 'all 0.25s ease'; }, 10);
     }
 
-    /* ── 모달 닫기 ── */
+    /* ── 확인 모달 닫기 ── */
     function closeModal() {
-      var modal = document.getElementById('confirmModal');
-      modal.style.opacity = '0';
-      setTimeout(function() { modal.style.display = 'none'; }, 250);
+      document.getElementById('confirmModal').style.display = 'none';
     }
 
     /* ── 등록 완료 ── */
     function completeRegister() {
       closeModal();
       setTimeout(function() {
-        var success = document.getElementById('successModal');
-        success.style.display = 'flex';
-      }, 300);
+        document.getElementById('successModal').style.display = 'flex';
+      }, 150);
     }
 
     /* ── 목록으로 이동 ── */
