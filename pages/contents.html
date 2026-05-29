@@ -3,117 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>콘텐츠 관리 — CMS</title>
+  <title>콘텐츠 관리 — CMS 2.0</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    /* page-specific */
-    .filter-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      background: #F6F7F9;
-      border-radius: 6px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
+    .content { padding-top: 0; }
+
+    /* ── Modal form ── */
+    .modal-form-row { display: flex; align-items: flex-start; padding: 10px 0; border-top: 1px solid #F5F7FA; }
+    .modal-form-row:first-child { border-top: none; }
+    .modal-form-label {
+      width: 90px; flex-shrink: 0; padding-top: 6px;
+      font-size: 14px; color: #909399; text-align: right; padding-right: 16px;
     }
-    .filter-row label {
-      font-size: 13px;
-      color: #596066;
-      white-space: nowrap;
-    }
-    .filter-sep {
-      font-size: 13px;
-      color: #9EA5AD;
-      padding: 0 2px;
-    }
-    .tbl td.td-name {
-      text-align: left;
-    }
-    .card-foot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    .modal-form-value { flex: 1; }
+    .req { color: #FF0000; }
   </style>
 </head>
 <body>
 
-  <!-- GNB Sidebar -->
+  <!-- GNB -->
   <aside class="gnb">
-    <!-- Logo -->
     <div class="gnb-logo">
-      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="44" height="44" rx="8" fill="rgba(255,255,255,0.10)"/>
-        <text x="22" y="27" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="13" font-weight="700" fill="#58C65D">DL</text>
+      <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+        <rect width="50" height="50" rx="8" fill="rgba(0,0,0,0.08)"/>
+        <text x="25" y="32" text-anchor="middle"
+          font-family="'Pretendard','Apple SD Gothic Neo',sans-serif"
+          font-size="15" font-weight="700" fill="#fff">DL</text>
       </svg>
     </div>
-    <!-- Nav -->
     <nav class="gnb-nav">
-      <!-- 대시보드 -->
       <a href="dashboard.html">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="7" height="7" rx="1"/>
-          <rect x="11" y="2" width="7" height="7" rx="1"/>
-          <rect x="2" y="11" width="7" height="7" rx="1"/>
-          <rect x="11" y="11" width="7" height="7" rx="1"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
+          <rect x="2" y="2" width="8" height="8" rx="1"/>
+          <rect x="12" y="2" width="8" height="8" rx="1"/>
+          <rect x="2" y="12" width="8" height="8" rx="1"/>
+          <rect x="12" y="12" width="8" height="8" rx="1"/>
         </svg>
         대시보드
       </a>
-      <!-- 미디어 -->
       <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="4" width="16" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M7 17h6M10 15v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="4" width="18" height="12" rx="2"/>
+          <path d="M8 18h6M11 16v2" stroke-linecap="round"/>
         </svg>
         미디어
       </a>
-      <!-- 미디어그룹 -->
       <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="7" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M6 7V5a1 1 0 011-1h6a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M6 5V3.5A1.5 1.5 0 017.5 2h5A1.5 1.5 0 0114 3.5V5" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.5"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="7" width="16" height="11" rx="1.5"/>
+          <path d="M6 7V5a1 1 0 011-1h8a1 1 0 011 1v2"/>
         </svg>
         미디어그룹
       </a>
-      <!-- 콘텐츠 (active) -->
       <a href="contents.html" class="active">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2H5a1 1 0 00-1 1v14a1 1 0 001 1h10a1 1 0 001-1V7l-4-5z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M12 2v5h4" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="7" y1="13" x2="11" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M13 2H6a1 1 0 00-1 1v16a1 1 0 001 1h10a1 1 0 001-1V7l-4-5z"/>
+          <path d="M13 2v5h4"/>
+          <line x1="8" y1="11" x2="14" y2="11" stroke-linecap="round"/>
+          <line x1="8" y1="14" x2="12" y2="14" stroke-linecap="round"/>
         </svg>
         콘텐츠
       </a>
-      <!-- 스케줄 -->
       <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="4" width="14" height="14" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.5"/>
-          <rect x="6" y="12" width="2" height="2" rx="0.5" fill="currentColor"/>
-          <rect x="9" y="12" width="2" height="2" rx="0.5" fill="currentColor"/>
-          <rect x="12" y="12" width="2" height="2" rx="0.5" fill="currentColor"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="4" width="16" height="15" rx="2"/>
+          <path d="M3 9h16M8 2v3M14 2v3" stroke-linecap="round"/>
+          <rect x="6" y="13" width="2" height="2" rx=".5" fill="currentColor" stroke="none"/>
+          <rect x="10" y="13" width="2" height="2" rx=".5" fill="currentColor" stroke="none"/>
+          <rect x="14" y="13" width="2" height="2" rx=".5" fill="currentColor" stroke="none"/>
         </svg>
         스케줄
       </a>
-      <!-- 모니터링 -->
       <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polyline points="2,14 6,9 9,12 13,6 18,10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="2,16 6,10 10,13 14,7 20,11"/>
         </svg>
         모니터링
       </a>
-      <!-- Divider -->
       <div class="gnb-divider"></div>
-      <!-- 태그검색 -->
       <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 3h6l8 8a2 2 0 010 2.83l-3.17 3.17a2 2 0 01-2.83 0L3 9V3z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <circle cx="7" cy="7" r="1.2" fill="currentColor"/>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 3h7l9 9a2 2 0 010 2.83l-3.17 3.17a2 2 0 01-2.83 0L3 9V3z"/>
+          <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/>
         </svg>
         태그검색
       </a>
@@ -121,237 +92,288 @@
   </aside>
 
   <!-- Topbar -->
-  <header class="topbar">
-    <!-- Search -->
-    <div class="topbar-search">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/>
-        <line x1="11" y1="11" x2="14.5" y2="14.5" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <input type="text" placeholder="검색">
-    </div>
-    <!-- User area -->
-    <div class="topbar-user">
-      <!-- Notification bell -->
-      <div class="topbar-icon-btn">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 2a5.5 5.5 0 00-5.5 5.5v3.5L2 14h14l-1.5-3V7.5A5.5 5.5 0 009 2z" stroke="#9EA5AD" stroke-width="1.3" fill="none"/>
-          <path d="M7 14a2 2 0 004 0" stroke="#9EA5AD" stroke-width="1.3" fill="none"/>
+  <header class="topbar" id="topbar">
+    <div class="topbar-top">
+      <div class="topbar-search">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="6" cy="6" r="4" stroke="#9EA5AD" stroke-width="1.4"/>
+          <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
-        <span class="dot-badge"></span>
+        <input type="text" placeholder="검색">
       </div>
-      <!-- Profile dropdown -->
-      <div class="topbar-profile" id="profileBtn" onclick="toggleProfile()">
-        <div class="topbar-avatar">관</div>
-        <div class="topbar-profile-info">
-          <div class="topbar-profile-name">관리자</div>
-          <div class="topbar-profile-org">DOOH Service</div>
+      <div class="topbar-user">
+        <div class="topbar-icon-btn">
+          <div class="dot-badge"></div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2a5.5 5.5 0 00-5.5 5.5V11l-1.5 2h14L14.5 11V7.5A5.5 5.5 0 009 2z" stroke="#9EA5AD" stroke-width="1.3"/>
+            <path d="M7 14a2 2 0 004 0" stroke="#9EA5AD" stroke-width="1.3"/>
+          </svg>
         </div>
-        <span class="topbar-caret">▾</span>
-        <div class="profile-dropdown" id="profileDropdown">
-          <a href="#">내 정보</a>
-          <a href="#">비밀번호 변경</a>
-          <a href="login.html" class="logout">로그아웃</a>
+        <div class="topbar-profile" id="profileTrigger" onclick="toggleProfile(event)">
+          <div class="topbar-profile-info">
+            <div class="topbar-profile-name">관리자</div>
+            <div class="topbar-profile-org">DOOH Service</div>
+          </div>
+          <span class="topbar-caret">▾</span>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="#">내 정보</a>
+            <a href="#">비밀번호 변경</a>
+            <a href="login.html" class="logout">로그아웃</a>
+          </div>
         </div>
       </div>
     </div>
+    <div class="topbar-bottom">
+      <span class="header-title">콘텐츠 관리</span>
+      <ul class="header-nav">
+        <li class="active"><a href="contents.html">콘텐츠 목록</a></li>
+        <li><a href="#">콘텐츠 그룹</a></li>
+      </ul>
+    </div>
+    <ul class="header-subnav">
+      <li class="active"><a href="#">전체 목록</a></li>
+      <li><a href="#">진행중</a></li>
+      <li><a href="#">예약</a></li>
+      <li><a href="#">완료</a></li>
+    </ul>
   </header>
 
-  <!-- Breadcrumb -->
-  <div class="bcrumb">
-    <a href="#" class="bcrumb-back">‹</a>
-    <a href="#">콘텐츠 관리</a>
-    <span class="sep">›</span>
-    <span class="cur">콘텐츠 목록</span>
-  </div>
+  <!-- Content -->
+  <main class="content" id="mainContent">
+    <div class="article">
 
-  <!-- Main Content -->
-  <main class="content">
-    <div class="content-inner">
-      <div class="card">
+      <!-- Article Header -->
+      <div class="article-header">
+        <span class="article-title">콘텐츠 목록</span>
+        <button class="btn btn-primary" onclick="openModal('addModal')">＋ 콘텐츠 등록</button>
+      </div>
 
-        <!-- Card Head -->
-        <div class="card-head">
-          <span class="card-title">콘텐츠 목록</span>
-          <button class="btn btn-primary">＋ 콘텐츠 등록</button>
-        </div>
+      <div class="article-inner">
 
-        <!-- Card Body -->
-        <div class="card-body">
-
-          <!-- Tab Nav -->
-          <ul class="tab-nav">
-            <li class="active"><a href="#">전체(248)</a></li>
-            <li><a href="#">진행중(87)</a></li>
-            <li><a href="#">예약(42)</a></li>
-            <li><a href="#">완료(106)</a></li>
-            <li><a href="#">취소(13)</a></li>
+        <!-- State Panel -->
+        <div class="state-wrap" style="margin-bottom: 20px;">
+          <ul>
+            <li class="active">
+              <span>전체</span><h1>248</h1>
+            </li>
+            <li>
+              <span><em class="stat-dot dot-online"></em>진행중</span><h1>87</h1>
+            </li>
+            <li>
+              <span><em class="stat-dot" style="background:#409EFF;"></em>예약</span><h1>42</h1>
+            </li>
+            <li>
+              <span><em class="stat-dot dot-offline"></em>완료</span><h1>106</h1>
+            </li>
+            <li>
+              <span><em class="stat-dot dot-error"></em>취소</span><h1>13</h1>
+            </li>
           </ul>
-
-          <!-- Search Filter Row -->
-          <div class="filter-row">
-            <label>기간</label>
-            <input type="date" class="inp" value="2024-01-01" style="width:140px;">
-            <span class="filter-sep">~</span>
-            <input type="date" class="inp" value="2024-12-31" style="width:140px;">
-            <select class="sel" style="width:130px;">
-              <option value="">전체</option>
-              <option>진행중</option>
-              <option>예약</option>
-              <option>완료</option>
-              <option>취소</option>
-            </select>
-            <select class="sel" style="width:140px;">
-              <option value="">카테고리</option>
-              <option>광고</option>
-              <option>공익</option>
-              <option>자체</option>
-            </select>
-            <input type="text" class="inp" placeholder="콘텐츠명 검색" style="width:160px;">
-            <button class="btn btn-primary" style="margin-left:auto;">검색</button>
-          </div>
-
-          <!-- List Option Row -->
-          <div class="list-option">
-            <select class="sel" style="width:100px;">
-              <option>10개씩 보기</option>
-              <option>20개씩 보기</option>
-              <option>50개씩 보기</option>
-            </select>
-            <button class="btn btn-ghost btn-sm ml-auto">엑셀 다운로드</button>
-          </div>
-
-          <!-- Table -->
-          <div class="tbl-wrap">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th style="width:40px;"><input type="checkbox" id="checkAll" onclick="toggleAll(this)"></th>
-                  <th style="width:60px;">번호</th>
-                  <th>콘텐츠명</th>
-                  <th style="width:90px;">썸네일</th>
-                  <th style="width:90px;">카테고리</th>
-                  <th style="width:80px;">상태</th>
-                  <th style="width:120px;">집행 기간</th>
-                  <th style="width:110px;">집행 사이트</th>
-                  <th style="width:100px;">등록일</th>
-                  <th style="width:80px;">관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>248</td>
-                  <td class="td-name"><a href="#">2024 하반기 브랜드 광고 캠페인 영상</a></td>
-                  <td><span class="thumb">MP4</span></td>
-                  <td>광고</td>
-                  <td><span class="badge badge-running">진행중</span></td>
-                  <td style="font-size:12px;">2024.07.01~12.31</td>
-                  <td>서울 강남 A</td>
-                  <td style="font-size:12px;">2024.06.28</td>
-                  <td><button class="btn btn-ghost btn-sm">수정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>247</td>
-                  <td class="td-name"><a href="#">공익 캠페인 — 에너지 절약 포스터</a></td>
-                  <td><span class="thumb">IMG</span></td>
-                  <td>공익</td>
-                  <td><span class="badge badge-running">진행중</span></td>
-                  <td style="font-size:12px;">2024.06.01~12.31</td>
-                  <td>전국 12개소</td>
-                  <td style="font-size:12px;">2024.05.30</td>
-                  <td><button class="btn btn-ghost btn-sm">수정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>246</td>
-                  <td class="td-name"><a href="#">신제품 출시 프로모션</a></td>
-                  <td><span class="thumb">MP4</span></td>
-                  <td>광고</td>
-                  <td><span class="badge badge-reserved">예약</span></td>
-                  <td style="font-size:12px;">2024.10.01~10.31</td>
-                  <td>서울 5개소</td>
-                  <td style="font-size:12px;">2024.09.15</td>
-                  <td><button class="btn btn-ghost btn-sm">수정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>245</td>
-                  <td class="td-name"><a href="#">2024 상반기 시즌 오프 세일 광고</a></td>
-                  <td><span class="thumb">IMG</span></td>
-                  <td>광고</td>
-                  <td><span class="badge badge-done">완료</span></td>
-                  <td style="font-size:12px;">2024.01.01~06.30</td>
-                  <td>경기 3개소</td>
-                  <td style="font-size:12px;">2023.12.20</td>
-                  <td><button class="btn btn-ghost btn-sm">보기</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>244</td>
-                  <td class="td-name"><a href="#">지방자치단체 공지 안내문</a></td>
-                  <td><span class="thumb">IMG</span></td>
-                  <td>자체</td>
-                  <td><span class="badge badge-cancel">취소</span></td>
-                  <td style="font-size:12px;">2024.03.01~03.15</td>
-                  <td>부산 1개소</td>
-                  <td style="font-size:12px;">2024.02.10</td>
-                  <td><button class="btn btn-ghost btn-sm">보기</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-        </div><!-- /card-body -->
-
-        <!-- Card Foot -->
-        <div class="card-foot">
-          <button class="btn btn-gray btn-sm">선택 삭제</button>
-          <nav class="pager">
-            <button>‹</button>
-            <a href="#" class="active">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <button>›</button>
-          </nav>
-          <span class="text-muted text-sm">총 248건</span>
         </div>
 
-      </div><!-- /card -->
-    </div><!-- /content-inner -->
+        <!-- Search / Filter -->
+        <div class="search-wrap">
+          <label>기간</label>
+          <input type="date" class="inp" value="2024-01-01" style="width:130px;">
+          <span class="search-sep">~</span>
+          <input type="date" class="inp" value="2024-12-31" style="width:130px;">
+          <select class="sel" style="width:110px;">
+            <option value="">전체 상태</option>
+            <option>진행중</option><option>예약</option><option>완료</option><option>취소</option>
+          </select>
+          <select class="sel" style="width:120px;">
+            <option value="">카테고리</option>
+            <option>광고</option><option>공익</option><option>자체</option>
+          </select>
+          <input type="text" class="inp" placeholder="콘텐츠명 검색" style="width:160px;">
+          <button class="btn btn-primary btn-round" style="margin-left:auto;">검색</button>
+        </div>
+
+        <!-- List option -->
+        <div class="list-option">
+          <select class="sel" style="width:110px;">
+            <option>10개씩 보기</option>
+            <option>20개씩 보기</option>
+            <option>50개씩 보기</option>
+          </select>
+          <button class="btn btn-plain btn-sm ml-auto">엑셀 다운로드</button>
+        </div>
+
+        <!-- Table -->
+        <div class="tbl-wrap">
+          <table class="tbl open-border">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+                <th style="width:55px;">번호</th>
+                <th>콘텐츠명</th>
+                <th style="width:80px;">썸네일</th>
+                <th style="width:80px;">카테고리</th>
+                <th style="width:75px;">상태</th>
+                <th style="width:130px;">집행 기간</th>
+                <th style="width:100px;">집행 사이트</th>
+                <th style="width:90px;">등록일</th>
+                <th style="width:70px;">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>248</td>
+                <td class="td-left"><a href="#">2024 하반기 브랜드 광고 캠페인 영상</a></td>
+                <td><span class="thumb">MP4</span></td>
+                <td>광고</td>
+                <td><span class="badge badge-running">진행중</span></td>
+                <td style="font-size:12px;">2024.07.01~12.31</td>
+                <td>서울 강남 A</td>
+                <td style="font-size:12px;">2024.06.28</td>
+                <td><button class="btn btn-plain btn-sm">수정</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>247</td>
+                <td class="td-left"><a href="#">공익 캠페인 — 에너지 절약 포스터</a></td>
+                <td><span class="thumb">IMG</span></td>
+                <td>공익</td>
+                <td><span class="badge badge-running">진행중</span></td>
+                <td style="font-size:12px;">2024.06.01~12.31</td>
+                <td>전국 12개소</td>
+                <td style="font-size:12px;">2024.05.30</td>
+                <td><button class="btn btn-plain btn-sm">수정</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>246</td>
+                <td class="td-left"><a href="#">신제품 출시 프로모션</a></td>
+                <td><span class="thumb">MP4</span></td>
+                <td>광고</td>
+                <td><span class="badge badge-reserved">예약</span></td>
+                <td style="font-size:12px;">2024.10.01~10.31</td>
+                <td>서울 5개소</td>
+                <td style="font-size:12px;">2024.09.15</td>
+                <td><button class="btn btn-plain btn-sm">수정</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>245</td>
+                <td class="td-left"><a href="#">2024 상반기 시즌 오프 세일 광고</a></td>
+                <td><span class="thumb">IMG</span></td>
+                <td>광고</td>
+                <td><span class="badge badge-done">완료</span></td>
+                <td style="font-size:12px;">2024.01.01~06.30</td>
+                <td>경기 3개소</td>
+                <td style="font-size:12px;">2023.12.20</td>
+                <td><button class="btn btn-plain btn-sm">보기</button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>244</td>
+                <td class="td-left"><a href="#">지방자치단체 공지 안내문</a></td>
+                <td><span class="thumb">IMG</span></td>
+                <td>자체</td>
+                <td><span class="badge badge-cancel">취소</span></td>
+                <td style="font-size:12px;">2024.03.01~03.15</td>
+                <td>부산 1개소</td>
+                <td style="font-size:12px;">2024.02.10</td>
+                <td><button class="btn btn-plain btn-sm">보기</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /article-inner -->
+
+      <!-- Article Footer -->
+      <div class="article-footer" style="display:flex; align-items:center; justify-content:space-between;">
+        <button class="btn btn-gray btn-sm">선택 삭제</button>
+        <nav class="pager" style="margin-top:0;">
+          <button>‹</button>
+          <a href="#" class="active">1</a>
+          <a href="#">2</a>
+          <a href="#">3</a>
+          <a href="#">4</a>
+          <a href="#">5</a>
+          <button>›</button>
+        </nav>
+        <span class="text-muted text-sm">총 248건</span>
+      </div>
+
+    </div><!-- /article -->
   </main>
 
+  <!-- Add Modal -->
+  <div class="modal-backdrop" id="addModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2>콘텐츠 등록</h2>
+        <button class="modal-close-btn" onclick="closeModal('addModal')">✕</button>
+      </div>
+      <div class="modal-body-inner">
+        <div class="modal-form-row">
+          <div class="modal-form-label">콘텐츠명 <span class="req">*</span></div>
+          <div class="modal-form-value">
+            <input type="text" class="inp" style="width:100%;" placeholder="콘텐츠명을 입력하세요">
+          </div>
+        </div>
+        <div class="modal-form-row">
+          <div class="modal-form-label">카테고리</div>
+          <div class="modal-form-value">
+            <select class="sel" style="width:160px;">
+              <option value="">선택</option>
+              <option>광고</option><option>공익</option><option>자체</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-form-row">
+          <div class="modal-form-label">파일 첨부 <span class="req">*</span></div>
+          <div class="modal-form-value">
+            <input type="file" class="inp" style="width:100%;">
+          </div>
+        </div>
+        <div class="modal-form-row">
+          <div class="modal-form-label">집행 기간 <span class="req">*</span></div>
+          <div class="modal-form-value" style="display:flex; align-items:center; gap:8px;">
+            <input type="date" class="inp" style="width:130px;">
+            <span class="text-muted">~</span>
+            <input type="date" class="inp" style="width:130px;">
+          </div>
+        </div>
+        <div class="modal-form-row">
+          <div class="modal-form-label">집행 사이트</div>
+          <div class="modal-form-value">
+            <input type="text" class="inp" style="width:100%;" placeholder="사이트명 입력">
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-gray" onclick="closeModal('addModal')">취소</button>
+        <button class="btn btn-primary">등록</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Tab switching
-    document.querySelectorAll('.tab-nav li').forEach(function(li) {
-      li.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.tab-nav li').forEach(function(l) { l.classList.remove('active'); });
-        this.classList.add('active');
-      });
-    });
-
-    // Toggle all checkboxes
-    function toggleAll(master) {
-      document.querySelectorAll('tbody input[type=checkbox]').forEach(function(cb) {
-        cb.checked = master.checked;
-      });
-    }
-
-    // Profile dropdown
-    function toggleProfile() {
+    function toggleProfile(e) {
+      e.stopPropagation();
       document.getElementById('profileDropdown').classList.toggle('open');
     }
-    document.addEventListener('click', function(e) {
-      var btn = document.getElementById('profileBtn');
-      var dd  = document.getElementById('profileDropdown');
-      if (btn && !btn.contains(e.target)) {
-        dd.classList.remove('open');
-      }
+    document.addEventListener('click', function() {
+      document.getElementById('profileDropdown').classList.remove('open');
     });
+
+    function toggleAll(cb) {
+      document.querySelectorAll('tbody input[type=checkbox]').forEach(function(c) { c.checked = cb.checked; });
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function updatePadding() {
+      var h = document.getElementById('topbar').offsetHeight;
+      document.getElementById('mainContent').style.paddingTop = (h + 24) + 'px';
+    }
+    updatePadding();
+    window.addEventListener('resize', updatePadding);
   </script>
 </body>
 </html>
