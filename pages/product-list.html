@@ -76,8 +76,8 @@
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th {
       text-align: left;
-      font-size: 12px; font-weight: 500;
-      color: #9EA5AD;
+      font-size: 14px; font-weight: 600;
+      color: #596066;
       padding: 10px 16px;
       background: #F6F7F9;
       border-bottom: 1px solid #E5E7EA;
@@ -133,7 +133,7 @@
       border: none; outline: none; background: none;
       font-size: 14px; color: #24292E; font-family: inherit; width: 100%;
     }
-    .search-box input::placeholder { color: #9EA5AD; }
+    .search-box input::placeholder { color: #CED2D6; }
     .filter-select {
       height: 36px; padding: 0 12px;
       border: 1px solid #CED2D6; border-radius: 4px;
@@ -144,20 +144,21 @@
     .list-toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
     /* ── 페이지네이션 ── */
-    .pagination {
+    .pager {
       display: flex; align-items: center; justify-content: center;
       gap: 4px; padding: 16px 0 0;
     }
-    .page-btn {
+    .pager button, .pager a {
       width: 32px; height: 32px;
       border: 1px solid #E5E7EA; border-radius: 4px;
       background: #fff; font-size: 13px; color: #596066;
       cursor: pointer; transition: all 0.2s;
       display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
     }
-    .page-btn:hover { border-color: #58C65D; color: #58C65D; }
-    .page-btn.active { background: #58C65D; border-color: #58C65D; color: #fff; }
-    .page-btn.disabled { opacity: 0.4; pointer-events: none; }
+    .pager button:hover, .pager a:hover { border-color: #58C65D; color: #58C65D; }
+    .pager a.active { background: #58C65D; border-color: #58C65D; color: #fff; }
+    .pager button.disabled { opacity: 0.4; pointer-events: none; }
 
     /* ── 빈 상태 ── */
     .empty-state {
@@ -267,17 +268,13 @@
         <div class="stat-card-label">전체 프로덕트</div>
         <div class="stat-card-value">24</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card-label" style="color:#2E9E34;">
-          <span class="stat-dot" style="background:#58C65D;"></span>여유 있음
-        </div>
-        <div class="stat-card-value" style="color:#2E9E34;">18</div>
+      <div class="stat-card active">
+        <div class="stat-card-label">여유 있음</div>
+        <div class="stat-card-value">18</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card-label" style="color:#C83434;">
-          <span class="stat-dot" style="background:#E97474;"></span>잔여시간 부족
-        </div>
-        <div class="stat-card-value" style="color:#C83434;">3</div>
+        <div class="stat-card-label">잔여시간 부족</div>
+        <div class="stat-card-value">3</div>
       </div>
     </div>
 
@@ -566,13 +563,13 @@
         </div>
 
         <!-- 페이지네이션 -->
-        <div class="pagination">
-          <button class="page-btn disabled">‹</button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn">›</button>
-        </div>
+        <nav class="pager">
+          <button class="disabled">‹</button>
+          <a href="#" class="active">1</a>
+          <a href="#">2</a>
+          <a href="#">3</a>
+          <button>›</button>
+        </nav>
 
       </div>
     </div>

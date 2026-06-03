@@ -1,19 +1,26 @@
 /* ================================================================
-   CMS 2.0 — 공통 디자인 시스템 (design.md 기준)
+   CMS 2.0 — 공통 디자인 시스템
+   Source: dev.doohservice.com live site audit (2026.05.31)
 
-   색상 토큰:
-     green        #58C65D   — 1차 액션 (버튼, 포커스, 탭 활성, 토글)
-     grayscale-900 #24292E  — body bg
-     grayscale-800 #383F45  — topbar, breadcrumb bar bg
-     grayscale-700 #454C52  — GNB bg
-     grayscale-600 #596066  — GNB hover, divider
-     grayscale-400 #9EA5AD  — 비활성 아이콘, muted text
-     grayscale-300 #CED2D6  — 인풋 border, separator
-     grayscale-200 #E5E7EA  — 카드 내부 구분선
-     surface-bg    #F6F7F9  — 콘텐츠 영역 bg
-     surface-card  #FFFFFF  — 카드 bg
-     danger        #E97474  — 에러
-     main-blue     #2d84ed  — MAIN 배지 전용
+   Color tokens:
+     body-bg        #24292E  — body background
+     gnb-bg         #454C52  — GNB sidebar
+     topbar-bg      #383F45  — Topbar + Breadcrumb
+     gnb-hover      #596066  — GNB item hover
+     green          #58C65D  — Primary CTA, active, focus
+     green-light    #C1E9C3  — Outline btn border
+     green-tint     rgba(88,198,93,0.1)
+     main-blue      #2D84ED  — MAIN badge only
+     tag-orange     #FFAA5B  — Hashtag badge
+     surface-bg     #F6F7F9  — Content area, th bg
+     surface-card   #FFFFFF  — Cards, inputs
+     border-default #CED2D6  — Inputs, selects, ghost btn
+     border-card    #E5E7EA  — Card dividers, table borders
+     text-primary   #24292E  — Body, td, card titles
+     text-secondary #596066  — th, ghost btn text
+     text-muted     #9EA5AD  — Icons inactive, placeholders (dark bg: #CED2D6 for inputs)
+     danger         #E97474  — Error, alert dot, offline
+     warning        #E8841A  — Warning
 ================================================================ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +37,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 ul, ol { list-style: none; }
 
 /* ================================================================
-   ZONE 1 — GNB Sidebar  (fixed, left:0, 93px, bg:#454C52)
+   ZONE 1 — GNB Sidebar
 ================================================================ */
 .gnb {
   position: fixed;
@@ -73,14 +80,12 @@ ul, ol { list-style: none; }
   transition: all 0.25s ease;
   position: relative;
   text-align: center;
+  width: 100%;
 }
 .gnb-nav a svg { fill: #9EA5AD; transition: fill 0.25s ease; flex-shrink: 0; }
 .gnb-nav a:hover { color: #fff; background: #596066; }
 .gnb-nav a:hover svg { fill: #fff; }
-.gnb-nav a.active {
-  color: #fff;
-  background: rgba(88,198,93,0.12);
-}
+.gnb-nav a.active { color: #fff; background: rgba(88,198,93,0.12); }
 .gnb-nav a.active svg { fill: #fff; }
 .gnb-nav a.active::before {
   content: '';
@@ -98,13 +103,14 @@ ul, ol { list-style: none; }
 }
 
 /* ================================================================
-   ZONE 2 — Topbar  (fixed, top:0, left:93px, right:0, 60px)
+   ZONE 2 — Topbar
 ================================================================ */
 .topbar {
   position: fixed;
   top: 0; left: 93px; right: 0;
   height: 60px;
   background: #383F45;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -133,9 +139,8 @@ ul, ol { list-style: none; }
 .topbar-search input::placeholder { color: #596066; }
 .topbar-search svg { fill: #9EA5AD; flex-shrink: 0; }
 
-.topbar-user {
-  display: flex; align-items: center; gap: 16px;
-}
+.topbar-user { display: flex; align-items: center; gap: 16px; }
+
 .topbar-icon-btn {
   position: relative;
   width: 32px; height: 32px;
@@ -197,7 +202,7 @@ ul, ol { list-style: none; }
 .profile-dropdown .logout { color: #9EA5AD; border-top: 1px solid #454C52; margin-top: 4px; }
 
 /* ================================================================
-   ZONE 3 — Breadcrumb Bar  (fixed, top:60px, left:93px, 40px)
+   ZONE 3 — Breadcrumb Bar
 ================================================================ */
 .bcrumb {
   position: fixed;
@@ -232,7 +237,7 @@ ul, ol { list-style: none; }
 .bcrumb .cur { color: #CED2D6; }
 
 /* ================================================================
-   ZONE 4 — Content Area  (margin-left:93px, padding-top:100px)
+   ZONE 4 — Content Area
 ================================================================ */
 .content {
   margin-left: 93px;
@@ -241,16 +246,15 @@ ul, ol { list-style: none; }
   background: #F6F7F9;
   padding-bottom: 48px;
 }
-.content-inner {
-  padding: 24px 28px;
-}
+.content-inner { padding: 24px 28px; }
 
 /* ================================================================
-   Page Card
+   Card
 ================================================================ */
 .card {
   background: #fff;
   border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.06);
   margin-bottom: 20px;
 }
 .card:last-child { margin-bottom: 0; }
@@ -262,19 +266,12 @@ ul, ol { list-style: none; }
   padding: 18px 24px 14px;
   border-bottom: 1px solid #E5E7EA;
 }
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #24292E;
-}
-.card-body { padding: 20px 24px; }
-.card-foot {
-  padding: 14px 24px;
-  border-top: 1px solid #E5E7EA;
-}
+.card-title { font-size: 16px; font-weight: 600; color: #24292E; }
+.card-body  { padding: 20px 24px; }
+.card-foot  { padding: 14px 24px; border-top: 1px solid #E5E7EA; }
 
 /* ================================================================
-   Stat Cards  (design.md: stat-card)
+   Stat Cards — clickable filter cards (live site pattern)
 ================================================================ */
 .stat-row {
   display: grid;
@@ -284,42 +281,43 @@ ul, ol { list-style: none; }
 }
 .stat-card {
   background: #fff;
+  border: 1px solid #E5E7EA;
   border-radius: 8px;
   padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.25s ease;
 }
-.stat-card-label {
-  font-size: 12px;
-  color: #9EA5AD;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.stat-dot {
-  width: 7px; height: 7px;
+/* top-right circle indicator */
+.stat-card::after {
+  content: '';
+  position: absolute; top: 12px; right: 12px;
+  width: 16px; height: 16px;
   border-radius: 50%;
-  flex-shrink: 0;
+  border: 1px solid #CED2D6;
+  transition: all 0.25s ease;
 }
+.stat-card.active { border-color: #58C65D; }
+.stat-card.active::after { background: #58C65D; border-color: #58C65D; }
+
 .stat-card-value {
   font-size: 30px;
   font-weight: 700;
   color: #24292E;
   line-height: 1;
+  margin-bottom: 4px;
 }
-.stat-card.active .stat-card-label { color: #58C65D; }
-.stat-card.active .stat-dot { background: #58C65D; }
 .stat-card.active .stat-card-value { color: #58C65D; }
+.stat-card-label { font-size: 14px; color: #9EA5AD; }
 
 /* ================================================================
-   Tabs  (line-style, green underline)
+   Tabs
 ================================================================ */
 .tab-nav {
   display: flex;
   border-bottom: 1px solid #E5E7EA;
-  margin-bottom: 16px;
   padding: 0 4px;
+  margin-bottom: 16px;
 }
 .tab-nav li a, .tab-nav li button {
   display: block;
@@ -336,9 +334,7 @@ ul, ol { list-style: none; }
   white-space: nowrap;
 }
 .tab-nav li.active a,
-.tab-nav li.active button,
-.tab-nav li a.active,
-.tab-nav li button.active {
+.tab-nav li.active button {
   color: #24292E;
   border-bottom-color: #58C65D;
   font-weight: 500;
@@ -369,33 +365,34 @@ ul, ol { list-style: none; }
 .btn-lg { height: 44px; padding: 0 24px; font-size: 15px; font-weight: 600; }
 .btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
 
-.btn-primary {
-  background: #58C65D; border-color: #58C65D; color: #fff; font-weight: 600;
-}
+.btn-primary { background: #58C65D; border-color: #58C65D; color: #fff; font-weight: 600; }
 .btn-primary:hover { background: #fff; color: #58C65D; }
 
-.btn-dark {
-  background: #383F45; border-color: #383F45; color: #fff;
-}
-.btn-dark:hover { background: #454C52; }
-
-.btn-ghost {
-  background: #fff; border-color: #CED2D6; color: #596066;
-}
-.btn-ghost:hover { background: #F6F7F9; }
-
-.btn-outline {
-  background: #fff; border-color: #C1E9C3; color: #58C65D;
-}
+.btn-outline { background: #fff; border-color: #C1E9C3; color: #58C65D; }
 .btn-outline:hover { background: rgba(88,198,93,0.08); }
 
-.btn-gray {
-  background: #CED2D6; border-color: #CED2D6; color: #fff;
-}
+.btn-dark { background: #383F45; border-color: #383F45; color: #fff; }
+.btn-dark:hover { background: #454C52; }
+
+.btn-ghost { background: #fff; border-color: #CED2D6; color: #596066; }
+.btn-ghost:hover { background: #F6F7F9; }
+
+.btn-gray { background: #CED2D6; border-color: #CED2D6; color: #fff; }
 .btn-gray:hover { background: #9EA5AD; border-color: #9EA5AD; }
 
+/* FAB */
+.fab {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: #24292E; color: #fff; font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.25s ease;
+}
+.fab:hover { background: #383F45; }
+
 /* ================================================================
-   Inputs (light surface)
+   Inputs & Controls
 ================================================================ */
 .inp {
   height: 36px;
@@ -427,6 +424,28 @@ ul, ol { list-style: none; }
 }
 .sel:focus { outline: none; border-color: #58C65D; }
 
+/* Toggle switch */
+.toggle-track {
+  width: 36px; height: 20px;
+  border-radius: 10px;
+  background: #E5E7EA;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.toggle-track.on { background: #58C65D; }
+.toggle-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 2px; left: 2px;
+  transition: left 0.25s ease;
+}
+.toggle-track.on .toggle-thumb { left: 18px; }
+
 /* ================================================================
    Table
 ================================================================ */
@@ -438,8 +457,8 @@ ul, ol { list-style: none; }
 }
 .tbl th {
   background: #F6F7F9;
-  color: #9EA5AD;
-  font-weight: 400;
+  color: #596066;
+  font-weight: 600;          /* live site: 600 */
   padding: 10px 12px;
   border: 1px solid #E5E7EA;
   text-align: center;
@@ -456,6 +475,42 @@ ul, ol { list-style: none; }
 .tbl td a:hover { text-decoration: underline; }
 .tbl tbody tr:hover { background: #FAFAFA; }
 .tbl input[type="checkbox"] { accent-color: #58C65D; width: 14px; height: 14px; cursor: pointer; }
+
+/* Row expand chevron */
+.row-expand-btn {
+  width: 24px; height: 24px;
+  border-radius: 4px;
+  border: 1px solid #CED2D6;
+  background: #fff;
+  color: #9EA5AD; font-size: 11px;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.2s; cursor: pointer; margin-left: 4px;
+}
+.row-expand-btn:hover { border-color: #58C65D; color: #58C65D; }
+.row-expand-btn.open { background: #58C65D; border-color: #58C65D; color: #fff; }
+
+/* ================================================================
+   Filter Bar
+================================================================ */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+.view-toggle { display: flex; gap: 2px; margin-left: auto; }
+.view-toggle-btn {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  border: 1px solid #CED2D6;
+  background: #fff;
+  color: #9EA5AD;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.view-toggle-btn.active { background: #58C65D; border-color: #58C65D; color: #fff; }
 
 /* ================================================================
    Pagination
@@ -477,7 +532,7 @@ ul, ol { list-style: none; }
   cursor: pointer;
 }
 .pager button:hover, .pager a:hover { border-color: #58C65D; color: #58C65D; }
-.pager .active a, .pager a.active {
+.pager .active, .pager a.active {
   background: #58C65D; border-color: #58C65D;
   color: #fff; font-weight: 500;
 }
@@ -485,6 +540,20 @@ ul, ol { list-style: none; }
 /* ================================================================
    Badges
 ================================================================ */
+/* Type badges (inline, narrow) */
+.badge-type {
+  display: inline-flex; align-items: center;
+  height: 18px; padding: 0 6px;
+  border-radius: 3px;
+  font-size: 11px; font-weight: 600;
+  white-space: nowrap;
+  margin-right: 6px;
+}
+.badge-type-sync { background: #58C65D; color: #fff; }
+.badge-type-time { background: rgba(144,97,184,0.15); color: #9061B8; border: 1px solid #d4b8f5; }
+.badge-type-main { background: #2D84ED; color: #fff; }
+
+/* Status badges */
 .badge {
   display: inline-flex; align-items: center; justify-content: center;
   height: 20px; padding: 0 8px;
@@ -492,15 +561,33 @@ ul, ol { list-style: none; }
   font-size: 12px; font-weight: 500;
   white-space: nowrap;
 }
-.badge-main    { background: #2d84ed; color: #fff; }
-.badge-sub     { background: #676E76; color: #fff; }
-.badge-time    { background: #9097B8; color: #fff; }
-.badge-done    { background: #F6F7F9; color: #9EA5AD; border: 1px solid #CED2D6; }
-.badge-running { background: rgba(88,198,93,0.1); color: #58C65D; border: 1px solid #C1E9C3; }
-.badge-reserved{ background: rgba(45,132,237,0.1); color: #2d84ed; border: 1px solid #b3d3f5; }
-.badge-cancel  { background: rgba(233,116,116,0.1); color: #E97474; border: 1px solid #f5c0c0; }
-.badge-admin   { background: rgba(88,198,93,0.1); color: #58C65D; border: 1px solid #C1E9C3; }
-.badge-viewer  { background: #F6F7F9; color: #9EA5AD; border: 1px solid #CED2D6; }
+.badge-pending  { background: rgba(233,116,116,0.1); color: #E97474; border: 1px solid #f5c0c0; }
+.badge-reserved { background: rgba(45,132,237,0.1);  color: #2D84ED;  border: 1px solid #b3d3f5; }
+.badge-running  { background: rgba(88,198,93,0.1);   color: #58C65D;  border: 1px solid #C1E9C3; }
+.badge-done     { background: #F6F7F9; color: #9EA5AD; border: 1px solid #CED2D6; }
+.badge-cancel   { background: rgba(233,116,116,0.1); color: #E97474; border: 1px solid #f5c0c0; }
+
+/* Tag badge */
+.badge-tag {
+  display: inline-flex; align-items: center;
+  background: #fff; color: #FFAA5B;
+  border: 1px solid #FFAA5B; border-radius: 6px;
+  padding: 0 8px; height: 20px; font-size: 12px;
+}
+
+/* ================================================================
+   Progress / Slot Bar
+================================================================ */
+.prog-bar {
+  height: 6px; background: #E5E7EA;
+  border-radius: 3px; overflow: hidden;
+}
+.prog-fill {
+  height: 100%; border-radius: 3px;
+  background: #58C65D;
+  transition: width 0.4s ease;
+}
+.prog-fill.warn { background: #E97474; }
 
 /* ================================================================
    Status dots
@@ -518,7 +605,7 @@ ul, ol { list-style: none; }
 .dot-error   { background: #E97474; }
 
 /* ================================================================
-   Modal  (popup-light)
+   Modal
 ================================================================ */
 .modal-backdrop {
   display: none;
@@ -536,6 +623,10 @@ ul, ol { list-style: none; }
   width: 460px;
   max-width: calc(100vw - 40px);
 }
+.modal-box.sm { width: 360px; }
+.modal-box.md { width: 520px; }
+.modal-box.lg { width: 680px; }
+
 .modal-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 20px 12px;
@@ -558,31 +649,40 @@ ul, ol { list-style: none; }
 }
 
 /* ================================================================
-   Misc helpers
+   Kebab (3-dot) Menu
 ================================================================ */
-.flex { display: flex; align-items: center; }
-.flex-between { justify-content: space-between; }
-.flex-col { flex-direction: column; align-items: flex-start; }
-.gap-4  { gap: 4px; }
-.gap-8  { gap: 8px; }
-.gap-12 { gap: 12px; }
-.gap-16 { gap: 16px; }
-.text-muted { color: #9EA5AD; }
-.text-sm { font-size: 12px; }
-.text-green { color: #58C65D; }
-.text-danger { color: #E97474; }
-
-/* list-option row */
-.list-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+.kebab-btn {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  color: #9EA5AD; font-size: 20px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  cursor: pointer;
 }
-.list-option .ml-auto { margin-left: auto; }
+.kebab-btn:hover { background: #F6F7F9; color: #24292E; }
 
-/* thumbnail */
+.kebab-menu {
+  background: #fff;
+  border: 1px solid #E5E7EA;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 4px 0;
+  min-width: 140px;
+  position: absolute;
+  z-index: 500;
+}
+.kebab-menu-item {
+  padding: 9px 14px;
+  font-size: 13px; color: #24292E;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.kebab-menu-item:hover { background: #F6F7F9; }
+.kebab-menu-item.danger { color: #E97474; }
+
+/* ================================================================
+   Thumbnail
+================================================================ */
 .thumb {
   width: 69px; height: 39px;
   background: #E5E7EA;
@@ -591,4 +691,30 @@ ul, ol { list-style: none; }
   align-items: center; justify-content: center;
   font-size: 10px; font-weight: 500;
   color: #9EA5AD;
+  flex-shrink: 0;
 }
+
+/* ================================================================
+   Misc helpers
+================================================================ */
+.flex          { display: flex; align-items: center; }
+.flex-between  { justify-content: space-between; }
+.flex-col      { flex-direction: column; align-items: flex-start; }
+.gap-4  { gap: 4px; }
+.gap-8  { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.text-muted   { color: #9EA5AD; }
+.text-sm      { font-size: 12px; }
+.text-green   { color: #58C65D; }
+.text-danger  { color: #E97474; }
+.text-warning { color: #E8841A; }
+
+.list-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.list-option .ml-auto { margin-left: auto; }
