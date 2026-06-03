@@ -164,24 +164,23 @@
             </div>
 
             <div class="form-row">
-              <div class="form-label">보장 횟수 <span class="req">*</span></div>
+              <div class="form-label">일 보장 횟수 <span class="req">*</span></div>
               <div class="form-field">
                 <div class="input-unit">
-                  <input type="number" class="input" placeholder="5000" style="max-width:140px;text-align:right;" id="ppCount" oninput="updatePreview()" min="1">
-                  <span class="unit">회 (기간 내 총 보장)</span>
+                  <input type="number" class="input" style="max-width:140px;text-align:right;" id="ppCount" oninput="updatePreview()" min="1" readonly>
+                  <span class="unit">회 / 일</span>
                 </div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-label">기간 <span class="req">*</span></div>
-              <div class="form-field">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <input type="date" class="input" style="max-width:160px;" id="ppStart" oninput="updatePreview()">
-                  <span style="color:#9EA5AD;">~</span>
-                  <input type="date" class="input" style="max-width:160px;" id="ppEnd" oninput="updatePreview()">
+                <div class="input-hint">미디어의 일 보장 횟수에서 자동으로 가져옵니다</div>
+                <!-- 미디어별 일 보장 횟수 표시 -->
+                <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+                  <div style="font-size:12px;color:#9EA5AD;margin-bottom:2px;">소속 미디어 일 보장 횟수</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    <div style="font-size:12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;padding:4px 10px;color:#596066;">강남역 1번출구 A · <strong style="color:#24292E;">100회</strong></div>
+                    <div style="font-size:12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;padding:4px 10px;color:#596066;">강남역 1번출구 B · <strong style="color:#24292E;">100회</strong></div>
+                    <div style="font-size:12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;padding:4px 10px;color:#596066;">신논현역 메인 월 · <strong style="color:#24292E;">80회</strong></div>
+                    <div style="font-size:12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;padding:4px 10px;color:#596066;">역삼역 2번출구 · <strong style="color:#24292E;">100회</strong></div>
+                  </div>
                 </div>
-                <div class="input-hint" id="dateHint"></div>
               </div>
             </div>
 
@@ -307,24 +306,12 @@
             <span class="calc-row-value" id="sum-dur">—</span>
           </div>
           <div class="calc-row">
-            <span class="calc-row-label">보장 횟수</span>
+            <span class="calc-row-label">일 보장 횟수</span>
             <span class="calc-row-value" id="sum-count">—</span>
-          </div>
-          <div class="calc-row">
-            <span class="calc-row-label">기간</span>
-            <span class="calc-row-value" id="sum-period" style="font-size:11px;">—</span>
-          </div>
-          <div class="calc-row">
-            <span class="calc-row-label">일수</span>
-            <span class="calc-row-value" id="sum-days">—</span>
           </div>
           <div class="calc-row">
             <span class="calc-row-label">금액</span>
             <span class="calc-row-value" id="sum-price">—</span>
-          </div>
-          <div class="calc-row highlight">
-            <span class="calc-row-label">일평균 단가</span>
-            <span class="calc-row-value" id="sum-daily">—</span>
           </div>
         </div>
 
@@ -340,16 +327,24 @@
 </main>
 
 <script>
+// 미디어별 일 보장 횟수 (서버에서 가져오는 데이터 — 여기선 샘플)
+const MEDIA_DAILY_GUARANTEE = { a: 100, b: 100, c: 80, e: 100 };
+// 소속 미디어 중 최솟값을 플랜 일 보장 횟수로 사용
+const minGuarantee = Math.min(...Object.values(MEDIA_DAILY_GUARANTEE));
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ppCount').value = minGuarantee;
+  updateCalc();
+});
+
 function updatePreview() {
   const dur   = parseInt(document.getElementById('ppDuration').value) || 0;
-  const bases = [321, 78, 260, 196]; // 각 미디어 현재 잔여(초)
+  const bases = [321, 78, 260, 196];
   const maxes = [396, 396, 400, 396];
   const ids   = ['a','b','c','e'];
-  const medNames = ids;
 
   ids.forEach((id, i) => {
     const after = bases[i] - dur;
-    const el = document.getElementById('prev-' + id);
+    const el  = document.getElementById('prev-' + id);
     const bar = document.getElementById('bar-' + id);
     if (!el || !bar) return;
 
@@ -368,16 +363,6 @@ function updatePreview() {
   });
 
   updateCalc();
-
-  // 기간 힌트
-  const s = document.getElementById('ppStart').value;
-  const e = document.getElementById('ppEnd').value;
-  if (s && e) {
-    const days = Math.ceil((new Date(e) - new Date(s)) / 86400000) + 1;
-    document.getElementById('dateHint').textContent = days > 0 ? days + '일 기간' : '';
-    document.getElementById('sum-days').textContent = days > 0 ? days + '일' : '—';
-    document.getElementById('sum-period').textContent = s + ' ~ ' + e;
-  }
 }
 
 function updateCalc() {
@@ -385,25 +370,15 @@ function updateCalc() {
   const dur   = document.getElementById('ppDuration').value;
   const cnt   = document.getElementById('ppCount').value;
   const price = parseInt(document.getElementById('ppPrice').value) || 0;
-  const s     = document.getElementById('ppStart').value;
-  const e     = document.getElementById('ppEnd').value;
 
   document.getElementById('sum-name').textContent  = name || '미입력';
   document.getElementById('sum-name').style.color  = name ? '#24292E' : '#9EA5AD';
-  document.getElementById('sum-dur').textContent   = dur   ? dur + '초'   : '—';
-  document.getElementById('sum-count').textContent = cnt   ? Number(cnt).toLocaleString() + '회' : '—';
+  document.getElementById('sum-dur').textContent   = dur   ? dur + '초' : '—';
+  document.getElementById('sum-count').textContent = cnt   ? Number(cnt).toLocaleString() + '회 / 일' : '—';
   document.getElementById('sum-price').textContent = price ? price.toLocaleString() + '원' : '—';
 
-  if (price && s && e) {
-    const days = Math.ceil((new Date(e) - new Date(s)) / 86400000) + 1;
-    if (days > 0) {
-      document.getElementById('sum-daily').textContent = Math.round(price / days).toLocaleString() + '원';
-    }
-  }
-
   if (document.getElementById('ppPrice').value) {
-    const hint = price > 0 ? price.toLocaleString() + '원' : '';
-    document.getElementById('priceHint').textContent = hint ? '입력 금액: ' + hint : '';
+    document.getElementById('priceHint').textContent = price > 0 ? '입력 금액: ' + price.toLocaleString() + '원' : '';
   }
 }
 </script>
