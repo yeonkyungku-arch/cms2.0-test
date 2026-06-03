@@ -212,6 +212,108 @@
 
       <!-- ─── 탭: 기본 정보 ─── -->
       <div id="tab-basic" class="card-body">
+
+        <!-- 지도 영역 -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-size:13px;font-weight:600;color:#24292E;">미디어 위치</div>
+            <div style="display:flex;align-items:center;gap:12px;font-size:12px;color:#596066;">
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#58C65D;margin-right:4px;vertical-align:middle;"></span>온라인</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#F5A623;margin-right:4px;vertical-align:middle;"></span>이슈</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#CED2D6;margin-right:4px;vertical-align:middle;"></span>오프라인</span>
+            </div>
+          </div>
+          <!-- SVG 인터랙티브 지도 (Google Maps 미연동 목업) -->
+          <div id="map-wrap" style="position:relative;width:100%;height:320px;background:#E8EFF5;border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;cursor:grab;">
+            <!-- 배경 도로망 SVG -->
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;">
+              <!-- 배경 -->
+              <rect width="100%" height="100%" fill="#E8EFF5"/>
+              <!-- 블록들 (건물) -->
+              <rect x="60"  y="40"  width="90"  height="60"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="200" y="30"  width="120" height="80"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="380" y="50"  width="80"  height="50"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="500" y="20"  width="100" height="70"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="660" y="40"  width="90"  height="55"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="60"  y="160" width="110" height="90"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="220" y="170" width="90"  height="70"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="380" y="155" width="110" height="85"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="560" y="160" width="95"  height="75"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="700" y="150" width="80"  height="90"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="80"  y="260" width="100" height="50"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="250" y="255" width="130" height="55"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="450" y="260" width="90"  height="50"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <rect x="610" y="250" width="110" height="60"  rx="3" fill="#D8E4EF" opacity=".6"/>
+              <!-- 주요 도로 (강남대로 세로) -->
+              <rect x="170" y="0"   width="20" height="320" fill="#fff" opacity=".8"/>
+              <!-- 강남대로 레이블 -->
+              <text x="175" y="310" font-size="9" fill="#9EA5AD" writing-mode="tb" transform="rotate(0,175,310)">강남대로</text>
+              <!-- 테헤란로 (가로) -->
+              <rect x="0"   y="130" width="800" height="20" fill="#fff" opacity=".8"/>
+              <text x="10"  y="143" font-size="9" fill="#9EA5AD">테헤란로</text>
+              <!-- 언주로 (세로) -->
+              <rect x="370" y="0"   width="14" height="320" fill="#fff" opacity=".7"/>
+              <!-- 역삼로 (가로) -->
+              <rect x="0"   y="240" width="800" height="14" fill="#fff" opacity=".7"/>
+              <!-- 봉은사로 -->
+              <rect x="560" y="0"   width="14" height="320" fill="#fff" opacity=".7"/>
+            </svg>
+
+            <!-- 핀: 강남역 1번출구 A (온라인) -->
+            <div class="map-pin" data-id="m1" style="position:absolute;left:152px;top:108px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m1')">
+              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#58C65D"/>
+                <circle cx="14" cy="14" r="6" fill="#fff"/>
+              </svg>
+            </div>
+
+            <!-- 핀: 강남역 1번출구 B (온라인) -->
+            <div class="map-pin" data-id="m2" style="position:absolute;left:190px;top:120px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m2')">
+              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#58C65D"/>
+                <circle cx="14" cy="14" r="6" fill="#fff"/>
+              </svg>
+            </div>
+
+            <!-- 핀: 신논현역 메인 월 (이슈) -->
+            <div class="map-pin" data-id="m3" style="position:absolute;left:358px;top:90px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m3')">
+              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#F5A623"/>
+                <circle cx="14" cy="14" r="6" fill="#fff"/>
+              </svg>
+            </div>
+
+            <!-- 핀: 삼성역 코엑스 광장 (오프라인) -->
+            <div class="map-pin" data-id="m4" style="position:absolute;left:555px;top:105px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m4')">
+              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#CED2D6"/>
+                <circle cx="14" cy="14" r="6" fill="#fff"/>
+              </svg>
+            </div>
+
+            <!-- 핀: 역삼역 2번출구 (온라인) -->
+            <div class="map-pin" data-id="m5" style="position:absolute;left:290px;top:232px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m5')">
+              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#58C65D"/>
+                <circle cx="14" cy="14" r="6" fill="#fff"/>
+              </svg>
+            </div>
+
+            <!-- 팝업 툴팁 -->
+            <div id="map-tooltip" style="display:none;position:absolute;background:#fff;border:1px solid #E5E7EA;border-radius:8px;padding:12px 14px;min-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:10;pointer-events:none;">
+              <div id="tt-name" style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:4px;"></div>
+              <div id="tt-loc"  style="font-size:11px;color:#9EA5AD;margin-bottom:8px;"></div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span id="tt-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;"></span>
+                <span id="tt-status" style="font-size:12px;"></span>
+              </div>
+            </div>
+
+            <!-- 지도 우측 하단 안내 -->
+            <div style="position:absolute;bottom:10px;right:10px;font-size:11px;color:#9EA5AD;background:rgba(255,255,255,.8);padding:4px 8px;border-radius:4px;">목업 지도 (실제 서비스: Google Maps 연동)</div>
+          </div>
+        </div>
+
         <div style="margin-bottom:12px;font-size:13px;color:#596066;">소속 미디어 <strong style="color:#24292E;">5개</strong></div>
         <div class="media-card-grid">
           <!-- 미디어 카드 1 -->
@@ -585,6 +687,49 @@ document.querySelectorAll('.analysis-tab button').forEach(btn => {
     document.querySelectorAll('.analysis-tab button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   });
+});
+
+// 지도 핀 데이터
+const PIN_DATA = {
+  m1: { name:'강남역 1번출구 A', loc:'서울 강남구 강남대로 396', status:'online',  statusLabel:'온라인',  color:'#58C65D' },
+  m2: { name:'강남역 1번출구 B', loc:'서울 강남구 강남대로 396', status:'online',  statusLabel:'온라인',  color:'#58C65D' },
+  m3: { name:'신논현역 메인 월', loc:'서울 강남구 언주로 411',   status:'issue',   statusLabel:'이슈 있음', color:'#F5A623' },
+  m4: { name:'삼성역 코엑스 광장', loc:'서울 강남구 봉은사로 524', status:'offline', statusLabel:'오프라인', color:'#CED2D6' },
+  m5: { name:'역삼역 2번출구',   loc:'서울 강남구 역삼로 160',   status:'online',  statusLabel:'온라인',  color:'#58C65D' },
+};
+
+function selectPin(id) {
+  const d   = PIN_DATA[id];
+  const pin = document.querySelector('[data-id="' + id + '"]');
+  const tt  = document.getElementById('map-tooltip');
+  const rect = pin.getBoundingClientRect();
+  const wrap = document.getElementById('map-wrap').getBoundingClientRect();
+
+  document.getElementById('tt-name').textContent   = d.name;
+  document.getElementById('tt-loc').textContent    = d.loc;
+  document.getElementById('tt-status').textContent = d.statusLabel;
+  document.getElementById('tt-status').style.color = d.color;
+  document.getElementById('tt-dot').style.background = d.color;
+
+  let left = rect.left - wrap.left + 14;
+  let top  = rect.top  - wrap.top  - 8;
+  tt.style.display = 'block';
+  // 오른쪽 잘림 방지
+  if (left + 210 > wrap.width) left = wrap.width - 215;
+  tt.style.left = left + 'px';
+  tt.style.top  = top  + 'px';
+
+  // 선택 강조
+  document.querySelectorAll('.map-pin svg path').forEach(p => p.style.filter = '');
+  pin.querySelector('svg path').style.filter = 'drop-shadow(0 0 6px rgba(0,0,0,.4))';
+}
+
+// 지도 바깥 클릭 시 툴팁 닫기
+document.getElementById('map-wrap').addEventListener('click', function(e) {
+  if (!e.target.closest('.map-pin')) {
+    document.getElementById('map-tooltip').style.display = 'none';
+    document.querySelectorAll('.map-pin svg path').forEach(p => p.style.filter = '');
+  }
 });
 </script>
 </body>
