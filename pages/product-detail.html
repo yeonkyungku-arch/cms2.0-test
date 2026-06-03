@@ -394,9 +394,9 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
           <div class="analysis-tab" id="analysisViewTab">
             <button class="active" data-view="daily" onclick="switchAnalysis('daily',this)">일 평균</button>
-            <button data-view="monthly" onclick="switchAnalysis('monthly',this)">월별</button>
-            <button data-view="weekday" onclick="switchAnalysis('weekday',this)">요일별</button>
-            <button data-view="hourly" onclick="switchAnalysis('hourly',this)">시간대별</button>
+            <button data-view="monthly" onclick="switchAnalysis('monthly',this)">월 평균</button>
+            <button data-view="weekday" onclick="switchAnalysis('weekday',this)">요일 평균</button>
+            <button data-view="hourly" onclick="switchAnalysis('hourly',this)">시간대 평균</button>
             <button data-view="gender" onclick="switchAnalysis('gender',this)">연령·성별</button>
           </div>
           <div style="display:flex;gap:6px;">
@@ -442,7 +442,7 @@
 
         <div id="chart-monthly" class="analysis-chart-panel" style="display:none;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">월별 노출인구 비교</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">월 평균 노출인구 비교</div>
             <div style="font-size:11px;color:#9EA5AD;">2025.07 ~ 2025.10 · 미디어별 월 합산 노출인구</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
@@ -458,7 +458,7 @@
 
         <div id="chart-weekday" class="analysis-chart-panel" style="display:none;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">요일별 노출인구 비교</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">요일 평균 노출인구 비교</div>
             <div style="font-size:11px;color:#9EA5AD;">2025.10.01 ~ 2025.10.31 · 요일별 일 평균 노출인구</div>
           </div>
           <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
@@ -473,7 +473,7 @@
 
         <div id="chart-hourly" class="analysis-chart-panel" style="display:none;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">시간대별 노출인구 비교</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">시간대 평균 노출인구 비교</div>
             <div style="font-size:11px;color:#9EA5AD;">09시 ~ 22시 · 시간대별 평균 노출인구</div>
           </div>
           <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
