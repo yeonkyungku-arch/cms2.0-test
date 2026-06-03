@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사이클 순서 편집 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <style>
+    .zoom-btn-group {
+      display: flex; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
+    }
+    .zoom-btn-group button {
+      height: 32px; padding: 0 14px; border: none; background: #fff;
+      font-size: 13px; font-weight: 500; color: #596066; cursor: pointer; transition: all 0.15s;
+    }
+    .zoom-btn-group button + button { border-left: 1px solid #CED2D6; }
+    .zoom-btn-group button.active { background: #F6F7F9; color: #24292E; font-weight: 600; }
+
+    /* 편집 레이아웃 */
+    .edit-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* 왼쪽 드래그 목록 */
+    .drag-list-card {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden;
+    }
+    .drag-list-head {
+      padding: 14px 16px; border-bottom: 1px solid #E5E7EA;
+      font-size: 14px; font-weight: 700; color: #24292E;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .drag-list-body { padding: 8px; }
+
+    .drag-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 6px;
+      background: #fff; border: 1px solid #E5E7EA;
+      margin-bottom: 6px; cursor: grab; transition: all 0.15s;
+      user-select: none;
+    }
+    .drag-item:last-child { margin-bottom: 0; }
+    .drag-item:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .drag-item.dragging { opacity: 0.5; border: 1px dashed #58C65D; }
+    .drag-item.fixed { background: #F6F7F9; cursor: default; border-color: #E5E7EA; }
+    .drag-item.fixed:hover { border-color: #E5E7EA; box-shadow: none; }
+
+    .drag-handle {
+      display: flex; flex-direction: column; gap: 2.5px; cursor: grab; flex-shrink: 0;
+    }
+    .drag-handle span {
+      display: block; width: 18px; height: 2px; background: #CED2D6; border-radius: 1px;
+    }
+    .drag-handle.disabled span { background: #E5E7EA; cursor: default; }
+
+    .drag-item-order {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #F6F7F9; border: 1px solid #E5E7EA;
+      font-size: 11px; font-weight: 700; color: #596066;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .drag-item-order.active { background: #58C65D; border-color: #58C65D; color: #fff; }
+
+    .drag-item-info { flex: 1; min-width: 0; }
+    .drag-item-name { font-size: 13px; font-weight: 600; color: #24292E; }
+    .drag-item-meta { font-size: 11px; color: #9EA5AD; margin-top: 2px; }
+
+    .drag-item-dur {
+      font-size: 12px; font-weight: 600; color: #596066;
+      background: #F6F7F9; padding: 2px 8px; border-radius: 10px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    .drag-divider {
+      height: 1px; background: #E5E7EA; margin: 8px 0;
+    }
+
+    /* 오른쪽 미리보기 타임라인 */
+    .preview-card {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden;
+    }
+    .preview-head {
+      padding: 14px 16px; border-bottom: 1px solid #E5E7EA;
+      font-size: 14px; font-weight: 700; color: #24292E;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .preview-body { padding: 20px; }
+
+    .preview-timeline {
+      position: relative; height: 60px;
+      border: 1px solid #E5E7EA; border-radius: 6px; overflow: hidden;
+      display: flex; margin-bottom: 8px;
+    }
+    .preview-block {
+      height: 100%; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; overflow: hidden;
+      position: relative;
+    }
+    .preview-block::after {
+      content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+      width: 1px; background: rgba(255,255,255,0.4);
+    }
+    .preview-block.s-a { background: #58C65D; color: #fff; }
+    .preview-block.s-b { background: #A8E6AB; color: #1E7E22; }
+    .preview-block.s-c { background: #58C65D; color: #fff; opacity: 0.85; }
+    .preview-block.s-alt { background: #9EA5AD; color: #fff; }
+    .preview-block.s-remain { background: #F6F7F9; color: #9EA5AD; border: 1px dashed #E5E7EA; }
+
+    .preview-labels {
+      display: flex; font-size: 10px; color: #9EA5AD; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .preview-legend {
+      display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .preview-legend-item {
+      display: flex; align-items: center; gap: 5px; font-size: 12px; color: #596066;
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 2px;
+    }
+
+    .preview-stat {
+      background: #F6F7F9; border-radius: 6px; padding: 12px 16px;
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .preview-stat-item { font-size: 13px; color: #596066; }
+    .preview-stat-item strong { color: #24292E; }
+
+    /* 하단 설정 패널 */
+    .setting-panel {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 8px;
+      padding: 20px; margin-top: 20px;
+    }
+    .setting-panel-title {
+      font-size: 14px; font-weight: 700; color: #24292E;
+      margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #E5E7EA;
+    }
+    .setting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .setting-group-label {
+      font-size: 13px; font-weight: 600; color: #596066; margin-bottom: 10px;
+    }
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-item {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .radio-item input[type="radio"] { accent-color: #58C65D; width: 16px; height: 16px; }
+    .radio-item label { font-size: 14px; color: #24292E; cursor: pointer; }
+    .radio-item .radio-desc { font-size: 11px; color: #9EA5AD; margin-top: 1px; }
+
+    .setting-actions {
+      display: flex; justify-content: flex-end; gap: 8px;
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid #E5E7EA;
+    }
+
+    /* 페이지 헤더 */
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .page-header-info h2 { font-size: 18px; font-weight: 700; color: #24292E; margin: 0 0 4px; }
+    .page-header-info p { font-size: 13px; color: #9EA5AD; margin: 0; }
+  </style>
+</head>
+<body>
+
+<!-- ① GNB Sidebar -->
+<nav class="gnb">
+  <div class="gnb-logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#58C65D"/>
+      <text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
+    </svg>
+  </div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard.html">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+      대시보드
+    </a></li>
+    <li><a href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>
+      미디어
+    </a></li>
+    <li><a href="product-list.html">
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>
+      프로덕트
+    </a></li>
+    <li><a href="contents.html">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>
+      콘텐츠
+    </a></li>
+    <li><a href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      스케줄
+    </a></li>
+    <li><a href="schedule-main.html" class="active">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      편성표
+    </a></li>
+    <div class="gnb-divider"></div>
+    <li><a href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      모니터링
+    </a></li>
+  </ul>
+</nav>
+
+<!-- ② Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+      <span class="topbar-caret">▾</span>
+      <div class="profile-dropdown">
+        <a href="#">내 정보</a>
+        <a href="#" class="logout">로그아웃</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ③ Breadcrumb Bar -->
+<div class="bcrumb">
+  <a href="schedule-main.html">편성표</a>
+  <span class="bcrumb-sep">›</span>
+  <a href="schedule-media-day.html">미디어 A · 2025.10.15</a>
+  <span class="bcrumb-sep">›</span>
+  <span>사이클 순서 편집</span>
+</div>
+
+<!-- ④ Content -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header">
+      <div class="page-header-info">
+        <h2>사이클 순서 편집</h2>
+        <p>미디어 A · 강남역 1번 출구 &nbsp;|&nbsp; 2025.10.15 (수) &nbsp;|&nbsp; 사이클 1회 = 396초</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:13px;color:#596066;">타임라인 단위</span>
+        <div class="zoom-btn-group">
+          <button onclick="setZoom('1h')">1시간</button>
+          <button class="active" onclick="setZoom('30m')">30분</button>
+          <button onclick="setZoom('1m')">1분</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 편집 레이아웃 -->
+    <div class="edit-layout">
+
+      <!-- 왼쪽: 드래그 목록 -->
+      <div class="drag-list-card">
+        <div class="drag-list-head">
+          <span>사이클 내 순서</span>
+          <span style="font-size:12px;color:#9EA5AD;font-weight:400;">드래그로 순서 변경</span>
+        </div>
+        <div class="drag-list-body" id="dragList">
+
+          <div class="drag-item" draggable="true" id="item-1">
+            <div class="drag-handle">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="drag-item-order active">1</div>
+            <div class="drag-item-info">
+              <div class="drag-item-name">스케줄 A</div>
+              <div class="drag-item-meta">광고영상.mp4 &nbsp;·&nbsp; 확정</div>
+            </div>
+            <div class="drag-item-dur">30초</div>
+          </div>
+
+          <div class="drag-item" draggable="true" id="item-2">
+            <div class="drag-handle">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="drag-item-order">2</div>
+            <div class="drag-item-info">
+              <div class="drag-item-name">스케줄 B</div>
+              <div class="drag-item-meta">봄날광고.mp4 &nbsp;·&nbsp; 초안</div>
+            </div>
+            <div class="drag-item-dur">15초</div>
+          </div>
+
+          <div class="drag-item" draggable="true" id="item-3">
+            <div class="drag-handle">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="drag-item-order">3</div>
+            <div class="drag-item-info">
+              <div class="drag-item-name">스케줄 C</div>
+              <div class="drag-item-meta">이벤트광고.mp4 &nbsp;·&nbsp; 확정</div>
+            </div>
+            <div class="drag-item-dur">30초</div>
+          </div>
+
+          <div class="drag-divider"></div>
+
+          <!-- 대체 콘텐츠 고정 -->
+          <div class="drag-item fixed">
+            <div class="drag-handle disabled">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="drag-item-order" style="background:#9EA5AD;border-color:#9EA5AD;color:#fff;">고정</div>
+            <div class="drag-item-info">
+              <div class="drag-item-name" style="color:#9EA5AD;">대체 콘텐츠</div>
+              <div class="drag-item-meta">default_fallback.mp4 &nbsp;·&nbsp; 항상 마지막</div>
+            </div>
+            <div class="drag-item-dur" style="color:#9EA5AD;">15초</div>
+          </div>
+
+        </div>
+
+        <!-- 합계 -->
+        <div style="padding:12px 16px;border-top:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;color:#596066;">합계 재생시간</span>
+          <span style="font-size:14px;font-weight:700;color:#24292E;" id="totalDur">75초 / 396초</span>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 미리보기 타임라인 -->
+      <div class="preview-card">
+        <div class="preview-head">
+          <span>타임라인 미리보기</span>
+          <span style="font-size:12px;color:#9EA5AD;font-weight:400;">현재 순서 기준 시각화</span>
+        </div>
+        <div class="preview-body">
+
+          <div class="preview-legend">
+            <div class="preview-legend-item">
+              <div class="legend-dot" style="background:#58C65D;"></div>
+              <span>스케줄 A (30초)</span>
+            </div>
+            <div class="preview-legend-item">
+              <div class="legend-dot" style="background:#A8E6AB;"></div>
+              <span>스케줄 B (15초)</span>
+            </div>
+            <div class="preview-legend-item">
+              <div class="legend-dot" style="background:#58C65D;opacity:0.7;"></div>
+              <span>스케줄 C (30초)</span>
+            </div>
+            <div class="preview-legend-item">
+              <div class="legend-dot" style="background:#9EA5AD;"></div>
+              <span>대체 콘텐츠 (15초)</span>
+            </div>
+            <div class="preview-legend-item">
+              <div class="legend-dot" style="background:#F6F7F9;border:1px dashed #CED2D6;"></div>
+              <span>잔여 (321초)</span>
+            </div>
+          </div>
+
+          <!-- 1사이클 타임라인 -->
+          <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">1 사이클 (396초)</div>
+          <div class="preview-timeline">
+            <!-- A: 30/396 = 7.57% -->
+            <div class="preview-block s-a" style="width:7.57%">A</div>
+            <!-- B: 15/396 = 3.79% -->
+            <div class="preview-block s-b" style="width:3.79%">B</div>
+            <!-- C: 30/396 = 7.57% -->
+            <div class="preview-block s-c" style="width:7.57%">C</div>
+            <!-- 대체: 15/396 = 3.79% -->
+            <div class="preview-block s-alt" style="width:3.79%">대체</div>
+            <!-- 잔여: 321/396 = 81.06% -->
+            <div class="preview-block s-remain" style="width:77.28%;font-size:10px;">잔여 321초</div>
+          </div>
+          <div class="preview-labels">
+            <span>0s</span>
+            <span>100s</span>
+            <span>200s</span>
+            <span>300s</span>
+            <span>396s</span>
+          </div>
+
+          <!-- 반복 미리보기 (3사이클) -->
+          <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;margin-top:16px;">3 사이클 반복 (09:00 기준)</div>
+          <div class="preview-timeline" style="height:40px;">
+            <!-- 반복 3회 -->
+            <div class="preview-block s-a"    style="width:7.57%"></div>
+            <div class="preview-block s-b"    style="width:3.79%"></div>
+            <div class="preview-block s-c"    style="width:7.57%"></div>
+            <div class="preview-block s-alt"  style="width:3.79%"></div>
+            <div class="preview-block s-remain" style="width:10.26%;border-right:2px solid #CED2D6;"></div>
+            <div class="preview-block s-a"    style="width:7.57%"></div>
+            <div class="preview-block s-b"    style="width:3.79%"></div>
+            <div class="preview-block s-c"    style="width:7.57%"></div>
+            <div class="preview-block s-alt"  style="width:3.79%"></div>
+            <div class="preview-block s-remain" style="width:10.26%;border-right:2px solid #CED2D6;"></div>
+            <div class="preview-block s-a"    style="width:7.57%"></div>
+            <div class="preview-block s-b"    style="width:3.79%"></div>
+            <div class="preview-block s-c"    style="width:7.57%"></div>
+            <div class="preview-block s-alt"  style="width:3.79%"></div>
+            <div class="preview-block s-remain" style="flex:1;"></div>
+          </div>
+
+          <!-- 통계 -->
+          <div class="preview-stat" style="margin-top:16px;">
+            <div class="preview-stat-item">1회당 허용 <strong>396초</strong></div>
+            <div class="preview-stat-item">사용 <strong>75초</strong></div>
+            <div class="preview-stat-item" style="color:#58C65D;">잔여 <strong style="color:#58C65D;">321초 (81%)</strong></div>
+            <div class="preview-stat-item">운영시간 내 예상 사이클 <strong>약 99회</strong></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 하단 설정 패널 -->
+    <div class="setting-panel">
+      <div class="setting-panel-title">반영 설정</div>
+      <div class="setting-grid">
+        <div>
+          <div class="setting-group-label">반영 범위</div>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="scope" value="today" checked>
+              <div>
+                <label>이 날만</label>
+                <div class="radio-desc">2025.10.15 하루만 적용됩니다</div>
+              </div>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="scope" value="forward">
+              <div>
+                <label>이후 전체</label>
+                <div class="radio-desc">2025.10.15 이후 모든 날에 적용됩니다</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div>
+          <div class="setting-group-label">반영 시점</div>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="timing" value="now" checked>
+              <div>
+                <label>즉시 반영</label>
+                <div class="radio-desc">저장 즉시 현재 진행 중인 사이클에 반영됩니다</div>
+              </div>
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="timing" value="next">
+              <div>
+                <label>다음 사이클부터</label>
+                <div class="radio-desc">현재 사이클이 완료된 후 다음 사이클부터 적용됩니다</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-actions">
+        <button class="btn btn-ghost" onclick="location.href='schedule-media-day.html'">취소</button>
+        <button class="btn btn-primary" onclick="handleSave()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          저장
+        </button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // 줌 전환
+  function setZoom(z) {
+    document.querySelectorAll('.zoom-btn-group button').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    event.target.classList.add('active');
+  }
+
+  // 드래그 앤 드롭 (기본 구현)
+  var dragSrc = null;
+  document.querySelectorAll('.drag-item[draggable="true"]').forEach(function(item) {
+    item.addEventListener('dragstart', function() {
+      dragSrc = this;
+      this.classList.add('dragging');
+    });
+    item.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+      updateOrders();
+    });
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      if (dragSrc && dragSrc !== this) {
+        var list = document.getElementById('dragList');
+        var items = Array.from(list.querySelectorAll('.drag-item[draggable="true"]'));
+        var srcIdx = items.indexOf(dragSrc);
+        var dstIdx = items.indexOf(this);
+        if (srcIdx !== -1 && dstIdx !== -1) {
+          if (srcIdx < dstIdx) {
+            this.parentNode.insertBefore(dragSrc, this.nextSibling);
+          } else {
+            this.parentNode.insertBefore(dragSrc, this);
+          }
+        }
+      }
+    });
+  });
+
+  function updateOrders() {
+    var items = document.querySelectorAll('#dragList .drag-item[draggable="true"]');
+    items.forEach(function(item, idx) {
+      var orderEl = item.querySelector('.drag-item-order');
+      if (orderEl) {
+        orderEl.textContent = idx + 1;
+        orderEl.classList.toggle('active', idx === 0);
+      }
+    });
+  }
+
+  function handleSave() {
+    var scope = document.querySelector('input[name="scope"]:checked').value;
+    var timing = document.querySelector('input[name="timing"]:checked').value;
+    var scopeText = scope === 'today' ? '이 날만' : '이후 전체';
+    var timingText = timing === 'now' ? '즉시 반영' : '다음 사이클부터';
+    if (confirm('순서를 저장합니다.\n\n반영 범위: ' + scopeText + '\n반영 시점: ' + timingText + '\n\n계속하시겠습니까?')) {
+      location.href = 'schedule-media-day.html';
+    }
+  }
+</script>
+</body>
+</html>
