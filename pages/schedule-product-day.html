@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>편성표 · 프로덕트 일 보기 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <style>
+    /* ── 탭 ── */
+    .view-tabs {
+      display: flex;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .view-tabs button {
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      color: #596066;
+      transition: all 0.15s;
+    }
+    .view-tabs button.active { background: #24292E; color: #fff; }
+    .view-tabs button + button { border-left: 1px solid #CED2D6; }
+
+    .day-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .cal-nav { display: flex; align-items: center; gap: 6px; }
+    .cal-nav button {
+      width: 30px; height: 30px;
+      border: 1px solid #CED2D6;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      color: #596066;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .cal-nav button:hover { border-color: #58C65D; color: #58C65D; }
+    .cal-nav-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #24292E;
+      min-width: 130px;
+      text-align: center;
+    }
+    .product-select {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid #CED2D6;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 14px;
+      color: #24292E;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      min-width: 200px;
+    }
+    .day-toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+    /* ── 타임라인 ── */
+    .timeline-wrap {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .timeline-header {
+      display: flex;
+      background: #F6F7F9;
+      border-bottom: 2px solid #E5E7EA;
+    }
+    .tl-media-col {
+      width: 120px;
+      flex-shrink: 0;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #596066;
+      border-right: 1px solid #E5E7EA;
+    }
+    .tl-time-header {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+    .tl-time-tick {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: #9EA5AD;
+      padding: 10px 0;
+      border-right: 1px solid #E5E7EA;
+    }
+    .tl-time-tick:last-child { border-right: none; }
+
+    /* 미디어 행 */
+    .tl-row {
+      display: flex;
+      border-bottom: 1px solid #E5E7EA;
+      min-height: 80px;
+    }
+    .tl-row:last-child { border-bottom: none; }
+    .tl-row-label {
+      width: 120px;
+      flex-shrink: 0;
+      padding: 12px 14px;
+      border-right: 1px solid #E5E7EA;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tl-media-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #24292E;
+    }
+    .tl-media-sub {
+      font-size: 11px;
+      color: #9EA5AD;
+    }
+    .tl-track {
+      flex: 1;
+      position: relative;
+      background: #FAFAFA;
+    }
+
+    /* 시간 그리드 선 */
+    .tl-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc((100% / 11) - 1px),
+        #E5E7EA calc((100% / 11) - 1px),
+        #E5E7EA calc(100% / 11)
+      );
+      pointer-events: none;
+    }
+
+    /* 블록 공통 */
+    .tl-block {
+      position: absolute;
+      top: 8px;
+      height: calc(100% - 16px);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: 600;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      transition: opacity 0.15s;
+    }
+    .tl-block:hover { opacity: 0.85; }
+
+    /* 블록 타입 */
+    .block-confirmed { background: #2E9E34; color: #fff; }
+    .block-draft { background: #fff; color: #596066; border: 2px dashed #CED2D6; }
+    .block-booking { background: #2D84ED; color: #fff; }
+    .block-condition { background: repeating-linear-gradient(45deg,#F6F7F9,#F6F7F9 4px,#E5E7EA 4px,#E5E7EA 8px); color: #596066; border: 1px solid #CED2D6; }
+    .block-alt { background: #CED2D6; color: #596066; }
+
+    /* 사이클 구분선 */
+    .cycle-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: rgba(88,198,93,0.3);
+      pointer-events: none;
+    }
+
+    /* 달성률 바 */
+    .achieve-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #FAFAFA;
+      border-top: 1px solid #E5E7EA;
+    }
+    .achieve-label { font-size: 12px; color: #596066; width: 120px; flex-shrink: 0; }
+    .achieve-bar-wrap { flex: 1; height: 8px; background: #E5E7EA; border-radius: 4px; overflow: hidden; }
+    .achieve-bar { height: 100%; background: #58C65D; border-radius: 4px; }
+    .achieve-pct { font-size: 12px; font-weight: 600; color: #2E9E34; min-width: 36px; }
+
+    /* 범례 */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #596066;
+    }
+    .legend-dot {
+      width: 12px; height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ① GNB Sidebar -->
+<nav class="gnb">
+  <div class="gnb-logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#58C65D"/>
+      <text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
+    </svg>
+  </div>
+  <ul class="gnb-nav">
+    <li>
+      <a href="dashboard.html">
+        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+        대시보드
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>
+        미디어
+      </a>
+    </li>
+    <li>
+      <a href="product-list.html">
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>
+        프로덕트
+      </a>
+    </li>
+    <li>
+      <a href="contents.html">
+        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>
+        콘텐츠
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        스케줄
+      </a>
+    </li>
+    <li>
+      <a href="schedule-product-month.html" class="active">
+        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        편성표
+      </a>
+    </li>
+    <div class="gnb-divider"></div>
+    <li>
+      <a href="#">
+        <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        모니터링
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<!-- ② Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+      <span class="topbar-caret">▾</span>
+      <div class="profile-dropdown">
+        <a href="#">내 정보</a>
+        <a href="#" class="logout">로그아웃</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ③ Breadcrumb Bar -->
+<div class="bcrumb">
+  <span>편성표</span>
+  <span class="bcrumb-sep">›</span>
+  <span>프로덕트 기준</span>
+  <span class="bcrumb-sep">›</span>
+  <span class="bcrumb-current">일 보기</span>
+</div>
+
+<!-- ④ Content -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- 상단 툴바 -->
+    <div class="day-toolbar">
+      <div class="view-tabs">
+        <button onclick="location.href='schedule-main.html'">미디어 기준</button>
+        <button class="active">프로덕트 기준</button>
+      </div>
+
+      <select class="product-select">
+        <option selected>강남 프리미엄 패키지</option>
+        <option>홍대 입구역 프리미엄</option>
+        <option>신촌 역세권 디스플레이</option>
+      </select>
+
+      <div class="view-tabs">
+        <button onclick="location.href='schedule-product-month.html'">월간</button>
+        <button class="active">일 보기</button>
+      </div>
+
+      <div class="cal-nav">
+        <button title="이전 날">‹</button>
+        <span class="cal-nav-label">2025.10.15 (수)</span>
+        <button title="다음 날">›</button>
+      </div>
+
+      <div class="day-toolbar-right">
+        <button class="btn btn-primary" onclick="location.href='schedule-register-form.html'">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          스케줄 등록
+        </button>
+      </div>
+    </div>
+
+    <!-- 범례 -->
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#2E9E34;"></span>확정 스케줄</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#fff;border:2px dashed #CED2D6;"></span>초안</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#2D84ED;"></span>Booking</span>
+      <span class="legend-item"><span class="legend-dot" style="background:repeating-linear-gradient(45deg,#F6F7F9,#F6F7F9 3px,#E5E7EA 3px,#E5E7EA 6px);border:1px solid #CED2D6;"></span>조건 광고</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#CED2D6;"></span>대체 콘텐츠</span>
+      <span class="legend-item"><span style="width:12px;height:12px;background:rgba(88,198,93,0.3);display:inline-block;"></span>사이클 구분</span>
+    </div>
+
+    <!-- 타임라인 -->
+    <div class="timeline-wrap">
+      <!-- 헤더 -->
+      <div class="timeline-header">
+        <div class="tl-media-col">미디어</div>
+        <div class="tl-time-header">
+          <div class="tl-time-tick">09:00</div>
+          <div class="tl-time-tick">10:00</div>
+          <div class="tl-time-tick">11:00</div>
+          <div class="tl-time-tick">12:00</div>
+          <div class="tl-time-tick">13:00</div>
+          <div class="tl-time-tick">14:00</div>
+          <div class="tl-time-tick">15:00</div>
+          <div class="tl-time-tick">16:00</div>
+          <div class="tl-time-tick">17:00</div>
+          <div class="tl-time-tick">18:00</div>
+          <div class="tl-time-tick">20:00</div>
+        </div>
+      </div>
+
+      <!-- 미디어 A -->
+      <div class="tl-row">
+        <div class="tl-row-label">
+          <div class="tl-media-name">미디어 A</div>
+          <div class="tl-media-sub">강남역 1번출구</div>
+        </div>
+        <div class="tl-track">
+          <!-- 사이클 구분선 -->
+          <div class="cycle-line" style="left: 18.18%;"></div>
+          <div class="cycle-line" style="left: 36.36%;"></div>
+          <div class="cycle-line" style="left: 54.54%;"></div>
+          <div class="cycle-line" style="left: 72.72%;"></div>
+          <!-- 블록들 -->
+          <div class="tl-block block-confirmed" style="left:2%;width:15%;" onclick="location.href='schedule-block-detail.html'" title="강남역 CF 광고">강남역 CF 광고</div>
+          <div class="tl-block block-booking" style="left:20%;width:18%;" onclick="location.href='schedule-booking-detail.html'" title="Booking">Booking</div>
+          <div class="tl-block block-confirmed" style="left:40%;width:12%;" onclick="location.href='schedule-block-detail.html'" title="브랜드 광고">브랜드 광고</div>
+          <div class="tl-block block-draft" style="left:55%;width:16%;" onclick="location.href='schedule-block-detail.html'" title="가을 캠페인 (초안)">가을 캠페인</div>
+          <div class="tl-block block-alt" style="left:73%;width:10%;" title="대체 콘텐츠">대체 콘텐츠</div>
+        </div>
+      </div>
+
+      <!-- 미디어 B -->
+      <div class="tl-row">
+        <div class="tl-row-label">
+          <div class="tl-media-name">미디어 B</div>
+          <div class="tl-media-sub">강남역 2번출구</div>
+        </div>
+        <div class="tl-track">
+          <div class="cycle-line" style="left: 18.18%;"></div>
+          <div class="cycle-line" style="left: 36.36%;"></div>
+          <div class="cycle-line" style="left: 54.54%;"></div>
+          <div class="cycle-line" style="left: 72.72%;"></div>
+          <div class="tl-block block-confirmed" style="left:2%;width:14%;" onclick="location.href='schedule-block-detail.html'" title="강남역 CF 광고">강남역 CF 광고</div>
+          <div class="tl-block block-condition" style="left:19%;width:10%;" onclick="location.href='schedule-block-detail.html'" title="조건부 광고">조건부 광고</div>
+          <div class="tl-block block-confirmed" style="left:38%;width:16%;" onclick="location.href='schedule-block-detail.html'" title="브랜드 광고">브랜드 광고</div>
+          <div class="tl-block block-booking" style="left:57%;width:20%;" onclick="location.href='schedule-booking-detail.html'" title="Booking">Booking</div>
+        </div>
+      </div>
+
+      <!-- 미디어 C -->
+      <div class="tl-row">
+        <div class="tl-row-label">
+          <div class="tl-media-name">미디어 C</div>
+          <div class="tl-media-sub">강남역 출구광장</div>
+        </div>
+        <div class="tl-track">
+          <div class="cycle-line" style="left: 18.18%;"></div>
+          <div class="cycle-line" style="left: 36.36%;"></div>
+          <div class="cycle-line" style="left: 54.54%;"></div>
+          <div class="cycle-line" style="left: 72.72%;"></div>
+          <div class="tl-block block-draft" style="left:2%;width:18%;" onclick="location.href='schedule-block-detail.html'" title="신규 광고 (초안)">신규 광고 (초안)</div>
+          <div class="tl-block block-confirmed" style="left:22%;width:14%;" onclick="location.href='schedule-block-detail.html'" title="브랜드 광고">브랜드 광고</div>
+          <div class="tl-block block-condition" style="left:38%;width:12%;" onclick="location.href='schedule-block-detail.html'" title="조건부 광고">조건부 광고</div>
+          <div class="tl-block block-confirmed" style="left:55%;width:15%;" onclick="location.href='schedule-block-detail.html'" title="강남역 CF 광고">강남역 CF 광고</div>
+          <div class="tl-block block-alt" style="left:74%;width:8%;" title="대체 콘텐츠">대체</div>
+        </div>
+      </div>
+
+      <!-- 달성률 -->
+      <div class="achieve-row">
+        <div class="achieve-label" style="font-size:12px;font-weight:600;color:#596066;">미디어별 보장 달성률</div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:#596066;min-width:60px;">미디어 A</span>
+            <div class="achieve-bar-wrap"><div class="achieve-bar" style="width:78%;"></div></div>
+            <span class="achieve-pct">78%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:#596066;min-width:60px;">미디어 B</span>
+            <div class="achieve-bar-wrap"><div class="achieve-bar" style="width:92%;"></div></div>
+            <span class="achieve-pct">92%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:#596066;min-width:60px;">미디어 C</span>
+            <div class="achieve-bar-wrap"><div class="achieve-bar" style="width:55%;background:#F5A623;"></div></div>
+            <span class="achieve-pct" style="color:#B97B00;">55%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>
