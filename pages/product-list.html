@@ -284,14 +284,19 @@
   <div class="content-inner">
 
     <!-- 요약 stat 카드 -->
-    <div class="stat-row" style="grid-template-columns: repeat(3,1fr); max-width: 640px; margin-bottom: 20px;">
+    <div class="stat-row" style="grid-template-columns: repeat(4,1fr); max-width: 800px; margin-bottom: 20px;">
       <div class="stat-card">
         <div class="stat-card-label">전체 프로덕트</div>
         <div class="stat-card-value">24</div>
       </div>
       <div class="stat-card active">
-        <div class="stat-card-label">여유 있음</div>
+        <div class="stat-card-label">판매 가능</div>
         <div class="stat-card-value">18</div>
+      </div>
+      <div class="stat-card" style="border-color:#FFF0C2;">
+        <div class="stat-card-label" style="color:#B97B00;">미디어 이슈</div>
+        <div class="stat-card-value" style="color:#B97B00;">3</div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:4px;">소속 미디어 이슈 발생</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-label">잔여시간 부족</div>
@@ -317,12 +322,6 @@
             <input type="text" placeholder="프로덕트명 · 태그 검색">
           </div>
           <select class="filter-select">
-            <option value="">인벤토리 상태 전체</option>
-            <option>여유 있음 ●</option>
-            <option>일부 부족 ▲</option>
-            <option>전체 불가 ✕</option>
-          </select>
-          <select class="filter-select">
             <option value="">태그 전체</option>
             <option>강남</option>
             <option>홍대</option>
@@ -347,7 +346,6 @@
               <tr>
                 <th>프로덕트명</th>
                 <th>소속 미디어</th>
-                <th>인벤토리 상태</th>
                 <th>Play Plan</th>
                 <th>등록일</th>
                 <th></th>
@@ -374,7 +372,6 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="inv-badge ok">● 여유 있음</span></td>
                 <td><span class="muted">3개 연결됨</span></td>
                 <td><span class="muted">2025.09.01</span></td>
                 <td>
@@ -401,7 +398,6 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="inv-badge warn">▲ 일부 부족</span></td>
                 <td><span class="muted">1개 연결됨</span></td>
                 <td><span class="muted">2025.08.15</span></td>
                 <td>
@@ -433,7 +429,6 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="inv-badge full">✕ 전체 불가</span></td>
                 <td><span style="color:#9EA5AD;font-size:13px;">—</span></td>
                 <td><span class="muted">2025.07.20</span></td>
                 <td>
@@ -462,7 +457,6 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="inv-badge ok">● 여유 있음</span></td>
                 <td><span class="muted">2개 연결됨</span></td>
                 <td><span class="muted">2025.09.10</span></td>
                 <td>
@@ -489,7 +483,6 @@
                     <span style="font-size:11px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:10px;padding:1px 8px;color:#596066;">실외</span>
                   </div>
                 </div>
-                <span class="inv-badge ok">● 여유</span>
               </div>
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
@@ -518,7 +511,6 @@
                     <span style="font-size:11px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:10px;padding:1px 8px;color:#596066;">홍대</span>
                   </div>
                 </div>
-                <span class="inv-badge warn">▲ 부족</span>
               </div>
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
@@ -547,7 +539,6 @@
                     <span style="font-size:11px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:10px;padding:1px 8px;color:#596066;">신촌</span>
                   </div>
                 </div>
-                <span class="inv-badge full">✕ 불가</span>
               </div>
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
@@ -577,7 +568,6 @@
                     <span style="font-size:11px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:10px;padding:1px 8px;color:#596066;">실내</span>
                   </div>
                 </div>
-                <span class="inv-badge ok">● 여유</span>
               </div>
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
