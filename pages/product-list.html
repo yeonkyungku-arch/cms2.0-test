@@ -160,6 +160,27 @@
     .pager a.active { background: #58C65D; border-color: #58C65D; color: #fff; }
     .pager button.disabled { opacity: 0.4; pointer-events: none; }
 
+    /* ── 미디어 +n 툴팁 ── */
+    .media-tag {
+      position: relative; display: inline-flex; align-items: center; gap: 4px;
+      font-size: 13px; color: #24292E; cursor: default;
+    }
+    .media-more {
+      font-size: 12px; color: #2d84ed; font-weight: 600;
+    }
+    .media-tooltip {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0;
+      background: #24292E; color: #fff; border-radius: 6px;
+      padding: 8px 12px; min-width: 180px; z-index: 100;
+      font-size: 12px; line-height: 1.8; white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    }
+    .media-tooltip::before {
+      content: ''; position: absolute; bottom: 100%; left: 16px;
+      border: 5px solid transparent; border-bottom-color: #24292E;
+    }
+    .media-tag:hover .media-tooltip { display: block; }
+
     /* ── 빈 상태 ── */
     .empty-state {
       padding: 60px 24px;
@@ -342,13 +363,16 @@
                   </div>
                 </td>
                 <td>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div>
-                    <div class="media-dot">B</div>
-                    <div class="media-dot">C</div>
-                    <div class="media-dot more">+2</div>
+                  <div class="media-tag" onclick="event.stopPropagation()">
+                    강남역 1번출구 A <span class="media-more">+4</span>
+                    <div class="media-tooltip">
+                      강남역 1번출구 A<br>
+                      강남역 1번출구 B<br>
+                      신논현역 메인 월<br>
+                      삼성역 코엑스 광장<br>
+                      역삼역 2번출구
+                    </div>
                   </div>
-                  <div class="muted" style="margin-top:4px;">5개 미디어</div>
                 </td>
                 <td><span class="inv-badge ok">● 여유 있음</span></td>
                 <td><span class="muted">3개 연결됨</span></td>
@@ -369,11 +393,13 @@
                   </div>
                 </td>
                 <td>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div>
-                    <div class="media-dot">B</div>
+                  <div class="media-tag" onclick="event.stopPropagation()">
+                    홍대입구역 정문 A <span class="media-more">+1</span>
+                    <div class="media-tooltip">
+                      홍대입구역 정문 A<br>
+                      홍대입구역 정문 B
+                    </div>
                   </div>
-                  <div class="muted" style="margin-top:4px;">2개 미디어</div>
                 </td>
                 <td><span class="inv-badge warn">▲ 일부 부족</span></td>
                 <td><span class="muted">1개 연결됨</span></td>
@@ -393,13 +419,19 @@
                   </div>
                 </td>
                 <td>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div>
-                    <div class="media-dot">B</div>
-                    <div class="media-dot">C</div>
-                    <div class="media-dot more">+5</div>
+                  <div class="media-tag" onclick="event.stopPropagation()">
+                    신촌역 메인 광장 A <span class="media-more">+7</span>
+                    <div class="media-tooltip">
+                      신촌역 메인 광장 A<br>
+                      신촌역 메인 광장 B<br>
+                      신촌역 서쪽 출구<br>
+                      연세로 입구 월<br>
+                      이화여대 정문 A<br>
+                      이화여대 정문 B<br>
+                      신촌 CGV 외벽<br>
+                      신촌 현대백화점 앞
+                    </div>
                   </div>
-                  <div class="muted" style="margin-top:4px;">8개 미디어</div>
                 </td>
                 <td><span class="inv-badge full">✕ 전체 불가</span></td>
                 <td><span style="color:#9EA5AD;font-size:13px;">—</span></td>
@@ -420,13 +452,15 @@
                   </div>
                 </td>
                 <td>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div>
-                    <div class="media-dot">B</div>
-                    <div class="media-dot">C</div>
-                    <div class="media-dot">D</div>
+                  <div class="media-tag" onclick="event.stopPropagation()">
+                    IFC몰 1층 A <span class="media-more">+3</span>
+                    <div class="media-tooltip">
+                      IFC몰 1층 A<br>
+                      IFC몰 1층 B<br>
+                      IFC몰 지하 1층<br>
+                      여의도역 환승 통로
+                    </div>
                   </div>
-                  <div class="muted" style="margin-top:4px;">4개 미디어</div>
                 </td>
                 <td><span class="inv-badge ok">● 여유 있음</span></td>
                 <td><span class="muted">2개 연결됨</span></td>
@@ -460,8 +494,9 @@
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
                   <span class="product-card-meta-label">소속 미디어</span>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div><div class="media-dot">B</div><div class="media-dot">C</div><div class="media-dot more">+2</div>
+                  <div class="media-tag" onclick="event.stopPropagation()" style="font-size:13px;">
+                    강남역 1번출구 A <span class="media-more">+4</span>
+                    <div class="media-tooltip">강남역 1번출구 A<br>강남역 1번출구 B<br>신논현역 메인 월<br>삼성역 코엑스 광장<br>역삼역 2번출구</div>
                   </div>
                 </div>
                 <div class="product-card-meta-row">
@@ -488,8 +523,9 @@
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
                   <span class="product-card-meta-label">소속 미디어</span>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div><div class="media-dot">B</div>
+                  <div class="media-tag" onclick="event.stopPropagation()" style="font-size:13px;">
+                    홍대입구역 정문 A <span class="media-more">+1</span>
+                    <div class="media-tooltip">홍대입구역 정문 A<br>홍대입구역 정문 B</div>
                   </div>
                 </div>
                 <div class="product-card-meta-row">
@@ -516,8 +552,9 @@
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
                   <span class="product-card-meta-label">소속 미디어</span>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div><div class="media-dot">B</div><div class="media-dot more">+6</div>
+                  <div class="media-tag" onclick="event.stopPropagation()" style="font-size:13px;">
+                    신촌역 메인 광장 A <span class="media-more">+7</span>
+                    <div class="media-tooltip">신촌역 메인 광장 A<br>신촌역 메인 광장 B<br>신촌역 서쪽 출구<br>연세로 입구 월<br>이화여대 정문 A<br>이화여대 정문 B<br>신촌 CGV 외벽<br>신촌 현대백화점 앞</div>
                   </div>
                 </div>
                 <div class="product-card-meta-row">
@@ -545,8 +582,9 @@
               <div class="product-card-meta">
                 <div class="product-card-meta-row">
                   <span class="product-card-meta-label">소속 미디어</span>
-                  <div class="media-dots">
-                    <div class="media-dot">A</div><div class="media-dot">B</div><div class="media-dot">C</div><div class="media-dot">D</div>
+                  <div class="media-tag" onclick="event.stopPropagation()" style="font-size:13px;">
+                    IFC몰 1층 A <span class="media-more">+3</span>
+                    <div class="media-tooltip">IFC몰 1층 A<br>IFC몰 1층 B<br>IFC몰 지하 1층<br>여의도역 환승 통로</div>
                   </div>
                 </div>
                 <div class="product-card-meta-row">
