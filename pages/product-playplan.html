@@ -146,6 +146,21 @@
           <div class="form-section-body">
 
             <div class="form-row">
+              <div class="form-label">광고 유형 <span class="req">*</span></div>
+              <div class="form-field">
+                <div style="display:flex;gap:10px;">
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;color:#24292E;">
+                    <input type="radio" name="adType" value="general" checked onchange="updateAdType()"> 일반 광고
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;color:#24292E;">
+                    <input type="radio" name="adType" value="condition" onchange="updateAdType()"> 조건 광고
+                  </label>
+                </div>
+                <div class="input-hint" id="adTypeHint">운영 기간 내 조건 없이 송출됩니다</div>
+              </div>
+            </div>
+
+            <div class="form-row">
               <div class="form-label">플레이 플랜명 <span class="req">*</span></div>
               <div class="form-field">
                 <input type="text" class="input" placeholder="예: 강남 가을 캠페인 30초" style="max-width:400px;" id="ppName" oninput="updatePreview()">
@@ -198,76 +213,9 @@
           </div>
         </div>
 
-        <!-- 잔여 시간 미리보기 섹션 -->
+        <!-- ADeX 연동 안내 -->
         <div class="form-section">
-          <div class="form-section-head">
-            <div class="form-section-title">미디어별 잔여 시간 미리보기</div>
-            <div class="form-section-desc">입력한 재생 시간을 기준으로 소속 미디어의 잔여 시간 변화를 확인합니다</div>
-          </div>
           <div class="form-section-body">
-            <div class="preview-box">
-              <div class="preview-grid">
-                <!-- 미디어 A -->
-                <div class="preview-media-card">
-                  <div class="preview-media-name">강남역 1번출구 A</div>
-                  <div class="preview-row"><span class="preview-row-label">현재 잔여</span><span class="preview-row-value">321초</span></div>
-                  <div class="preview-row"><span class="preview-row-label">차감 후</span><span class="preview-row-value ok" id="prev-a">291초</span></div>
-                  <div class="bar-wrap">
-                    <div class="bar-label"><span>0초</span><span>396초</span></div>
-                    <div class="bar">
-                      <div class="bar-fill" id="bar-a" style="width:73%;background:#58C65D;"></div>
-                    </div>
-                  </div>
-                </div>
-                <!-- 미디어 B -->
-                <div class="preview-media-card">
-                  <div class="preview-media-name">강남역 1번출구 B</div>
-                  <div class="preview-row"><span class="preview-row-label">현재 잔여</span><span class="preview-row-value">78초</span></div>
-                  <div class="preview-row"><span class="preview-row-label">차감 후</span><span class="preview-row-value warn" id="prev-b">48초</span></div>
-                  <div class="bar-wrap">
-                    <div class="bar-label"><span>0초</span><span>396초</span></div>
-                    <div class="bar">
-                      <div class="bar-fill" id="bar-b" style="width:12%;background:#F5A623;"></div>
-                    </div>
-                  </div>
-                </div>
-                <!-- 미디어 C -->
-                <div class="preview-media-card">
-                  <div class="preview-media-name">신논현역 메인 월</div>
-                  <div class="preview-row"><span class="preview-row-label">현재 잔여</span><span class="preview-row-value">260초</span></div>
-                  <div class="preview-row"><span class="preview-row-label">차감 후</span><span class="preview-row-value ok" id="prev-c">230초</span></div>
-                  <div class="bar-wrap">
-                    <div class="bar-label"><span>0초</span><span>400초</span></div>
-                    <div class="bar">
-                      <div class="bar-fill" id="bar-c" style="width:58%;background:#58C65D;"></div>
-                    </div>
-                  </div>
-                </div>
-                <!-- 미디어 D (오프라인) -->
-                <div class="preview-media-card" style="opacity:0.5;">
-                  <div class="preview-media-name">삼성역 코엑스 광장 <span style="font-size:10px;color:#9EA5AD;">(오프라인)</span></div>
-                  <div class="preview-row"><span class="preview-row-label">현재 잔여</span><span class="preview-row-value" style="color:#9EA5AD;">—</span></div>
-                  <div class="preview-row"><span class="preview-row-label">차감 후</span><span class="preview-row-value" style="color:#9EA5AD;">—</span></div>
-                  <div class="bar-wrap">
-                    <div class="bar"><div class="bar-fill" style="width:0;"></div></div>
-                  </div>
-                </div>
-                <!-- 미디어 E -->
-                <div class="preview-media-card">
-                  <div class="preview-media-name">역삼역 2번출구</div>
-                  <div class="preview-row"><span class="preview-row-label">현재 잔여</span><span class="preview-row-value">196초</span></div>
-                  <div class="preview-row"><span class="preview-row-label">차감 후</span><span class="preview-row-value ok" id="prev-e">166초</span></div>
-                  <div class="bar-wrap">
-                    <div class="bar-label"><span>0초</span><span>396초</span></div>
-                    <div class="bar">
-                      <div class="bar-fill" id="bar-e" style="width:42%;background:#58C65D;"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- ADeX 연동 안내 -->
             <div class="adex-info-box">
               <span class="adex-info-icon">ℹ</span>
               <div class="adex-info-text">
@@ -296,6 +244,10 @@
           <div class="calc-summary-title">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="vertical-align:-2px;margin-right:4px;"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#9EA5AD" stroke-width="1.3"/><path d="M4 4h6M4 7h6M4 10h3" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/></svg>
             입력 요약
+          </div>
+          <div class="calc-row">
+            <span class="calc-row-label">광고 유형</span>
+            <span class="calc-row-value" id="sum-type">일반 광고</span>
           </div>
           <div class="calc-row">
             <span class="calc-row-label">플랜명</span>
@@ -337,32 +289,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updatePreview() {
-  const dur   = parseInt(document.getElementById('ppDuration').value) || 0;
-  const bases = [321, 78, 260, 196];
-  const maxes = [396, 396, 400, 396];
-  const ids   = ['a','b','c','e'];
-
-  ids.forEach((id, i) => {
-    const after = bases[i] - dur;
-    const el  = document.getElementById('prev-' + id);
-    const bar = document.getElementById('bar-' + id);
-    if (!el || !bar) return;
-
-    if (after < 0) {
-      el.textContent = after + '초 (잔여 초과)';
-      el.className = 'preview-row-value err';
-      bar.style.width = '0%';
-      bar.style.background = '#E97474';
-    } else {
-      const pct = Math.round((after / maxes[i]) * 100);
-      el.textContent = after + '초';
-      el.className = 'preview-row-value ' + (pct < 20 ? 'warn' : 'ok');
-      bar.style.width = pct + '%';
-      bar.style.background = pct < 20 ? '#F5A623' : '#58C65D';
-    }
-  });
-
   updateCalc();
+}
+
+function updateAdType() {
+  const type = document.querySelector('input[name="adType"]:checked').value;
+  const hint = document.getElementById('adTypeHint');
+  hint.textContent = type === 'general'
+    ? '운영 기간 내 조건 없이 송출됩니다'
+    : '날씨·기온·센서·시보 등 외부 트리거 충족 시에만 송출됩니다';
+  document.getElementById('sum-type').textContent = type === 'general' ? '일반 광고' : '조건 광고';
 }
 
 function updateCalc() {
