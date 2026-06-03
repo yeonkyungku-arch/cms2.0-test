@@ -1,500 +1,531 @@
-# CMS Dashboard — Design System
-> **Version**: 2.0.1 | **Source**: Figma `iKYE9BxahJHeTd4UTIC6f9` | **Updated**: 2026.05.26
+# CMS 2.0 — Design System (Live Site Reference)
 
-## Overview
-
-This CMS dashboard is a **hybrid-theme management interface**: a dark chrome shell (GNB + Topbar + Breadcrumb bar) wrapping a light-surface content area. The shell and content zones use completely separate color families and never mix.
-
-The shell is built from dark grayscale surfaces (`{colors.grayscale-800}` #383F45 for topbar/breadcrumb, `{colors.grayscale-700}` #454C52 for GNB). The content area sits on a light gray background (`{colors.surface-bg}` #F6F7F9) and hosts white cards where all data entry and display takes place.
-
-**Brand green** (`{colors.green}` — #58C65D) is the primary action color throughout: it fills the "등록하기" / "다음" CTA buttons, marks active tab underlines, highlights focused inputs, fills calendar date selections, outlines tags, and colors the toggle ON state. Green is the universal "do something" signal.
-
-**Interactive blue** (`{colors.main}` — #2d84ed) is narrower in scope: it fills the MAIN badge type and marks active schedule/media group indicators inside lists.
-
-**Key Characteristics:**
-- **Four-zone shell**: GNB sidebar (93px collapsed / 200px expanded) + Topbar (60px) + Breadcrumb bar (~36px) + Light-gray content area.
-- **Green is primary.** `{colors.green}` (#58C65D) is the single CTA color for buttons, input focus, calendar selection, active tabs, and tags. Not decorative — functional.
-- **Blue is badge-scoped.** `{colors.main}` (#2d84ed) is used for the MAIN schedule/media-group badge type only. It does not appear on buttons.
-- **Content is always light.** The content area and all cards/panels inside it are light surfaces (white or near-white). Dark surfaces are shell-only.
-- **Single transition**: `all 0.25s ease` governs every animation.
-- **GNB is collapsible**: icon-only at 93px, icon + label at 200px expanded.
-- **Navigation items**: 대시보드, 미디어, 미디어그룹, 콘텐츠, 스케줄, 모니터링, (divider), 태그검색.
-- All buttons invert fill on hover. Primary green button → white bg + green text/border on hover.
+> **Source**: dev.doohservice.com — CSS extraction + visual inspection (2026.05.31)  
+> **Token source**: `/assets/css/cms.css`  
+> Previous Figma-based version superseded by live site audit.
 
 ---
 
-## Colors
+## Overview
 
-> **Source**: Figma variable definitions (node 243:5406) + verified from actual screen renders.
+CMS 2.0 is a **dark-shell + green-action** management interface. A fixed four-zone dark shell (GNB, Topbar, Breadcrumb, content bg) wraps a light-surface content area where all data entry and display happens.
 
-### Brand / Primary Action
-- **Green** (`{colors.green}` — #58C65D): The single primary action color. Used for: logo mark, CTA buttons ("등록하기", "다음", "YOUTUBE 계정 등록"), input focus border, active tab underline, calendar date selection, tag outlines/fills, toggle ON state. This is the most important color in the system.
-- **Tag Media Green** (`{colors.tag-media}` — #5BD660): Media-type tag badge specific green.
-- **Light Green** (`{colors.light-green}` — #C1E9C3): Hover tint for green-accented elements.
+**Two-color action language:**
+- **Brand green** `#58C65D` — every CTA button, active state, focus ring, tab underline, GNB active bar, toggle ON, stat card active number
+- **Blue** `#2D84ED` — MAIN schedule/media-group badge **only**. Never on buttons.
 
-### Interactive Blue (Badge-scoped)
-- **Main Blue** (`{colors.main}` — #2d84ed): Fills the MAIN badge type (schedule, media group labels). Also used for calendar date range fill tint. Does **not** appear on buttons or general interactive elements.
-- **Blue 1** (`{colors.blue-1}` — #4892CB): Secondary blue informational accents.
-- **Blue 2** (`{colors.blue-2}` — #D6EDFF): Very light blue fill; hover bg for blue-accented items.
+**Shell is dark. Content is always light.** Dark surfaces (`#24292E / #383F45 / #454C52`) appear only in GNB, Topbar, Breadcrumb. Cards, tables, inputs are always white or near-white.
 
-### Secondary / Sub (Slate)
-- **Sub 1** (`{colors.sub-1}` — #9097B8): Purple-slate for "Time" badge type.
-- **Sub 2** (`{colors.sub-2}` — #E1E5F6): Light purple-slate bg, paired with Sub 1.
+---
 
-### Status / Semantic
-- **Danger** (`{colors.danger}` — #E97474): Input error border, error message text, required-field markers, error badge text.
-- **Gray 3** (`{colors.gray-3}` — #B5B5B5): Neutral inactive fills, disabled states.
+## Color Tokens
 
-### Dark Shell Surfaces (GNB + Topbar + Breadcrumb)
-| Token | Value | Use |
-|---|---|---|
-| `{colors.grayscale-900}` | #24292E | Deepest shell layer |
-| `{colors.grayscale-800}` | #383F45 | Topbar bg, Breadcrumb bar bg, elevated card bg, popup bg |
-| `{colors.grayscale-700}` | #454C52 | GNB sidebar bg, GNB hover row bg |
-| `{colors.grayscale-600}` | #596066 | GNB dividers, inactive icon fills on dark bg |
-| `{colors.grayscale-500}` | #676E76 | Placeholder text on dark inputs |
-| `{colors.grayscale-400}` | #9EA5AD | Inactive nav icon fills, muted text on dark |
+### Shell
+| Token | Value | Usage |
+|-------|-------|-------|
+| `{colors.body-bg}` | `#24292E` | `<body>` background |
+| `{colors.gnb-bg}` | `#454C52` | GNB sidebar |
+| `{colors.topbar-bg}` | `#383F45` | Topbar + Breadcrumb |
+| `{colors.gnb-hover}` | `#596066` | GNB item hover |
+| `{colors.gnb-active-bg}` | `rgba(88,198,93,0.12)` | GNB active item |
+| `{colors.gnb-active-bar}` | `#58C65D` | GNB left indicator (3px) |
 
-### Light Content Surfaces (Content area + Cards)
-| Token | Value | Use |
-|---|---|---|
-| `{colors.surface-bg}` | #F6F7F9 | Content area background (fills behind white cards) |
-| `{colors.surface-card}` | #FFFFFF | Card / panel background, all form surfaces |
-| `{colors.grayscale-150}` | #EFF0F2 | Subtle tint, alternate row bg |
-| `{colors.grayscale-100}` | #F6F7F9 | Same as surface-bg; used as light accent in components |
-| `{colors.grayscale-50}` | #FAFAFA | Near-white |
-| `{colors.grayscale-300}` | #CED2D6 | Input borders (default), table borders, separator lines |
-| `{colors.grayscale-200}` | #E5E7EA | Light borders, subtle dividers |
-| `{colors.white}` | #FFFFFF | Pure white text on dark surfaces, card bg |
+### Brand & Interactive
+| Token | Value | Usage |
+|-------|-------|-------|
+| `{colors.green}` | `#58C65D` | Primary CTA, active, focus, icons |
+| `{colors.green-light}` | `#C1E9C3` | Outline btn border, running badge border |
+| `{colors.green-tint}` | `rgba(88,198,93,0.1)` | Outline btn hover, running badge bg |
+| `{colors.main-blue}` | `#2D84ED` | MAIN badge only |
+| `{colors.tag-orange}` | `#FFAA5B` | Hashtag badge text/border |
 
-### Text
-| Token | Value | Context |
-|---|---|---|
-| `{colors.text-primary}` | #000000 or #24292E | Main content text on light bg |
-| `{colors.text-secondary}` | #9EA5AD | Secondary/muted text on light bg |
-| `{colors.text-placeholder}` | #9EA5AD or #CED2D6 | Input placeholder on light bg |
-| `{colors.text-on-dark}` | #FFFFFF | Text on dark shell surfaces |
-| `{colors.text-muted-dark}` | #9EA5AD | Muted text on dark shell |
-| `{colors.text-link}` | #58C65D | Clickable links, schedule names in lists |
-| `{colors.text-error}` | #E97474 | Error messages, validation text |
+### Surfaces
+| Token | Value | Usage |
+|-------|-------|-------|
+| `{colors.surface-bg}` | `#F6F7F9` | Content area, `<th>` bg, ghost btn hover |
+| `{colors.surface-card}` | `#FFFFFF` | Cards, inputs, `<td>`, modals |
+
+### Borders & Text
+| Token | Value | Usage |
+|-------|-------|-------|
+| `{colors.border-default}` | `#CED2D6` | Inputs, selects, ghost btn |
+| `{colors.border-card}` | `#E5E7EA` | Card dividers, table borders |
+| `{colors.text-primary}` | `#24292E` | Body, `<td>`, card titles |
+| `{colors.text-secondary}` | `#596066` | `<th>`, ghost btn text |
+| `{colors.text-muted}` | `#9EA5AD` | Icons inactive, placeholders |
+| `{colors.text-on-dark}` | `#FFFFFF` | Shell text |
+| `{colors.danger}` | `#E97474` | Error, alert dot, offline |
+| `{colors.warning}` | `#E8841A` | Warning, tag badge color |
 
 ---
 
 ## Typography
 
-### Font Family
-- **Primary**: System Korean sans-serif (Pretendard recommended). All elements default to this stack.
-- **Base size**: `14px` desktop body.
+Font: `'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif` — base `14px`
 
-### Hierarchy
-
-| Token | Size | Weight | Color | Use |
-|---|---|---|---|---|
-| `{typography.page-title}` | 20–24px | 700 | `{colors.text-primary}` | Page/card main heading (e.g. "미디어 상세정보") |
-| `{typography.section-title}` | 16px | 600 | `{colors.text-primary}` | Card section heading (e.g. "기본 정보", "디스플레이 정보") |
-| `{typography.nav-label}` | 14px | 500 | `{colors.white}` | GNB active nav label |
-| `{typography.nav-label-inactive}` | 14px | 400 | `{colors.grayscale-400}` | GNB inactive nav label |
-| `{typography.topbar-user}` | 14px | 400 | `{colors.white}` | Topbar user name |
-| `{typography.breadcrumb}` | 12px | 400 | `{colors.grayscale-400}` | Breadcrumb path text on dark bar |
-| `{typography.body}` | 14px | 400 | `{colors.text-primary}` | Form labels, table data, general body |
-| `{typography.body-secondary}` | 14px | 400 | `{colors.text-secondary}` | Muted body text, helper text |
-| `{typography.input}` | 14px | 400 | `{colors.text-primary}` | Typed value in text inputs |
-| `{typography.placeholder}` | 14px | 400 | `{colors.text-placeholder}` | Input placeholder |
-| `{typography.badge}` | 12px | 500 | `{colors.white}` | Badge label (Default size) |
-| `{typography.badge-mini}` | 11px | 500 | `{colors.white}` | Badge label (mini) |
-| `{typography.error}` | 12px | 400 | `{colors.text-error}` | Validation error message |
-| `{typography.tag}` | 12px | 400 | `{colors.green}` | Tag pill text |
-| `{typography.stat-counter}` | 28–32px | 700 | `{colors.text-primary}` | Stat card large counter |
-| `{typography.stat-label}` | 12px | 400 | `{colors.text-secondary}` | Stat card label |
-| `{typography.button-primary}` | 14px | 600 | `{colors.white}` | Primary button label |
-| `{typography.button-secondary}` | 14px | 400 | `{colors.text-primary}` | Secondary/ghost button label |
+| Role | Size | Weight | Color |
+|------|------|--------|-------|
+| Card title | 16px | 600 | `#24292E` |
+| Body / input | 14px | 400 | `#24292E` |
+| **Table `<th>`** | 14px | **600** | `#596066` |
+| Table `<td>` | 14px | 400 | `#24292E` |
+| Active tab | 14px | 500 | `#24292E` |
+| Inactive tab | 14px | 400 | `#9EA5AD` |
+| Stat card number | 30px | 700 | `#24292E` → active `#58C65D` |
+| Stat card label | 14px | 400 | `#9EA5AD` |
+| Breadcrumb | 12px | 400 | `#9EA5AD` parent / `#CED2D6` current |
+| GNB label | 10px | 400 | `#9EA5AD` → `#FFFFFF` active |
+| Badge | 12px | 500 | per badge |
 
 ---
 
-## Layout
-
-### Spacing System
-- **Base unit**: 4px. All structural values are multiples of 4.
-
-| Token | Value | Primary Usage |
-|---|---|---|
-| `{spacing.xxs}` | 4px | Micro gaps, icon inner padding |
-| `{spacing.xs}` | 8px | Badge padding, inline gaps |
-| `{spacing.sm}` | 12px | Card inner padding sm, input padding |
-| `{spacing.md}` | 16px | Card inner padding, form row gaps |
-| `{spacing.lg}` | 20–24px | Card padding, section padding |
-| `{spacing.xl}` | 32px | Between cards |
-| `{spacing.2xl}` | 48px | Major section gaps |
-
-### Application Shell — Four Zones
+## Layout — Four-zone Shell
 
 ```
-<body>  1920×1080, bg: {colors.grayscale-900} (#24292E)
-  │
-  ├── [ZONE 1] <gnb>
-  │     position: fixed, left: 0, top: 0
-  │     width: 93px (collapsed) / 200px (expanded)
-  │     height: 100vh
-  │     bg: {colors.grayscale-700} (#454C52)
-  │
-  ├── [ZONE 2] <topbar>
-  │     position: fixed, top: 0, left: 0
-  │     width: 100%, height: 60px
-  │     bg: {colors.grayscale-800} (#383F45)
-  │     z-index above GNB
-  │
-  ├── [ZONE 3] <breadcrumb-bar>
-  │     position: fixed or static, top: 60px, left: 93px (or 200px expanded)
-  │     width: calc(100% - 93px), height: ~36px
-  │     bg: {colors.grayscale-800} (#383F45)
-  │     contains: back arrow + breadcrumb path + optional page title
-  │
-  └── [ZONE 4] <content>
-        position: below zones 2+3, right of zone 1
-        margin-left: 93px (or 200px), margin-top: 96px (60+36)
-        bg: {colors.surface-bg} (#F6F7F9)
-        overflow: auto
-        contains: white card(s) with all actual page content
+<body>  bg:#24292E
+  ├── <aside class="gnb">     fixed · left:0 · w:93px · h:100vh · bg:#454C52
+  ├── <header class="topbar"> fixed · top:0 · left:93px · right:0 · h:60px · bg:#383F45
+  ├── <div class="bcrumb">    fixed · top:60px · left:93px · right:0 · h:40px · bg:#383F45
+  │                            border-top:1px solid #454C52
+  └── <main class="content">  margin-left:93px · padding-top:100px · bg:#F6F7F9
+        └── .content-inner    padding:24px 28px
 ```
-
-### GNB (Global Navigation Bar)
-
-- **Collapsed width**: 93px | **Expanded width**: 200px
-- **Background**: `{colors.grayscale-700}` (#454C52)
-- **Top**: Toggle arrow button (36×36px, `border-radius: 50%`, bg `{colors.grayscale-800}`). `←` to expand, `→` to collapse.
-- **Nav items** (icon 32×32px):
-  - 대시보드 (home icon)
-  - 미디어 (screen/monitor icon)
-  - 미디어그룹 (layers icon)
-  - 콘텐츠 (film/content icon)
-  - 스케줄 (calendar icon)
-  - 모니터링 (monitor+chart icon)
-  - `1px` divider `{colors.grayscale-600}`
-  - 태그검색 (tag icon)
-- **Item height**: 46px, `padding: 0 20px (collapsed) / 0 16px (expanded)`
-- **Inactive**: icon fill `{colors.grayscale-400}`, no label in collapsed
-- **Active**: icon fill `{colors.white}`, label `{colors.white}` weight 500, left accent `3px solid {colors.green}` or bg tint
-- **Hover**: row bg `{colors.grayscale-600}`, icon + label turn white
-- **Transition**: `width 0.25s ease` (expand/collapse), `fill 0.25s ease` (icon color)
-
-### Topbar
-
-- **Height**: 60px | **Background**: `{colors.grayscale-800}` (#383F45)
-- **Left**: "DL" logo in `{colors.green}` (#58C65D), height ~28px
-- **Right**: User avatar circle (32px, bg `{colors.grayscale-600}`) + name (14px, white) + org name (12px, `{colors.grayscale-400}`) + caret dropdown
-
-### Breadcrumb Bar
-
-- **Height**: ~36px | **Background**: `{colors.grayscale-800}` (#383F45)
-- **Left**: Back arrow `<` + breadcrumb path (e.g. "미디어그룹 > 미디어 조회 > 미디어 상세정보")
-- **Text**: 12px, `{colors.grayscale-400}`, active/current segment is slightly brighter
-- **Separator**: `>` character, `{colors.grayscale-600}`
-
-### Content Area + White Card
-
-- **Content area bg**: `{colors.surface-bg}` (#F6F7F9)
-- **Card bg**: `{colors.white}` (#FFFFFF), `border-radius: 8–12px`, no shadow (white on light gray provides sufficient contrast)
-- **Card header row**: back arrow `<` + page title (20px, 700) on the left; primary action button on the right
-- **Card padding**: 24px
-- **Tabs inside card**: line-style (underline only), active tab has `border-bottom: 2px solid {colors.green}`
-
----
-
-## Elevation & Depth
-
-| Level | Treatment | Use |
-|---|---|---|
-| Shell base | `{colors.grayscale-800}` (#383F45) | Topbar, breadcrumb bar |
-| GNB | `{colors.grayscale-700}` (#454C52) | Left sidebar |
-| Content bg | `{colors.surface-bg}` (#F6F7F9) | Page background |
-| Card | `{colors.white}` (#FFFFFF), no shadow | All page content containers |
-| Input | `{colors.white}` bg + `{colors.grayscale-300}` border | Form inputs on card |
-| Popup/Modal | `{colors.white}` bg + `box-shadow: 0 4px 10px rgba(0,0,0,0.15)` | Dialog overlays on light bg |
-| Dark popup | `{colors.grayscale-800}` bg + `drop-shadow(0 4px 10px rgba(0,0,0,0.5))` | Floating panels in GNB context |
-
----
-
-## Shapes
-
-### Border Radius Scale
-
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.none}` | 0px | Table cells, flush dividers |
-| `{rounded.xs}` | 2px | Mini badges |
-| `{rounded.sm}` | 4px | Inputs, selects, small buttons |
-| `{rounded.md}` | 6px | Badges (Default size), tags |
-| `{rounded.lg}` | 8px | White card containers, popup containers |
-| `{rounded.xl}` | 12px | Larger card containers |
-| `{rounded.pill}` | 100px | Toggle track |
-| `{rounded.full}` | 50% | Avatar circles, toggle thumb, notification dots, calendar date cells (selected) |
 
 ---
 
 ## Components
 
-### GNB Sidebar
+### 1. Status Filter Cards (`stat-row`)
 
-**`gnb-sidebar`** — See Layout section for full spec. Key states:
-- **Collapsed** (default): 93px, icon only
-- **Expanded**: 200px, icon + text label
-- **Active item**: white icon, white bold label, green left border `3px solid {colors.green}`
-- **Hover**: `bg: {colors.grayscale-600}`, white icon + text
-
-### Topbar + Breadcrumb
-
-**`topbar`** — Dark bar, DL logo left, user info right. No tab navigation here.
-
-**`breadcrumb-bar`** — Dark strip just below topbar. Back arrow `<` for navigation, breadcrumb path showing current location within the nav hierarchy.
-
-### Page Card
-
-**`page-card`** — White container wrapping all page content:
-- `background: {colors.white}`, `border-radius: {rounded.lg}`
-- Header row: `< [page title]` left, `[action button]` right
-- Tabs (when present): `border-bottom: 2px solid {colors.green}` on active tab
-- Sections divided by `1px solid {colors.grayscale-200}` lines
-- Two-column layouts for detail pages (left: form fields, right: map / additional info)
-
-### Buttons
-
-**`btn-primary`** — Main CTA: "등록하기", "다음", "수정하기"
-- `background: {colors.green}` (#58C65D), `border: 1px solid {colors.green}`, `color: {colors.white}`
-- `border-radius: {rounded.sm}` (4px), `height: 40px`, `padding: 0 20px`, `font-size: 14px`, `font-weight: 600`
-- Hover: `background: {colors.white}`, `color: {colors.green}`, border stays green
-- Often includes a `>` arrow icon on the right for forward actions
-
-**`btn-dark`** — Secondary shell-level action: "수정 및 삭제", "수정하기" in card header
-- `background: {colors.grayscale-800}` (#383F45), `color: {colors.white}`
-- Same size/radius as btn-primary
-- Hover: `background: {colors.grayscale-700}`, `color: {colors.white}`
-
-**`btn-ghost`** — Tertiary/outlined actions: "+ 미디어그룹 생성", "+ 콘텐츠 등록"
-- `background: {colors.white}`, `border: 1px solid {colors.grayscale-300}`, `color: {colors.text-primary}`
-- `border-radius: {rounded.sm}`, `height: 36–40px`
-- Hover: `background: {colors.surface-bg}`, border same
-
-**`btn-gray`** — Utility actions: "인증 요청", "인증하기", "주소 검색", "확인"
-- `background: {colors.grayscale-300}` (#CED2D6), `color: {colors.text-primary}`, `border: none`
-- Hover: `background: {colors.grayscale-200}`
-
-**`btn-icon`** — Floating circular action button ("+" at bottom-right of list pages)
-- `background: {colors.grayscale-800}` (#383F45), `color: {colors.white}`
-- `width: 48px, height: 48px, border-radius: 50%`
-- `box-shadow: 0 4px 10px rgba(0,0,0,0.2)`
-
-**All button transitions**: `all 0.25s ease`
-
-### Form Inputs (Light Surface)
-
-**`input-text`** — Standard text input on white card:
-- `background: {colors.white}`, `border: 1px solid {colors.grayscale-300}` (#CED2D6)
-- `border-radius: {rounded.sm}` (4px), `height: 40px`, `padding: 0 12px`
-- `font-size: 14px`, `color: {colors.text-primary}`
-- Placeholder: `color: {colors.text-placeholder}`
-- **Focus**: `border-color: {colors.green}` (#58C65D) — green focus ring
-- **Error**: `border-color: {colors.danger}` (#E97474); error message (12px, `{colors.danger}`) appears below the field
-- **Disabled**: `opacity: 0.5`, `background: {colors.surface-bg}`
-- Transition: `all 0.25s ease`
-
-**`input-select`** — Same border/radius as text input. Custom chevron arrow, `padding-right: 32px`.
-
-**`input-textarea`** — Same border/radius. `resize: vertical`. Min-height ~80px.
-
-**`input-phone`** — Phone number input: country code dropdown (small, left-attached) + number input. Same border style.
-
-### Toggle (Light Surface Context)
-
-**`toggle`** — `width: 32px, height: 18px`, `border-radius: {rounded.pill}`
-- **OFF**: track `{colors.grayscale-300}`, thumb `{colors.white}` at left
-- **ON**: track `{colors.green}` (#58C65D), thumb `{colors.white}` at right
-- Thumb: 14×14px circle, `border-radius: 50%`
-- Transition: `all 0.25s ease-in`
-
-### Searchbar
-
-Two sizes: **Big** (h:44px) for page-level search, **Small** (h:36px) for panel/filter search.
+Top of every list page. Clicking a card filters the table to that status.
 
 ```
-[전체 ▾] [🔍 검색어를 입력해 주세요.] [✕ clear button (when typed)]
+┌──────────────────────────┐   ┌──────────────────────────┐
+│ 153                    ◉ │   │ 142                    ○ │
+│ All                      │   │ Commercial               │
+└──────────────────────────┘   └──────────────────────────┘
+  Active (green border)           Inactive (gray border)
 ```
-- Container: `bg: {colors.white}`, `border: 1px solid {colors.grayscale-300}`, `border-radius: {rounded.sm}`
-- Category dropdown: left-attached, `border-right: 1px solid {colors.grayscale-300}`
-- Input text: `{colors.text-primary}`, placeholder `{colors.text-placeholder}`
-- Clear ✕: appears when typed, `color: {colors.grayscale-400}`
-- Focus: entire container gets `border-color: {colors.green}`
 
-### Badge
+```css
+.stat-card {
+  background: #fff;
+  border: 1px solid #E5E7EA;
+  border-radius: 8px;
+  padding: 16px 20px;
+  cursor: pointer;
+  position: relative;
+}
+.stat-card.active { border-color: #58C65D; }
+.stat-card-checkbox {          /* top-right circle */
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid #CED2D6;
+  position: absolute; top: 12px; right: 12px;
+}
+.stat-card.active .stat-card-checkbox {
+  background: #58C65D; border-color: #58C65D;  /* filled green */
+}
+.stat-card-value { font-size: 30px; font-weight: 700; color: #24292E; }
+.stat-card.active .stat-card-value { color: #58C65D; }
+.stat-card-label { font-size: 14px; color: #9EA5AD; margin-top: 4px; }
+```
 
-| Variant | Background | Text color | Notes |
-|---|---|---|---|
-| MAIN | `{colors.main}` (#2d84ed) | white | Schedule/media group type |
-| SUB | `{colors.grayscale-500}` | white | Secondary type |
-| Sync | transparent | white | Outlined, `border: 1px solid {colors.grayscale-400}` |
-| 등록대기 | transparent | `{colors.grayscale-400}` | Outlined, muted |
-| Time | `{colors.sub-1}` (#9097B8) | white | Time-based schedule |
-| MON | `{colors.grayscale-800}` | white | Monitoring-related |
-| K-type | `{colors.grayscale-100}` | `{colors.text-primary}` | K-type LED content |
-
-**Default size**: `height: 20px`, `padding: 0 8px`, `border-radius: {rounded.md}` (6px), `font-size: 12px`, `font-weight: 500`
-**Mini size**: `height: 16px`, `padding: 0 6px`, `border-radius: {rounded.xs}` (2px), `font-size: 11px`
-
-### Tags
-
-**`tag`** — Hashtag pill used for media/schedule tagging:
-- Border: `1px solid {colors.green}` (#58C65D)
-- Text: `{colors.green}`, `font-size: 12px`
-- `border-radius: {rounded.md}` (6px), `padding: 2px 10px`
-- With delete button: `✕` icon appended inside pill
-
-### Stat Cards
-
-**`stat-card`** — Summary count cards shown at top of list pages:
-- `background: {colors.white}`, `border-radius: {rounded.lg}`, no shadow
-- **Active/selected state**: green circle indicator dot (8px, `{colors.green}`), counter and label may change color
-- Counter: `font-size: 28–32px`, `font-weight: 700`, `{colors.text-primary}`
-- Label: `font-size: 12px`, `{colors.text-secondary}`
-- Right arrow `>` if more items (e.g. "미확정 스케줄" drill-down)
-
-### Tabs (Line Style)
-
-**`tab-nav`** — Horizontal tab bar inside white card:
-- Inactive: `font-size: 14px`, `color: {colors.text-secondary}`, no border, `padding-bottom: 8px`
-- Active: same size, `color: {colors.text-primary}`, `border-bottom: 2px solid {colors.green}` (#58C65D)
-- No background fill change — underline only
-
-### Calendar / Date Range Picker
-
-**`calendar-range`** — Two-month range picker used in schedule registration:
-- Cell size: 32×32px, `border-radius: 50%` on selected/start/end
-- **Today**: outlined circle, `border: 1px solid {colors.grayscale-300}`
-- **Hover**: bg `{colors.surface-bg}`
-- **Selected (start/end)**: bg `{colors.green}` (#58C65D), text white
-- **Range middle**: bg `rgba(88, 198, 93, 0.15)` (green tint), text `{colors.text-primary}`
-- **Disabled**: text `{colors.grayscale-300}`, not interactive
-- Month navigation: `<` `>` arrows, `color: {colors.green}`
-
-### Table
-
-**`table`** — Standard data table on white card:
-- `border-collapse: collapse`
-- `<th>`: `background: {colors.surface-bg}` (#F6F7F9), `color: {colors.text-secondary}`, `font-size: 14px`, `font-weight: 400`, `border: 1px solid {colors.grayscale-200}`
-- `<td>`: `background: {colors.white}`, `color: {colors.text-primary}`, `font-size: 14px`, `border: 1px solid {colors.grayscale-200}`
-- Clickable row links: `color: {colors.green}` (#58C65D), underline on hover
-- Content thumbnail: 80×45px image in td cell
-- Expand row: chevron `⌄` on right side of row, click reveals child rows
-
-### Popup / Modal (Light Context)
-
-**`popup-light`** — Dialog over light content area:
-- `background: {colors.white}`, `border-radius: {rounded.lg}`, `box-shadow: 0 4px 10px rgba(0,0,0,0.15)`
-- Title: 16px, 600, `{colors.text-primary}`
-- Body: 14px, 400, `{colors.text-secondary}`
-- Buttons: standard btn-primary + btn-ghost or btn-gray
-
-**`popup-dark`** — Floating panel over GNB/dark shell context (component library):
-- `background: {colors.grayscale-800}` (#383F45), `border-radius: {rounded.lg}`, `drop-shadow(0 4px 10px rgba(0,0,0,0.5))`
-
-### Toast Notifications
-
-**`toast`** — Temporary feedback at bottom or top of screen:
-- Dark pill: `background: {colors.grayscale-800}`, `color: {colors.white}`, `border-radius: {rounded.pill}`
-- Success variant: `{colors.green}` left border or icon
-- Error variant: `{colors.danger}` left border or icon
-
-### Map
-
-**`map-embed`** — Google Maps or equivalent embedded in detail pages:
-- Displayed in right column of detail layout
-- `border: 1px solid {colors.grayscale-200}`, `border-radius: {rounded.sm}`
-- Map pins: `{colors.text-primary}` default, `{colors.danger}` for error state media
-
-### Logo Upload Area
-
-**`logo-upload`** — File drop zone for company logos:
-- `background: {colors.white}`, `border: 1px dashed {colors.grayscale-300}`, `border-radius: {rounded.sm}`
-- Placeholder text: `color: {colors.text-secondary}`, centered
-- `+` icon at bottom for browse action
-- Format hint text: `font-size: 12px`, `{colors.text-secondary}`
-
-### Monitoring Cards
-
-**`card-monitoring`** — Sensor/hardware status tile (135×101px):
-- Category types: 메모리, 업데이트, CPU, RAM, HDD, 셋탑온도, 네트워크, 충격감지, 도어열림, 온습도이상, 미세먼지
-- **Default state**: white bg, metric value centered
-- **Error state**: `{colors.danger}` (#E97474) accent border or bg tint
-- **Selected**: `{colors.main}` (#2d84ed) border highlight
+Grid: `grid-template-columns: repeat(N, 1fr); gap: 12px; margin-bottom: 20px`  
+N matches the number of status types (typically 4–6 cards + action buttons flush right).
 
 ---
 
-## Do's and Don'ts
+### 2. Buttons
 
-### Do
-- Use `{colors.green}` (#58C65D) for ALL primary CTA buttons, input focus borders, active tab underlines, calendar selections, tags, and the toggle ON state. Green is the universal action signal.
-- Use `{colors.main}` (#2d84ed) only for MAIN badge type. It does not go on buttons.
-- Keep content area and cards always on light surfaces (`{colors.surface-bg}` / `{colors.white}`). Dark surfaces are shell-only.
-- Apply `transition: all 0.25s ease` to every interactive element.
-- Invert button fill on hover: green fill → white bg + green text/border.
-- Error state: change border to `{colors.danger}` and show error text below. Do not fill input red.
-- Input focus: green border `{colors.green}`. No glow effect.
-- Use the MAIN badge for media group type labels, TIME badge for time-conditioned schedules, SUB badge for general secondary types.
-- Breadcrumb uses `>` separator with small (12px) muted text on the dark breadcrumb bar.
+**Universal rule**: `transition: all 0.25s ease` on every button.  
+**Hover rule**: filled buttons invert (colored bg → white bg + colored text/border).
 
-### Don't
-- Don't use `{colors.main}` (#2d84ed) on buttons. Green is the button color.
-- Don't put dark surfaces inside the content area. Content cards are always white.
-- Don't use `{colors.green}` inside dark shell UI (GNB icons, topbar elements) — shell uses grayscale neutrals.
-- Don't vary the 0.25s ease transition.
-- Don't add shadows to content cards — white on light-gray provides sufficient depth without shadows.
-- Don't use red for success states. `{colors.danger}` is exclusively for errors.
-- Don't create new badge colors. Use the defined variant set only.
-- Don't use underline as the only distinction for links — pair with `{colors.green}` color.
+```css
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 16px;
+  border-radius: 4px; font-size: 14px; font-family: inherit;
+  border: 1px solid transparent; cursor: pointer;
+  transition: all 0.25s ease; white-space: nowrap;
+}
+```
+
+| Class | Bg | Text | Border | Hover effect |
+|-------|----|------|--------|-------------|
+| `.btn-primary` | `#58C65D` | `#fff` | `#58C65D` | white bg, green text |
+| `.btn-outline` | `#fff` | `#58C65D` | `#C1E9C3` | `rgba(88,198,93,0.08)` bg |
+| `.btn-dark` | `#383F45` | `#fff` | `#383F45` | `#454C52` bg |
+| `.btn-ghost` | `#fff` | `#596066` | `#CED2D6` | `#F6F7F9` bg |
+| `.btn-gray` | `#CED2D6` | `#fff` | `#CED2D6` | `#9EA5AD` bg |
+
+**Sizes:**
+| Class | Height | Padding-x | Font |
+|-------|--------|-----------|------|
+| `.btn-lg` | 44px | 24px | 15px / 600 |
+| `.btn` | 36px | 16px | 14px |
+| `.btn-sm` | 30px | 12px | 13px |
+
+**Dual-button header pattern** (right side of `.card-head`):
+```html
+<!-- Primary action + secondary action side by side -->
+<button class="btn btn-primary">+ Create Schedule</button>
+<button class="btn btn-outline">+ Time Schedule</button>
+```
+
+**FAB** (floating action, bottom-right corner):
+```css
+.fab {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: #24292E; color: #fff; font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.fab:hover { background: #383F45; }
+```
+
+---
+
+### 3. Inputs & Controls
+
+```css
+/* Text input */
+.inp {
+  height: 36px; padding: 0 10px;
+  background: #fff; border: 1px solid #CED2D6;
+  border-radius: 4px; font-size: 14px; color: #24292E;
+  transition: border-color 0.25s ease;
+}
+.inp:focus { outline: none; border-color: #58C65D; }
+.inp::placeholder { color: #CED2D6; }
+.inp[readonly] { background: #F6F7F9; color: #9EA5AD; }
+
+/* Select */
+.sel {
+  height: 36px; padding: 0 28px 0 10px;
+  background: #fff url('../images/select_arrow.svg') no-repeat right 8px center;
+  border: 1px solid #CED2D6; border-radius: 4px;
+  appearance: none; font-size: 14px; cursor: pointer;
+}
+.sel:focus { outline: none; border-color: #58C65D; }
+
+/* Toggle switch */
+.toggle-track { width:36px; height:20px; border-radius:10px; background:#E5E7EA; position:relative; cursor:pointer; transition:background 0.25s ease; }
+.toggle-track.on { background: #58C65D; }
+.toggle-thumb { width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:2px; left:2px; transition:left 0.25s ease; }
+.toggle-track.on .toggle-thumb { left:18px; }
+```
+
+---
+
+### 4. Table
+
+```css
+.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tbl th {
+  background: #F6F7F9; color: #596066; font-weight: 600;
+  padding: 10px 12px; border: 1px solid #E5E7EA; text-align: center;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 10px 12px; border: 1px solid #E5E7EA;
+  color: #24292E; text-align: center; vertical-align: middle;
+}
+.tbl td a { color: #58C65D; }
+.tbl tbody tr:hover { background: #FAFAFA; }
+.tbl input[type="checkbox"] { accent-color: #58C65D; width:14px; height:14px; }
+```
+
+**Live site table anatomy (left → right):**
+```
+[No.] [Name/Link] [Thumbnail?] [Type] [Duration] [Resolution] [Ad Type] [Advertiser] [Tags] [Status ▼] [⋮]
+```
+
+- **Thumbnail**: `69px × 39px` preview image where applicable
+- **Status + chevron** `▼`: status badge followed by expand-row button
+- **3-dot kebab** `⋮`: rightmost column, opens contextual dropdown
+- **Checkbox**: leftmost, for bulk select (`accent-color: #58C65D`)
+
+**Row expand**: clicking `▼` reveals a detail sub-row beneath, pushing subsequent rows down.
+
+---
+
+### 5. Badges
+
+#### Schedule / Content Type Badges (narrow, inline with row name)
+
+```css
+.badge-type {
+  display: inline-flex; align-items: center;
+  height: 18px; padding: 0 6px; border-radius: 3px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+  margin-right: 6px;
+}
+```
+
+| Type | Background | Text | Border |
+|------|-----------|------|--------|
+| `SYNC` | `#58C65D` | `#fff` | — |
+| `Time` | `rgba(144,97,184,0.15)` | `#9061B8` | `1px solid #d4b8f5` |
+| `MAIN` | `#2D84ED` | `#fff` | — |
+
+#### Status Badges (in Status column)
+
+```css
+.badge { height:20px; padding:0 8px; border-radius:6px; font-size:12px; font-weight:500; }
+```
+
+| Status | Bg | Text | Border |
+|--------|----|------|--------|
+| `Pending` | `rgba(233,116,116,0.1)` | `#E97474` | `1px solid #f5c0c0` |
+| `Scheduled` | `rgba(45,132,237,0.1)` | `#2D84ED` | `1px solid #b3d3f5` |
+| `Active / Running` | `rgba(88,198,93,0.1)` | `#58C65D` | `1px solid #C1E9C3` |
+| `Ended / Done` | `#F6F7F9` | `#9EA5AD` | `1px solid #CED2D6` |
+| `Cancelled` | `rgba(233,116,116,0.1)` | `#E97474` | `1px solid #f5c0c0` |
+
+#### Tag Badge (user hashtag)
+
+```css
+.badge-tag {
+  background: #fff; color: #FFAA5B;
+  border: 1px solid #FFAA5B; border-radius: 6px;
+  padding: 0 8px; height: 20px; font-size: 12px;
+}
+```
+
+---
+
+### 6. Tabs
+
+```css
+.tab-nav { display:flex; border-bottom:1px solid #E5E7EA; padding:0 4px; }
+.tab-nav li a {
+  display:block; padding:10px 16px; font-size:14px;
+  color:#9EA5AD; border-bottom:2px solid transparent;
+  margin-bottom:-1px; transition:all 0.25s ease; white-space:nowrap;
+}
+.tab-nav li.active a { color:#24292E; font-weight:500; border-bottom-color:#58C65D; }
+.tab-nav li a:hover { color:#24292E; }
+```
+
+Sub-tab variant (smaller, inside card body):
+- Same structure, `padding: 8px 12px`, often with a right-aligned action link
+
+---
+
+### 7. Filter Bar
+
+Sits between `.card-head` and the table; contains sort/filter controls.
+
+```
+[Schedule Type ▼] [Ad Type ▼] [📅 Start──End] [Newest ▼] [🔄]      [≡ list] [⊞ grid]
+```
+
+```css
+.filter-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 0; flex-wrap: wrap;
+}
+.view-toggle { display:flex; gap:2px; margin-left:auto; }
+.view-toggle-btn { width:28px; height:28px; border-radius:4px; border:1px solid #CED2D6; background:#fff; color:#9EA5AD; }
+.view-toggle-btn.active { background:#58C65D; border-color:#58C65D; color:#fff; }
+```
+
+---
+
+### 8. Card (`.card`)
+
+```css
+.card { background:#fff; border-radius:8px; margin-bottom:20px; }
+.card-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 24px 14px; border-bottom:1px solid #E5E7EA;
+}
+.card-title { font-size:16px; font-weight:600; color:#24292E; }
+.card-body { padding:20px 24px; }
+.card-foot { padding:14px 24px; border-top:1px solid #E5E7EA; }
+```
+
+---
+
+### 9. Modal (`.modal-backdrop`)
+
+```css
+.modal-backdrop {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:900; display:flex; align-items:center; justify-content:center;
+}
+.modal-box {
+  background:#fff; border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  width:460px; max-width:calc(100vw - 40px);
+}
+.modal-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px 12px; border-bottom:1px solid #E5E7EA;
+}
+.modal-head h2 { font-size:16px; font-weight:600; }
+.modal-body-inner { padding:20px; }
+.modal-foot {
+  display:flex; justify-content:flex-end; gap:8px;
+  padding:12px 20px 16px; border-top:1px solid #E5E7EA;
+}
+```
+
+Context-specific widths: `360px` (confirm), `520px` (type select), `680px` (form).
+
+---
+
+### 10. Pagination
+
+```css
+.pager { display:flex; align-items:center; gap:4px; }
+.pager button, .pager a {
+  width:30px; height:30px; border-radius:4px;
+  font-size:13px; color:#9EA5AD;
+  border:1px solid #E5E7EA; background:#fff;
+  transition:all 0.25s ease;
+}
+.pager button:hover, .pager a:hover { border-color:#58C65D; color:#58C65D; }
+.pager .active { background:#58C65D; border-color:#58C65D; color:#fff; font-weight:500; }
+```
+
+---
+
+### 11. Progress / Slot Bar
+
+```css
+.prog-bar { height:6px; background:#E5E7EA; border-radius:3px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:3px; background:#58C65D; transition:width 0.4s ease; }
+.prog-fill.warn { background:#E97474; }   /* threshold: > 80% */
+```
+
+Used in: product detail (Inventory capacity), monitor detail (CPU / memory / storage).
+
+---
+
+### 12. Kebab (3-dot) Menu
+
+```css
+.kebab-btn {
+  width:28px; height:28px; border-radius:4px;
+  color:#9EA5AD; font-size:20px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.kebab-btn:hover { background:#F6F7F9; color:#24292E; }
+
+.kebab-menu {
+  background:#fff; border:1px solid #E5E7EA; border-radius:6px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:4px 0; min-width:140px;
+}
+.kebab-menu-item { padding:9px 14px; font-size:13px; color:#24292E; cursor:pointer; }
+.kebab-menu-item:hover { background:#F6F7F9; }
+.kebab-menu-item.danger { color:#E97474; }
+```
+
+---
+
+### 13. Row Expand Chevron
+
+Expands a table row to show additional details inline.
+
+```css
+.row-expand-btn {
+  width:24px; height:24px; border-radius:4px;
+  border:1px solid #CED2D6; background:#fff;
+  color:#9EA5AD; font-size:11px;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition:all 0.2s; cursor:pointer; margin-left:4px;
+}
+.row-expand-btn:hover { border-color:#58C65D; color:#58C65D; }
+.row-expand-btn.open { background:#58C65D; border-color:#58C65D; color:#fff; }
+```
+
+---
+
+### 14. GNB Sidebar
+
+```css
+.gnb {
+  position:fixed; top:0; left:0;
+  width:93px; height:100vh; background:#454C52;
+  display:flex; flex-direction:column; align-items:center;
+  padding:20px 0 24px; z-index:300;
+}
+.gnb-nav a {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:10px 6px; color:#9EA5AD; font-size:10px;
+  transition:all 0.25s ease; width:100%; text-align:center;
+}
+.gnb-nav a svg { fill:#9EA5AD; transition:fill 0.25s ease; }
+.gnb-nav a:hover { color:#fff; background:#596066; }
+.gnb-nav a:hover svg { fill:#fff; }
+.gnb-nav a.active { color:#fff; background:rgba(88,198,93,0.12); }
+.gnb-nav a.active svg { fill:#fff; }
+.gnb-nav a.active::before {   /* left bar indicator */
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:32px; background:#58C65D; border-radius:0 2px 2px 0;
+}
+```
+
+---
+
+## Shadow Scale
+
+| Level | Value | Used on |
+|-------|-------|---------|
+| Flat | — | Tables, tab panels |
+| Card | `0 0 8px rgba(0,0,0,0.06)` | `.card` |
+| Topbar | `0 2px 8px rgba(0,0,0,0.15)` | `<header>` |
+| Dropdown / Kebab | `0 4px 12px rgba(0,0,0,0.1)` | Menus |
+| Modal | `0 4px 20px rgba(0,0,0,0.2)` | `.modal-box` |
+| FAB | `0 4px 12px rgba(0,0,0,0.3)` | Floating button |
+
+---
+
+## Border Radius Scale
+
+| Value | Used on |
+|-------|---------|
+| `2px` | GNB bar cap |
+| `4px` | Buttons, inputs, pagination, type badges |
+| `6px` | Kebab dropdown, status badges, tag badges |
+| `8px` | Cards, modal box, stat cards |
+| `50%` | Avatar, FAB, status dots |
 
 ---
 
 ## Animation
 
-| Token | Value | Applied To |
-|---|---|---|
-| `{transition.default}` | `all 0.25s ease` | All buttons, inputs, nav items, toggle, dropdown, tabs |
-| `{transition.fill}` | `fill 0.25s ease` | GNB icon path fill |
-| `{transition.width}` | `width 0.25s ease` | GNB expand/collapse |
+Single signature — no exceptions:
 
-No other duration or easing. All animations: `0.25s ease`.
-
----
-
-## Responsive Behavior
-
-| Name | Range | Notes |
-|---|---|---|
-| **Desktop** | ≥ 1440px | Canonical 1920×1080 layout |
-| **Compact** | 1024–1439px | GNB defaults to collapsed |
-| **Minimum** | 768–1023px | GNB as overlay / hidden |
-
-**Desktop-primary tool.** No mobile breakpoint is defined. Below 768px renders at compact scale without further adjustment.
+```css
+transition: all 0.25s ease;
+/* SVG fill only: */
+transition: fill 0.25s ease;
+```
 
 ---
 
-## Iteration Guide
+## Do / Don't
 
-1. **Shell first**: `<gnb>` + `<topbar>` + `<breadcrumb-bar>`. All three are always present and dark.
-2. **Content structure**: One or more white `<page-card>` elements on light-gray content bg. Each card has a header row (title + action button) and optional tabs.
-3. **Green for actions**: Any button that does something primary (등록, 저장, 다음) is `btn-primary` with green fill.
-4. **Dark for shell actions**: Buttons inside the card header that destructively or navigably change context (수정하기, 수정 및 삭제) use `btn-dark`.
-5. **Badge variants**: Confirm the schedule/content type before choosing a badge. MAIN=blue, TIME=slate-purple, SUB=gray, Sync=outlined. Never invent a new color.
-6. **Forms**: White input on white card. Focus ring = green. Error = red border + text below. Labels above inputs at 14px.
-7. **Tables**: All on white card. Clickable items are green text links. Thumbnails in dedicated cells.
-8. **Transitions**: Always `0.25s ease`. No exceptions.
+### Do ✅
+- `#58C65D` for every CTA, active state, focus ring, tab underline
+- Dark grayscale in shell only (GNB / topbar / breadcrumb)
+- Invert button colors on hover
+- `font-weight: 600` on `<th>`
+- Show slot capacity as progress bar with exact counts
+- `border-radius: 4px` as default; `6px` for badges; `8px` for cards
+
+### Don't ❌
+- `#409EFF` blue for buttons — **deprecated**, legacy only
+- Dark bg surfaces inside content area (cards, table, forms)
+- `border-radius` > `8px` on cards or modals
+- Skip the `3px` green left bar on GNB active items
+- More than two accent colors on any single page
+- `font-weight: 600` on body text or `<td>`
 
 ---
 
-## Known Gaps
-
-- **Exact breadcrumb bar height** (appears ~36px) needs measurement confirmation.
-- **GNB active indicator** style (green left border vs. bg fill) — both patterns may exist per item type.
-- **Mobile/tablet behavior** below 768px is not defined.
-- **Color tokens as CSS variables** — all values extracted from Figma and should be implemented as `var(--token-name)`.
-- **Dark popup** (component library only) vs **light popup** (content area) — context determines which to use.
-- **Scrollbar styles** on content area not specified.
-- **Footer bar** ("Dooh Service v 1.0" + "문의하기" button at bottom) — present on some pages, styling TBD.
+*Updated: 2026.05.31 — live site CSS + visual component audit (dev.doohservice.com)*
