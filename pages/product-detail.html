@@ -393,7 +393,8 @@
         <!-- 상단 컨트롤 -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
           <div class="analysis-tab" id="analysisViewTab">
-            <button class="active" data-view="daily" onclick="switchAnalysis('daily',this)">일별</button>
+            <button class="active" data-view="daily" onclick="switchAnalysis('daily',this)">일 평균</button>
+            <button data-view="monthly" onclick="switchAnalysis('monthly',this)">월별</button>
             <button data-view="weekday" onclick="switchAnalysis('weekday',this)">요일별</button>
             <button data-view="hourly" onclick="switchAnalysis('hourly',this)">시간대별</button>
             <button data-view="gender" onclick="switchAnalysis('gender',this)">연령·성별</button>
@@ -424,8 +425,8 @@
         <!-- 차트 영역 -->
         <div id="chart-daily" class="analysis-chart-panel">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">일별 노출인구 비교</div>
-            <div style="font-size:11px;color:#9EA5AD;">2025.10.01 ~ 2025.10.31 · 미디어별 일별 노출인구</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">일 평균 노출인구 비교</div>
+            <div style="font-size:11px;color:#9EA5AD;">2025.10.01 ~ 2025.10.31 · 미디어별 일 평균 노출인구</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
             <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1A7A6E;margin-right:4px;vertical-align:middle;"></span>강남역 (합산)</span>
@@ -435,7 +436,23 @@
           </div>
           <canvas id="chartDaily" height="200"></canvas>
           <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
-            월 초(1~5일)에 노출인구가 높게 집중되었으며, 이후 중순까지 다소 감소하다가 월말에 재상승하는 패턴을 보였습니다. <strong style="color:#24292E;">강남역(합산)</strong> 미디어가 전체 노출의 약 <strong style="color:#24292E;">67%</strong>를 차지하며 핵심 매체로 기여했고, 전체 일 평균 노출인구는 <strong style="color:#24292E;">12,376명</strong>으로 집계됩니다.
+            분석 기간 동안 일 평균 노출인구는 <strong style="color:#24292E;">12,376명</strong>으로 집계됩니다. <strong style="color:#24292E;">강남역(합산)</strong> 미디어가 전체 노출의 약 <strong style="color:#24292E;">67%</strong>를 차지하며 핵심 매체로 기여하고 있으며, 신논현역과 역삼역은 각각 전체의 약 22%, 11%를 담당합니다.
+          </div>
+        </div>
+
+        <div id="chart-monthly" class="analysis-chart-panel" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:600;color:#24292E;">월별 노출인구 비교</div>
+            <div style="font-size:11px;color:#9EA5AD;">2025.07 ~ 2025.10 · 미디어별 월 합산 노출인구</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1A7A6E;margin-right:4px;vertical-align:middle;"></span>강남역 (합산)</span>
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6FD8CE;margin-right:4px;vertical-align:middle;"></span>신논현역</span>
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#A8E6E0;margin-right:4px;vertical-align:middle;"></span>역삼역</span>
+          </div>
+          <canvas id="chartMonthly" height="200"></canvas>
+          <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
+            7월~10월 기간 동안 노출인구는 꾸준히 증가하는 추세를 보였으며, <strong style="color:#24292E;">10월</strong>에 최고치를 기록했습니다. 여름철(7~8월) 대비 가을철(9~10월) 노출인구가 약 <strong style="color:#24292E;">18%</strong> 증가하여 계절적 유동인구 상승이 광고 효과에 긍정적으로 작용한 것으로 분석됩니다.
           </div>
         </div>
 
@@ -773,7 +790,7 @@
 <script>
 // ── 효과 분석: 차트 뷰 전환 ──
 function switchAnalysis(view, btn) {
-  ['daily','weekday','hourly','gender'].forEach(v => {
+  ['daily','monthly','weekday','hourly','gender'].forEach(v => {
     document.getElementById('chart-' + v).style.display = v === view ? '' : 'none';
   });
   document.querySelectorAll('.analysis-tab button').forEach(b => b.classList.remove('active'));
@@ -812,6 +829,20 @@ const chartDaily = new Chart(document.getElementById('chartDaily'), {
       { label:'전체 평균', type:'line', borderColor: COLORS.avg, borderDash:[6,4],
         borderWidth:2, pointRadius:0, fill:false, tension:0,
         data: Array(dailyLabels.length).fill(dailyAvg) }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ beginAtZero:true, ticks:{ callback:v=>v.toLocaleString() } } } }
+});
+
+// 월별 차트 (묶음 막대)
+const chartMonthly = new Chart(document.getElementById('chartMonthly'), {
+  type: 'bar',
+  data: {
+    labels: ['2025.07','2025.08','2025.09','2025.10'],
+    datasets: [
+      { label:'강남역 (합산)', backgroundColor: COLORS.a, data: [215400, 234800, 248600, 259100] },
+      { label:'신논현역',      backgroundColor: COLORS.b, data: [74200,  81300,  87400,  91200]  },
+      { label:'역삼역',        backgroundColor: COLORS.c, data: [31800,  34900,  37100,  38600]  }
     ]
   },
   options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ beginAtZero:true, ticks:{ callback:v=>v.toLocaleString() } } } }
