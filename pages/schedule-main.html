@@ -863,8 +863,8 @@
       var el = document.getElementById('btn-'+k);
       if (el) el.classList.toggle('active', k === v);
     });
-    document.getElementById('dayView').style.display   = (v === 'day')   ? '' : 'none';
-    document.getElementById('monthView').style.display = (v === 'month') ? '' : 'none';
+    document.getElementById('dayView').style.display   = (v === 'day')   ? 'block' : 'none';
+    document.getElementById('monthView').style.display = (v === 'month') ? 'block' : 'none';
     if (v === 'month') renderMonth();
     renderDateLabel();
   }
