@@ -239,8 +239,8 @@
       display: inline-block; margin-bottom: 4px;
       line-height: 22px;
     }
-    .cal-cell:nth-child(7n+1) .cal-date { color: #E24B4B; }
-    .cal-cell:nth-child(7n)   .cal-date { color: #2D84ED; }
+    .cal-cell-wrap:nth-child(7n+1) .cal-date { color: #E24B4B; }
+    .cal-cell-wrap:nth-child(7n)   .cal-date { color: #2D84ED; }
     .cal-cell.today .cal-date { color: #fff !important; }
 
     .cal-sched-block {
@@ -432,7 +432,6 @@
           <!-- 뷰 토글 -->
           <div class="view-btn-group" id="viewBtnGroup">
             <button id="btn-day"   class="active" onclick="setView('day')">일 보기</button>
-            <button id="btn-week"  onclick="setView('week')">주 보기</button>
             <button id="btn-month" onclick="setView('month')">월 보기</button>
           </div>
 
@@ -860,8 +859,9 @@
 
   function setView(v) {
     view = v;
-    ['day','week','month'].forEach(function(k){
-      document.getElementById('btn-'+k).classList.toggle('active', k === v);
+    ['day','month'].forEach(function(k){
+      var el = document.getElementById('btn-'+k);
+      if (el) el.classList.toggle('active', k === v);
     });
     document.getElementById('dayView').style.display   = (v === 'day')   ? '' : 'none';
     document.getElementById('monthView').style.display = (v === 'month') ? '' : 'none';
@@ -916,8 +916,7 @@
       cells.push({ day: n, month: m + 1, year: y, other: true });
     }
 
-    var grid = document.getElementById('calGrid');
-    grid.innerHTML = '';
+    var html = '';
 
     cells.forEach(function(c, idx) {
       var isToday = !c.other &&
@@ -927,44 +926,38 @@
 
       var key = c.year + '-' + (c.month+1) + '-' + c.day;
       var scheds = (!c.other && scheduleData[key]) ? scheduleData[key] : [];
-
-      // 마지막 2열은 툴팁을 왼쪽으로
       var tipLeft = (idx % 7 >= 5) ? ' tip-left' : '';
 
-      var cellHtml = '<div class="cal-cell-wrap' + tipLeft + '">';
-      cellHtml += '<div class="cal-cell' + (c.other ? ' other-month' : '') + (isToday ? ' today' : '') + '">';
-      cellHtml += '<span class="cal-date">' + c.day + '</span>';
+      html += '<div class="cal-cell-wrap' + tipLeft + '">';
+      html += '<div class="cal-cell' + (c.other ? ' other-month' : '') + (isToday ? ' today' : '') + '">';
+      html += '<span class="cal-date">' + c.day + '</span>';
 
-      var shown = scheds.slice(0, 3);
-      shown.forEach(function(s) {
-        cellHtml += '<div class="cal-sched-block ' + s.type + '">' + s.name + '</div>';
+      scheds.slice(0, 3).forEach(function(s) {
+        html += '<div class="cal-sched-block ' + s.type + '">' + s.name + '</div>';
       });
       if (scheds.length > 3) {
-        cellHtml += '<div class="cal-more">+' + (scheds.length - 3) + '개 더보기</div>';
+        html += '<div class="cal-more">+' + (scheds.length - 3) + '개 더보기</div>';
       }
+      html += '</div>';
 
-      cellHtml += '</div>'; // .cal-cell
-
-      // 툴팁
       if (scheds.length > 0) {
-        var monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
         var dateStr = (c.month+1) + '월 ' + c.day + '일';
-        cellHtml += '<div class="cal-tooltip">';
-        cellHtml += '<div class="cal-tooltip-date">' + dateStr + ' 스케줄</div>';
+        html += '<div class="cal-tooltip">';
+        html += '<div class="cal-tooltip-date">' + dateStr + ' 스케줄</div>';
         scheds.forEach(function(s) {
-          cellHtml += '<div class="cal-tooltip-item">';
-          cellHtml += '<div class="cal-tooltip-dot" style="background:' + typeColor[s.type] + ';"></div>';
-          cellHtml += '<div class="cal-tooltip-info">';
-          cellHtml += '<div class="cal-tooltip-name">' + s.name + '</div>';
-          cellHtml += '<div class="cal-tooltip-meta">' + s.meta + '</div>';
-          cellHtml += '</div></div>';
+          html += '<div class="cal-tooltip-item">';
+          html += '<div class="cal-tooltip-dot" style="background:' + typeColor[s.type] + ';"></div>';
+          html += '<div class="cal-tooltip-info">';
+          html += '<div class="cal-tooltip-name">' + s.name + '</div>';
+          html += '<div class="cal-tooltip-meta">' + s.meta + '</div>';
+          html += '</div></div>';
         });
-        cellHtml += '</div>'; // .cal-tooltip
+        html += '</div>';
       }
-
-      cellHtml += '</div>'; // .cal-cell-wrap
-      grid.innerHTML += cellHtml;
+      html += '</div>';
     });
+
+    document.getElementById('calGrid').innerHTML = html;
   }
 
   /* 초기화 */
