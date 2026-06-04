@@ -184,6 +184,12 @@
     }
     .loop-item-title { font-size: 10px; font-weight: 600; white-space: nowrap; }
     .loop-item-sec   { font-size: 9px; margin-top: 2px; white-space: nowrap; opacity: .85; }
+    .loop-item-product {
+      font-size: 9px; margin-top: 3px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      padding: 1px 4px; border-radius: 2px;
+      background: rgba(0,0,0,.08); opacity: .7;
+    }
 
     .li-confirmed { background: #EEEDFE; }
     .li-confirmed .loop-item-title { color: #3C3489; }
@@ -230,6 +236,13 @@
     }
     .vtl-sched-title { font-size: 12px; font-weight: 600; }
     .vtl-sched-sub   { font-size: 11px; margin-top: 2px; opacity: .85; }
+    .vtl-sched-product {
+      display: inline-block; margin-top: 5px;
+      font-size: 10px; font-weight: 500;
+      padding: 1px 6px; border-radius: 3px;
+      background: rgba(0,0,0,.07); color: inherit; opacity: .75;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    }
     .vtl-sched.s-confirmed { background:#EEEDFE; border:1px solid #AFA9EC; }
     .vtl-sched.s-confirmed .vtl-sched-title { color:#3C3489; }
     .vtl-sched.s-confirmed .vtl-sched-sub   { color:#534AB7; }
@@ -588,26 +601,31 @@
               <div class="vtl-sched s-selfop" style="top:0;height:88px;left:44px;">
                 <div class="vtl-sched-title">기본 홍보</div>
                 <div class="vtl-sched-sub">자체 운영 · 07:00~08:30</div>
+                <div class="vtl-sched-product">자체 운영</div>
               </div>
               <!-- 확정 08:30~11:00 (150분) -->
               <div class="vtl-sched s-confirmed" style="top:90px;height:148px;left:44px;">
                 <div class="vtl-sched-title">삼성 갤럭시 S25</div>
                 <div class="vtl-sched-sub">30초 · 100회 보장 · 08:30~11:00</div>
+                <div class="vtl-sched-product">강남 A지구 패키지</div>
               </div>
               <!-- 조건 11:00~12:30 (90분) -->
               <div class="vtl-sched s-condition" style="top:240px;height:88px;left:44px;">
                 <div class="vtl-sched-title">우산 광고</div>
                 <div class="vtl-sched-sub">비 조건 · 최대 50회 · 11:00~12:30</div>
+                <div class="vtl-sched-product">강남 A지구 패키지</div>
               </div>
               <!-- 확정 13:00~17:00 (240분) -->
               <div class="vtl-sched s-confirmed" style="top:360px;height:238px;left:44px;">
                 <div class="vtl-sched-title">현대자동차 아이오닉</div>
                 <div class="vtl-sched-sub">15초 · 200회 보장 · 13:00~17:00</div>
+                <div class="vtl-sched-product">강남 A지구 패키지</div>
               </div>
               <!-- 초안 18:00~20:00 (120분) -->
               <div class="vtl-sched s-draft" style="top:660px;height:118px;left:44px;">
                 <div class="vtl-sched-title">롯데백화점 [초안]</div>
                 <div class="vtl-sched-sub">미확정 · 18:00~20:00</div>
+                <div class="vtl-sched-product">홍대 입구역 프리미엄</div>
               </div>
             </div>
           </div>
@@ -627,41 +645,50 @@
               <span class="loop-card-meta">총 300초 · 하루 180회 반복</span>
             </div>
             <div class="loop-items">
-              <div class="loop-item li-confirmed" style="width:82px">
+              <div class="loop-item li-confirmed" style="width:90px">
                 <div class="loop-item-title">갤럭시 S25</div>
                 <div class="loop-item-sec">30초</div>
+                <div class="loop-item-product">강남 A지구</div>
               </div>
-              <div class="loop-item li-selfop" style="width:56px">
+              <div class="loop-item li-selfop" style="width:64px">
                 <div class="loop-item-title">기본 홍보</div>
                 <div class="loop-item-sec">15초</div>
+                <div class="loop-item-product">자체 운영</div>
               </div>
-              <div class="loop-item li-confirmed" style="width:82px">
+              <div class="loop-item li-confirmed" style="width:90px">
                 <div class="loop-item-title">갤럭시 S25</div>
                 <div class="loop-item-sec">30초</div>
+                <div class="loop-item-product">강남 A지구</div>
               </div>
-              <div class="loop-item li-condition" style="width:80px">
+              <div class="loop-item li-condition" style="width:88px">
                 <div class="loop-item-title">우산광고</div>
                 <div class="loop-item-sec">30초 · 비조건</div>
+                <div class="loop-item-product">강남 A지구</div>
               </div>
-              <div class="loop-item li-confirmed" style="width:82px">
+              <div class="loop-item li-confirmed" style="width:90px">
                 <div class="loop-item-title">갤럭시 S25</div>
                 <div class="loop-item-sec">30초</div>
+                <div class="loop-item-product">강남 A지구</div>
               </div>
-              <div class="loop-item li-selfop" style="width:56px">
+              <div class="loop-item li-selfop" style="width:64px">
                 <div class="loop-item-title">기본 홍보</div>
                 <div class="loop-item-sec">15초</div>
+                <div class="loop-item-product">자체 운영</div>
               </div>
               <div class="loop-item li-confirmed" style="width:90px">
                 <div class="loop-item-title">아이오닉</div>
                 <div class="loop-item-sec">15초</div>
+                <div class="loop-item-product">강남 A지구</div>
               </div>
-              <div class="loop-item li-selfop" style="width:56px">
+              <div class="loop-item li-selfop" style="width:64px">
                 <div class="loop-item-title">기본 홍보</div>
                 <div class="loop-item-sec">15초</div>
+                <div class="loop-item-product">자체 운영</div>
               </div>
               <div class="loop-item li-confirmed" style="width:90px">
                 <div class="loop-item-title">아이오닉</div>
                 <div class="loop-item-sec">15초</div>
+                <div class="loop-item-product">강남 A지구</div>
               </div>
             </div>
           </div>
@@ -676,6 +703,7 @@
               <thead>
                 <tr style="background:#F6F7F9;">
                   <th style="padding:8px 16px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">스케줄</th>
+                  <th style="padding:8px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">프로덕트</th>
                   <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">루프당 횟수</th>
                   <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">일 반복 수</th>
                   <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">예상 노출</th>
@@ -689,6 +717,7 @@
                     <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#AFA9EC;margin-right:6px;vertical-align:middle;"></span>
                     <span style="font-weight:600;color:#24292E;">삼성 갤럭시 S25</span>
                   </td>
+                  <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구 패키지</span></td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">3회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
                   <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">540회</td>
@@ -700,6 +729,7 @@
                     <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#AFA9EC;margin-right:6px;vertical-align:middle;"></span>
                     <span style="font-weight:600;color:#24292E;">현대자동차 아이오닉</span>
                   </td>
+                  <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구 패키지</span></td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">2회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
                   <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">360회</td>
@@ -712,6 +742,7 @@
                     <span style="font-weight:600;color:#24292E;">우산 광고</span>
                     <span style="font-size:10px;color:#9EA5AD;margin-left:4px;">비 조건</span>
                   </td>
+                  <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구 패키지</span></td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">1회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
                   <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">180회</td>
@@ -724,6 +755,7 @@
                     <span style="font-weight:600;color:#9EA5AD;">롯데백화점</span>
                     <span style="font-size:10px;color:#9EA5AD;margin-left:4px;">초안</span>
                   </td>
+                  <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#CED2D6;">홍대 입구역 프리미엄</span></td>
                   <td style="padding:9px 12px;text-align:center;color:#CED2D6;">—</td>
                   <td style="padding:9px 12px;text-align:center;color:#CED2D6;">—</td>
                   <td style="padding:9px 12px;text-align:center;color:#CED2D6;">미확정</td>
@@ -744,80 +776,25 @@
 
 <!-- ════ 스케줄 예약 모달 ════ -->
 <div id="schedBookingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:12px;width:600px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+  <div style="background:#fff;border-radius:12px;width:580px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);">
 
     <!-- 모달 헤더 -->
     <div style="padding:20px 24px 16px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
       <div>
         <div style="font-size:16px;font-weight:700;color:#24292E;">스케줄 예약</div>
-        <div style="font-size:12px;color:#9EA5AD;margin-top:2px;" id="bkModalSub">프로덕트 인벤토리 확인 후 예약</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-top:2px;" id="bkModalSub">프로덕트 선택 후 예약 정보를 입력하세요</div>
       </div>
       <button onclick="closeScheduleBooking()" style="border:none;background:none;font-size:20px;color:#9EA5AD;cursor:pointer;line-height:1;">✕</button>
     </div>
 
-    <!-- Step 탭 -->
-    <div style="display:flex;border-bottom:1px solid #E5E7EA;">
-      <div id="bkStep1Tab" style="flex:1;padding:12px 0;text-align:center;font-size:13px;font-weight:600;color:#58C65D;border-bottom:2px solid #58C65D;cursor:default;">
-        1단계 · 인벤토리 조회
+    <!-- 단일 폼 -->
+    <div style="padding:24px;">
+
+      <!-- 프로덕트 표시 -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:6px;">프로덕트</div>
+        <div style="padding:8px 12px;background:#F6F7F9;border-radius:6px;font-size:13px;font-weight:600;color:#24292E;" id="bkProductName">강남 A지구 패키지</div>
       </div>
-      <div id="bkStep2Tab" style="flex:1;padding:12px 0;text-align:center;font-size:13px;font-weight:600;color:#CED2D6;cursor:default;">
-        2단계 · 예약 정보 입력
-      </div>
-    </div>
-
-    <!-- Step 1: 인벤토리 조회 -->
-    <div id="bkStep1" style="padding:24px;">
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-        <div>
-          <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:6px;">프로덕트</div>
-          <div style="padding:8px 12px;background:#F6F7F9;border-radius:6px;font-size:13px;font-weight:600;color:#24292E;" id="bkProductName">강남 A지구 패키지</div>
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:6px;">예약 날짜</div>
-          <input type="date" id="bkDate" style="width:100%;padding:8px 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;" onchange="checkInventory()">
-        </div>
-      </div>
-
-      <!-- 인벤토리 조회 결과 -->
-      <div id="bkInventoryResult" style="display:none;">
-        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;">인벤토리 현황</div>
-
-        <!-- 미디어 가용 상태 테이블 -->
-        <div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;margin-bottom:16px;">
-          <table style="width:100%;border-collapse:collapse;font-size:12px;">
-            <thead>
-              <tr style="background:#F6F7F9;">
-                <th style="padding:8px 12px;text-align:left;font-weight:600;color:#596066;">미디어</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;">운영 시간</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;">루프/일</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;">예약 현황</th>
-                <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;">예약 가능</th>
-              </tr>
-            </thead>
-            <tbody id="bkInventoryTable">
-              <!-- JS로 채움 -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- 안내 문구 -->
-        <div id="bkInventoryNote" style="padding:10px 14px;background:#F6F7F9;border-radius:6px;font-size:12px;color:#596066;margin-bottom:20px;"></div>
-
-        <div style="display:flex;justify-content:flex-end;">
-          <button onclick="goToStep2()" id="bkNextBtn" style="height:38px;padding:0 20px;background:#58C65D;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">
-            다음 단계 →
-          </button>
-        </div>
-      </div>
-
-      <div id="bkInventoryEmpty" style="text-align:center;padding:24px;color:#9EA5AD;font-size:13px;">
-        날짜를 선택하면 인벤토리를 조회합니다.
-      </div>
-    </div>
-
-    <!-- Step 2: 예약 정보 입력 -->
-    <div id="bkStep2" style="padding:24px;display:none;">
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
         <div>
@@ -840,8 +817,8 @@
           <input id="bkDuration" type="number" value="30" min="5" max="120" style="width:100%;padding:8px 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;">
         </div>
         <div>
-          <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:6px;">일 최소 노출 보장 (회)</div>
-          <input id="bkGuarantee" type="number" value="100" min="1" style="width:100%;padding:8px 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;">
+          <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:6px;">일 최소 노출 보장 (회) <span style="color:#E24B4B;">*</span></div>
+          <input id="bkGuarantee" type="number" value="100" min="1" oninput="checkLoopGuarantee()" style="width:100%;padding:8px 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;">
         </div>
       </div>
 
@@ -856,20 +833,43 @@
         </div>
       </div>
 
-      <!-- 루프 충족 여부 실시간 표시 -->
-      <div id="bkLoopCheck" style="padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:16px;display:none;"></div>
-
       <div style="margin-bottom:16px;">
         <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:6px;">메모</div>
-        <textarea id="bkMemo" rows="3" placeholder="특이사항, 조건 등을 입력하세요" style="width:100%;padding:8px 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;"></textarea>
+        <textarea id="bkMemo" rows="2" placeholder="특이사항, 조건 등을 입력하세요" style="width:100%;padding:8px 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;resize:vertical;"></textarea>
       </div>
 
-      <div style="display:flex;gap:8px;justify-content:space-between;">
-        <button onclick="goToStep1()" style="height:38px;padding:0 16px;background:#fff;color:#596066;border:1px solid #CED2D6;border-radius:6px;font-size:13px;cursor:pointer;">← 이전</button>
-        <button onclick="submitScheduleBooking()" style="height:38px;padding:0 20px;background:#58C65D;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">예약 확정</button>
+      <!-- 인벤토리 확인 버튼 -->
+      <button onclick="checkInventory()" style="width:100%;height:38px;background:#F6F7F9;color:#24292E;border:1px solid #CED2D6;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;">
+        인벤토리 확인
+      </button>
+
+      <!-- 인벤토리 결과 (인라인) -->
+      <div id="bkInventoryResult" style="display:none;margin-bottom:16px;">
+        <div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">
+          <div style="padding:8px 14px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:12px;font-weight:700;color:#24292E;">인벤토리 현황</div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:#FAFAFA;">
+                <th style="padding:7px 12px;text-align:left;font-weight:600;color:#596066;">미디어</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">루프/일</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">예약 현황</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">보장 충족</th>
+                <th style="padding:7px 12px;text-align:center;font-weight:600;color:#596066;">예약 가능</th>
+              </tr>
+            </thead>
+            <tbody id="bkInventoryTable"></tbody>
+          </table>
+        </div>
+        <div id="bkInventoryNote" style="padding:8px 12px;border-radius:6px;font-size:12px;margin-top:8px;"></div>
       </div>
+
+      <!-- 액션 버튼 -->
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="closeScheduleBooking()" style="height:38px;padding:0 16px;background:#fff;color:#596066;border:1px solid #CED2D6;border-radius:6px;font-size:13px;cursor:pointer;">취소</button>
+        <button id="bkConfirmBtn" onclick="submitScheduleBooking()" disabled style="height:38px;padding:0 20px;background:#CED2D6;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:not-allowed;">예약 확정</button>
+      </div>
+
     </div>
-
   </div>
 </div>
 
@@ -1111,16 +1111,16 @@
     'p1': {
       name: '강남 A지구 패키지',
       medias: [
-        { name:'강남역 1번출구 A', opHours:'07:00~22:00', loopsPerDay:180, bookedLoops:120, available:true },
-        { name:'강남역 1번출구 B', opHours:'07:00~22:00', loopsPerDay:180, bookedLoops:170, available:false },
-        { name:'강남역 2번출구',   opHours:'08:00~21:00', loopsPerDay:156, bookedLoops:80,  available:true  }
+        { name:'강남역 1번출구 A', loopsPerDay:180, bookedLoops:120 },
+        { name:'강남역 1번출구 B', loopsPerDay:180, bookedLoops:170 },
+        { name:'강남역 2번출구',   loopsPerDay:156, bookedLoops:80  }
       ]
     },
     'p2': {
       name: '홍대 입구역 프리미엄',
       medias: [
-        { name:'홍대입구역 A',   opHours:'07:00~24:00', loopsPerDay:204, bookedLoops:100, available:true },
-        { name:'홍대입구역 B',   opHours:'07:00~24:00', loopsPerDay:204, bookedLoops:200, available:true  }
+        { name:'홍대입구역 A', loopsPerDay:204, bookedLoops:100 },
+        { name:'홍대입구역 B', loopsPerDay:204, bookedLoops:200 }
       ]
     }
   };
@@ -1130,10 +1130,15 @@
     var pid = sel.value || 'p1';
     var pname = inventoryData[pid] ? inventoryData[pid].name : sel.options[sel.selectedIndex].text;
     document.getElementById('bkProductName').textContent = pname;
-    document.getElementById('bkDate').value = '';
     document.getElementById('bkInventoryResult').style.display = 'none';
-    document.getElementById('bkInventoryEmpty').style.display = 'block';
-    goToStep1();
+    document.getElementById('bkAdvertiser').value = '';
+    document.getElementById('bkMemo').value = '';
+    document.getElementById('bkFrom').value = '';
+    document.getElementById('bkTo').value = '';
+    var confirmBtn = document.getElementById('bkConfirmBtn');
+    confirmBtn.disabled = true;
+    confirmBtn.style.background = '#CED2D6';
+    confirmBtn.style.cursor = 'not-allowed';
     document.getElementById('schedBookingModal').style.display = 'flex';
   }
 
@@ -1141,100 +1146,71 @@
     document.getElementById('schedBookingModal').style.display = 'none';
   }
 
-  function goToStep1() {
-    document.getElementById('bkStep1').style.display = 'block';
-    document.getElementById('bkStep2').style.display = 'none';
-    document.getElementById('bkStep1Tab').style.color = '#58C65D';
-    document.getElementById('bkStep1Tab').style.borderBottom = '2px solid #58C65D';
-    document.getElementById('bkStep2Tab').style.color = '#CED2D6';
-    document.getElementById('bkStep2Tab').style.borderBottom = '2px solid transparent';
-  }
-
-  function goToStep2() {
-    document.getElementById('bkStep1').style.display = 'none';
-    document.getElementById('bkStep2').style.display = 'block';
-    document.getElementById('bkStep1Tab').style.color = '#9EA5AD';
-    document.getElementById('bkStep1Tab').style.borderBottom = '2px solid transparent';
-    document.getElementById('bkStep2Tab').style.color = '#58C65D';
-    document.getElementById('bkStep2Tab').style.borderBottom = '2px solid #58C65D';
-    // 날짜 기본값
-    var d = document.getElementById('bkDate').value;
-    if (d) {
-      document.getElementById('bkFrom').value = d;
-      document.getElementById('bkTo').value = d;
-    }
-    checkLoopGuarantee();
-  }
-
   function checkInventory() {
     var sel = document.getElementById('productSelect');
     var pid = sel.value || 'p1';
     var inv = inventoryData[pid];
     if (!inv) return;
-    var d = document.getElementById('bkDate').value;
-    if (!d) return;
+    var guarantee = parseInt(document.getElementById('bkGuarantee').value) || 0;
 
     var tbody = document.getElementById('bkInventoryTable');
     var rows = '';
     var anyAvailable = false;
     inv.medias.forEach(function(m) {
+      var remaining = m.loopsPerDay - m.bookedLoops;
       var pct = Math.round(m.bookedLoops / m.loopsPerDay * 100);
-      var avail = m.available;
+      var loopOk = guarantee <= m.loopsPerDay;
+      var avail = remaining > 0 && loopOk;
       if (avail) anyAvailable = true;
       rows += '<tr style="border-top:1px solid #F0F1F3;">';
-      rows += '<td style="padding:8px 12px;font-weight:600;color:#24292E;">' + m.name + '</td>';
-      rows += '<td style="padding:8px 12px;text-align:center;color:#596066;">' + m.opHours + '</td>';
-      rows += '<td style="padding:8px 12px;text-align:center;color:#596066;">' + m.loopsPerDay + '회/일</td>';
-      rows += '<td style="padding:8px 12px;text-align:center;">';
-      rows += '<div style="display:flex;align-items:center;gap:6px;">';
-      rows += '<div style="flex:1;height:6px;background:#F0F1F3;border-radius:3px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + (avail ? '#AFA9EC' : '#E24B4B') + ';border-radius:3px;"></div></div>';
-      rows += '<span style="font-size:11px;color:#596066;white-space:nowrap;">' + m.bookedLoops + '/' + m.loopsPerDay + '회</span>';
+      rows += '<td style="padding:7px 12px;font-weight:600;color:#24292E;">' + m.name + '</td>';
+      rows += '<td style="padding:7px 10px;text-align:center;color:#596066;">' + m.loopsPerDay + '회/일</td>';
+      rows += '<td style="padding:7px 10px;text-align:center;">';
+      rows += '<div style="display:flex;align-items:center;gap:5px;">';
+      rows += '<div style="width:60px;height:5px;background:#F0F1F3;border-radius:3px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + (avail ? '#AFA9EC' : '#E24B4B') + ';border-radius:3px;"></div></div>';
+      rows += '<span style="font-size:11px;color:#596066;">' + m.bookedLoops + '/' + m.loopsPerDay + '</span>';
       rows += '</div></td>';
-      rows += '<td style="padding:8px 12px;text-align:center;">';
-      if (avail) {
-        rows += '<span style="display:inline-block;padding:2px 8px;background:#E8F9E8;color:#2A7A2E;border-radius:4px;font-size:11px;font-weight:600;">예약 가능</span>';
+      rows += '<td style="padding:7px 10px;text-align:center;">';
+      if (!guarantee) {
+        rows += '<span style="color:#CED2D6;font-size:11px;">—</span>';
+      } else if (loopOk) {
+        rows += '<span style="color:#58C65D;font-size:12px;font-weight:700;">✓</span>';
       } else {
-        rows += '<span style="display:inline-block;padding:2px 8px;background:#FEE8E8;color:#B91C1C;border-radius:4px;font-size:11px;font-weight:600;">마감</span>';
+        rows += '<span style="color:#E24B4B;font-size:12px;font-weight:700;">✗</span>';
+      }
+      rows += '</td>';
+      rows += '<td style="padding:7px 12px;text-align:center;">';
+      if (avail) {
+        rows += '<span style="display:inline-block;padding:2px 8px;background:#E8F9E8;color:#2A7A2E;border-radius:4px;font-size:11px;font-weight:600;">가능</span>';
+      } else {
+        rows += '<span style="display:inline-block;padding:2px 8px;background:#FEE8E8;color:#B91C1C;border-radius:4px;font-size:11px;font-weight:600;">' + (remaining <= 0 ? '마감' : '루프 부족') + '</span>';
       }
       rows += '</td></tr>';
     });
     tbody.innerHTML = rows;
 
     var note = document.getElementById('bkInventoryNote');
+    var confirmBtn = document.getElementById('bkConfirmBtn');
     if (anyAvailable) {
-      note.style.background = '#E8F9E8';
-      note.style.color = '#2A7A2E';
-      note.textContent = '✓ 예약 가능한 미디어가 있습니다. 다음 단계에서 스케줄 정보를 입력해 예약을 확정하세요.';
-      document.getElementById('bkNextBtn').disabled = false;
-      document.getElementById('bkNextBtn').style.opacity = '1';
+      note.style.background = '#E8F9E8'; note.style.color = '#2A7A2E';
+      note.textContent = '✓ 예약 가능한 미디어가 있습니다. 예약 확정 버튼을 눌러 예약하세요.';
+      confirmBtn.disabled = false;
+      confirmBtn.style.background = '#58C65D';
+      confirmBtn.style.cursor = 'pointer';
     } else {
-      note.style.background = '#FEE8E8';
-      note.style.color = '#B91C1C';
-      note.textContent = '✗ 선택한 날짜에 예약 가능한 미디어가 없습니다. 다른 날짜를 선택해주세요.';
-      document.getElementById('bkNextBtn').disabled = true;
-      document.getElementById('bkNextBtn').style.opacity = '0.4';
+      note.style.background = '#FEE8E8'; note.style.color = '#B91C1C';
+      note.textContent = '✗ 예약 가능한 미디어가 없습니다. 보장 횟수를 낮추거나 다른 기간을 확인하세요.';
+      confirmBtn.disabled = true;
+      confirmBtn.style.background = '#CED2D6';
+      confirmBtn.style.cursor = 'not-allowed';
     }
-    document.getElementById('bkInventoryEmpty').style.display = 'none';
     document.getElementById('bkInventoryResult').style.display = 'block';
   }
 
   function checkLoopGuarantee() {
-    var guarantee = parseInt(document.getElementById('bkGuarantee').value) || 0;
-    var sel = document.getElementById('productSelect');
-    var pid = sel.value || 'p1';
-    var inv = inventoryData[pid];
-    var loopsPerDay = inv ? inv.medias[0].loopsPerDay : 180;
-    var el = document.getElementById('bkLoopCheck');
-    if (!guarantee) { el.style.display = 'none'; return; }
-    el.style.display = 'block';
-    if (loopsPerDay >= guarantee) {
-      el.style.background = '#E8F9E8';
-      el.style.color = '#2A7A2E';
-      el.innerHTML = '✓ 일 루프 수 <strong>' + loopsPerDay + '회</strong> ≥ 최소 보장 <strong>' + guarantee + '회</strong> — 루프 수 충족';
-    } else {
-      el.style.background = '#FEE8E8';
-      el.style.color = '#B91C1C';
-      el.innerHTML = '✗ 일 루프 수 <strong>' + loopsPerDay + '회</strong> < 최소 보장 <strong>' + guarantee + '회</strong> — 루프 수 부족. 보장 횟수를 조정하거나 루프 구성을 변경하세요.';
+    // 인벤토리 결과가 보이는 중이면 재조회
+    if (document.getElementById('bkInventoryResult').style.display !== 'none') {
+      checkInventory();
     }
   }
 
