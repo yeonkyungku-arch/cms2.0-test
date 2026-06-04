@@ -565,8 +565,11 @@
           </div>
         </div>
 
-        <!-- 일 보기: 세로 타임라인 (미디어 기준 — 단일 미디어) -->
+        <!-- 일 보기 -->
         <div id="dayView">
+
+          <!-- ── 미디어 기준: 단일 미디어 루프 목록 ── -->
+          <div id="mediaDay">
 
           <!-- 미디어 정보 헤더 -->
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
@@ -724,6 +727,15 @@
             </table>
           </div>
 
+
+          </div><!-- /#mediaDay -->
+
+          <!-- ── 프로덕트 기준: 미디어별 루프 목록 ── -->
+          <div id="productDay" style="display:none;">
+            <div id="productDayBody">
+              <!-- JS로 채움 -->
+            </div>
+          </div>
 
         </div><!-- /#dayView -->
 
@@ -959,6 +971,12 @@
     document.getElementById('mediaSelect').style.display   = b === 'media'   ? '' : 'none';
     document.getElementById('productSelect').style.display = b === 'product' ? '' : 'none';
     document.getElementById('bookingBtn').style.display    = b === 'product' ? '' : 'none';
+    /* 일 보기 중이면 미디어/프로덕트 하위 뷰 전환 */
+    if (view === 'day') {
+      document.getElementById('mediaDay').style.display   = b === 'media'   ? '' : 'none';
+      document.getElementById('productDay').style.display = b === 'product' ? '' : 'none';
+      if (b === 'product') renderProductDay();
+    }
   }
 
   function setView(v) {
@@ -969,6 +987,11 @@
     });
     document.getElementById('dayView').style.display   = (v === 'day')   ? 'block' : 'none';
     document.getElementById('monthView').style.display = (v === 'month') ? 'block' : 'none';
+    if (v === 'day') {
+      document.getElementById('mediaDay').style.display   = basis === 'media'   ? '' : 'none';
+      document.getElementById('productDay').style.display = basis === 'product' ? '' : 'none';
+      if (basis === 'product') renderProductDay();
+    }
     if (v === 'month') renderMonth();
     renderDateLabel();
   }
@@ -1062,6 +1085,175 @@
     });
 
     document.getElementById('calGrid').innerHTML = html;
+  }
+
+  /* ── 프로덕트 기준 일 보기: 미디어별 루프 목록 ── */
+  var productMediaData = {
+    'p1': {
+      name: '강남 A지구 패키지',
+      medias: [
+        {
+          name: '강남역 1번출구 A', status: 'online',
+          spec: '실외 · 세로형 · 1920×1080', opHours: '07:00~22:00', loops: 180,
+          seq: [
+            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
+            { name:'우산 광고',  dur:30, cls:'lc-condition' },
+            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'롯데백화점', dur:30, cls:'lc-draft'     },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
+          ]
+        },
+        {
+          name: '강남역 1번출구 B', status: 'online',
+          spec: '실외 · 가로형 · 1920×1080', opHours: '07:00~22:00', loops: 180,
+          seq: [
+            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'네이버 플러스', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'네이버 플러스', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
+          ]
+        },
+        {
+          name: '강남역 2번출구', status: 'offline',
+          spec: '실외 · 세로형 · 1080×1920', opHours: '08:00~21:00', loops: 156,
+          seq: [
+            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'CJ 햇반',    dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'CJ 햇반',    dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
+          ]
+        }
+      ]
+    },
+    'p2': {
+      name: '홍대 입구역 프리미엄',
+      medias: [
+        {
+          name: '홍대입구역 A', status: 'online',
+          spec: '실외 · 세로형 · 1920×1080', opHours: '07:00~24:00', loops: 204,
+          seq: [
+            { name:'무신사',    dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
+            { name:'무신사',    dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
+            { name:'신한카드',  dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
+            { name:'신한카드',  dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보', dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보', dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보', dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보', dur:30, cls:'lc-selfop'    }
+          ]
+        },
+        {
+          name: '홍대입구역 B', status: 'online',
+          spec: '실외 · 가로형 · 1920×1080', opHours: '07:00~24:00', loops: 204,
+          seq: [
+            { name:'하이트진로', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'하이트진로', dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'배달의민족', dur:30, cls:'lc-condition' },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
+            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    }
+          ]
+        }
+      ]
+    }
+  };
+
+  function buildLoopRows(seq, loops, startH) {
+    var html = '';
+    var LOOP_DUR = 300;
+    for (var i = 0; i < loops; i++) {
+      var totalMin = startH * 60 + i * 5;
+      var hh = Math.floor(totalMin / 60);
+      var mm = totalMin % 60;
+      var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+      var loopNum = 'L' + String(i+1).padStart(3,'0');
+      html += '<div class="loop-row" style="' + (i%2?'background:#FAFBFC;':'') + '">';
+      html += '<span class="loop-row-num">' + loopNum + '</span>';
+      html += '<span class="loop-row-time">' + timeStr + '</span>';
+      html += '<div class="loop-row-items">';
+      seq.forEach(function(item) {
+        var pct = (item.dur / LOOP_DUR * 100).toFixed(2);
+        html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초">';
+        html += '<span>' + item.name + '</span></div>';
+      });
+      html += '</div></div>';
+    }
+    return html;
+  }
+
+  function renderProductDay() {
+    var sel = document.getElementById('productSelect');
+    var pid = sel.value || 'p1';
+    var pd = productMediaData[pid];
+    if (!pd) return;
+
+    var html = '';
+    pd.medias.forEach(function(m, idx) {
+      var startH = parseInt(m.opHours.split(':')[0]);
+      var isOpen = idx === 0; /* 첫 미디어는 기본 펼침 */
+      html += '<div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;margin-bottom:12px;">';
+      /* 미디어 헤더 (클릭 시 토글) */
+      html += '<div onclick="toggleMediaSection(this)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:#F6F7F9;">';
+      html += '<span class="' + (m.status==='online' ? 'dot-online' : 'dot-offline') + '"></span>';
+      html += '<span style="font-size:13px;font-weight:700;color:#24292E;">' + m.name + '</span>';
+      html += '<span style="font-size:12px;color:#9EA5AD;">' + m.spec + '</span>';
+      html += '<span style="font-size:12px;color:#596066;margin-left:auto;">운영 ' + m.opHours + ' · <strong>' + m.loops + '회/일</strong></span>';
+      html += '<span style="font-size:12px;color:#9EA5AD;margin-left:8px;">' + (isOpen ? '▲' : '▼') + '</span>';
+      html += '</div>';
+      /* 루프 목록 */
+      html += '<div class="media-loop-section" style="display:' + (isOpen ? 'block' : 'none') + ';">';
+      html += '<div class="loop-list-wrap" style="border:none;border-radius:0;">';
+      html += '<div class="loop-list-head"><span>루프</span><span>시작</span><span>재생 콘텐츠 시퀀스 (총 300초)</span></div>';
+      html += '<div class="loop-list-body">' + buildLoopRows(m.seq, m.loops, startH) + '</div>';
+      html += '</div></div></div>';
+    });
+    document.getElementById('productDayBody').innerHTML = html;
+  }
+
+  function toggleMediaSection(header) {
+    var section = header.nextElementSibling;
+    var arrow = header.querySelector('span:last-child');
+    var isOpen = section.style.display !== 'none';
+    section.style.display = isOpen ? 'none' : 'block';
+    arrow.textContent = isOpen ? '▼' : '▲';
   }
 
   /* ── 스케줄 예약 모달 ── */
