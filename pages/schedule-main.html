@@ -1196,56 +1196,89 @@
     }
   };
 
-  function buildLoopRows(seq, loops, startH) {
-    var html = '';
-    var LOOP_DUR = 300;
-    for (var i = 0; i < loops; i++) {
-      var totalMin = startH * 60 + i * 5;
-      var hh = Math.floor(totalMin / 60);
-      var mm = totalMin % 60;
-      var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-      var loopNum = 'L' + String(i+1).padStart(3,'0');
-      html += '<div class="loop-row" style="' + (i%2?'background:#FAFBFC;':'') + '">';
-      html += '<span class="loop-row-num">' + loopNum + '</span>';
-      html += '<span class="loop-row-time">' + timeStr + '</span>';
-      html += '<div class="loop-row-items">';
-      seq.forEach(function(item) {
-        var pct = (item.dur / LOOP_DUR * 100).toFixed(2);
-        html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초">';
-        html += '<span>' + item.name + '</span></div>';
-      });
-      html += '</div></div>';
-    }
-    return html;
-  }
-
   function renderProductDay() {
     var sel = document.getElementById('productSelect');
     var pid = sel.value || 'p1';
     var pd = productMediaData[pid];
     if (!pd) return;
 
-    var html = '';
-    pd.medias.forEach(function(m, idx) {
-      var startH = parseInt(m.opHours.split(':')[0]);
-      var isOpen = idx === 0; /* 첫 미디어는 기본 펼침 */
-      html += '<div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;margin-bottom:12px;">';
-      /* 미디어 헤더 (클릭 시 토글) */
-      html += '<div onclick="toggleMediaSection(this)" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:#F6F7F9;">';
-      html += '<span class="' + (m.status==='online' ? 'dot-online' : 'dot-offline') + '"></span>';
-      html += '<span style="font-size:13px;font-weight:700;color:#24292E;">' + m.name + '</span>';
-      html += '<span style="font-size:12px;color:#9EA5AD;">' + m.spec + '</span>';
-      html += '<span style="font-size:12px;color:#596066;margin-left:auto;">운영 ' + m.opHours + ' · <strong>' + m.loops + '회/일</strong></span>';
-      html += '<span style="font-size:12px;color:#9EA5AD;margin-left:8px;">' + (isOpen ? '▲' : '▼') + '</span>';
-      html += '</div>';
-      /* 루프 목록 */
-      html += '<div class="media-loop-section" style="display:' + (isOpen ? 'block' : 'none') + ';">';
-      html += '<div class="loop-list-wrap" style="border:none;border-radius:0;">';
-      html += '<div class="loop-list-head"><span>루프</span><span>시작</span><span>재생 콘텐츠 시퀀스 (총 300초)</span></div>';
-      html += '<div class="loop-list-body">' + buildLoopRows(m.seq, m.loops, startH) + '</div>';
-      html += '</div></div></div>';
+    var medias = pd.medias;
+    var LOOP_DUR = 300;
+    /* 가장 이른 운영 시작 시각 기준으로 행 생성 */
+    var minStartH = medias.reduce(function(min, m) {
+      return Math.min(min, parseInt(m.opHours));
+    }, 24);
+    /* 가장 늦게 끝나는 미디어 기준 총 행 수 */
+    var maxLoops = medias.reduce(function(mx, m) {
+      var startH = parseInt(m.opHours);
+      var offset = (startH - minStartH) * 12;
+      return Math.max(mx, offset + m.loops);
+    }, 0);
+
+    /* ── 테이블 헤더 ── */
+    var thCols = '<th style="padding:8px 10px;text-align:center;font-weight:600;color:#596066;' +
+      'border-right:1px solid #E5E7EA;border-bottom:1px solid #E5E7EA;white-space:nowrap;' +
+      'position:sticky;left:0;background:#F6F7F9;z-index:11;min-width:46px;">루프</th>' +
+      '<th style="padding:8px 10px;text-align:center;font-weight:600;color:#596066;' +
+      'border-right:1px solid #E5E7EA;border-bottom:1px solid #E5E7EA;white-space:nowrap;' +
+      'position:sticky;left:46px;background:#F6F7F9;z-index:11;min-width:52px;">시각</th>';
+
+    medias.forEach(function(m) {
+      thCols += '<th style="padding:8px 14px;text-align:left;border-right:1px solid #E5E7EA;' +
+        'border-bottom:1px solid #E5E7EA;min-width:320px;background:#F6F7F9;">' +
+        '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<span class="' + (m.status==='online'?'dot-online':'dot-offline') + '"></span>' +
+        '<span style="font-size:12px;font-weight:700;color:#24292E;">' + m.name + '</span>' +
+        '</div>' +
+        '<div style="font-size:10px;font-weight:400;color:#9EA5AD;margin-top:2px;">' +
+        m.opHours + ' · ' + m.loops + '회/일 · ' + m.spec + '</div></th>';
     });
-    document.getElementById('productDayBody').innerHTML = html;
+
+    /* ── 테이블 바디 ── */
+    var tbRows = '';
+    for (var i = 0; i < maxLoops; i++) {
+      var totalMin = minStartH * 60 + i * 5;
+      var hh = Math.floor(totalMin / 60);
+      var mm = totalMin % 60;
+      var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+      var loopNum = 'L' + String(i+1).padStart(3,'0');
+      var bg = i % 2 ? '#FAFBFC' : '#fff';
+
+      tbRows += '<tr>';
+      tbRows += '<td style="padding:3px 8px;text-align:center;font-size:10px;font-weight:600;color:#B0B7BE;' +
+        'border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;white-space:nowrap;' +
+        'position:sticky;left:0;background:' + bg + ';z-index:5;">' + loopNum + '</td>';
+      tbRows += '<td style="padding:3px 8px;text-align:center;font-size:11px;color:#596066;' +
+        'border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;white-space:nowrap;' +
+        'position:sticky;left:46px;background:' + bg + ';z-index:5;">' + timeStr + '</td>';
+
+      medias.forEach(function(m) {
+        var startH = parseInt(m.opHours);
+        var offset = (startH - minStartH) * 12;
+        var active = (i >= offset && i < offset + m.loops);
+        tbRows += '<td style="padding:2px 8px;border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;background:' + bg + ';">';
+        if (active) {
+          tbRows += '<div style="display:flex;gap:1px;height:22px;">';
+          m.seq.forEach(function(item) {
+            var pct = (item.dur / LOOP_DUR * 100).toFixed(2);
+            tbRows += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초">' +
+              '<span>' + item.name + '</span></div>';
+          });
+          tbRows += '</div>';
+        } else {
+          tbRows += '<div style="height:22px;background:#F6F7F9;border-radius:3px;"></div>';
+        }
+        tbRows += '</td>';
+      });
+      tbRows += '</tr>';
+    }
+
+    document.getElementById('productDayBody').innerHTML =
+      '<div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">' +
+      '<div style="overflow:auto;max-height:540px;">' +
+      '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+      '<thead><tr>' + thCols + '</tr></thead>' +
+      '<tbody>' + tbRows + '</tbody></table></div></div>';
   }
 
   function toggleMediaSection(header) {
