@@ -366,7 +366,42 @@
     .cal-tooltip-name { font-weight: 600; color: #24292E; }
     .cal-tooltip-meta { font-size: 11px; color: #9EA5AD; }
 
-    /* ── 잔여 시간 바 ── */
+    /* ── 루프 목록 (일 보기) ── */
+    .loop-list-wrap {
+      border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden;
+    }
+    .loop-list-head {
+      display: grid; grid-template-columns: 44px 48px 1fr;
+      gap: 0; background: #F6F7F9;
+      border-bottom: 1px solid #E5E7EA;
+      padding: 7px 12px;
+    }
+    .loop-list-head span { font-size: 11px; font-weight: 600; color: #596066; }
+    .loop-list-body {
+      overflow-y: auto; max-height: 520px;
+    }
+    .loop-row {
+      display: grid; grid-template-columns: 44px 48px 1fr;
+      gap: 0; align-items: center;
+      padding: 3px 12px; border-bottom: 1px solid #F5F6F7;
+      min-height: 32px;
+    }
+    .loop-row:hover { background: #FAFBFC; }
+    .loop-row-num  { font-size: 10px; color: #B0B7BE; font-weight: 600; }
+    .loop-row-time { font-size: 11px; color: #596066; }
+    .loop-row-items { display: flex; gap: 1px; overflow: hidden; height: 22px; }
+    .loop-chip {
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px; overflow: hidden;
+      font-size: 9px; font-weight: 600; white-space: nowrap;
+      cursor: default; flex-shrink: 0;
+    }
+    .loop-chip span { padding: 0 4px; overflow: hidden; text-overflow: ellipsis; }
+    /* 칩 색 */
+    .lc-confirmed { background: #EEEDFE; color: #3C3489; }
+    .lc-selfop    { background: #E1F5EE; color: #085041; }
+    .lc-condition { background: #FFF3DC; color: #6B3C00; }
+    .lc-draft     { background: #F1F2F4; color: #3E4650; border: 1px dashed #B0B7BE; }
     .remain-section-title {
       font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 10px;
     }
@@ -541,92 +576,15 @@
             <span style="margin-left:auto;font-size:12px;color:#596066;">운영시간 <strong style="color:#24292E;">07:00 ~ 22:00</strong></span>
           </div>
 
-          <!-- 세로 타임라인 -->
-          <div class="vtl-wrap">
-            <!-- 시간 레이블 컬럼 -->
-            <div class="vtl-time-col">
-              <div class="vtl-hour-label" style="height:30px;"></div><!-- 상단 여백 -->
-              <div class="vtl-hour-label">07:00</div>
-              <div class="vtl-hour-label">08:00</div>
-              <div class="vtl-hour-label">09:00</div>
-              <div class="vtl-hour-label">10:00</div>
-              <div class="vtl-hour-label">11:00</div>
-              <div class="vtl-hour-label">12:00</div>
-              <div class="vtl-hour-label">13:00</div>
-              <div class="vtl-hour-label">14:00</div>
-              <div class="vtl-hour-label">15:00</div>
-              <div class="vtl-hour-label">16:00</div>
-              <div class="vtl-hour-label">17:00</div>
-              <div class="vtl-hour-label">18:00</div>
-              <div class="vtl-hour-label">19:00</div>
-              <div class="vtl-hour-label">20:00</div>
-              <div class="vtl-hour-label">21:00</div>
-              <div class="vtl-hour-label">22:00</div>
+          <!-- 루프 목록 (L1~L180, 각 루프의 재생 콘텐츠 시퀀스) -->
+          <div class="loop-list-wrap">
+            <div class="loop-list-head">
+              <span>루프</span>
+              <span>시작</span>
+              <span>재생 콘텐츠 시퀀스 (총 300초)</span>
             </div>
-            <!-- 타임라인 바디 (07:00~22:00 = 15시간 = 900분, 루프 5분×180회) -->
-            <div class="vtl-body" style="height:900px;">
-
-              <!-- ① 루프 구획 strip (왼쪽 40px) — 5px = 1루프 -->
-              <div id="loopStrip" style="position:absolute;top:0;left:0;width:40px;bottom:0;border-right:1px solid #E5E7EA;z-index:1;
-                background:repeating-linear-gradient(to bottom,#F8F9FA 0px,#F8F9FA 4px,#E8EAED 4px,#E8EAED 5px);">
-                <!-- 루프 번호 레이블 (30루프마다 = 150px) -->
-                <div style="position:absolute;top:0px;  left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L1</div>
-                <div style="position:absolute;top:150px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L31</div>
-                <div style="position:absolute;top:300px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L61</div>
-                <div style="position:absolute;top:450px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L91</div>
-                <div style="position:absolute;top:600px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L121</div>
-                <div style="position:absolute;top:750px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L151</div>
-                <div style="position:absolute;top:895px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L180</div>
-              </div>
-
-              <!-- ② 시간 눈금선 (매 시간, 60px=60분) -->
-              <div style="position:absolute;left:40px;right:0;top:0px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:60px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:120px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:180px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:240px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:300px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:360px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:420px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:480px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:540px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:600px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:660px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:720px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:780px;border-top:1px solid #E5E7EA;"></div>
-              <div style="position:absolute;left:40px;right:0;top:840px;border-top:1px solid #E5E7EA;"></div>
-
-              <!-- ③ 스케줄 블록: 1px=1분, 07:00=top:0, left:44px(strip 여백) -->
-              <!-- 자체운영 07:00~08:30 (90분) -->
-              <div class="vtl-sched s-selfop" style="top:0;height:88px;left:44px;">
-                <div class="vtl-sched-title">기본 홍보</div>
-                <div class="vtl-sched-sub">자체 운영 · 07:00~08:30</div>
-                <div class="vtl-sched-product">자체 운영</div>
-              </div>
-              <!-- 확정 08:30~11:00 (150분) -->
-              <div class="vtl-sched s-confirmed" style="top:90px;height:148px;left:44px;">
-                <div class="vtl-sched-title">삼성 갤럭시 S25</div>
-                <div class="vtl-sched-sub">30초 · 100회 보장 · 08:30~11:00</div>
-                <div class="vtl-sched-product">강남 A지구 패키지</div>
-              </div>
-              <!-- 조건 11:00~12:30 (90분) -->
-              <div class="vtl-sched s-condition" style="top:240px;height:88px;left:44px;">
-                <div class="vtl-sched-title">우산 광고</div>
-                <div class="vtl-sched-sub">비 조건 · 최대 50회 · 11:00~12:30</div>
-                <div class="vtl-sched-product">강남 A지구 패키지</div>
-              </div>
-              <!-- 확정 13:00~17:00 (240분) -->
-              <div class="vtl-sched s-confirmed" style="top:360px;height:238px;left:44px;">
-                <div class="vtl-sched-title">현대자동차 아이오닉</div>
-                <div class="vtl-sched-sub">15초 · 200회 보장 · 13:00~17:00</div>
-                <div class="vtl-sched-product">강남 A지구 패키지</div>
-              </div>
-              <!-- 초안 18:00~20:00 (120분) -->
-              <div class="vtl-sched s-draft" style="top:660px;height:118px;left:44px;">
-                <div class="vtl-sched-title">롯데백화점 [초안]</div>
-                <div class="vtl-sched-sub">미확정 · 18:00~20:00</div>
-                <div class="vtl-sched-product">홍대 입구역 프리미엄</div>
-              </div>
+            <div class="loop-list-body" id="loopListBody">
+              <!-- JS로 채움 -->
             </div>
           </div>
 
@@ -1221,8 +1179,56 @@
     setTimeout(function(){ toast.style.display = 'none'; }, 2800);
   }
 
+  /* ── 루프 목록 렌더링 ── */
+  /* 루프 1회 = 300초. 스케줄은 날짜 기준으로 배정되며 같은 날의 모든 루프에 동일하게 적용 */
+  var loopSeq = [
+    { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
+    { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
+    { name:'우산 광고',  dur:30, cls:'lc-condition', prod:'강남 A지구 패키지' },
+    { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
+    { name:'아이오닉',   dur:15, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
+    { name:'아이오닉',   dur:15, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
+    { name:'롯데백화점', dur:30, cls:'lc-draft',     prod:'홍대 입구역 프리미엄' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
+    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' }
+    /* 합계: 30+15+30+30+30+15+15+15+15+15+30+15+15+15 = 300초 */
+  ];
+
+  function renderLoopList() {
+    var LOOPS = 180;
+    var START_H = 7, START_M = 0; /* 07:00 */
+    var html = '';
+    for (var i = 0; i < LOOPS; i++) {
+      var totalMin = START_H * 60 + START_M + i * 5;
+      var hh = Math.floor(totalMin / 60);
+      var mm = totalMin % 60;
+      var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+      var loopNum = 'L' + String(i + 1).padStart(3, '0');
+      var rowBg = (i % 2 === 0) ? '' : 'background:#FAFBFC;';
+
+      html += '<div class="loop-row" style="' + rowBg + '">';
+      html += '<span class="loop-row-num">' + loopNum + '</span>';
+      html += '<span class="loop-row-time">' + timeStr + '</span>';
+      html += '<div class="loop-row-items">';
+      loopSeq.forEach(function(item) {
+        var pct = (item.dur / 300 * 100).toFixed(2);
+        html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
+        html += '<span>' + item.name + '</span>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    }
+    document.getElementById('loopListBody').innerHTML = html;
+  }
+
   /* 초기화 */
   renderDateLabel();
+  renderLoopList();
 </script>
 </body>
 </html>
