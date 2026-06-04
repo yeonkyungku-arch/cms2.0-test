@@ -730,7 +730,11 @@
         <div style="font-size:15px;font-weight:700;color:#24292E;padding-bottom:14px;border-bottom:1px solid #E5E7EA;margin-bottom:20px;">스케줄</div>
       </div>
       <div id="tab-schedule" class="card-body" style="padding-top:0;">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px;">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bookingModal').style.display='flex'">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M1 5h10" stroke="currentColor" stroke-width="1.3"/><path d="M4 1v2M8 1v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            스케줄 예약
+          </button>
           <button class="btn btn-primary btn-sm">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
             스케줄 등록
@@ -745,6 +749,7 @@
               <th>기간</th>
               <th>재생시간</th>
               <th>상태</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -755,6 +760,7 @@
               <td>2025.10.01 ~ 10.31</td>
               <td>30초</td>
               <td><span class="status-chip active">활성</span></td>
+              <td><button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="openBooking('삼성 갤럭시 S26 런칭','2025-10-01','2025-10-31')">예약</button></td>
             </tr>
             <tr>
               <td class="link">나이키 FW25 캠페인</td>
@@ -763,6 +769,7 @@
               <td>2025.10.01 ~ 10.31</td>
               <td>15초</td>
               <td><span class="status-chip active">활성</span></td>
+              <td><button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="openBooking('나이키 FW25 캠페인','2025-10-01','2025-10-31')">예약</button></td>
             </tr>
             <tr>
               <td class="link">현대차 아이오닉9</td>
@@ -771,6 +778,7 @@
               <td>2025.11.01 ~ 11.30</td>
               <td>30초</td>
               <td><span class="status-chip confirm">확정</span></td>
+              <td><span style="font-size:11px;color:#9EA5AD;">예약완료</span></td>
             </tr>
             <tr>
               <td class="link">롯데백화점 연말 세일</td>
@@ -779,6 +787,7 @@
               <td>2025.12.01 ~ 12.31</td>
               <td>20초</td>
               <td><span class="status-chip draft">초안</span></td>
+              <td><button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="openBooking('롯데백화점 연말 세일','2025-12-01','2025-12-31')">예약</button></td>
             </tr>
           </tbody>
         </table>
@@ -786,6 +795,81 @@
     </div>
   </div>
 </main>
+
+<!-- ── 스케줄 예약 모달 ── -->
+<div id="bookingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;width:520px;max-width:calc(100vw - 40px);box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;">
+    <!-- 모달 헤더 -->
+    <div style="padding:20px 24px 16px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#24292E;">스케줄 예약</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-top:3px;" id="bookingSubtitle">강남 A지구 패키지</div>
+      </div>
+      <button onclick="document.getElementById('bookingModal').style.display='none'" style="width:28px;height:28px;border-radius:50%;border:none;background:#F6F7F9;font-size:16px;color:#596066;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+    <!-- 모달 바디 -->
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
+
+      <!-- 스케줄 선택 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">스케줄</div>
+        <select class="input" id="bookingSchedSelect" style="width:100%;font-size:13px;">
+          <option>삼성 갤럭시 S26 런칭 · 일반 · 30초</option>
+          <option>나이키 FW25 캠페인 · 조건 · 15초</option>
+          <option>롯데백화점 연말 세일 · 일반 · 20초</option>
+        </select>
+      </div>
+
+      <!-- 예약 기간 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">예약 기간</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="date" class="input" id="bookingFrom" style="flex:1;font-size:13px;">
+          <span style="color:#9EA5AD;font-size:13px;">~</span>
+          <input type="date" class="input" id="bookingTo" style="flex:1;font-size:13px;">
+        </div>
+      </div>
+
+      <!-- 미디어 선택 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">미디어 선택 <span style="font-weight:400;color:#9EA5AD;">(복수 선택 가능)</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" checked> 강남역 1번출구 A
+            <span style="margin-left:auto;font-size:11px;color:#2E9E34;">● 여유 있음</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" checked> 강남역 1번출구 B
+            <span style="margin-left:auto;font-size:11px;color:#B97B00;">▲ 일부 부족</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+            <input type="checkbox"> 신논현역 메인 월
+            <span style="margin-left:auto;font-size:11px;color:#2E9E34;">● 여유 있음</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9EA5AD;cursor:not-allowed;">
+            <input type="checkbox" disabled> 삼성역 코엑스 광장
+            <span style="margin-left:auto;font-size:11px;color:#C83434;">✕ 오프라인</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+            <input type="checkbox"> 역삼역 2번출구
+            <span style="margin-left:auto;font-size:11px;color:#2E9E34;">● 여유 있음</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 메모 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">메모 <span style="font-weight:400;color:#9EA5AD;">(선택)</span></div>
+        <textarea class="textarea" placeholder="예약 관련 메모를 입력하세요" style="width:100%;height:64px;font-size:13px;resize:none;"></textarea>
+      </div>
+    </div>
+    <!-- 모달 푸터 -->
+    <div style="padding:14px 24px 20px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #E5E7EA;">
+      <button class="btn btn-ghost" onclick="document.getElementById('bookingModal').style.display='none'">취소</button>
+      <button class="btn btn-primary" onclick="submitBooking()">예약 확정</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── 효과 분석: 차트 뷰 전환 ──
@@ -807,6 +891,27 @@ function switchAnalysisType(type) {
     work.className   = 'btn btn-primary btn-sm';
     reside.className = 'btn btn-ghost btn-sm';
   }
+}
+
+// ── 스케줄 예약 ──
+function openBooking(schedName, from, to) {
+  var opts = document.getElementById('bookingSchedSelect').options;
+  for (var i = 0; i < opts.length; i++) {
+    if (opts[i].text.indexOf(schedName) === 0) { opts[i].selected = true; break; }
+  }
+  if (from) document.getElementById('bookingFrom').value = from;
+  if (to)   document.getElementById('bookingTo').value   = to;
+  document.getElementById('bookingSubtitle').textContent = '강남 A지구 패키지 · ' + (schedName || '');
+  document.getElementById('bookingModal').style.display = 'flex';
+}
+
+function submitBooking() {
+  document.getElementById('bookingModal').style.display = 'none';
+  var toast = document.createElement('div');
+  toast.textContent = '✓ 스케줄 예약이 완료됐습니다.';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#24292E;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,.25);';
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.remove(); }, 2800);
 }
 
 // ── Chart.js 초기화 ──
