@@ -603,7 +603,10 @@
 
           <!-- 일별 루프 구성 -->
           <div class="loop-detail-title">일별 루프 구성 — 강남역 1번출구 A · 2025년 9월 10일</div>
-          <div style="font-size:12px;color:#9EA5AD;margin-bottom:12px;">루프 1회 = 300초 · 하루 총 288회 반복</div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:#9EA5AD;">루프 1회 = 300초 · 하루 총 <strong style="color:#24292E;">288회</strong> 반복</span>
+            <span style="font-size:12px;color:#596066;">일 최소 노출 보장 기준 <strong style="color:#24292E;">200회</strong> (최대 보장 요건) → 현재 루프 수 288회/일로 <span style="color:#58C65D;font-weight:600;">충족 ✓</span></span>
+          </div>
 
           <div class="loop-card">
             <div class="loop-card-head">
@@ -652,6 +655,74 @@
                 <div class="loop-item-sec">15초</div>
               </div>
             </div>
+          </div>
+
+          <!-- 노출 보장 충족 현황 -->
+          <div style="margin-top:14px;background:#fff;border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">
+            <div style="padding:10px 16px;border-bottom:1px solid #F0F1F3;display:flex;align-items:center;gap:6px;">
+              <span style="font-size:12px;font-weight:700;color:#24292E;">노출 보장 충족 현황</span>
+              <span style="font-size:11px;color:#9EA5AD;">루프 1회당 등장 횟수 × 일 반복 횟수 ≥ 최소 보장 횟수</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#F6F7F9;">
+                  <th style="padding:8px 16px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">스케줄</th>
+                  <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">루프당 횟수</th>
+                  <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">일 반복 수</th>
+                  <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">예상 노출</th>
+                  <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">최소 보장</th>
+                  <th style="padding:8px 16px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">충족</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #F0F1F3;">
+                  <td style="padding:9px 16px;">
+                    <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#AFA9EC;margin-right:6px;vertical-align:middle;"></span>
+                    <span style="font-weight:600;color:#24292E;">삼성 갤럭시 S25</span>
+                  </td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">3회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">288회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">864회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">100회</td>
+                  <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid #F0F1F3;">
+                  <td style="padding:9px 16px;">
+                    <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#AFA9EC;margin-right:6px;vertical-align:middle;"></span>
+                    <span style="font-weight:600;color:#24292E;">현대자동차 아이오닉</span>
+                  </td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">2회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">288회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">576회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">200회</td>
+                  <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid #F0F1F3;">
+                  <td style="padding:9px 16px;">
+                    <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#FABB60;border:1px dashed #E8841A;margin-right:6px;vertical-align:middle;"></span>
+                    <span style="font-weight:600;color:#24292E;">우산 광고</span>
+                    <span style="font-size:10px;color:#9EA5AD;margin-left:4px;">비 조건</span>
+                  </td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">1회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">288회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">288회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">최대 50회</td>
+                  <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:9px 16px;">
+                    <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#D6D8DC;border:1px dashed #9EA5AD;margin-right:6px;vertical-align:middle;"></span>
+                    <span style="font-weight:600;color:#9EA5AD;">롯데백화점</span>
+                    <span style="font-size:10px;color:#9EA5AD;margin-left:4px;">초안</span>
+                  </td>
+                  <td style="padding:9px 12px;text-align:center;color:#CED2D6;">—</td>
+                  <td style="padding:9px 12px;text-align:center;color:#CED2D6;">—</td>
+                  <td style="padding:9px 12px;text-align:center;color:#CED2D6;">미확정</td>
+                  <td style="padding:9px 12px;text-align:center;color:#CED2D6;">—</td>
+                  <td style="padding:9px 16px;text-align:center;"><span style="color:#CED2D6;font-size:12px;">대기</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <hr class="section-divider">
