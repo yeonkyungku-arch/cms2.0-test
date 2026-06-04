@@ -551,50 +551,64 @@
               <div class="vtl-hour-label">21:00</div>
               <div class="vtl-hour-label">22:00</div>
             </div>
-            <!-- 타임라인 바디 (07:00~22:00 = 15시간 = 900분) -->
+            <!-- 타임라인 바디 (07:00~22:00 = 15시간 = 900분, 루프 5분×180회) -->
             <div class="vtl-body" style="height:900px;">
-              <!-- 눈금선 (매 시간) -->
-              <div style="position:absolute;left:0;right:0;top:0px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:60px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:120px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:180px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:240px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:300px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:360px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:420px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:480px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:540px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:600px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:660px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:720px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:780px;border-top:1px solid #F0F1F3;"></div>
-              <div style="position:absolute;left:0;right:0;top:840px;border-top:1px solid #F0F1F3;"></div>
 
-              <!-- 스케줄 블록: 1px = 1분, 07:00=top:0 -->
+              <!-- ① 루프 구획 strip (왼쪽 40px) — 5px = 1루프 -->
+              <div id="loopStrip" style="position:absolute;top:0;left:0;width:40px;bottom:0;border-right:1px solid #E5E7EA;z-index:1;
+                background:repeating-linear-gradient(to bottom,#F8F9FA 0px,#F8F9FA 4px,#E8EAED 4px,#E8EAED 5px);">
+                <!-- 루프 번호 레이블 (30루프마다 = 150px) -->
+                <div style="position:absolute;top:0px;  left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L1</div>
+                <div style="position:absolute;top:150px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L31</div>
+                <div style="position:absolute;top:300px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L61</div>
+                <div style="position:absolute;top:450px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L91</div>
+                <div style="position:absolute;top:600px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L121</div>
+                <div style="position:absolute;top:750px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L151</div>
+                <div style="position:absolute;top:895px;left:3px;font-size:9px;line-height:1;color:#B0B7BE;">L180</div>
+              </div>
+
+              <!-- ② 시간 눈금선 (매 시간, 60px=60분) -->
+              <div style="position:absolute;left:40px;right:0;top:0px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:60px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:120px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:180px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:240px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:300px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:360px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:420px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:480px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:540px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:600px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:660px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:720px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:780px;border-top:1px solid #E5E7EA;"></div>
+              <div style="position:absolute;left:40px;right:0;top:840px;border-top:1px solid #E5E7EA;"></div>
+
+              <!-- ③ 스케줄 블록: 1px=1분, 07:00=top:0, left:44px(strip 여백) -->
               <!-- 자체운영 07:00~08:30 (90분) -->
-              <div class="vtl-sched s-selfop" style="top:0;height:88px;">
+              <div class="vtl-sched s-selfop" style="top:0;height:88px;left:44px;">
                 <div class="vtl-sched-title">기본 홍보</div>
-                <div class="vtl-sched-sub">자체 운영 · 07:00~08:30</div>
+                <div class="vtl-sched-sub">자체 운영 · 07:00~08:30 · 18루프</div>
               </div>
               <!-- 확정 08:30~11:00 (150분) -->
-              <div class="vtl-sched s-confirmed" style="top:90px;height:148px;">
+              <div class="vtl-sched s-confirmed" style="top:90px;height:148px;left:44px;">
                 <div class="vtl-sched-title">삼성 갤럭시 S25</div>
-                <div class="vtl-sched-sub">30초 · 100회 보장 · 08:30~11:00</div>
+                <div class="vtl-sched-sub">30초 · 100회 보장 · 08:30~11:00 · 30루프</div>
               </div>
               <!-- 조건 11:00~12:30 (90분) -->
-              <div class="vtl-sched s-condition" style="top:240px;height:88px;">
+              <div class="vtl-sched s-condition" style="top:240px;height:88px;left:44px;">
                 <div class="vtl-sched-title">우산 광고</div>
-                <div class="vtl-sched-sub">비 조건 · 최대 50회 · 11:00~12:30</div>
+                <div class="vtl-sched-sub">비 조건 · 최대 50회 · 11:00~12:30 · 18루프</div>
               </div>
               <!-- 확정 13:00~17:00 (240분) -->
-              <div class="vtl-sched s-confirmed" style="top:360px;height:238px;">
+              <div class="vtl-sched s-confirmed" style="top:360px;height:238px;left:44px;">
                 <div class="vtl-sched-title">현대자동차 아이오닉</div>
-                <div class="vtl-sched-sub">15초 · 200회 보장 · 13:00~17:00</div>
+                <div class="vtl-sched-sub">15초 · 200회 보장 · 13:00~17:00 · 48루프</div>
               </div>
               <!-- 초안 18:00~20:00 (120분) -->
-              <div class="vtl-sched s-draft" style="top:660px;height:118px;">
+              <div class="vtl-sched s-draft" style="top:660px;height:118px;left:44px;">
                 <div class="vtl-sched-title">롯데백화점 [초안]</div>
-                <div class="vtl-sched-sub">미확정 · 18:00~20:00</div>
+                <div class="vtl-sched-sub">미확정 · 18:00~20:00 · 24루프</div>
               </div>
             </div>
           </div>
@@ -604,14 +618,14 @@
           <!-- 일별 루프 구성 -->
           <div class="loop-detail-title">일별 루프 구성 — 강남역 1번출구 A · 2025년 9월 10일</div>
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;color:#9EA5AD;">루프 1회 = 300초 · 하루 총 <strong style="color:#24292E;">288회</strong> 반복</span>
-            <span style="font-size:12px;color:#596066;">일 최소 노출 보장 기준 <strong style="color:#24292E;">200회</strong> (최대 보장 요건) → 현재 루프 수 288회/일로 <span style="color:#58C65D;font-weight:600;">충족 ✓</span></span>
+            <span style="font-size:12px;color:#9EA5AD;">루프 1회 = 300초 · 하루 총 <strong style="color:#24292E;">180회</strong> 반복 (07:00~22:00 · 15시간)</span>
+            <span style="font-size:12px;color:#596066;">일 최소 노출 보장 기준 <strong style="color:#24292E;">200회</strong> (최대 보장 요건) → 현재 루프 수 180회/일로 <span style="color:#58C65D;font-weight:600;">충족 ✓</span></span>
           </div>
 
           <div class="loop-card">
             <div class="loop-card-head">
               <span class="loop-card-title">오늘의 루프 구성</span>
-              <span class="loop-card-meta">총 300초 · 잔여 15초</span>
+              <span class="loop-card-meta">총 300초 · 잔여 15초 · 하루 180회 반복</span>
             </div>
             <div class="loop-items">
               <div class="loop-item li-confirmed" style="width:82px">
@@ -681,8 +695,8 @@
                     <span style="font-weight:600;color:#24292E;">삼성 갤럭시 S25</span>
                   </td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">3회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">288회</td>
-                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">864회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">540회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">100회</td>
                   <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
                 </tr>
@@ -692,8 +706,8 @@
                     <span style="font-weight:600;color:#24292E;">현대자동차 아이오닉</span>
                   </td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">2회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">288회</td>
-                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">576회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">360회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">200회</td>
                   <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
                 </tr>
@@ -704,8 +718,8 @@
                     <span style="font-size:10px;color:#9EA5AD;margin-left:4px;">비 조건</span>
                   </td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">1회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">288회</td>
-                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">288회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">180회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">최대 50회</td>
                   <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
                 </tr>
