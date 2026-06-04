@@ -198,6 +198,111 @@
     .li-gap .loop-item-title { color: #9EA5AD; }
     .li-gap .loop-item-sec   { color: #9EA5AD; }
 
+    /* ── 월간 캘린더 ── */
+    #monthView { display: none; }
+
+    .cal-header {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9;
+    }
+    .cal-dow {
+      padding: 8px 0; text-align: center;
+      font-size: 12px; font-weight: 600; color: #596066;
+    }
+    .cal-dow:first-child { color: #E24B4B; }
+    .cal-dow:last-child  { color: #2D84ED; }
+
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      border-left: 1px solid #E5E7EA;
+    }
+    .cal-cell {
+      min-height: 110px;
+      border-right: 1px solid #E5E7EA;
+      border-bottom: 1px solid #E5E7EA;
+      padding: 6px 6px 4px;
+      position: relative;
+      vertical-align: top;
+    }
+    .cal-cell:hover { background: #F6F7F9; }
+    .cal-cell.other-month { background: #FAFAFA; }
+    .cal-cell.other-month .cal-date { color: #CED2D6; }
+    .cal-cell.today .cal-date {
+      background: #58C65D; color: #fff;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .cal-date {
+      font-size: 12px; font-weight: 600; color: #24292E;
+      display: inline-block; margin-bottom: 4px;
+      line-height: 22px;
+    }
+    .cal-cell:nth-child(7n+1) .cal-date { color: #E24B4B; }
+    .cal-cell:nth-child(7n)   .cal-date { color: #2D84ED; }
+    .cal-cell.today .cal-date { color: #fff !important; }
+
+    .cal-sched-block {
+      display: flex; align-items: center;
+      font-size: 10px; font-weight: 500;
+      padding: 2px 6px; border-radius: 3px;
+      margin-bottom: 2px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      cursor: default;
+    }
+    .cal-sched-block.confirmed { background: #EEEDFE; color: #3C3489; }
+    .cal-sched-block.draft     { background: #F1F2F4; color: #596066; border: 1px dashed #CED2D6; }
+    .cal-sched-block.condition { background: #FFF3DC; color: #6B3C00; border: 1px dashed #E8841A; }
+    .cal-sched-block.selfop    { background: #E1F5EE; color: #085041; }
+
+    .cal-more {
+      font-size: 11px; color: #2D84ED; font-weight: 600;
+      padding: 1px 4px; cursor: pointer;
+    }
+    .cal-more:hover { text-decoration: underline; }
+
+    /* 호버 툴팁 */
+    .cal-cell-wrap {
+      position: relative;
+    }
+    .cal-tooltip {
+      display: none;
+      position: absolute;
+      top: 0; left: calc(100% + 6px);
+      z-index: 200;
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.14);
+      padding: 12px 14px;
+      min-width: 200px;
+      max-width: 260px;
+      pointer-events: none;
+    }
+    /* 마지막 2열은 왼쪽으로 */
+    .cal-cell-wrap.tip-left .cal-tooltip {
+      left: auto; right: calc(100% + 6px);
+    }
+    .cal-cell-wrap:hover .cal-tooltip { display: block; }
+
+    .cal-tooltip-date {
+      font-size: 12px; font-weight: 700; color: #24292E;
+      margin-bottom: 8px; padding-bottom: 6px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .cal-tooltip-item {
+      display: flex; align-items: flex-start; gap: 6px;
+      margin-bottom: 6px; font-size: 12px;
+    }
+    .cal-tooltip-dot {
+      width: 8px; height: 8px; border-radius: 2px;
+      flex-shrink: 0; margin-top: 3px;
+    }
+    .cal-tooltip-info { line-height: 1.5; }
+    .cal-tooltip-name { font-weight: 600; color: #24292E; }
+    .cal-tooltip-meta { font-size: 11px; color: #9EA5AD; }
+
     /* ── 잔여 시간 바 ── */
     .remain-section-title {
       font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 10px;
@@ -348,7 +453,24 @@
           <div class="leg"><div class="leg-dot" style="background:#E5E7EA;border:1px solid #CED2D6;"></div>잔여 시간</div>
         </div>
 
-        <!-- 타임라인 그리드 -->
+        <!-- 월간 캘린더 뷰 -->
+        <div id="monthView">
+          <div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">
+            <div class="cal-header">
+              <div class="cal-dow">일</div>
+              <div class="cal-dow">월</div>
+              <div class="cal-dow">화</div>
+              <div class="cal-dow">수</div>
+              <div class="cal-dow">목</div>
+              <div class="cal-dow">금</div>
+              <div class="cal-dow">토</div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+        </div>
+
+        <!-- 타임라인 그리드 (일 보기) -->
+        <div id="dayView">
         <div class="timeline-wrap">
           <div class="timeline-inner">
 
@@ -496,6 +618,7 @@
 
           </div>
         </div>
+        </div><!-- /#dayView -->
 
         <hr class="section-divider">
 
@@ -614,7 +737,119 @@
 <script>
   var basis = 'media';
   var view  = 'day';
+  var dateObj = new Date(2025, 8, 10); // 2025-09-10
+  var DOW = ['일','월','화','수','목','금','토'];
 
+  /* ── 샘플 스케줄 데이터 (2025년 9월) ── */
+  var scheduleData = {
+    '2025-9-1':  [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'현대자동차 아이오닉', meta:'15초 · 200회', type:'confirmed' },
+      { name:'우산 광고', meta:'비 조건 · 최대 50회', type:'condition' }
+    ],
+    '2025-9-2':  [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'롯데백화점', meta:'미확정', type:'draft' }
+    ],
+    '2025-9-3':  [
+      { name:'CJ 제일제당 햇반', meta:'30초 · 150회', type:'confirmed' },
+      { name:'네이버 플러스', meta:'15초 · 180회', type:'confirmed' },
+      { name:'스타벅스 계절', meta:'온도 25° 이상', type:'condition' },
+      { name:'올리브영 세일', meta:'30초 · 120회', type:'confirmed' }
+    ],
+    '2025-9-4':  [
+      { name:'무신사 스탠다드', meta:'15초 · 200회', type:'confirmed' },
+      { name:'카카오뱅크', meta:'미확정', type:'draft' }
+    ],
+    '2025-9-5':  [
+      { name:'하이트진로 테라', meta:'30초 · 80회', type:'confirmed' },
+      { name:'배달의민족', meta:'시보 · 18:00', type:'condition' },
+      { name:'신한카드', meta:'15초 · 100회', type:'confirmed' }
+    ],
+    '2025-9-8':  [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'기본 홍보', meta:'자체 운영', type:'selfop' }
+    ],
+    '2025-9-9':  [
+      { name:'CJ 제일제당 햇반', meta:'30초 · 150회', type:'confirmed' },
+      { name:'네이버 플러스', meta:'15초 · 180회', type:'confirmed' },
+      { name:'현대자동차 아이오닉', meta:'15초 · 200회', type:'confirmed' },
+      { name:'롯데백화점', meta:'미확정', type:'draft' },
+      { name:'스타벅스 계절', meta:'온도 25° 이상', type:'condition' }
+    ],
+    '2025-9-10': [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'현대자동차 아이오닉', meta:'15초 · 200회', type:'confirmed' },
+      { name:'우산 광고', meta:'비 조건 · 최대 50회', type:'condition' },
+      { name:'롯데백화점', meta:'미확정', type:'draft' }
+    ],
+    '2025-9-11': [
+      { name:'무신사 스탠다드', meta:'15초 · 200회', type:'confirmed' },
+      { name:'올리브영 세일', meta:'30초 · 120회', type:'confirmed' }
+    ],
+    '2025-9-12': [
+      { name:'하이트진로 테라', meta:'30초 · 80회', type:'confirmed' },
+      { name:'신한카드', meta:'15초 · 100회', type:'confirmed' },
+      { name:'배달의민족', meta:'시보 · 18:00', type:'condition' }
+    ],
+    '2025-9-15': [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'CJ 제일제당 햇반', meta:'30초 · 150회', type:'confirmed' },
+      { name:'기본 홍보', meta:'자체 운영', type:'selfop' },
+      { name:'우산 광고', meta:'비 조건 · 최대 50회', type:'condition' },
+      { name:'카카오뱅크', meta:'미확정', type:'draft' }
+    ],
+    '2025-9-16': [
+      { name:'네이버 플러스', meta:'15초 · 180회', type:'confirmed' }
+    ],
+    '2025-9-17': [
+      { name:'현대자동차 아이오닉', meta:'15초 · 200회', type:'confirmed' },
+      { name:'롯데백화점', meta:'미확정', type:'draft' },
+      { name:'스타벅스 계절', meta:'온도 25° 이상', type:'condition' }
+    ],
+    '2025-9-18': [
+      { name:'무신사 스탠다드', meta:'15초 · 200회', type:'confirmed' },
+      { name:'올리브영 세일', meta:'30초 · 120회', type:'confirmed' }
+    ],
+    '2025-9-22': [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'하이트진로 테라', meta:'30초 · 80회', type:'confirmed' },
+      { name:'신한카드', meta:'15초 · 100회', type:'confirmed' },
+      { name:'배달의민족', meta:'시보 · 18:00', type:'condition' }
+    ],
+    '2025-9-23': [
+      { name:'CJ 제일제당 햇반', meta:'30초 · 150회', type:'confirmed' },
+      { name:'기본 홍보', meta:'자체 운영', type:'selfop' }
+    ],
+    '2025-9-24': [
+      { name:'네이버 플러스', meta:'15초 · 180회', type:'confirmed' },
+      { name:'카카오뱅크', meta:'미확정', type:'draft' },
+      { name:'우산 광고', meta:'비 조건 · 최대 50회', type:'condition' }
+    ],
+    '2025-9-25': [
+      { name:'현대자동차 아이오닉', meta:'15초 · 200회', type:'confirmed' }
+    ],
+    '2025-9-29': [
+      { name:'올리브영 세일', meta:'30초 · 120회', type:'confirmed' },
+      { name:'무신사 스탠다드', meta:'15초 · 200회', type:'confirmed' },
+      { name:'신한카드', meta:'15초 · 100회', type:'confirmed' },
+      { name:'롯데백화점', meta:'미확정', type:'draft' },
+      { name:'스타벅스 계절', meta:'온도 25° 이상', type:'condition' }
+    ],
+    '2025-9-30': [
+      { name:'삼성 갤럭시 S25', meta:'30초 · 100회', type:'confirmed' },
+      { name:'하이트진로 테라', meta:'30초 · 80회', type:'confirmed' }
+    ]
+  };
+
+  var typeColor = {
+    confirmed: '#AFA9EC',
+    draft:     '#CED2D6',
+    condition: '#FABB60',
+    selfop:    '#5DCAA5'
+  };
+
+  /* ── 기준/뷰 전환 ── */
   function setBasis(b, btn) {
     basis = b;
     document.querySelectorAll('#basisTab button').forEach(function(el){ el.classList.remove('active'); });
@@ -628,22 +863,111 @@
     ['day','week','month'].forEach(function(k){
       document.getElementById('btn-'+k).classList.toggle('active', k === v);
     });
-  }
-
-  var dateObj = new Date(2025, 8, 10); // 2025-09-10
-  var DOW = ['일','월','화','수','목','금','토'];
-
-  function renderDateLabel() {
-    var d = dateObj;
-    document.getElementById('dateLabel').textContent =
-      d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 (' + DOW[d.getDay()] + ')';
-  }
-
-  function changeDate(dir) {
-    dateObj.setDate(dateObj.getDate() + dir);
+    document.getElementById('dayView').style.display   = (v === 'day')   ? '' : 'none';
+    document.getElementById('monthView').style.display = (v === 'month') ? '' : 'none';
+    if (v === 'month') renderMonth();
     renderDateLabel();
   }
 
+  /* ── 날짜 레이블 ── */
+  function renderDateLabel() {
+    var d = dateObj;
+    var label;
+    if (view === 'month') {
+      label = d.getFullYear() + '년 ' + (d.getMonth()+1) + '월';
+    } else {
+      label = d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 (' + DOW[d.getDay()] + ')';
+    }
+    document.getElementById('dateLabel').textContent = label;
+  }
+
+  function changeDate(dir) {
+    if (view === 'month') {
+      dateObj.setMonth(dateObj.getMonth() + dir);
+    } else {
+      dateObj.setDate(dateObj.getDate() + dir);
+    }
+    renderDateLabel();
+    if (view === 'month') renderMonth();
+  }
+
+  /* ── 월간 캘린더 렌더링 ── */
+  function renderMonth() {
+    var y = dateObj.getFullYear();
+    var m = dateObj.getMonth(); // 0-based
+    var today = new Date();
+
+    var firstDay = new Date(y, m, 1).getDay(); // 0=Sun
+    var daysInMonth = new Date(y, m+1, 0).getDate();
+    var daysInPrev  = new Date(y, m, 0).getDate();
+
+    var cells = [];
+    // 이전 달 채우기
+    for (var i = firstDay - 1; i >= 0; i--) {
+      cells.push({ day: daysInPrev - i, month: m - 1, year: y, other: true });
+    }
+    // 이번 달
+    for (var d = 1; d <= daysInMonth; d++) {
+      cells.push({ day: d, month: m, year: y, other: false });
+    }
+    // 다음 달 채우기 (6행 고정)
+    var remaining = 42 - cells.length;
+    for (var n = 1; n <= remaining; n++) {
+      cells.push({ day: n, month: m + 1, year: y, other: true });
+    }
+
+    var grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    cells.forEach(function(c, idx) {
+      var isToday = !c.other &&
+        c.day === today.getDate() &&
+        c.month === today.getMonth() &&
+        c.year === today.getFullYear();
+
+      var key = c.year + '-' + (c.month+1) + '-' + c.day;
+      var scheds = (!c.other && scheduleData[key]) ? scheduleData[key] : [];
+
+      // 마지막 2열은 툴팁을 왼쪽으로
+      var tipLeft = (idx % 7 >= 5) ? ' tip-left' : '';
+
+      var cellHtml = '<div class="cal-cell-wrap' + tipLeft + '">';
+      cellHtml += '<div class="cal-cell' + (c.other ? ' other-month' : '') + (isToday ? ' today' : '') + '">';
+      cellHtml += '<span class="cal-date">' + c.day + '</span>';
+
+      var shown = scheds.slice(0, 3);
+      shown.forEach(function(s) {
+        cellHtml += '<div class="cal-sched-block ' + s.type + '">' + s.name + '</div>';
+      });
+      if (scheds.length > 3) {
+        cellHtml += '<div class="cal-more">+' + (scheds.length - 3) + '개 더보기</div>';
+      }
+
+      cellHtml += '</div>'; // .cal-cell
+
+      // 툴팁
+      if (scheds.length > 0) {
+        var monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+        var dateStr = (c.month+1) + '월 ' + c.day + '일';
+        cellHtml += '<div class="cal-tooltip">';
+        cellHtml += '<div class="cal-tooltip-date">' + dateStr + ' 스케줄</div>';
+        scheds.forEach(function(s) {
+          cellHtml += '<div class="cal-tooltip-item">';
+          cellHtml += '<div class="cal-tooltip-dot" style="background:' + typeColor[s.type] + ';"></div>';
+          cellHtml += '<div class="cal-tooltip-info">';
+          cellHtml += '<div class="cal-tooltip-name">' + s.name + '</div>';
+          cellHtml += '<div class="cal-tooltip-meta">' + s.meta + '</div>';
+          cellHtml += '</div></div>';
+        });
+        cellHtml += '</div>'; // .cal-tooltip
+      }
+
+      cellHtml += '</div>'; // .cal-cell-wrap
+      grid.innerHTML += cellHtml;
+    });
+  }
+
+  /* 초기화 */
   renderDateLabel();
 </script>
 </body>
