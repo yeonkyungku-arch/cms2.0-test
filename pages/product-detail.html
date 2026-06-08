@@ -773,7 +773,6 @@
         프로덕트 목록
       </a>
       <div class="header-actions">
-        <button class="btn-primary" onclick="openSchedModal()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px;"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>스케줄 예약</button>
         <button class="btn-outline" onclick="alert('편집 모드 (목업)')">편집</button>
         <button class="btn-danger-outline" onclick="alert('삭제 확인 (목업)')">삭제</button>
       </div>
@@ -1141,131 +1140,17 @@
     </div>
   </div>
 
-  <!-- ─── Section B-2: 인벤토리 현황 ─── -->
-  <div class="section-card">
-    <div class="section-header">
-      <h2 class="section-title">인벤토리 현황</h2>
-      <div class="inv-tab-bar">
-        <button class="inv-tab active" onclick="switchInvTab('A')">강남역 A</button>
-        <button class="inv-tab" onclick="switchInvTab('B')">강남역 B</button>
-        <button class="inv-tab" onclick="switchInvTab('C')">강남역 C</button>
-      </div>
-    </div>
-
-    <!-- 강남역 A 패널 -->
-    <div class="inv-panel active" id="inv-panel-A">
-      <div class="cycle-card">
-        <div class="cycle-row">
-          <div class="cycle-item"><div class="cycle-label">사이클 최대 시간</div><div class="cycle-value">600<span class="cycle-unit">초</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">사용 시간</div><div class="cycle-value">125<span class="cycle-unit">초</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">잔여 시간</div><div class="cycle-value">475<span class="cycle-unit">초</span></div></div>
-        </div>
-        <div class="cycle-bar-wrap"><div class="cycle-bar-fill" style="width:20.8%;background:#2D84ED;"></div></div>
-        <div class="cycle-bar-label">20.8% 사용&nbsp;&nbsp;<span style="color:#9EA5AD;">(잔여 79.2%)</span></div>
-        <div class="cycle-row">
-          <div class="cycle-item"><div class="cycle-label">기준 슬롯 수</div><div class="cycle-value">20<span class="cycle-unit">개</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">등록 슬롯 수</div><div class="cycle-value">5<span class="cycle-unit">개</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">잔여 슬롯 수</div><div class="cycle-value">15<span class="cycle-unit">개</span></div></div>
-        </div>
-        <div class="cycle-footer">
-          <span>예상 실제 사이클 시간: <strong>125초</strong></span>
-          <span>예상 일 송출 횟수: <strong>432회</strong>&nbsp;✅ 90회 이상</span>
-        </div>
-      </div>
-      <div class="adex-card">
-        <div class="adex-header">
-          <span class="adex-title">🔗 ADeX 연동 인벤토리</span>
-          <span class="adex-sub">잔여 475초 · 잔여 15슬롯 기준</span>
-        </div>
-        <table class="sched-table">
-          <thead><tr><th>플레이플랜</th><th>재생 시간</th><th>추가 판매 가능 슬롯 수</th><th>제한 기준</th></tr></thead>
-          <tbody>
-            <tr><td>30초 일반</td><td>30초</td><td>15개</td><td>슬롯 수 상한</td></tr>
-            <tr><td>20초 일반</td><td>20초</td><td>15개</td><td>슬롯 수 상한</td></tr>
-            <tr><td>30초 조건</td><td>30초</td><td>15개</td><td>슬롯 수 상한</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 강남역 B 패널 -->
-    <div class="inv-panel" id="inv-panel-B">
-      <div class="cycle-card">
-        <div class="cycle-row">
-          <div class="cycle-item"><div class="cycle-label">사이클 최대 시간</div><div class="cycle-value">480<span class="cycle-unit">초</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">사용 시간</div><div class="cycle-value">90<span class="cycle-unit">초</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">잔여 시간</div><div class="cycle-value">390<span class="cycle-unit">초</span></div></div>
-        </div>
-        <div class="cycle-bar-wrap"><div class="cycle-bar-fill" style="width:18.75%;background:#2D84ED;"></div></div>
-        <div class="cycle-bar-label">18.8% 사용&nbsp;&nbsp;<span style="color:#9EA5AD;">(잔여 81.2%)</span></div>
-        <div class="cycle-row">
-          <div class="cycle-item"><div class="cycle-label">기준 슬롯 수</div><div class="cycle-value">16<span class="cycle-unit">개</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">등록 슬롯 수</div><div class="cycle-value">3<span class="cycle-unit">개</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">잔여 슬롯 수</div><div class="cycle-value">13<span class="cycle-unit">개</span></div></div>
-        </div>
-        <div class="cycle-footer">
-          <span>예상 실제 사이클 시간: <strong>90초</strong></span>
-          <span>예상 일 송출 횟수: <strong>600회</strong>&nbsp;✅ 112회 이상</span>
-        </div>
-      </div>
-      <div class="adex-card">
-        <div class="adex-header">
-          <span class="adex-title">🔗 ADeX 연동 인벤토리</span>
-          <span class="adex-sub">잔여 390초 · 잔여 13슬롯 기준</span>
-        </div>
-        <table class="sched-table">
-          <thead><tr><th>플레이플랜</th><th>재생 시간</th><th>추가 판매 가능 슬롯 수</th><th>제한 기준</th></tr></thead>
-          <tbody>
-            <tr><td>30초 일반</td><td>30초</td><td>13개</td><td>슬롯 수 상한</td></tr>
-            <tr><td>20초 일반</td><td>20초</td><td>13개</td><td>슬롯 수 상한</td></tr>
-            <tr><td>30초 조건</td><td>30초</td><td>13개</td><td>슬롯 수 상한</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 강남역 C 패널 -->
-    <div class="inv-panel" id="inv-panel-C">
-      <div class="cycle-card">
-        <div class="cycle-row">
-          <div class="cycle-item"><div class="cycle-label">사이클 최대 시간</div><div class="cycle-value">540<span class="cycle-unit">초</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">사용 시간</div><div class="cycle-value">108<span class="cycle-unit">초</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">잔여 시간</div><div class="cycle-value">432<span class="cycle-unit">초</span></div></div>
-        </div>
-        <div class="cycle-bar-wrap"><div class="cycle-bar-fill" style="width:20%;background:#2D84ED;"></div></div>
-        <div class="cycle-bar-label">20.0% 사용&nbsp;&nbsp;<span style="color:#9EA5AD;">(잔여 80.0%)</span></div>
-        <div class="cycle-row">
-          <div class="cycle-item"><div class="cycle-label">기준 슬롯 수</div><div class="cycle-value">18<span class="cycle-unit">개</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">등록 슬롯 수</div><div class="cycle-value">4<span class="cycle-unit">개</span></div></div>
-          <div class="cycle-item"><div class="cycle-label">잔여 슬롯 수</div><div class="cycle-value">14<span class="cycle-unit">개</span></div></div>
-        </div>
-        <div class="cycle-footer">
-          <span>예상 실제 사이클 시간: <strong>108초</strong></span>
-          <span>예상 일 송출 횟수: <strong>433회</strong>&nbsp;✅ 86회 이상</span>
-        </div>
-      </div>
-      <div class="adex-card">
-        <div class="adex-header">
-          <span class="adex-title">🔗 ADeX 연동 인벤토리</span>
-          <span class="adex-sub">잔여 432초 · 잔여 14슬롯 기준</span>
-        </div>
-        <table class="sched-table">
-          <thead><tr><th>플레이플랜</th><th>재생 시간</th><th>추가 판매 가능 슬롯 수</th><th>제한 기준</th></tr></thead>
-          <tbody>
-            <tr><td>30초 일반</td><td>30초</td><td>14개</td><td>슬롯 수 상한</td></tr>
-            <tr><td>20초 일반</td><td>20초</td><td>14개</td><td>슬롯 수 상한</td></tr>
-            <tr><td>30초 조건</td><td>30초</td><td>14개</td><td>슬롯 수 상한</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
   <!-- ─── Section C: 스케줄 현황 ─── -->
   <div class="section-card">
     <div class="section-header">
       <h2 class="section-title">스케줄 현황</h2>
-      <a class="link-btn" href="schedule-main.html">편성표 보기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="btn-primary" onclick="openSchedModal()" style="height:32px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          스케줄 예약
+        </button>
+        <a class="link-btn" href="schedule-main.html">편성표 보기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+      </div>
     </div>
 
     <!-- Filter tabs -->
