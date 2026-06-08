@@ -146,7 +146,7 @@
     .s-selfop .sched-title { color: #085041; }
     .s-selfop .sched-sub   { color: #0F6E56; }
 
-    /* 루프 경계 */
+    /* 사이클 경계 */
     .loop-mark {
       position: absolute; top: 0; bottom: 0;
       border-left: 2px solid #7F77DD;
@@ -161,7 +161,7 @@
       border: none; border-top: 1px solid #E5E7EA; margin: 20px 0;
     }
 
-    /* ── 루프 상세 ── */
+    /* ── 사이클 상세 ── */
     .loop-detail-title {
       font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 10px;
     }
@@ -366,7 +366,7 @@
     .cal-tooltip-name { font-weight: 600; color: #24292E; }
     .cal-tooltip-meta { font-size: 11px; color: #9EA5AD; }
 
-    /* ── 루프 목록 (일 보기) ── */
+    /* ── 사이클 목록 (일 보기) ── */
     .loop-list-wrap {
       border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden;
     }
@@ -579,12 +579,12 @@
             <span style="margin-left:auto;font-size:12px;color:#596066;">운영시간 <strong style="color:#24292E;">07:00 ~ 22:00</strong></span>
           </div>
 
-          <!-- 루프 목록 (L1~L180, 각 루프의 재생 콘텐츠 시퀀스) -->
+          <!-- 사이클 목록 (C001~C450, 각 사이클의 재생 콘텐츠 시퀀스) -->
           <div class="loop-list-wrap">
             <div class="loop-list-head">
-              <span>루프</span>
+              <span>사이클</span>
               <span>시작</span>
-              <span>재생 콘텐츠 시퀀스 (총 300초)</span>
+              <span>재생 콘텐츠 시퀀스 (실제 120초 / 사이클 최대 600초)</span>
             </div>
             <div class="loop-list-body" id="loopListBody">
               <!-- JS로 채움 -->
@@ -593,17 +593,17 @@
 
           <hr class="section-divider">
 
-          <!-- 일별 루프 구성 -->
-          <div class="loop-detail-title">일별 루프 구성 — 강남역 1번출구 A · 2025년 9월 10일</div>
+          <!-- 일별 사이클 구성 -->
+          <div class="loop-detail-title">일별 사이클 구성 — 강남역 1번출구 A · 2025년 9월 10일</div>
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
-            <span style="font-size:12px;color:#9EA5AD;">루프 1회 = 300초 · 하루 총 <strong style="color:#24292E;">180회</strong> 반복 (07:00~22:00 · 15시간)</span>
-            <span style="font-size:12px;color:#596066;">일 최소 노출 보장 기준 <strong style="color:#24292E;">200회</strong> (최대 보장 요건) → 현재 루프 수 180회/일로 <span style="color:#58C65D;font-weight:600;">충족 ✓</span></span>
+            <span style="font-size:12px;color:#9EA5AD;">사이클 최대 시간 = <strong style="color:#24292E;">600초</strong> (30초 × 20슬롯) · 실제 사이클 = <strong style="color:#24292E;">120초</strong> · 하루 총 <strong style="color:#24292E;">450회</strong> 반복 (07:00~22:00 · 15시간)</span>
+            <span style="font-size:12px;color:#596066;">최소 보장 횟수 <strong style="color:#24292E;">90회</strong>/일 (54,000초 ÷ 600초) → 현재 사이클 수 450회/일로 <span style="color:#58C65D;font-weight:600;">충족 ✓</span></span>
           </div>
 
           <div class="loop-card">
             <div class="loop-card-head">
-              <span class="loop-card-title">오늘의 루프 구성</span>
-              <span class="loop-card-meta">총 300초 · 하루 180회 반복</span>
+              <span class="loop-card-title">오늘의 사이클 구성</span>
+              <span class="loop-card-meta">실제 120초 · 잔여 480초 · 하루 450회 반복</span>
             </div>
             <div class="loop-items">
               <div class="loop-item li-confirmed" style="width:90px">
@@ -611,45 +611,29 @@
                 <div class="loop-item-sec">30초</div>
                 <div class="loop-item-product">강남 A지구</div>
               </div>
-              <div class="loop-item li-selfop" style="width:64px">
-                <div class="loop-item-title">기본 홍보</div>
-                <div class="loop-item-sec">15초</div>
-                <div class="loop-item-product">자체 운영</div>
-              </div>
-              <div class="loop-item li-confirmed" style="width:90px">
-                <div class="loop-item-title">갤럭시 S25</div>
-                <div class="loop-item-sec">30초</div>
-                <div class="loop-item-product">강남 A지구</div>
-              </div>
-              <div class="loop-item li-condition" style="width:88px">
-                <div class="loop-item-title">우산광고</div>
-                <div class="loop-item-sec">30초 · 비조건</div>
-                <div class="loop-item-product">강남 A지구</div>
-              </div>
-              <div class="loop-item li-confirmed" style="width:90px">
-                <div class="loop-item-title">갤럭시 S25</div>
-                <div class="loop-item-sec">30초</div>
-                <div class="loop-item-product">강남 A지구</div>
-              </div>
-              <div class="loop-item li-selfop" style="width:64px">
-                <div class="loop-item-title">기본 홍보</div>
-                <div class="loop-item-sec">15초</div>
-                <div class="loop-item-product">자체 운영</div>
-              </div>
-              <div class="loop-item li-confirmed" style="width:90px">
+              <div class="loop-item li-confirmed" style="width:64px">
                 <div class="loop-item-title">아이오닉</div>
                 <div class="loop-item-sec">15초</div>
                 <div class="loop-item-product">강남 A지구</div>
               </div>
+              <div class="loop-item li-condition" style="width:90px">
+                <div class="loop-item-title">우산 광고</div>
+                <div class="loop-item-sec">30초 · 비 조건</div>
+                <div class="loop-item-product">강남 A지구</div>
+              </div>
+              <div class="loop-item li-draft" style="width:90px">
+                <div class="loop-item-title">롯데백화점</div>
+                <div class="loop-item-sec">30초 · 초안</div>
+                <div class="loop-item-product">홍대 입구역</div>
+              </div>
               <div class="loop-item li-selfop" style="width:64px">
                 <div class="loop-item-title">기본 홍보</div>
                 <div class="loop-item-sec">15초</div>
                 <div class="loop-item-product">자체 운영</div>
               </div>
-              <div class="loop-item li-confirmed" style="width:90px">
-                <div class="loop-item-title">아이오닉</div>
-                <div class="loop-item-sec">15초</div>
-                <div class="loop-item-product">강남 A지구</div>
+              <div class="loop-item li-gap" style="flex:1;min-width:80px;">
+                <div class="loop-item-title" style="color:#9EA5AD;">잔여</div>
+                <div class="loop-item-sec" style="color:#9EA5AD;">480초</div>
               </div>
             </div>
           </div>
@@ -658,14 +642,14 @@
           <div style="margin-top:14px;background:#fff;border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">
             <div style="padding:10px 16px;border-bottom:1px solid #F0F1F3;display:flex;align-items:center;gap:6px;">
               <span style="font-size:12px;font-weight:700;color:#24292E;">노출 보장 충족 현황</span>
-              <span style="font-size:11px;color:#9EA5AD;">루프 1회당 등장 횟수 × 일 반복 횟수 ≥ 최소 보장 횟수</span>
+              <span style="font-size:11px;color:#9EA5AD;">사이클 1회당 등장 횟수 × 일 반복 횟수 ≥ 최소 보장 횟수</span>
             </div>
             <table style="width:100%;border-collapse:collapse;font-size:12px;">
               <thead>
                 <tr style="background:#F6F7F9;">
                   <th style="padding:8px 16px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">스케줄</th>
                   <th style="padding:8px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">프로덕트</th>
-                  <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">루프당 횟수</th>
+                  <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">사이클당 횟수</th>
                   <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">일 반복 수</th>
                   <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">예상 노출</th>
                   <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">최소 보장</th>
@@ -679,10 +663,10 @@
                     <span style="font-weight:600;color:#24292E;">삼성 갤럭시 S25</span>
                   </td>
                   <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구 패키지</span></td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">3회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
-                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">540회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">100회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">1회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">450회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">450회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">90회</td>
                   <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
                 </tr>
                 <tr style="border-bottom:1px solid #F0F1F3;">
@@ -691,10 +675,10 @@
                     <span style="font-weight:600;color:#24292E;">현대자동차 아이오닉</span>
                   </td>
                   <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구 패키지</span></td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">2회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
-                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">360회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">200회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">1회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">450회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">450회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">90회</td>
                   <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
                 </tr>
                 <tr style="border-bottom:1px solid #F0F1F3;">
@@ -705,8 +689,8 @@
                   </td>
                   <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구 패키지</span></td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">1회</td>
-                  <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
-                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">180회</td>
+                  <td style="padding:9px 12px;text-align:center;color:#596066;">최대 450회</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:600;color:#24292E;">최대 450회</td>
                   <td style="padding:9px 12px;text-align:center;color:#596066;">최대 50회</td>
                   <td style="padding:9px 16px;text-align:center;"><span style="color:#58C65D;font-weight:700;font-size:13px;">✓</span></td>
                 </tr>
@@ -821,7 +805,7 @@
             <thead>
               <tr style="background:#FAFAFA;">
                 <th style="padding:7px 12px;text-align:left;font-weight:600;color:#596066;">미디어</th>
-                <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">루프/일</th>
+                <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">사이클/일</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">예약 현황</th>
                 <th style="padding:7px 10px;text-align:center;font-weight:600;color:#596066;">보장 충족</th>
                 <th style="padding:7px 12px;text-align:center;font-weight:600;color:#596066;">예약 가능</th>
@@ -956,15 +940,15 @@
     ] /* 잔여: 300-(90+90)=120s */
   };
 
-  /* 날짜별 잔여 루프 용량 (300초 루프 기준) */
+  /* 날짜별 잔여 사이클 용량 (600초 사이클 최대 기준) */
   var remainData = {
-    '2025-9-1': 150,  '2025-9-2': 210,  '2025-9-3': 60,
-    '2025-9-4': 240,  '2025-9-5': 150,  '2025-9-8': 210,
-    '2025-9-9': 120,  '2025-9-10': 150, '2025-9-11': 150,
-    '2025-9-12': 150, '2025-9-15': 90,  '2025-9-16': 270,
-    '2025-9-17': 240, '2025-9-18': 150, '2025-9-22': 60,
-    '2025-9-23': 210, '2025-9-24': 240, '2025-9-25': 270,
-    '2025-9-29': 90,  '2025-9-30': 120
+    '2025-9-1': 525,  '2025-9-2': 540,  '2025-9-3': 495,
+    '2025-9-4': 585,  '2025-9-5': 525,  '2025-9-8': 555,
+    '2025-9-9': 510,  '2025-9-10': 525, '2025-9-11': 555,
+    '2025-9-12': 525, '2025-9-15': 495, '2025-9-16': 585,
+    '2025-9-17': 555, '2025-9-18': 555, '2025-9-22': 495,
+    '2025-9-23': 555, '2025-9-24': 555, '2025-9-25': 585,
+    '2025-9-29': 510, '2025-9-30': 540
   };
 
   var typeColor = {
@@ -1068,7 +1052,7 @@
 
       html += '<div class="cal-cell-wrap' + tipLeft + '">';
       var remainSec = (!c.other && remainData[key] !== undefined) ? remainData[key] : null;
-      var LOOP_TOTAL = 300;
+      var LOOP_TOTAL = 600;
 
       html += '<div class="cal-cell' + (c.other ? ' other-month' : '') + (isToday ? ' today' : '') + '">';
       html += '<span class="cal-date">' + c.day + '</span>';
@@ -1099,7 +1083,7 @@
         html += '<div style="margin-top:4px;padding-top:4px;border-top:1px dashed #E5E7EA;">';
         html += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">';
         html += '<span style="font-size:9px;color:#9EA5AD;">잔여</span>';
-        html += '<span style="font-size:9px;font-weight:700;color:#2A7A2E;">300초 (100%)</span>';
+        html += '<span style="font-size:9px;font-weight:700;color:#2A7A2E;">600초 (100%)</span>';
         html += '</div>';
         html += '<div style="height:3px;background:#F0F1F3;border-radius:2px;overflow:hidden;">';
         html += '<div style="width:100%;height:100%;background:#58C65D;border-radius:2px;"></div>';
@@ -1135,60 +1119,31 @@
       medias: [
         {
           name: '강남역 1번출구 A', status: 'online',
-          spec: '실외 · 세로형 · 1920×1080', opHours: '07:00~22:00', loops: 180,
+          spec: '실외 · 세로형 · 1920×1080', opHours: '07:00~22:00', loops: 450,
           seq: [
             { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
+            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
             { name:'우산 광고',  dur:30, cls:'lc-condition' },
-            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
             { name:'롯데백화점', dur:30, cls:'lc-draft'     },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
             { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
           ]
         },
         {
           name: '강남역 1번출구 B', status: 'online',
-          spec: '실외 · 가로형 · 1920×1080', opHours: '07:00~22:00', loops: 180,
+          spec: '실외 · 가로형 · 1920×1080', opHours: '07:00~22:00', loops: 450,
           seq: [
-            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
+            { name:'갤럭시 S25',    dur:30, cls:'lc-confirmed' },
             { name:'네이버 플러스', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'갤럭시 S25', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'네이버 플러스', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
+            { name:'기본 홍보',     dur:15, cls:'lc-selfop'    }
           ]
         },
         {
           name: '강남역 2번출구', status: 'offline',
-          spec: '실외 · 세로형 · 1080×1920', opHours: '08:00~21:00', loops: 156,
+          spec: '실외 · 세로형 · 1080×1920', opHours: '08:00~21:00', loops: 390,
           seq: [
-            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'아이오닉',   dur:15, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'CJ 햇반',    dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'CJ 햇반',    dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
+            { name:'아이오닉',  dur:15, cls:'lc-confirmed' },
+            { name:'CJ 햇반',   dur:30, cls:'lc-confirmed' },
+            { name:'기본 홍보', dur:15, cls:'lc-selfop'    }
           ]
         }
       ]
@@ -1198,39 +1153,20 @@
       medias: [
         {
           name: '홍대입구역 A', status: 'online',
-          spec: '실외 · 세로형 · 1920×1080', opHours: '07:00~24:00', loops: 204,
+          spec: '실외 · 세로형 · 1920×1080', opHours: '07:00~24:00', loops: 510,
           seq: [
-            { name:'무신사',    dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
-            { name:'무신사',    dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
-            { name:'신한카드',  dur:15, cls:'lc-confirmed' },
-            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
-            { name:'신한카드',  dur:15, cls:'lc-confirmed' },
-            { name:'기본 홍보', dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보', dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보', dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보', dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보', dur:30, cls:'lc-selfop'    }
+            { name:'무신사',   dur:30, cls:'lc-confirmed' },
+            { name:'신한카드', dur:15, cls:'lc-confirmed' },
+            { name:'기본 홍보',dur:15, cls:'lc-selfop'    }
           ]
         },
         {
           name: '홍대입구역 B', status: 'online',
-          spec: '실외 · 가로형 · 1920×1080', opHours: '07:00~24:00', loops: 204,
+          spec: '실외 · 가로형 · 1920×1080', opHours: '07:00~24:00', loops: 510,
           seq: [
             { name:'하이트진로', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'하이트진로', dur:30, cls:'lc-confirmed' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
             { name:'배달의민족', dur:30, cls:'lc-condition' },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    },
-            { name:'기본 홍보',  dur:30, cls:'lc-selfop'    }
+            { name:'기본 홍보',  dur:15, cls:'lc-selfop'    }
           ]
         }
       ]
@@ -1244,22 +1180,21 @@
     if (!pd) return;
 
     var medias = pd.medias;
-    var LOOP_DUR = 300;
-    /* 가장 이른 운영 시작 시각 기준으로 행 생성 */
+    /* 가장 이른 운영 시작 시각 기준으로 행 생성 (사이클 단위) */
     var minStartH = medias.reduce(function(min, m) {
       return Math.min(min, parseInt(m.opHours));
     }, 24);
-    /* 가장 늦게 끝나는 미디어 기준 총 행 수 */
+    /* 가장 늦게 끝나는 미디어 기준 총 행 수 (120초 사이클 기준) */
     var maxLoops = medias.reduce(function(mx, m) {
       var startH = parseInt(m.opHours);
-      var offset = (startH - minStartH) * 12;
+      var offset = (startH - minStartH) * 30; /* 3600초/시간 ÷ 120초/사이클 = 30 */
       return Math.max(mx, offset + m.loops);
     }, 0);
 
     /* ── 테이블 헤더 ── */
     var thCols = '<th style="padding:8px 10px;text-align:center;font-weight:600;color:#596066;' +
       'border-right:1px solid #E5E7EA;border-bottom:1px solid #E5E7EA;white-space:nowrap;' +
-      'position:sticky;left:0;background:#F6F7F9;z-index:11;min-width:46px;">루프</th>' +
+      'position:sticky;left:0;background:#F6F7F9;z-index:11;min-width:52px;">사이클</th>' +
       '<th style="padding:8px 10px;text-align:center;font-weight:600;color:#596066;' +
       'border-right:1px solid #E5E7EA;border-bottom:1px solid #E5E7EA;white-space:nowrap;' +
       'position:sticky;left:46px;background:#F6F7F9;z-index:11;min-width:52px;">시각</th>';
@@ -1277,31 +1212,34 @@
 
     /* ── 테이블 바디 ── */
     var tbRows = '';
+    /* 사이클 간격: 각 미디어의 실제 사이클 시간(초) 중 최솟값으로 행 간격 계산 */
+    var CYCLE_SEC = 120; /* 실제 사이클 시간 (초) */
     for (var i = 0; i < maxLoops; i++) {
-      var totalMin = minStartH * 60 + i * 5;
-      var hh = Math.floor(totalMin / 60);
-      var mm = totalMin % 60;
+      var totalSec = minStartH * 3600 + i * CYCLE_SEC;
+      var hh = Math.floor(totalSec / 3600);
+      var mm = Math.floor((totalSec % 3600) / 60);
       var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-      var loopNum = 'L' + String(i+1).padStart(3,'0');
+      var cycleNum = 'C' + String(i+1).padStart(3,'0');
       var bg = i % 2 ? '#FAFBFC' : '#fff';
 
       tbRows += '<tr>';
       tbRows += '<td style="padding:3px 8px;text-align:center;font-size:10px;font-weight:600;color:#B0B7BE;' +
         'border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;white-space:nowrap;' +
-        'position:sticky;left:0;background:' + bg + ';z-index:5;">' + loopNum + '</td>';
+        'position:sticky;left:0;background:' + bg + ';z-index:5;">' + cycleNum + '</td>';
       tbRows += '<td style="padding:3px 8px;text-align:center;font-size:11px;color:#596066;' +
         'border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;white-space:nowrap;' +
-        'position:sticky;left:46px;background:' + bg + ';z-index:5;">' + timeStr + '</td>';
+        'position:sticky;left:52px;background:' + bg + ';z-index:5;">' + timeStr + '</td>';
 
       medias.forEach(function(m) {
         var startH = parseInt(m.opHours);
-        var offset = (startH - minStartH) * 12;
+        var offset = (startH - minStartH) * 3600 / CYCLE_SEC;
         var active = (i >= offset && i < offset + m.loops);
         tbRows += '<td style="padding:2px 8px;border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;background:' + bg + ';">';
         if (active) {
+          var seqTotal = m.seq.reduce(function(s,x){ return s+x.dur; }, 0);
           tbRows += '<div style="display:flex;gap:1px;height:22px;">';
           m.seq.forEach(function(item) {
-            var pct = (item.dur / LOOP_DUR * 100).toFixed(2);
+            var pct = (item.dur / seqTotal * 100).toFixed(2);
             tbRows += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초">' +
               '<span>' + item.name + '</span></div>';
           });
@@ -1335,16 +1273,16 @@
     'p1': {
       name: '강남 A지구 패키지',
       medias: [
-        { name:'강남역 1번출구 A', loopsPerDay:180, bookedLoops:120 },
-        { name:'강남역 1번출구 B', loopsPerDay:180, bookedLoops:170 },
-        { name:'강남역 2번출구',   loopsPerDay:156, bookedLoops:80  }
+        { name:'강남역 1번출구 A', loopsPerDay:450, bookedLoops:200 },
+        { name:'강남역 1번출구 B', loopsPerDay:450, bookedLoops:380 },
+        { name:'강남역 2번출구',   loopsPerDay:390, bookedLoops:150 }
       ]
     },
     'p2': {
       name: '홍대 입구역 프리미엄',
       medias: [
-        { name:'홍대입구역 A', loopsPerDay:204, bookedLoops:100 },
-        { name:'홍대입구역 B', loopsPerDay:204, bookedLoops:200 }
+        { name:'홍대입구역 A', loopsPerDay:510, bookedLoops:220 },
+        { name:'홍대입구역 B', loopsPerDay:510, bookedLoops:490 }
       ]
     }
   };
@@ -1388,7 +1326,7 @@
       if (avail) anyAvailable = true;
       rows += '<tr style="border-top:1px solid #F0F1F3;">';
       rows += '<td style="padding:7px 12px;font-weight:600;color:#24292E;">' + m.name + '</td>';
-      rows += '<td style="padding:7px 10px;text-align:center;color:#596066;">' + m.loopsPerDay + '회/일</td>';
+      rows += '<td style="padding:7px 10px;text-align:center;color:#596066;">' + m.loopsPerDay + '사이클/일</td>';
       rows += '<td style="padding:7px 10px;text-align:center;">';
       rows += '<div style="display:flex;align-items:center;gap:5px;">';
       rows += '<div style="width:60px;height:5px;background:#F0F1F3;border-radius:3px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + (avail ? '#AFA9EC' : '#E24B4B') + ';border-radius:3px;"></div></div>';
@@ -1407,7 +1345,7 @@
       if (avail) {
         rows += '<span style="display:inline-block;padding:2px 8px;background:#E8F9E8;color:#2A7A2E;border-radius:4px;font-size:11px;font-weight:600;">가능</span>';
       } else {
-        rows += '<span style="display:inline-block;padding:2px 8px;background:#FEE8E8;color:#B91C1C;border-radius:4px;font-size:11px;font-weight:600;">' + (remaining <= 0 ? '마감' : '루프 부족') + '</span>';
+        rows += '<span style="display:inline-block;padding:2px 8px;background:#FEE8E8;color:#B91C1C;border-radius:4px;font-size:11px;font-weight:600;">' + (remaining <= 0 ? '마감' : '사이클 부족') + '</span>';
       }
       rows += '</td></tr>';
     });
@@ -1445,44 +1383,37 @@
     setTimeout(function(){ toast.style.display = 'none'; }, 2800);
   }
 
-  /* ── 루프 목록 렌더링 ── */
-  /* 루프 1회 = 300초. 스케줄은 날짜 기준으로 배정되며 같은 날의 모든 루프에 동일하게 적용 */
+  /* ── 사이클 목록 렌더링 ── */
+  /* 사이클 최대 600초(30초×20슬롯). 실제 등록 스케줄 합산 = 120초. 잔여 = 480초 */
   var loopSeq = [
     { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
-    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
-    { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
+    { name:'아이오닉',   dur:15, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
     { name:'우산 광고',  dur:30, cls:'lc-condition', prod:'강남 A지구 패키지' },
-    { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
-    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
-    { name:'아이오닉',   dur:15, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
-    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
-    { name:'아이오닉',   dur:15, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
-    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
     { name:'롯데백화점', dur:30, cls:'lc-draft',     prod:'홍대 입구역 프리미엄' },
-    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
-    { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' },
     { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' }
-    /* 합계: 30+15+30+30+30+15+15+15+15+15+30+15+15+15 = 300초 */
+    /* 합계: 30+15+30+30+15 = 120초 (실제 사이클) / 최대 600초 */
   ];
+  var CYCLE_MAX = 600;   /* 사이클 최대 시간 (초) */
+  var CYCLE_ACTUAL = 120; /* 실제 사이클 시간 (초) */
 
   function renderLoopList() {
-    var LOOPS = 180;
-    var START_H = 7, START_M = 0; /* 07:00 */
+    var LOOPS = 450; /* 54,000초 ÷ 120초 */
+    var START_H = 7; /* 07:00 */
     var html = '';
     for (var i = 0; i < LOOPS; i++) {
-      var totalMin = START_H * 60 + START_M + i * 5;
-      var hh = Math.floor(totalMin / 60);
-      var mm = totalMin % 60;
+      var totalSec = START_H * 3600 + i * CYCLE_ACTUAL;
+      var hh = Math.floor(totalSec / 3600);
+      var mm = Math.floor((totalSec % 3600) / 60);
       var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-      var loopNum = 'L' + String(i + 1).padStart(3, '0');
+      var cycleNum = 'C' + String(i + 1).padStart(3, '0');
       var rowBg = (i % 2 === 0) ? '' : 'background:#FAFBFC;';
 
       html += '<div class="loop-row" style="' + rowBg + '">';
-      html += '<span class="loop-row-num">' + loopNum + '</span>';
+      html += '<span class="loop-row-num">' + cycleNum + '</span>';
       html += '<span class="loop-row-time">' + timeStr + '</span>';
       html += '<div class="loop-row-items">';
       loopSeq.forEach(function(item) {
-        var pct = (item.dur / 300 * 100).toFixed(2);
+        var pct = (item.dur / CYCLE_ACTUAL * 100).toFixed(2);
         html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
         html += '<span>' + item.name + '</span>';
         html += '</div>';
