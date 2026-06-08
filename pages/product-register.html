@@ -3,183 +3,327 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>프로덕트 등록 — D'ooh CMS</title>
+  <title>프로덕트 생성 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    /* ── 폼 레이아웃 ── */
-    .form-section { margin-bottom: 0; }
-    .form-section + .form-section { border-top: 1px solid #E5E7EA; }
+    /* ── 페이지 헤더 ── */
+    .page-hd {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .page-hd-left { display: flex; align-items: center; gap: 12px; }
+    .back-link {
+      color: #596066; text-decoration: none; font-size: 13px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .back-link:hover { color: #24292E; }
+    .page-hd-title { font-size: 18px; font-weight: 700; color: #24292E; }
+    .page-hd-actions { display: flex; gap: 8px; }
 
-    .form-section-head {
-      padding: 18px 24px 14px;
+    /* ── 섹션 카드 ── */
+    .form-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .section-head {
+      padding: 16px 24px 12px;
       border-bottom: 1px solid #E5E7EA;
     }
-    .form-section-title {
-      font-size: 14px; font-weight: 600; color: #24292E;
-    }
-    .form-section-desc {
-      font-size: 12px; color: #9EA5AD; margin-top: 3px;
-    }
-    .form-section-body { padding: 20px 24px; }
+    .section-title { font-size: 14px; font-weight: 600; color: #24292E; }
+    .section-desc  { font-size: 12px; color: #9EA5AD; margin-top: 3px; }
+    .section-body  { padding: 20px 24px; }
 
+    /* ── 폼 행 ── */
     .form-row {
       display: grid;
-      grid-template-columns: 180px 1fr;
+      grid-template-columns: 160px 1fr;
       gap: 0;
-      padding: 10px 0;
+      padding: 11px 0;
       align-items: flex-start;
       border-bottom: 1px solid #F6F7F9;
     }
     .form-row:last-child { border-bottom: none; }
     .form-label {
       font-size: 13px; font-weight: 500; color: #596066;
-      padding-top: 8px;
-      flex-shrink: 0;
+      padding-top: 9px; flex-shrink: 0;
     }
     .form-label .req { color: #E97474; margin-left: 2px; }
     .form-field { min-width: 0; }
 
     .input, .textarea, .select {
       width: 100%; height: 38px;
-      border: 1px solid #CED2D6; border-radius: 4px;
+      border: 1px solid #CED2D6; border-radius: 6px;
       padding: 0 12px;
       font-size: 14px; color: #24292E;
-      font-family: inherit;
-      background: #fff;
-      outline: none;
-      transition: border-color 0.2s;
+      font-family: inherit; background: #fff; outline: none;
+      transition: border-color 0.15s;
     }
-    .input:focus, .select:focus { border-color: #58C65D; }
-    .textarea {
-      height: auto; padding: 10px 12px; resize: vertical; min-height: 80px;
-    }
-    .input-hint { font-size: 12px; color: #9EA5AD; margin-top: 5px; }
-    .input-error { font-size: 12px; color: #E97474; margin-top: 5px; }
+    .input:focus, .select:focus { border-color: #58C65D; box-shadow: 0 0 0 3px rgba(88,198,93,0.12); }
+    .input.readonly { background: #F6F7F9; color: #596066; cursor: default; }
+    .textarea { height: auto; padding: 10px 12px; resize: vertical; min-height: 76px; }
+    .input-hint  { font-size: 12px; color: #9EA5AD; margin-top: 5px; }
+    .input-error { font-size: 12px; color: #E97474; margin-top: 5px; display: none; }
 
-    /* ── 태그 입력 ── */
+    /* ── 미디어 선택 ── */
+    .media-search-area {
+      border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
+    }
+    .media-search-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; background: #F6F7F9;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .media-search-bar input {
+      border: none; outline: none; background: none;
+      font-size: 13px; color: #24292E; font-family: inherit; flex: 1;
+    }
+    .media-search-bar select {
+      border: none; outline: none; background: none;
+      font-size: 12px; color: #596066; font-family: inherit; cursor: pointer;
+    }
+    .media-list { max-height: 220px; overflow-y: auto; }
+    .media-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-bottom: 1px solid #F6F7F9;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .media-item:last-child { border-bottom: none; }
+    .media-item:hover { background: #FAFAFA; }
+    .media-item input[type=checkbox] { accent-color: #58C65D; width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
+    .media-item-info { flex: 1; min-width: 0; }
+    .media-item-name { font-size: 13px; font-weight: 500; color: #24292E; }
+    .media-item-sub  { font-size: 12px; color: #9EA5AD; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .status-dot.online  { background: #58C65D; }
+    .status-dot.offline { background: #CED2D6; }
+    .selected-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .sel-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #F0F9F1; border: 1px solid #C1E9C3;
+      border-radius: 14px; padding: 4px 10px 4px 12px;
+      font-size: 12px; color: #2E9E34;
+    }
+    .sel-chip button {
+      background: none; border: none; color: #82C987; cursor: pointer;
+      font-size: 14px; padding: 0; line-height: 1;
+    }
+    .sel-chip button:hover { color: #E97474; }
+
+    /* ── 플레이플랜 마스터-디테일 ── */
+    .pp-split {
+      display: flex; border-top: 1px solid #E5E7EA;
+      min-height: 360px;
+    }
+    .pp-list-panel {
+      width: 240px; flex-shrink: 0;
+      border-right: 1px solid #E5E7EA;
+      display: flex; flex-direction: column;
+    }
+    .pp-list-header {
+      padding: 12px 16px;
+      font-size: 12px; font-weight: 600; color: #596066;
+      border-bottom: 1px solid #F6F7F9;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .pp-list-body { flex: 1; overflow-y: auto; }
+    .pp-item {
+      padding: 11px 16px; cursor: pointer;
+      border-bottom: 1px solid #F6F7F9;
+      transition: background 0.12s;
+    }
+    .pp-item:last-child { border-bottom: none; }
+    .pp-item:hover { background: #FAFAFA; }
+    .pp-item.active { background: #F0F9F1; border-left: 3px solid #58C65D; padding-left: 13px; }
+    .pp-item-name { font-size: 13px; font-weight: 600; color: #24292E; }
+    .pp-item-meta { font-size: 12px; color: #9EA5AD; margin-top: 2px; }
+    .pp-item-price { font-size: 12px; font-weight: 600; color: #58C65D; margin-top: 2px; }
+    .pp-empty {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px 16px; text-align: center;
+      color: #9EA5AD; font-size: 13px;
+    }
+    .pp-empty-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.5; }
+    .pp-detail-panel { flex: 1; overflow-y: auto; }
+
+    /* 플레이플랜 등록 폼 */
+    .pp-form-body { padding: 20px 24px; }
+    .pp-form-title { font-size: 13px; font-weight: 600; color: #24292E; margin-bottom: 16px; }
+    .pp-field { margin-bottom: 14px; }
+    .pp-field label {
+      display: block; font-size: 12px; font-weight: 500;
+      color: #596066; margin-bottom: 5px;
+    }
+    .pp-field label .req { color: #E97474; }
+    .pp-field-row { display: flex; align-items: center; gap: 8px; }
+    .pp-field-unit { font-size: 13px; color: #596066; white-space: nowrap; }
+
+    /* 광고 유형 토글 */
+    .type-toggle { display: flex; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden; }
+    .type-toggle-btn {
+      flex: 1; height: 36px; border: none; background: #fff;
+      font-size: 13px; font-family: inherit; color: #596066;
+      cursor: pointer; transition: background 0.15s, color 0.15s;
+    }
+    .type-toggle-btn.active-general { background: #2D84ED; color: #fff; font-weight: 600; }
+    .type-toggle-btn.active-cond    { background: #7C3AED; color: #fff; font-weight: 600; }
+
+    /* 조건 광고 섹션 */
+    .cond-section {
+      background: #F8F5FF; border: 1px solid #DDD6FE;
+      border-radius: 6px; padding: 14px 16px;
+      margin-bottom: 14px; display: none;
+    }
+    .cond-section.visible { display: block; }
+    .cond-section-title { font-size: 12px; font-weight: 600; color: #7C3AED; margin-bottom: 10px; }
+
+    /* 미디어별 보장 횟수 테이블 */
+    .pp-media-table {
+      width: 100%; border-collapse: collapse;
+      margin-top: 4px; font-size: 13px;
+    }
+    .pp-media-table th {
+      background: #F6F7F9; padding: 8px 12px;
+      text-align: left; font-size: 11px; font-weight: 600;
+      color: #596066; border: 1px solid #E5E7EA;
+    }
+    .pp-media-table td {
+      padding: 9px 12px; border: 1px solid #E5E7EA;
+      color: #24292E;
+    }
+    .pp-media-table tr:hover td { background: #FAFAFA; }
+    .pp-media-table td.auto { color: #596066; font-size: 12px; }
+    .pp-media-table td input {
+      width: 100%; border: 1px solid #CED2D6; border-radius: 4px;
+      padding: 5px 8px; font-size: 13px; font-family: inherit;
+      outline: none; color: #24292E;
+    }
+    .pp-media-table td input:focus { border-color: #58C65D; }
+    .pp-media-table .total-row td {
+      background: #F6F7F9; font-weight: 600;
+    }
+    .pp-no-media {
+      padding: 20px; text-align: center;
+      font-size: 13px; color: #9EA5AD;
+      background: #F6F7F9; border-radius: 6px;
+    }
+
+    /* 플레이플랜 뷰 모드 */
+    .pp-view-body { padding: 20px 24px; }
+    .pp-view-row { display: flex; gap: 4px; margin-bottom: 8px; font-size: 13px; }
+    .pp-view-key { color: #596066; width: 120px; flex-shrink: 0; }
+    .pp-view-val { color: #24292E; font-weight: 500; }
+    .badge-general { display: inline-block; background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; border-radius: 10px; padding: 1px 10px; font-size: 11px; font-weight: 600; }
+    .badge-cond    { display: inline-block; background: #F5F3FF; border: 1px solid #DDD6FE; color: #7C3AED; border-radius: 10px; padding: 1px 10px; font-size: 11px; font-weight: 600; }
+    .pp-view-actions { display: flex; gap: 8px; margin-top: 18px; }
+
+    /* 광고주 미리보기 */
+    .adv-preview {
+      background: #F6F7F9; border: 1px solid #E5E7EA;
+      border-radius: 6px; padding: 14px 16px; margin-top: 14px;
+    }
+    .adv-preview-title {
+      font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 10px;
+    }
+    .adv-preview-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+    .adv-preview-table th { color: #596066; padding: 4px 8px; text-align: left; font-weight: 600; border-bottom: 1px solid #E5E7EA; }
+    .adv-preview-table td { color: #24292E; padding: 6px 8px; }
+
+    /* 태그 입력 */
     .tag-input-wrap {
       display: flex; flex-wrap: wrap; gap: 6px;
-      border: 1px solid #CED2D6; border-radius: 4px;
+      border: 1px solid #CED2D6; border-radius: 6px;
       padding: 7px 10px; background: #fff; min-height: 38px;
-      align-items: center; cursor: text;
-      transition: border-color 0.2s;
+      align-items: center; cursor: text; transition: border-color 0.15s;
     }
-    .tag-input-wrap:focus-within { border-color: #58C65D; }
+    .tag-input-wrap:focus-within { border-color: #58C65D; box-shadow: 0 0 0 3px rgba(88,198,93,0.12); }
     .tag-item {
       display: inline-flex; align-items: center; gap: 4px;
       background: #E8F8E9; border: 1px solid #C1E9C3;
       border-radius: 10px; padding: 2px 10px;
       font-size: 12px; color: #2E9E34;
     }
-    .tag-item button { background: none; border: none; color: #2E9E34; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .tag-item button { background: none; border: none; color: #82C987; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
+    .tag-item button:hover { color: #E97474; }
     .tag-input-wrap input {
       border: none; outline: none; background: none;
       font-size: 13px; color: #24292E; font-family: inherit;
       min-width: 80px; flex: 1;
     }
-    /* tag-input placeholder handled by cms.css */
 
-    /* ── 미디어 선택 ── */
-    .media-search-area {
-      border: 1px solid #CED2D6; border-radius: 6px;
-      overflow: hidden;
-    }
-    .media-search-bar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px;
-      background: #F6F7F9;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .media-search-bar input {
-      border: none; outline: none; background: none;
-      font-size: 14px; color: #24292E; font-family: inherit; flex: 1;
-    }
-    .media-list {
-      max-height: 220px; overflow-y: auto;
-    }
-    .media-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 14px;
-      border-bottom: 1px solid #F6F7F9;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .media-item:last-child { border-bottom: none; }
-    .media-item:hover { background: #FAFAFA; }
-    .media-item input[type=checkbox] { accent-color: #58C65D; width: 15px; height: 15px; flex-shrink:0; cursor: pointer; }
-    .media-item-info { flex: 1; min-width: 0; }
-    .media-item-name { font-size: 13px; font-weight: 500; color: #24292E; }
-    .media-item-sub  { font-size: 12px; color: #9EA5AD; }
-    .media-item-status { flex-shrink: 0; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-    .status-dot.online  { background: #58C65D; }
-    .status-dot.offline { background: #CED2D6; }
-
-    .selected-media-area {
-      margin-top: 10px;
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-    .selected-media-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #F6F7F9; border: 1px solid #E5E7EA;
-      border-radius: 16px; padding: 4px 12px;
-      font-size: 12px; color: #24292E;
-    }
-    .selected-media-chip button { background: none; border: none; color: #9EA5AD; cursor: pointer; font-size: 14px; padding: 0; line-height: 1; }
-    .selected-media-chip button:hover { color: #E97474; }
-
-    /* ── Play Plan 섹션 ── */
-    .play-plan-box {
-      border: 1px dashed #CED2D6; border-radius: 6px;
-      padding: 20px;
-      background: #FAFAFA;
-    }
-    .play-plan-toggle {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 16px;
-    }
-    .toggle-switch {
-      position: relative;
-      width: 40px; height: 22px;
-      cursor: pointer;
-    }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .toggle-track {
-      position: absolute; inset: 0;
-      background: #CED2D6; border-radius: 11px;
-      transition: background 0.2s;
-    }
-    .toggle-switch input:checked + .toggle-track { background: #58C65D; }
-    .toggle-thumb {
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 16px; height: 16px;
-      background: #fff; border-radius: 50%;
-      transition: left 0.2s;
-    }
-    .toggle-switch input:checked ~ .toggle-thumb { left: 21px; }
-    .toggle-label { font-size: 13px; color: #596066; }
-
-    .pp-form { display: none; }
-    .pp-form.visible { display: block; }
-    .pp-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .pp-field label { display: block; font-size: 12px; color: #596066; margin-bottom: 5px; font-weight: 500; }
-    .pp-field label .req { color: #E97474; }
-
-    /* ── 폼 액션 바 ── */
+    /* ── 하단 액션 바 ── */
     .form-actions {
-      display: flex; align-items: center; justify-content: flex-end;
-      gap: 10px;
-      padding: 20px 24px;
-      border-top: 1px solid #E5E7EA;
-      background: #fff;
-      position: sticky; bottom: 0;
-      z-index: 10;
+      position: sticky; bottom: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+      padding: 16px 24px;
+      background: #fff; border-top: 1px solid #E5E7EA;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+      margin-top: 0;
     }
+    .btn-ghost {
+      height: 36px; padding: 0 16px;
+      background: #fff; border: 1px solid #CED2D6;
+      border-radius: 6px; font-size: 13px; color: #596066;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn-ghost:hover { background: #F6F7F9; }
+    .btn-draft {
+      height: 36px; padding: 0 16px;
+      background: #fff; border: 1px solid #CED2D6;
+      border-radius: 6px; font-size: 13px; color: #24292E;
+      cursor: pointer; font-family: inherit; font-weight: 500;
+    }
+    .btn-draft:hover { background: #F6F7F9; }
+    .btn-primary {
+      height: 36px; padding: 0 20px;
+      background: #58C65D; border: none; border-radius: 6px;
+      font-size: 13px; font-weight: 600; color: #fff;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-primary:hover { background: #43B049; }
+    .btn-primary:disabled { background: #CED2D6; cursor: not-allowed; }
+
+    .btn-sm {
+      height: 30px; padding: 0 12px;
+      font-size: 12px; border-radius: 5px; cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-sm-primary { background: #58C65D; color: #fff; border: none; font-weight: 600; }
+    .btn-sm-primary:hover { background: #43B049; }
+    .btn-sm-danger  { background: #fff; color: #E97474; border: 1px solid #E97474; }
+    .btn-sm-danger:hover  { background: #FFF5F5; }
+    .btn-sm-ghost   { background: #fff; color: #596066; border: 1px solid #CED2D6; }
+    .btn-sm-ghost:hover   { background: #F6F7F9; }
+    .btn-sm-add {
+      height: 28px; padding: 0 10px;
+      background: #F0F9F1; color: #2E9E34;
+      border: 1px solid #C1E9C3; border-radius: 5px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-sm-add:hover { background: #E2F5E3; }
+
+    .sep-line { width: 1px; height: 20px; background: #E5E7EA; margin: 0 2px; }
+
+    .info-box {
+      background: #F0F9FF; border: 1px solid #BAE6FD;
+      border-radius: 6px; padding: 10px 14px;
+      font-size: 12px; color: #0369A1; margin-top: 10px;
+      display: flex; gap: 8px; align-items: flex-start;
+    }
+    .info-box svg { flex-shrink: 0; margin-top: 1px; }
   </style>
 </head>
 <body>
@@ -226,198 +370,752 @@
   <a class="bcrumb-back" href="product-list.html">←</a>
   <a href="product-list.html">프로덕트</a>
   <span class="sep">›</span>
-  <span class="cur">프로덕트 등록</span>
+  <span class="cur">프로덕트 생성</span>
 </div>
 
 <!-- ④ Content -->
 <main class="content">
-  <div class="content-inner" style="max-width: 860px;">
-    <div class="card" style="margin-bottom:0;">
+  <div class="content-inner" style="max-width: 1000px;">
 
-      <!-- ─ 기본 정보 섹션 ─ -->
-      <div class="form-section">
-        <div class="form-section-head">
-          <div class="form-section-title">기본 정보</div>
-        </div>
-        <div class="form-section-body">
-          <div class="form-row">
-            <div class="form-label">프로덕트명 <span class="req">*</span></div>
-            <div class="form-field">
-              <input type="text" class="input" placeholder="프로덕트명을 입력하세요" style="max-width:400px;">
-            </div>
-          </div>
-        </div>
+    <!-- 페이지 헤더 -->
+    <div class="page-hd">
+      <div class="page-hd-left">
+        <a href="product-list.html" class="back-link">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 4l-5 4 5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          목록으로
+        </a>
+        <div class="sep-line"></div>
+        <div class="page-hd-title">프로덕트 생성</div>
       </div>
-
-      <!-- ─ 미디어 선택 섹션 ─ -->
-      <div class="form-section">
-        <div class="form-section-head">
-          <div class="form-section-title">미디어 선택 <span style="color:#E97474;font-size:12px; margin-left:4px;">* 1개 이상 필수</span></div>
-          <div class="form-section-desc">하나의 미디어는 여러 프로덕트에 속할 수 있습니다 (N:M 관계)</div>
-        </div>
-        <div class="form-section-body">
-          <div class="media-search-area">
-            <div class="media-search-bar">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l3 3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
-              <input type="text" placeholder="미디어명 · 위치 검색">
-              <select style="border:none;outline:none;background:none;font-size:13px;color:#596066;font-family:inherit;cursor:pointer;">
-                <option>상태 전체</option>
-                <option>온라인</option>
-                <option>오프라인</option>
-              </select>
-            </div>
-            <div class="media-list">
-              <label class="media-item">
-                <input type="checkbox" checked onchange="updateChips()">
-                <div class="media-item-info">
-                  <div class="media-item-name">강남역 1번출구 A</div>
-                  <div class="media-item-sub">서울 강남구 강남대로 396 · 실외 · 해상도 1920×1080</div>
-                </div>
-                <div class="media-item-status"><span class="status-dot online"></span></div>
-              </label>
-              <label class="media-item">
-                <input type="checkbox" checked onchange="updateChips()">
-                <div class="media-item-info">
-                  <div class="media-item-name">강남역 1번출구 B</div>
-                  <div class="media-item-sub">서울 강남구 강남대로 396 · 실외 · 해상도 1920×1080</div>
-                </div>
-                <div class="media-item-status"><span class="status-dot online"></span></div>
-              </label>
-              <label class="media-item">
-                <input type="checkbox" onchange="updateChips()">
-                <div class="media-item-info">
-                  <div class="media-item-name">신논현역 메인 월</div>
-                  <div class="media-item-sub">서울 강남구 언주로 · 실내 · 해상도 3840×2160</div>
-                </div>
-                <div class="media-item-status"><span class="status-dot online"></span></div>
-              </label>
-              <label class="media-item">
-                <input type="checkbox" onchange="updateChips()">
-                <div class="media-item-info">
-                  <div class="media-item-name">삼성역 코엑스 광장</div>
-                  <div class="media-item-sub">서울 강남구 봉은사로 · 실외 · 해상도 1920×1080</div>
-                </div>
-                <div class="media-item-status"><span class="status-dot offline"></span></div>
-              </label>
-              <label class="media-item">
-                <input type="checkbox" onchange="updateChips()">
-                <div class="media-item-info">
-                  <div class="media-item-name">역삼역 2번출구</div>
-                  <div class="media-item-sub">서울 강남구 역삼로 · 실외 · 해상도 1920×1080</div>
-                </div>
-                <div class="media-item-status"><span class="status-dot online"></span></div>
-              </label>
-            </div>
-          </div>
-
-          <div id="selectedArea" class="selected-media-area">
-            <div class="selected-media-chip">강남역 1번출구 A <button onclick="this.parentNode.remove()">×</button></div>
-            <div class="selected-media-chip">강남역 1번출구 B <button onclick="this.parentNode.remove()">×</button></div>
-          </div>
-          <div class="input-hint" style="margin-top:6px;" id="selectedCount">2개 선택됨</div>
-        </div>
-      </div>
-
-      <!-- ─ Play Plan 섹션 (선택) ─ -->
-      <div class="form-section">
-        <div class="form-section-head">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div>
-              <div class="form-section-title">Play Plan <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
-              <div class="form-section-desc">지금 등록하거나, 나중에 프로덕트 상세 Play Plan 탭에서 추가할 수 있습니다</div>
-            </div>
-            <label class="toggle-switch" id="ppToggle" onclick="togglePP()">
-              <input type="checkbox" id="ppCheck">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </label>
-          </div>
-        </div>
-        <div id="ppForm" class="pp-form" style="padding: 20px 24px;">
-          <div class="play-plan-box">
-            <div class="pp-grid">
-              <div class="pp-field">
-                <label>플레이 플랜명 <span class="req">*</span></label>
-                <input type="text" class="input" placeholder="예: 강남 가을 캠페인 30초">
-              </div>
-              <div class="pp-field">
-                <label>재생 시간 <span class="req">*</span></label>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <input type="number" class="input" placeholder="30" style="max-width:100px;text-align:right;">
-                  <span style="font-size:13px;color:#596066;">초</span>
-                </div>
-              </div>
-              <div class="pp-field">
-                <label>일 보장 횟수 <span class="req">*</span></label>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <input type="number" class="input" style="max-width:120px;text-align:right;" readonly placeholder="미디어 선택 후 자동 입력">
-                  <span style="font-size:13px;color:#596066;">회 / 일</span>
-                </div>
-                <div style="font-size:12px;color:#9EA5AD;margin-top:4px;">미디어 선택 시 소속 미디어의 일 보장 횟수에서 자동으로 가져옵니다</div>
-              </div>
-              <div class="pp-field">
-                <label>금액 <span class="req">*</span></label>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <input type="number" class="input" placeholder="5000000" style="max-width:160px;text-align:right;">
-                  <span style="font-size:13px;color:#596066;">원</span>
-                </div>
-              </div>
-            </div>
-            <div style="margin-top:14px;padding-top:14px;border-top:1px solid #E5E7EA;font-size:12px;color:#9EA5AD;display:flex;align-items:center;gap:6px;">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9EA5AD" stroke-width="1.2"/><path d="M7 5v2.5M7 9.5v.5" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-              저장 후 자동으로 ADeX에 연결됩니다
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ─ 태그 · 설명 섹션 ─ -->
-      <div class="form-section">
-        <div class="form-section-head">
-          <div class="form-section-title">태그 · 설명</div>
-        </div>
-        <div class="form-section-body">
-          <div class="form-row">
-            <div class="form-label">태그</div>
-            <div class="form-field">
-              <div class="tag-input-wrap" style="max-width:400px;" onclick="this.querySelector('input').focus()">
-                <span class="tag-item">강남 <button onclick="this.parentNode.remove()">×</button></span>
-                <span class="tag-item">실외 <button onclick="this.parentNode.remove()">×</button></span>
-                <input type="text" placeholder="태그 입력 후 Enter">
-              </div>
-              <div class="input-hint">Enter로 태그 추가</div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-label">설명</div>
-            <div class="form-field">
-              <textarea class="textarea" placeholder="프로덕트에 대한 설명을 입력하세요 (선택)" style="max-width:560px;"></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 액션 바 -->
-      <div class="form-actions">
-        <a href="product-list.html" class="btn btn-ghost">취소</a>
-        <button class="btn btn-primary" onclick="location.href='product-detail.html'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="page-hd-actions">
+        <a href="product-list.html" class="btn-ghost" style="display:flex;align-items:center;text-decoration:none;height:36px;padding:0 16px;font-size:13px;border:1px solid #CED2D6;border-radius:6px;color:#596066;">취소</a>
+        <button class="btn-draft" id="btnDraft" onclick="saveDraft()">임시저장</button>
+        <button class="btn-primary" id="btnSubmit" disabled onclick="submitForm()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           프로덕트 등록
         </button>
       </div>
-
     </div>
+
+    <!-- ─────────────────── 1. 기본 정보 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">기본 정보</div>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-label">프로덕트명 <span class="req">*</span></div>
+          <div class="form-field">
+            <input type="text" class="input" id="inputName" placeholder="프로덕트명을 입력하세요"
+              style="max-width:460px;" oninput="validateForm()">
+            <div class="input-error" id="errName">프로덕트명을 입력해 주세요.</div>
+          </div>
+        </div>
+        <div class="form-row" style="border-bottom:none;">
+          <div class="form-label">상태</div>
+          <div class="form-field" style="padding-top:4px;">
+            <select class="select" id="selectStatus" style="max-width:200px;">
+              <option value="ACTIVE">활성</option>
+              <option value="INACTIVE">비활성</option>
+              <option value="DRAFT" selected>임시저장</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 2. 미디어 선택 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="section-title">미디어 선택 <span style="color:#E97474;font-size:11px;font-weight:400;margin-left:4px;">* 1개 이상 필수</span></div>
+            <div class="section-desc">하나의 미디어는 여러 프로덕트에 포함될 수 있습니다 (N:M 관계)</div>
+          </div>
+          <div id="mediaCount" style="font-size:13px;color:#9EA5AD;"></div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="media-search-area">
+          <div class="media-search-bar">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l3 3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="미디어명 · 위치 검색" oninput="filterMedia(this.value)">
+            <select onchange="filterMediaStatus(this.value)">
+              <option value="">상태 전체</option>
+              <option value="online">온라인</option>
+              <option value="offline">오프라인</option>
+            </select>
+          </div>
+          <div class="media-list" id="mediaList">
+            <!-- 렌더링됨 -->
+          </div>
+        </div>
+        <div id="selectedChips" class="selected-chips"></div>
+        <div id="mediaSelMsg" class="input-error" style="margin-top:8px;">미디어를 1개 이상 선택해 주세요.</div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 3. 플레이플랜 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="section-title">플레이플랜 <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
+          <div class="section-desc">지금 추가하거나 나중에 프로덕트 상세에서 추가할 수 있습니다</div>
+        </div>
+        <button class="btn-sm-add" onclick="addPlanMode()">+ 플레이플랜 추가</button>
+      </div>
+
+      <div class="pp-split" id="ppSplit">
+        <!-- 좌: 목록 -->
+        <div class="pp-list-panel">
+          <div class="pp-list-header">
+            <span>추가된 플랜 <span id="ppCount" style="color:#9EA5AD;">0</span>개</span>
+          </div>
+          <div class="pp-list-body" id="ppListBody">
+            <div class="pp-empty" id="ppEmptyMsg">
+              <div class="pp-empty-icon">📋</div>
+              <div>아직 추가된 플레이플랜이 없습니다</div>
+              <div style="font-size:12px;margin-top:4px;">+ 플레이플랜 추가를 눌러 시작하세요</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우: 상세 / 편집 -->
+        <div class="pp-detail-panel" id="ppDetailPanel">
+          <!-- 초기: 안내 메시지 -->
+          <div id="ppGuide" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#9EA5AD;font-size:13px;padding:40px;">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="margin-bottom:12px;opacity:0.4;">
+              <rect x="8" y="8" width="24" height="24" rx="4" stroke="#9EA5AD" stroke-width="2"/>
+              <path d="M20 14v12M14 20h12" stroke="#9EA5AD" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            플레이플랜을 추가하거나 목록에서 선택하면<br>상세 정보가 표시됩니다
+          </div>
+
+          <!-- 편집 폼 (숨김) -->
+          <div id="ppEditForm" style="display:none;">
+            <div class="pp-form-body">
+              <div class="pp-form-title" id="ppFormTitle">새 플레이플랜 추가</div>
+
+              <!-- 재생 시간 -->
+              <div class="pp-field">
+                <label>재생 시간 <span class="req">*</span></label>
+                <div class="pp-field-row">
+                  <input type="number" class="input" id="ppDuration" min="1" placeholder="30"
+                    style="max-width:100px;text-align:right;" oninput="onDurationChange()">
+                  <span class="pp-field-unit">초</span>
+                </div>
+              </div>
+
+              <!-- 광고 유형 -->
+              <div class="pp-field">
+                <label>광고 유형 <span class="req">*</span></label>
+                <div class="type-toggle" style="max-width:200px;">
+                  <button class="type-toggle-btn active-general" id="btnGeneral" onclick="setAdType('general')">일반 광고</button>
+                  <button class="type-toggle-btn" id="btnCond" onclick="setAdType('cond')">조건 광고</button>
+                </div>
+              </div>
+
+              <!-- 조건 광고 설정 (조건 선택 시 노출) -->
+              <div class="cond-section" id="condSection">
+                <div class="cond-section-title">조건 설정</div>
+                <div class="pp-field">
+                  <label>조건 유형 <span class="req">*</span></label>
+                  <select class="select" id="condType" style="max-width:200px;" onchange="onCondTypeChange()">
+                    <option value="">선택하세요</option>
+                    <option value="env">환경 조건</option>
+                    <option value="target">타겟 조건</option>
+                  </select>
+                </div>
+                <!-- 환경 조건 -->
+                <div id="envCond" style="display:none;">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div class="pp-field">
+                      <label>날씨 상태</label>
+                      <select class="select">
+                        <option>전체</option>
+                        <option>맑음</option>
+                        <option>흐림</option>
+                        <option>비</option>
+                        <option>눈</option>
+                      </select>
+                    </div>
+                    <div class="pp-field">
+                      <label>기온 범위 (°C)</label>
+                      <div class="pp-field-row">
+                        <input type="number" class="input" placeholder="최소" style="max-width:80px;text-align:right;">
+                        <span class="pp-field-unit">~</span>
+                        <input type="number" class="input" placeholder="최대" style="max-width:80px;text-align:right;">
+                      </div>
+                    </div>
+                    <div class="pp-field">
+                      <label>강수량 (mm 이상)</label>
+                      <input type="number" class="input" placeholder="0" style="max-width:100px;text-align:right;">
+                    </div>
+                  </div>
+                </div>
+                <!-- 타겟 조건 -->
+                <div id="targetCond" style="display:none;">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div class="pp-field">
+                      <label>연령대</label>
+                      <select class="select">
+                        <option>전체</option>
+                        <option>10대</option>
+                        <option>20대</option>
+                        <option>30대</option>
+                        <option>40대</option>
+                        <option>50대+</option>
+                      </select>
+                    </div>
+                    <div class="pp-field">
+                      <label>성별</label>
+                      <select class="select">
+                        <option>전체</option>
+                        <option>남성</option>
+                        <option>여성</option>
+                      </select>
+                    </div>
+                    <div class="pp-field">
+                      <label>반경 거리 (m)</label>
+                      <input type="number" class="input" placeholder="500" style="max-width:120px;text-align:right;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 운영 기간 단위 -->
+              <div class="pp-field">
+                <label>운영 기간 단위 <span class="req">*</span></label>
+                <select class="select" id="ppPeriodUnit" style="max-width:160px;">
+                  <option value="month">월 단위</option>
+                  <option value="week">주 단위</option>
+                  <option value="day">일 단위</option>
+                </select>
+              </div>
+
+              <!-- 미디어별 보장 횟수 & 가격 -->
+              <div class="pp-field">
+                <label>미디어별 보장 횟수 & 가격</label>
+                <div id="ppMediaTableWrap">
+                  <div class="pp-no-media">미디어를 먼저 선택해 주세요</div>
+                </div>
+                <div class="info-box" id="ppInfoBox" style="display:none;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#0369A1" stroke-width="1.2"/><path d="M7 5v2.5M7 9.5v.5" stroke="#0369A1" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  보장 횟수는 미디어 고정값(운영 시간 ÷ 사이클 최대 시간)이며 재생 시간·플레이플랜 종류와 무관하게 동일합니다.
+                  최대 판매 슬롯 수는 재생 시간에 따라 달라집니다.
+                </div>
+              </div>
+
+              <!-- 폼 버튼 -->
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid #F6F7F9;">
+                <button class="btn-sm btn-sm-ghost" onclick="cancelPlanEdit()">취소</button>
+                <button class="btn-sm btn-sm-primary" id="btnSavePlan" onclick="savePlan()">플레이플랜 추가</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 조회 모드 (숨김) -->
+          <div id="ppViewPanel" style="display:none;">
+            <div class="pp-view-body" id="ppViewContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 4. 태그 · 설명 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">태그 · 설명 <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-label">태그</div>
+          <div class="form-field">
+            <div class="tag-input-wrap" style="max-width:460px;" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
+              <span class="tag-item">강남 <button onclick="this.parentNode.remove()">×</button></span>
+              <span class="tag-item">실외 <button onclick="this.parentNode.remove()">×</button></span>
+              <input type="text" id="tagInput" placeholder="태그 입력 후 Enter" onkeydown="addTag(event)">
+            </div>
+            <div class="input-hint">Enter로 태그 추가</div>
+          </div>
+        </div>
+        <div class="form-row" style="border-bottom:none;">
+          <div class="form-label">설명</div>
+          <div class="form-field">
+            <textarea class="textarea" placeholder="프로덕트에 대한 설명을 입력하세요" style="max-width:560px;"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 하단 액션 바 ─────────────────── -->
+    <div class="form-actions">
+      <a href="product-list.html" class="btn-ghost" style="display:flex;align-items:center;text-decoration:none;height:36px;padding:0 16px;font-size:13px;border:1px solid #CED2D6;border-radius:6px;color:#596066;">취소</a>
+      <button class="btn-draft" onclick="saveDraft()">임시저장</button>
+      <button class="btn-primary" id="btnSubmitBottom" disabled onclick="submitForm()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        프로덕트 등록
+      </button>
+    </div>
+
   </div>
 </main>
 
 <script>
-function togglePP() {
-  const check = document.getElementById('ppCheck');
-  const form  = document.getElementById('ppForm');
-  setTimeout(() => {
-    form.classList.toggle('visible', check.checked);
-  }, 10);
+/* ═══════════════════════════════════════════════
+   데이터: 미디어 목록 (운영시간÷사이클최대 = 보장횟수)
+   ═══════════════════════════════════════════════ */
+const MEDIA_DATA = [
+  {
+    id: 'A', name: '강남역 1번출구 A', sub: '서울 강남구 강남대로 396 · 실외 · 1920×1080',
+    status: 'online', opsTime: 54000, cycleMax: 600, refSlots: 20,
+    guaranteed: 90   /* 54000÷600 */
+  },
+  {
+    id: 'B', name: '강남역 1번출구 B', sub: '서울 강남구 강남대로 396 · 실외 · 1920×1080',
+    status: 'online', opsTime: 54000, cycleMax: 480, refSlots: 16,
+    guaranteed: 112  /* 54000÷480 */
+  },
+  {
+    id: 'C', name: '강남역 2번출구', sub: '서울 강남구 강남대로 · 실외 · 1920×1080',
+    status: 'online', opsTime: 46800, cycleMax: 540, refSlots: 18,
+    guaranteed: 86   /* 46800÷540 */
+  },
+  {
+    id: 'D', name: '신논현역 메인 월', sub: '서울 강남구 언주로 · 실내 · 3840×2160',
+    status: 'online', opsTime: 43200, cycleMax: 600, refSlots: 20,
+    guaranteed: 72
+  },
+  {
+    id: 'E', name: '삼성역 코엑스 광장', sub: '서울 강남구 봉은사로 · 실외 · 1920×1080',
+    status: 'offline', opsTime: 50400, cycleMax: 600, refSlots: 20,
+    guaranteed: 84
+  }
+];
+
+let selectedMedia = new Set(['A', 'B']); /* 초기 선택 */
+let plans = [];          /* 저장된 플레이플랜 목록 */
+let editingIdx = null;   /* 현재 편집 중인 인덱스 (-1 = 신규) */
+let currentAdType = 'general';
+
+/* ═══════════════════════════════════════════════ 미디어 렌더링 */
+function renderMediaList(filter = '', statusFilter = '') {
+  const list = document.getElementById('mediaList');
+  list.innerHTML = '';
+  MEDIA_DATA
+    .filter(m => {
+      const matchText = !filter || m.name.includes(filter) || m.sub.includes(filter);
+      const matchStatus = !statusFilter || m.status === statusFilter;
+      return matchText && matchStatus;
+    })
+    .forEach(m => {
+      const label = document.createElement('label');
+      label.className = 'media-item';
+      label.innerHTML = `
+        <input type="checkbox" ${selectedMedia.has(m.id) ? 'checked' : ''}
+          data-id="${m.id}" onchange="toggleMedia('${m.id}', this.checked)">
+        <div class="media-item-info">
+          <div class="media-item-name">${m.name}</div>
+          <div class="media-item-sub">${m.sub}</div>
+        </div>
+        <span class="status-dot ${m.status}"></span>`;
+      list.appendChild(label);
+    });
 }
+
+function filterMedia(v)       { renderMediaList(v, document.querySelector('.media-search-bar select').value); }
+function filterMediaStatus(v) { renderMediaList(document.querySelector('.media-search-bar input').value, v); }
+
+function toggleMedia(id, checked) {
+  if (checked) selectedMedia.add(id); else selectedMedia.delete(id);
+  renderChips();
+  updateMediaCount();
+  refreshPPMediaTable();
+  validateForm();
+}
+
+function renderChips() {
+  const wrap = document.getElementById('selectedChips');
+  wrap.innerHTML = '';
+  [...selectedMedia].forEach(id => {
+    const m = MEDIA_DATA.find(x => x.id === id);
+    if (!m) return;
+    const chip = document.createElement('div');
+    chip.className = 'sel-chip';
+    chip.innerHTML = `${m.name} <button onclick="removeChip('${id}')">×</button>`;
+    wrap.appendChild(chip);
+  });
+}
+
+function removeChip(id) {
+  selectedMedia.delete(id);
+  renderMediaList();
+  renderChips();
+  updateMediaCount();
+  refreshPPMediaTable();
+  validateForm();
+}
+
+function updateMediaCount() {
+  const n = selectedMedia.size;
+  document.getElementById('mediaCount').textContent = n > 0 ? `${n}개 선택됨` : '';
+  document.getElementById('mediaSelMsg').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════════ 플레이플랜 */
+function addPlanMode() {
+  editingIdx = -1;
+  document.getElementById('ppGuide').style.display = 'none';
+  document.getElementById('ppViewPanel').style.display = 'none';
+  document.getElementById('ppEditForm').style.display = 'block';
+  document.getElementById('ppFormTitle').textContent = '새 플레이플랜 추가';
+  document.getElementById('btnSavePlan').textContent = '플레이플랜 추가';
+
+  /* 폼 초기화 */
+  document.getElementById('ppDuration').value = '';
+  setAdType('general');
+  document.getElementById('ppPeriodUnit').value = 'month';
+  document.getElementById('condType').value = '';
+  document.getElementById('envCond').style.display = 'none';
+  document.getElementById('targetCond').style.display = 'none';
+  refreshPPMediaTable();
+
+  /* 목록 하이라이트 해제 */
+  document.querySelectorAll('.pp-item').forEach(el => el.classList.remove('active'));
+}
+
+function cancelPlanEdit() {
+  document.getElementById('ppEditForm').style.display = 'none';
+  document.getElementById('ppViewPanel').style.display = 'none';
+  document.getElementById('ppGuide').style.display = 'flex';
+  document.querySelectorAll('.pp-item').forEach(el => el.classList.remove('active'));
+  editingIdx = null;
+}
+
+function setAdType(type) {
+  currentAdType = type;
+  document.getElementById('btnGeneral').className = 'type-toggle-btn' + (type === 'general' ? ' active-general' : '');
+  document.getElementById('btnCond').className    = 'type-toggle-btn' + (type === 'cond'    ? ' active-cond'    : '');
+  document.getElementById('condSection').classList.toggle('visible', type === 'cond');
+}
+
+function onCondTypeChange() {
+  const val = document.getElementById('condType').value;
+  document.getElementById('envCond').style.display    = val === 'env'    ? 'block' : 'none';
+  document.getElementById('targetCond').style.display = val === 'target' ? 'block' : 'none';
+}
+
+function onDurationChange() { refreshPPMediaTable(); }
+
+function refreshPPMediaTable() {
+  const wrap = document.getElementById('ppMediaTableWrap');
+  const infoBox = document.getElementById('ppInfoBox');
+  const duration = parseInt(document.getElementById('ppDuration')?.value) || 0;
+
+  if (selectedMedia.size === 0) {
+    wrap.innerHTML = '<div class="pp-no-media">미디어를 먼저 선택해 주세요</div>';
+    infoBox.style.display = 'none';
+    return;
+  }
+
+  const medias = [...selectedMedia].map(id => MEDIA_DATA.find(m => m.id === id)).filter(Boolean);
+  const isCond = currentAdType === 'cond';
+
+  let html = `<table class="pp-media-table">
+    <thead><tr>
+      <th>미디어</th>
+      <th>보장 횟수 (일)</th>
+      <th>최대 판매 슬롯 수</th>
+      <th>가격 (원)</th>
+    </tr></thead><tbody>`;
+
+  let totalPrice = 0;
+  medias.forEach(m => {
+    const maxSlots = duration > 0 ? Math.floor(m.cycleMax / duration) : '—';
+    const label    = isCond
+      ? `최대 ${m.guaranteed}회 가능`
+      : `${m.guaranteed}회 보장`;
+    const slotTxt  = duration > 0 ? `${maxSlots}개` : '<span style="color:#9EA5AD;">재생 시간 입력 필요</span>';
+    html += `<tr>
+      <td><strong>${m.name}</strong></td>
+      <td class="auto">${label}</td>
+      <td class="auto">${slotTxt}</td>
+      <td><input type="number" placeholder="0" id="price_${m.id}" style="width:130px;"
+        oninput="updateTotalPrice()"></td>
+    </tr>`;
+  });
+
+  html += `</tbody><tfoot><tr class="total-row">
+    <td colspan="3" style="text-align:right;color:#596066;">합산 가격</td>
+    <td id="totalPriceCell">—</td>
+  </tr></tfoot></table>`;
+
+  wrap.innerHTML = html;
+  infoBox.style.display = 'flex';
+
+  /* 기존 가격 복원 (편집 모드) */
+  if (editingIdx !== null && editingIdx >= 0) {
+    const plan = plans[editingIdx];
+    if (plan && plan.prices) {
+      medias.forEach(m => {
+        const el = document.getElementById(`price_${m.id}`);
+        if (el && plan.prices[m.id]) el.value = plan.prices[m.id];
+      });
+      updateTotalPrice();
+    }
+  }
+}
+
+function updateTotalPrice() {
+  let total = 0;
+  [...selectedMedia].forEach(id => {
+    const el = document.getElementById(`price_${id}`);
+    if (el) total += parseInt(el.value) || 0;
+  });
+  const cell = document.getElementById('totalPriceCell');
+  if (cell) cell.textContent = total > 0 ? total.toLocaleString() + '원' : '—';
+}
+
+function savePlan() {
+  const duration = parseInt(document.getElementById('ppDuration').value);
+  if (!duration || duration <= 0) {
+    document.getElementById('ppDuration').focus();
+    return;
+  }
+
+  const prices = {};
+  let totalPrice = 0;
+  [...selectedMedia].forEach(id => {
+    const el = document.getElementById(`price_${id}`);
+    const v = el ? parseInt(el.value) || 0 : 0;
+    prices[id] = v;
+    totalPrice += v;
+  });
+
+  const plan = {
+    duration,
+    adType: currentAdType,
+    periodUnit: document.getElementById('ppPeriodUnit').value,
+    condType: currentAdType === 'cond' ? document.getElementById('condType').value : null,
+    prices,
+    totalPrice
+  };
+
+  if (editingIdx === -1) {
+    plans.push(plan);
+    editingIdx = plans.length - 1;
+  } else {
+    plans[editingIdx] = plan;
+  }
+
+  renderPlanList();
+  showPlanView(editingIdx);
+  document.getElementById('ppEditForm').style.display = 'none';
+}
+
+function renderPlanList() {
+  const body = document.getElementById('ppListBody');
+  const empty = document.getElementById('ppEmptyMsg');
+  document.getElementById('ppCount').textContent = plans.length;
+
+  if (plans.length === 0) {
+    body.innerHTML = '';
+    body.appendChild(empty);
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const items = body.querySelectorAll('.pp-item');
+  items.forEach(el => el.remove());
+
+  plans.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'pp-item' + (i === editingIdx ? ' active' : '');
+    el.setAttribute('data-idx', i);
+    const typeLabel = p.adType === 'general' ? '일반' : '조건';
+    const unitLabel = { month: '월', week: '주', day: '일' }[p.periodUnit] || '';
+    el.innerHTML = `
+      <div class="pp-item-name">${p.duration}초 ${typeLabel} · ${unitLabel} 단위</div>
+      <div class="pp-item-meta">${[...selectedMedia].map(id => {
+        const m = MEDIA_DATA.find(x => x.id === id);
+        return m ? m.name.replace('강남역', 'GN').replace('신논현역', 'SN').replace('삼성역', 'SS') : '';
+      }).join(', ')}</div>
+      <div class="pp-item-price">${p.totalPrice > 0 ? (p.totalPrice / 10000).toFixed(0) + '만원' : '가격 미입력'}</div>`;
+    el.onclick = () => { selectPlan(i); };
+    body.appendChild(el);
+  });
+}
+
+function selectPlan(idx) {
+  editingIdx = idx;
+  document.querySelectorAll('.pp-item').forEach(el => el.classList.remove('active'));
+  const target = document.querySelector(`.pp-item[data-idx="${idx}"]`);
+  if (target) target.classList.add('active');
+  showPlanView(idx);
+}
+
+function showPlanView(idx) {
+  const plan = plans[idx];
+  if (!plan) return;
+
+  document.getElementById('ppEditForm').style.display = 'none';
+  document.getElementById('ppGuide').style.display = 'none';
+  document.getElementById('ppViewPanel').style.display = 'block';
+
+  const isCond = plan.adType === 'cond';
+  const unitLabel = { month: '월 단위', week: '주 단위', day: '일 단위' }[plan.periodUnit] || '';
+  const medias = [...selectedMedia].map(id => MEDIA_DATA.find(m => m.id === id)).filter(Boolean);
+
+  let tableRows = '';
+  medias.forEach(m => {
+    const maxSlots = Math.floor(m.cycleMax / plan.duration);
+    const label = isCond ? `최대 ${m.guaranteed}회 가능` : `${m.guaranteed}회 보장`;
+    const price = (plan.prices[m.id] || 0).toLocaleString();
+    tableRows += `<tr>
+      <td>${m.name}</td>
+      <td class="auto">${label}</td>
+      <td class="auto">${maxSlots}개</td>
+      <td style="font-weight:600;">${price}원</td>
+    </tr>`;
+  });
+
+  /* 광고주 미리보기 행 */
+  let prevRows = '';
+  medias.forEach(m => {
+    const label = isCond ? `최대 ${m.guaranteed}회` : `${m.guaranteed}회 보장`;
+    const price = (plan.prices[m.id] || 0).toLocaleString();
+    prevRows += `<tr><td>${m.name}</td><td>${label}</td><td style="font-weight:600;">${price}원</td></tr>`;
+  });
+
+  document.getElementById('ppViewContent').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#24292E;">${plan.duration}초 ${isCond ? '조건' : '일반'} · ${unitLabel}</div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-sm btn-sm-ghost" onclick="editPlan(${idx})">편집</button>
+        <button class="btn-sm btn-sm-danger" onclick="deletePlan(${idx})">삭제</button>
+      </div>
+    </div>
+    <div class="pp-view-row"><span class="pp-view-key">재생 시간</span><span class="pp-view-val">${plan.duration}초</span></div>
+    <div class="pp-view-row"><span class="pp-view-key">광고 유형</span><span class="pp-view-val"><span class="${isCond ? 'badge-cond' : 'badge-general'}">${isCond ? '조건 광고' : '일반 광고'}</span></span></div>
+    ${isCond && plan.condType ? `<div class="pp-view-row"><span class="pp-view-key">조건 유형</span><span class="pp-view-val">${plan.condType === 'env' ? '환경 조건' : '타겟 조건'}</span></div>` : ''}
+    <div class="pp-view-row"><span class="pp-view-key">운영 기간 단위</span><span class="pp-view-val">${unitLabel}</span></div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:8px;">미디어별 보장 횟수 & 가격</div>
+      <table class="pp-media-table">
+        <thead><tr><th>미디어</th><th>보장 횟수 (일)</th><th>최대 슬롯 수</th><th>가격 (원)</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+        <tfoot><tr class="total-row">
+          <td colspan="3" style="text-align:right;color:#596066;">합산</td>
+          <td style="font-weight:700;">${plan.totalPrice.toLocaleString()}원</td>
+        </tr></tfoot>
+      </table>
+    </div>
+
+    <div class="adv-preview" style="margin-top:16px;">
+      <div class="adv-preview-title">광고주 뷰 미리보기</div>
+      <table class="adv-preview-table">
+        <thead><tr><th>미디어</th><th>송출 횟수 (일)</th><th>가격</th></tr></thead>
+        <tbody>${prevRows}</tbody>
+        <tfoot><tr>
+          <td colspan="2" style="font-weight:600;color:#596066;padding-top:8px;">합산 가격</td>
+          <td style="font-weight:700;padding-top:8px;">${plan.totalPrice.toLocaleString()}원</td>
+        </tr></tfoot>
+      </table>
+    </div>`;
+}
+
+function editPlan(idx) {
+  editingIdx = idx;
+  const plan = plans[idx];
+  document.getElementById('ppViewPanel').style.display = 'none';
+  document.getElementById('ppEditForm').style.display = 'block';
+  document.getElementById('ppFormTitle').textContent = '플레이플랜 편집';
+  document.getElementById('btnSavePlan').textContent = '저장';
+
+  document.getElementById('ppDuration').value = plan.duration;
+  setAdType(plan.adType);
+  document.getElementById('ppPeriodUnit').value = plan.periodUnit;
+  if (plan.condType) {
+    document.getElementById('condType').value = plan.condType;
+    onCondTypeChange();
+  }
+  refreshPPMediaTable();
+}
+
+function deletePlan(idx) {
+  if (!confirm('플레이플랜을 삭제하시겠습니까?')) return;
+  plans.splice(idx, 1);
+  editingIdx = null;
+  renderPlanList();
+  document.getElementById('ppViewPanel').style.display = 'none';
+  document.getElementById('ppGuide').style.display = 'flex';
+}
+
+/* ═══════════════════════════════════════════════ 태그 */
+function addTag(e) {
+  if (e.key !== 'Enter') return;
+  const input = e.target;
+  const val = input.value.trim();
+  if (!val) return;
+  const span = document.createElement('span');
+  span.className = 'tag-item';
+  span.innerHTML = `${val} <button onclick="this.parentNode.remove()">×</button>`;
+  document.getElementById('tagWrap').insertBefore(span, input);
+  input.value = '';
+  e.preventDefault();
+}
+
+/* ═══════════════════════════════════════════════ 유효성 검사 */
+function validateForm() {
+  const nameOk  = document.getElementById('inputName').value.trim().length > 0;
+  const mediaOk = selectedMedia.size > 0;
+  const ok = nameOk && mediaOk;
+  document.getElementById('btnSubmit').disabled = !ok;
+  document.getElementById('btnSubmitBottom').disabled = !ok;
+  return ok;
+}
+
+function saveDraft() {
+  document.getElementById('selectStatus').value = 'DRAFT';
+  showToast('임시저장되었습니다.');
+}
+
+function submitForm() {
+  const nameEl = document.getElementById('inputName');
+  if (!nameEl.value.trim()) {
+    document.getElementById('errName').style.display = 'block';
+    nameEl.focus();
+    return;
+  }
+  if (selectedMedia.size === 0) {
+    document.getElementById('mediaSelMsg').style.display = 'block';
+    return;
+  }
+  showToast('프로덕트가 등록되었습니다.');
+  setTimeout(() => { location.href = 'product-detail.html'; }, 900);
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+      'background:#24292E;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;' +
+      'z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2000);
+}
+
+/* ═══════════════════════════════════════════════ 초기화 */
+renderMediaList();
+renderChips();
+updateMediaCount();
 </script>
 </body>
 </html>
