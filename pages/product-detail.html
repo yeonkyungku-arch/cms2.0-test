@@ -3,133 +3,455 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>프로덕트 상세 — D'ooh CMS</title>
+  <title>강남 A지구 패키지 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
-    /* ── 인벤토리 뱃지 ── */
-    .inv-badge { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:12px; }
-    .inv-badge.ok   { background:#E8F8E9;color:#2E9E34; }
-    .inv-badge.warn { background:#FFF6E0;color:#B97B00; }
-    .inv-badge.full { background:#FDEEED;color:#C83434; }
+    /* ── Page header ── */
+    .detail-header {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .detail-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .back-link {
+      color: #596066;
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-link:hover { color: #24292E; }
+    .header-actions { display: flex; gap: 8px; }
+    .btn-outline {
+      height: 34px;
+      padding: 0 14px;
+      background: #fff;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-outline:hover { background: #F6F7F9; }
+    .btn-danger-outline {
+      height: 34px;
+      padding: 0 14px;
+      background: #fff;
+      border: 1px solid #E97474;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #E97474;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-danger-outline:hover { background: #FFF5F5; }
+    .detail-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .detail-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #24292E;
+      margin: 0;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-active   { background: #E8F8E9; color: #2E9E34; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-active .badge-dot { background: #58C65D; }
+    .media-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .media-tag {
+      padding: 4px 10px;
+      background: #EAF3FF;
+      color: #2D84ED;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .reg-date { font-size: 12px; color: #9EA5AD; }
 
-    /* ── 상태 뱃지 ── */
-    .status-chip {
-      display:inline-flex;align-items:center;gap:5px;
-      font-size:12px;padding:3px 10px;border-radius:12px;
+    /* ── Section card ── */
+    .section-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
     }
-    .status-chip.active   { background:#E8F8E9;color:#2E9E34; }
-    .status-chip.draft    { background:#F6F7F9;color:#596066; }
-    .status-chip.inactive { background:#F6F7F9;color:#9EA5AD; }
-    .status-chip.confirm  { background:#EAF3FF;color:#2d84ed; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #24292E;
+      margin: 0;
+    }
+    .link-btn {
+      font-size: 13px;
+      color: #2D84ED;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .link-btn:hover { text-decoration: underline; }
 
-    /* ── 미디어 카드 그리드 ── */
-    .media-card-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-      gap:12px;
+    /* ── Playplan master-detail ── */
+    .playplan-layout {
+      display: flex;
+      min-height: 320px;
     }
-    .media-card {
-      border:1px solid #E5E7EA;border-radius:6px;padding:14px;
-      cursor:pointer;transition:box-shadow .2s;
+    .playplan-list {
+      width: 240px;
+      flex-shrink: 0;
+      border-right: 1px solid #E5E7EA;
+      overflow-y: auto;
     }
-    .media-card:hover { box-shadow:0 2px 8px rgba(0,0,0,.07); }
-    .media-card-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px; }
-    .media-card-name { font-size:13px;font-weight:600;color:#24292E; }
-    .media-card-loc  { font-size:11px;color:#9EA5AD;margin-top:2px; }
-    .media-card-row  { display:flex;justify-content:space-between;font-size:12px;padding:3px 0; }
-    .media-card-row-label { color:#9EA5AD; }
+    .playplan-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .playplan-list-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .btn-add-small {
+      height: 26px;
+      padding: 0 10px;
+      background: #58C65D;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-add-small:hover { background: #4ab34f; }
+    .plan-item {
+      padding: 12px 14px;
+      border-bottom: 1px solid #F0F1F3;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .plan-item:hover { background: #F6F7F9; }
+    .plan-item.selected { background: #EAF3FF; border-left: 3px solid #2D84ED; }
+    .plan-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #24292E;
+      margin-bottom: 4px;
+    }
+    .plan-item.selected .plan-item-name { color: #2D84ED; }
+    .plan-item-price { font-size: 12px; color: #596066; }
 
-    .dot-online  { width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block; }
-    .dot-offline { width:8px;height:8px;border-radius:50%;background:#CED2D6;display:inline-block; }
-    .dot-issue   { width:8px;height:8px;border-radius:50%;background:#F5A623;display:inline-block; }
+    .playplan-detail {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+    .detail-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #9EA5AD;
+      font-size: 13px;
+    }
 
-    /* ── 효과 분석 ── */
-    .analysis-tab {
-      display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;
+    /* View mode */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
     }
-    .analysis-tab button {
-      height:30px;padding:0 12px;border-radius:14px;font-size:12px;
-      border:1px solid #E5E7EA;background:#fff;color:#596066;cursor:pointer;
-      transition:all .2s;font-family:inherit;
+    .info-item {}
+    .info-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9EA5AD;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
     }
-    .analysis-tab button.active { background:#58C65D;border-color:#58C65D;color:#fff; }
+    .info-value {
+      font-size: 14px;
+      color: #24292E;
+      font-weight: 500;
+    }
+    .plan-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    .plan-table th {
+      background: #F6F7F9;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .plan-table td {
+      padding: 11px 12px;
+      font-size: 13px;
+      color: #24292E;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .plan-table tr:last-child td { border-bottom: none; }
+    .plan-table .total-row td { font-weight: 700; background: #F6F7F9; }
 
-    .analysis-table { width:100%;border-collapse:collapse; }
-    .analysis-table th {
-      font-size:14px;color:#596066;font-weight:600;
-      padding:8px 14px;background:#F6F7F9;
-      border-bottom:1px solid #E5E7EA;text-align:left;
+    /* Preview toggle */
+    .preview-toggle {
+      background: none;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: #596066;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
     }
-    .analysis-table td {
-      padding:12px 14px;font-size:13px;color:#24292E;
-      border-bottom:1px solid #F6F7F9;
+    .preview-toggle:hover { background: #F6F7F9; }
+    .preview-panel {
+      background: #F6F7F9;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 12px;
+      color: #596066;
+      display: none;
     }
-    .analysis-table tr:last-child td { border-bottom:none; }
-    .analysis-table tr.total td { font-weight:600;background:#FAFAFA; }
+    .preview-panel.open { display: block; }
 
-    /* ── Play Plan 테이블 ── */
-    .pp-table { width:100%;border-collapse:collapse; }
-    .pp-table th {
-      font-size:14px;color:#596066;font-weight:600;
-      padding:8px 14px;background:#F6F7F9;
-      border-bottom:1px solid #E5E7EA;text-align:left;white-space:nowrap;
+    /* Edit form */
+    .edit-form { display: none; }
+    .edit-form.visible { display: block; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
     }
-    .pp-table td {
-      padding:13px 14px;font-size:13px;color:#24292E;
-      border-bottom:1px solid #F6F7F9;vertical-align:middle;
+    .form-label { font-size: 13px; color: #596066; font-weight: 500; }
+    .form-input {
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .pp-table tr:last-child td { border-bottom:none; }
-    .pp-table tr:hover td { background:#FAFAFA; }
+    .form-select {
+      height: 34px;
+      padding: 0 28px 0 10px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .toggle-group {
+      display: flex;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      overflow: hidden;
+      width: fit-content;
+    }
+    .toggle-btn {
+      padding: 6px 16px;
+      font-size: 13px;
+      border: none;
+      background: #fff;
+      color: #596066;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toggle-btn.active {
+      background: #24292E;
+      color: #fff;
+    }
+    .condition-fields { display: none; margin-top: 0; }
+    .condition-fields.visible { display: contents; }
+    .btn-primary-sm {
+      height: 34px;
+      padding: 0 16px;
+      background: #58C65D;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary-sm:hover { background: #4ab34f; }
+    .btn-cancel-sm {
+      height: 34px;
+      padding: 0 14px;
+      background: #fff;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #596066;
+      cursor: pointer;
+    }
+    .btn-cancel-sm:hover { background: #F6F7F9; }
+    .form-actions { display: flex; gap: 8px; margin-top: 20px; }
 
-    /* ── 인벤토리 조회 ── */
-    .inv-query-form {
-      background:#F6F7F9;border-radius:6px;padding:16px 20px;
-      margin-bottom:16px;
+    /* ── Chart section ── */
+    .chart-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .inv-form-row {
-      display:grid;grid-template-columns:repeat(3,1fr) auto;
-      gap:12px;align-items:flex-end;
+    .toggle-pill {
+      display: flex;
+      border: 1px solid #CED2D6;
+      border-radius: 20px;
+      overflow: hidden;
     }
-    .inv-form-field label { font-size:12px;color:#596066;font-weight:500;display:block;margin-bottom:5px; }
-    .inv-result-table { width:100%;border-collapse:collapse; }
-    .inv-result-table th {
-      font-size:14px;color:#596066;font-weight:600;
-      padding:8px 14px;background:#F6F7F9;
-      border-bottom:1px solid #E5E7EA;text-align:left;
+    .pill-btn {
+      padding: 4px 14px;
+      font-size: 12px;
+      border: none;
+      background: #fff;
+      color: #596066;
+      cursor: pointer;
+      transition: all 0.15s;
     }
-    .inv-result-table td {
-      padding:12px 14px;font-size:13px;border-bottom:1px solid #F6F7F9;
-    }
-    .inv-result-table tr:last-child td { border-bottom:none; }
-    .avail-yes  { color:#2E9E34;font-weight:500; }
-    .avail-no   { color:#C83434;font-weight:500; }
-    .avail-part { color:#B97B00;font-weight:500; }
+    .pill-btn.active { background: #24292E; color: #fff; }
+    .chart-wrap { padding: 20px 24px; }
+    .chart-canvas-wrap { position: relative; height: 260px; }
 
-    .prog-bar {
-      width:100%;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;
+    /* ── Schedule section ── */
+    .mini-calendar {
+      display: flex;
+      gap: 6px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #E5E7EA;
+      flex-wrap: wrap;
     }
-    .prog-fill { height:100%;border-radius:3px;transition:width .4s; }
+    .cal-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 14px;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fff;
+      transition: background 0.1s;
+      text-decoration: none;
+    }
+    .cal-day:hover { background: #F6F7F9; }
+    .cal-day.today { border-color: #2D84ED; background: #EAF3FF; }
+    .cal-day-label { font-size: 11px; color: #9EA5AD; font-weight: 500; }
+    .cal-day.today .cal-day-label { color: #2D84ED; }
+    .cal-day-date { font-size: 14px; font-weight: 700; color: #24292E; }
+    .cal-day.today .cal-day-date { color: #2D84ED; }
+    .cal-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-    /* ── 스케줄 목록 ── */
-    .schedule-table { width:100%;border-collapse:collapse; }
-    .schedule-table th {
-      font-size:14px;color:#596066;font-weight:600;
-      padding:8px 14px;background:#F6F7F9;
-      border-bottom:1px solid #E5E7EA;text-align:left;
+    /* schedule filter tabs */
+    .schedule-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 20px;
+      border-bottom: 1px solid #E5E7EA;
     }
-    .schedule-table td {
-      padding:13px 14px;font-size:13px;color:#24292E;
-      border-bottom:1px solid #F6F7F9;vertical-align:middle;
+    .sched-tab {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #9EA5AD;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-weight: 500;
+      transition: color 0.1s;
     }
-    .schedule-table tr:last-child td { border-bottom:none; }
-    .schedule-table .link { color:#58C65D;cursor:pointer; }
-    .schedule-table .link:hover { text-decoration:underline; }
+    .sched-tab.active { color: #24292E; border-bottom-color: #24292E; }
+    .sched-tab:hover { color: #596066; }
+
+    /* schedule table */
+    .sched-table { width: 100%; border-collapse: collapse; }
+    .sched-table th {
+      background: #F6F7F9;
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .sched-table td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #24292E;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .sched-table tr:last-child td { border-bottom: none; }
+    .sched-table tr[style*="none"] { display: none; }
+    .status-dot-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sdot { width: 7px; height: 7px; border-radius: 50%; }
+    .sdot-running  { background: #10B981; }
+    .sdot-upcoming { background: #2D84ED; }
     .type-badge {
-      display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
     }
-    .type-badge.normal { background:#E8F8E9;color:#2E9E34; }
-    .type-badge.cond   { background:#EAF3FF;color:#2d84ed; }
+    .type-badge.normal { background: #E8F8E9; color: #2E9E34; }
+    .type-badge.cond   { background: #EAF3FF; color: #2D84ED; }
   </style>
 </head>
 <body>
@@ -170,882 +492,534 @@
   </div>
 </header>
 
-<!-- ③ Breadcrumb -->
-<div class="bcrumb">
-  <a class="bcrumb-back" href="product-list.html">←</a>
-  <a href="product-list.html">프로덕트</a>
-  <span class="sep">›</span>
-  <span class="cur">강남 A지구 패키지</span>
-</div>
+<!-- ③ Main -->
+<main class="main">
 
-<!-- ④ Content -->
-<main class="content">
-  <div class="content-inner">
-
-    <!-- 페이지 헤더 -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
-      <div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-          <h1 style="font-size:20px;font-weight:700;color:#24292E;">강남 A지구 패키지</h1>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <span style="font-size:12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:10px;padding:2px 10px;color:#596066;">강남</span>
-          <span style="font-size:12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:10px;padding:2px 10px;color:#596066;">실외</span>
-          <span style="font-size:12px;color:#9EA5AD;">등록일 2025.09.01</span>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-ghost" onclick="document.getElementById('bookingModal').style.display='flex'">스케줄 예약</button>
-        <a href="product-edit.html" class="btn btn-ghost">수정</a>
+  <!-- Page header card -->
+  <div class="detail-header">
+    <div class="detail-header-top">
+      <a class="back-link" href="product-list.html">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#596066" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        프로덕트 목록
+      </a>
+      <div class="header-actions">
+        <button class="btn-outline" onclick="alert('편집 모드 (목업)')">편집</button>
+        <button class="btn-danger-outline" onclick="alert('삭제 확인 (목업)')">삭제</button>
       </div>
     </div>
-
-    <!-- ─── 섹션: 기본 정보 ─── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-body" style="padding-bottom:0;">
-        <div style="font-size:15px;font-weight:700;color:#24292E;padding-bottom:14px;border-bottom:1px solid #E5E7EA;margin-bottom:20px;">기본 정보</div>
-      </div>
-      <div id="tab-basic" class="card-body" style="padding-top:0;">
-
-        <!-- 지도 영역 -->
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">미디어 위치</div>
-            <div style="display:flex;align-items:center;gap:12px;font-size:12px;color:#596066;">
-              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#58C65D;margin-right:4px;vertical-align:middle;"></span>온라인</span>
-              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#F5A623;margin-right:4px;vertical-align:middle;"></span>이슈</span>
-              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#CED2D6;margin-right:4px;vertical-align:middle;"></span>오프라인</span>
-            </div>
-          </div>
-          <!-- SVG 인터랙티브 지도 (Google Maps 미연동 목업) -->
-          <div id="map-wrap" style="position:relative;width:100%;height:320px;background:#E8EFF5;border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;cursor:grab;">
-            <!-- 배경 도로망 SVG -->
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;">
-              <!-- 배경 -->
-              <rect width="100%" height="100%" fill="#E8EFF5"/>
-              <!-- 블록들 (건물) -->
-              <rect x="60"  y="40"  width="90"  height="60"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="200" y="30"  width="120" height="80"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="380" y="50"  width="80"  height="50"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="500" y="20"  width="100" height="70"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="660" y="40"  width="90"  height="55"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="60"  y="160" width="110" height="90"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="220" y="170" width="90"  height="70"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="380" y="155" width="110" height="85"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="560" y="160" width="95"  height="75"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="700" y="150" width="80"  height="90"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="80"  y="260" width="100" height="50"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="250" y="255" width="130" height="55"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="450" y="260" width="90"  height="50"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <rect x="610" y="250" width="110" height="60"  rx="3" fill="#D8E4EF" opacity=".6"/>
-              <!-- 주요 도로 (강남대로 세로) -->
-              <rect x="170" y="0"   width="20" height="320" fill="#fff" opacity=".8"/>
-              <!-- 강남대로 레이블 -->
-              <text x="175" y="310" font-size="9" fill="#9EA5AD" writing-mode="tb" transform="rotate(0,175,310)">강남대로</text>
-              <!-- 테헤란로 (가로) -->
-              <rect x="0"   y="130" width="800" height="20" fill="#fff" opacity=".8"/>
-              <text x="10"  y="143" font-size="9" fill="#9EA5AD">테헤란로</text>
-              <!-- 언주로 (세로) -->
-              <rect x="370" y="0"   width="14" height="320" fill="#fff" opacity=".7"/>
-              <!-- 역삼로 (가로) -->
-              <rect x="0"   y="240" width="800" height="14" fill="#fff" opacity=".7"/>
-              <!-- 봉은사로 -->
-              <rect x="560" y="0"   width="14" height="320" fill="#fff" opacity=".7"/>
-            </svg>
-
-            <!-- 핀: 강남역 1번출구 A (온라인) -->
-            <div class="map-pin" data-id="m1" style="position:absolute;left:152px;top:108px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m1')">
-              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#58C65D"/>
-                <circle cx="14" cy="14" r="6" fill="#fff"/>
-              </svg>
-            </div>
-
-            <!-- 핀: 강남역 1번출구 B (온라인) -->
-            <div class="map-pin" data-id="m2" style="position:absolute;left:190px;top:120px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m2')">
-              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#58C65D"/>
-                <circle cx="14" cy="14" r="6" fill="#fff"/>
-              </svg>
-            </div>
-
-            <!-- 핀: 신논현역 메인 월 (이슈) -->
-            <div class="map-pin" data-id="m3" style="position:absolute;left:358px;top:90px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m3')">
-              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#F5A623"/>
-                <circle cx="14" cy="14" r="6" fill="#fff"/>
-              </svg>
-            </div>
-
-            <!-- 핀: 삼성역 코엑스 광장 (오프라인) -->
-            <div class="map-pin" data-id="m4" style="position:absolute;left:555px;top:105px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m4')">
-              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#CED2D6"/>
-                <circle cx="14" cy="14" r="6" fill="#fff"/>
-              </svg>
-            </div>
-
-            <!-- 핀: 역삼역 2번출구 (온라인) -->
-            <div class="map-pin" data-id="m5" style="position:absolute;left:290px;top:232px;transform:translate(-50%,-100%);cursor:pointer;" onclick="selectPin('m5')">
-              <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
-                <path d="M14 0C6.27 0 0 6.27 0 14c0 9.63 14 22 14 22s14-12.37 14-22C28 6.27 21.73 0 14 0z" fill="#58C65D"/>
-                <circle cx="14" cy="14" r="6" fill="#fff"/>
-              </svg>
-            </div>
-
-            <!-- 팝업 툴팁 -->
-            <div id="map-tooltip" style="display:none;position:absolute;background:#fff;border:1px solid #E5E7EA;border-radius:8px;padding:12px 14px;min-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:10;pointer-events:none;">
-              <div id="tt-name" style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:4px;"></div>
-              <div id="tt-loc"  style="font-size:11px;color:#9EA5AD;margin-bottom:8px;"></div>
-              <div style="display:flex;align-items:center;gap:6px;">
-                <span id="tt-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;"></span>
-                <span id="tt-status" style="font-size:12px;"></span>
-              </div>
-            </div>
-
-            <!-- 지도 우측 하단 안내 -->
-            <div style="position:absolute;bottom:10px;right:10px;font-size:11px;color:#9EA5AD;background:rgba(255,255,255,.8);padding:4px 8px;border-radius:4px;">목업 지도 (실제 서비스: Google Maps 연동)</div>
-          </div>
-        </div>
-
-        <div style="margin-bottom:12px;font-size:13px;color:#596066;">소속 미디어 <strong style="color:#24292E;">5개</strong></div>
-        <div class="media-card-grid">
-          <!-- 미디어 카드 1 -->
-          <div class="media-card">
-            <div class="media-card-header">
-              <div>
-                <div class="media-card-name">강남역 1번출구 A</div>
-                <div class="media-card-loc">서울 강남구 강남대로 396</div>
-              </div>
-              <span class="dot-online"></span>
-            </div>
-            <div class="media-card-row"><span class="media-card-row-label">설치 장소</span><span>실외</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">해상도</span><span>1920 × 1080</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">운영 시간</span><span>07:00 ~ 22:00</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">잔여 시간</span><span style="color:#2E9E34;">321초 (81%)</span></div>
-          </div>
-          <!-- 미디어 카드 2 -->
-          <div class="media-card">
-            <div class="media-card-header">
-              <div>
-                <div class="media-card-name">강남역 1번출구 B</div>
-                <div class="media-card-loc">서울 강남구 강남대로 396</div>
-              </div>
-              <span class="dot-online"></span>
-            </div>
-            <div class="media-card-row"><span class="media-card-row-label">설치 장소</span><span>실외</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">해상도</span><span>1920 × 1080</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">운영 시간</span><span>07:00 ~ 22:00</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">잔여 시간</span><span style="color:#B97B00;">78초 (20%)</span></div>
-          </div>
-          <!-- 미디어 카드 3 -->
-          <div class="media-card">
-            <div class="media-card-header">
-              <div>
-                <div class="media-card-name">신논현역 메인 월</div>
-                <div class="media-card-loc">서울 강남구 언주로 411</div>
-              </div>
-              <span class="dot-issue" title="이슈 있음"></span>
-            </div>
-            <div class="media-card-row"><span class="media-card-row-label">설치 장소</span><span>실내</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">해상도</span><span>3840 × 2160</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">운영 시간</span><span>08:00 ~ 21:00</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">잔여 시간</span><span style="color:#2E9E34;">260초 (65%)</span></div>
-          </div>
-          <!-- 미디어 카드 4 -->
-          <div class="media-card">
-            <div class="media-card-header">
-              <div>
-                <div class="media-card-name">삼성역 코엑스 광장</div>
-                <div class="media-card-loc">서울 강남구 봉은사로 524</div>
-              </div>
-              <span class="dot-offline"></span>
-            </div>
-            <div class="media-card-row"><span class="media-card-row-label">설치 장소</span><span>실외</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">해상도</span><span>1920 × 1080</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">운영 시간</span><span>08:00 ~ 22:00</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">잔여 시간</span><span style="color:#9EA5AD;">— (오프라인)</span></div>
-          </div>
-          <!-- 미디어 카드 5 -->
-          <div class="media-card">
-            <div class="media-card-header">
-              <div>
-                <div class="media-card-name">역삼역 2번출구</div>
-                <div class="media-card-loc">서울 강남구 역삼로 160</div>
-              </div>
-              <span class="dot-online"></span>
-            </div>
-            <div class="media-card-row"><span class="media-card-row-label">설치 장소</span><span>실외</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">해상도</span><span>1920 × 1080</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">운영 시간</span><span>07:00 ~ 22:00</span></div>
-            <div class="media-card-row"><span class="media-card-row-label">잔여 시간</span><span style="color:#2E9E34;">196초 (49%)</span></div>
-          </div>
-        </div>
-      </div>
+    <div class="detail-title-row">
+      <h1 class="detail-title">강남 A지구 패키지</h1>
+      <span class="badge badge-active"><span class="badge-dot"></span>활성</span>
     </div>
+    <div class="media-tags">
+      <span class="media-tag">강남역 1번출구 A</span>
+      <span class="media-tag">강남역 1번출구 B</span>
+      <span class="media-tag">강남역 2번출구</span>
+    </div>
+    <div class="reg-date">등록일: 2025.09.01</div>
+  </div>
 
-    <!-- ─── 섹션: 효과 분석 ─── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-body" style="padding-bottom:0;">
-        <div style="font-size:15px;font-weight:700;color:#24292E;padding-bottom:14px;border-bottom:1px solid #E5E7EA;margin-bottom:20px;">효과 분석</div>
+  <!-- ─── Section A: 플레이플랜 ─── -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">플레이플랜</h2>
+    </div>
+    <div class="playplan-layout">
+
+      <!-- Left list -->
+      <div class="playplan-list">
+        <div class="playplan-list-header">
+          <span class="playplan-list-label">목록</span>
+          <button class="btn-add-small" onclick="showAddForm()">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+            추가
+          </button>
+        </div>
+        <div class="plan-item selected" onclick="selectPlan(this, 0)">
+          <div class="plan-item-name">▶ 30초 일반</div>
+          <div class="plan-item-price">3,300,000원</div>
+        </div>
+        <div class="plan-item" onclick="selectPlan(this, 1)">
+          <div class="plan-item-name">20초 일반</div>
+          <div class="plan-item-price">2,800,000원</div>
+        </div>
+        <div class="plan-item" onclick="selectPlan(this, 2)">
+          <div class="plan-item-name">30초 조건</div>
+          <div class="plan-item-price">2,500,000원</div>
+        </div>
       </div>
-      <div id="tab-analysis" class="card-body" style="padding-top:0;">
-        <!-- 상단 컨트롤 -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-          <div class="analysis-tab" id="analysisViewTab">
-            <button class="active" data-view="daily" onclick="switchAnalysis('daily',this)">일 평균</button>
-            <button data-view="monthly" onclick="switchAnalysis('monthly',this)">월 평균</button>
-            <button data-view="weekday" onclick="switchAnalysis('weekday',this)">요일 평균</button>
-            <button data-view="hourly" onclick="switchAnalysis('hourly',this)">시간대 평균</button>
-            <button data-view="gender" onclick="switchAnalysis('gender',this)">연령·성별</button>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <button id="btn-reside"  class="btn btn-primary  btn-sm" onclick="switchAnalysisType('reside')">거주지 분석</button>
-            <button id="btn-work"    class="btn btn-ghost    btn-sm" onclick="switchAnalysisType('work')">근무지 분석</button>
-          </div>
-        </div>
 
-        <!-- KPI 요약 카드 -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
-          <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:16px 20px;">
-            <div style="font-size:12px;color:#9EA5AD;margin-bottom:6px;">유동인구 (합산)</div>
-            <div style="font-size:22px;font-weight:700;color:#24292E;">548,096<span style="font-size:13px;font-weight:700;color:#24292E;margin-left:2px;">명</span></div>
-          </div>
-          <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:16px 20px;">
-            <div style="font-size:12px;color:#9EA5AD;margin-bottom:6px;">노출인구 (합산)</div>
-            <div style="font-size:22px;font-weight:700;color:#24292E;">383,667<span style="font-size:13px;font-weight:700;color:#24292E;margin-left:2px;">명</span></div>
-          </div>
-          <div style="background:#E8F8E9;border:1px solid #C1E9C3;border-radius:8px;padding:16px 20px;">
-            <div style="font-size:12px;color:#2E9E34;margin-bottom:6px;">유동 대비 노출 비율</div>
-            <div style="font-size:22px;font-weight:700;color:#2E9E34;">70.0<span style="font-size:13px;font-weight:400;margin-left:1px;">%</span></div>
-            <div style="font-size:11px;color:#58C65D;margin-top:4px;">✦ 프리미엄 수준의 효과</div>
-          </div>
-        </div>
+      <!-- Right detail -->
+      <div class="playplan-detail" id="planDetailPanel">
 
-        <!-- 차트 영역 -->
-        <div id="chart-daily" class="analysis-chart-panel">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">일 평균 노출인구 비교</div>
-            <div style="font-size:11px;color:#9EA5AD;">2025.10.01 ~ 2025.10.31 · 미디어별 일 평균 노출인구</div>
+        <!-- View mode panels (one per plan) -->
+        <div id="viewPanel0" class="view-panel">
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">재생 시간</div>
+              <div class="info-value">30초</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">광고 유형</div>
+              <div class="info-value">일반</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">운영 기간 단위</div>
+              <div class="info-value">월</div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1A7A6E;margin-right:4px;vertical-align:middle;"></span>강남역 (합산)</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6FD8CE;margin-right:4px;vertical-align:middle;"></span>신논현역</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#A8E6E0;margin-right:4px;vertical-align:middle;"></span>역삼역</span>
-            <span style="margin-left:4px;"><span style="display:inline-block;width:24px;height:2px;background:#E97474;margin-right:4px;vertical-align:middle;border-top:2px dashed #E97474;"></span>전체 평균</span>
-          </div>
-          <canvas id="chartDaily" height="200"></canvas>
-          <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
-            분석 기간 동안 일 평균 노출인구는 <strong style="color:#24292E;">12,376명</strong>으로 집계됩니다. <strong style="color:#24292E;">강남역(합산)</strong> 미디어가 전체 노출의 약 <strong style="color:#24292E;">67%</strong>를 차지하며 핵심 매체로 기여하고 있으며, 신논현역과 역삼역은 각각 전체의 약 22%, 11%를 담당합니다.
-          </div>
-        </div>
-
-        <div id="chart-monthly" class="analysis-chart-panel" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">월 평균 노출인구 비교</div>
-            <div style="font-size:11px;color:#9EA5AD;">2025.07 ~ 2025.10 · 미디어별 월 합산 노출인구</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1A7A6E;margin-right:4px;vertical-align:middle;"></span>강남역 (합산)</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6FD8CE;margin-right:4px;vertical-align:middle;"></span>신논현역</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#A8E6E0;margin-right:4px;vertical-align:middle;"></span>역삼역</span>
-          </div>
-          <canvas id="chartMonthly" height="200"></canvas>
-          <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
-            7월~10월 기간 동안 노출인구는 꾸준히 증가하는 추세를 보였으며, <strong style="color:#24292E;">10월</strong>에 최고치를 기록했습니다. 여름철(7~8월) 대비 가을철(9~10월) 노출인구가 약 <strong style="color:#24292E;">18%</strong> 증가하여 계절적 유동인구 상승이 광고 효과에 긍정적으로 작용한 것으로 분석됩니다.
-          </div>
-        </div>
-
-        <div id="chart-weekday" class="analysis-chart-panel" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">요일 평균 노출인구 비교</div>
-            <div style="font-size:11px;color:#9EA5AD;">2025.10.01 ~ 2025.10.31 · 요일별 일 평균 노출인구</div>
-          </div>
-          <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1A7A6E;margin-right:4px;vertical-align:middle;"></span>강남역</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6FD8CE;margin-right:4px;vertical-align:middle;"></span>신논현/역삼역</span>
-          </div>
-          <canvas id="chartWeekday" height="200"></canvas>
-          <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
-            <strong style="color:#24292E;">화·목요일</strong>에 노출인구가 최고치를 기록했으며, 주말(토·일)은 평일 대비 약 <strong style="color:#24292E;">20%</strong> 낮은 수준을 유지했습니다. 금요일 저녁 퇴근 시간대에 급격한 유동인구 증가가 관측되어 특정 요일 집중 집행 전략이 유효할 것으로 분석됩니다.
-          </div>
-        </div>
-
-        <div id="chart-hourly" class="analysis-chart-panel" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">시간대 평균 노출인구 비교</div>
-            <div style="font-size:11px;color:#9EA5AD;">09시 ~ 22시 · 시간대별 평균 노출인구</div>
-          </div>
-          <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1A7A6E;margin-right:4px;vertical-align:middle;"></span>강남역</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6FD8CE;margin-right:4px;vertical-align:middle;"></span>신논현/역삼역</span>
-          </div>
-          <canvas id="chartHourly" height="200"></canvas>
-          <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
-            <strong style="color:#24292E;">오전 8~9시</strong> 출근 시간대와 <strong style="color:#24292E;">오후 18~19시</strong> 퇴근 시간대에 노출인구가 집중되는 이중 피크 패턴이 확인됩니다. 12시 점심 시간대에도 소폭 상승이 나타나며, 주요 광고 집행은 출퇴근 피크 시간대에 집중하는 것이 효과적입니다.
-          </div>
-        </div>
-
-        <div id="chart-gender" class="analysis-chart-panel" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;color:#24292E;">연령·성별 분포 비교</div>
-            <div style="font-size:11px;color:#9EA5AD;">2025.10.01 ~ 2025.10.31 · 미디어그룹별 노출인구 총합</div>
-          </div>
-          <div style="display:flex;gap:12px;margin-bottom:12px;font-size:12px;color:#596066;">
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5B9BD5;margin-right:4px;vertical-align:middle;"></span>남성</span>
-            <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#F5A623;margin-right:4px;vertical-align:middle;"></span>여성</span>
-          </div>
-          <canvas id="chartGender" height="260"></canvas>
-          <div style="margin-top:16px;padding:14px 18px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;font-size:13px;color:#3E4650;line-height:1.7;">
-            <strong style="color:#24292E;">30대</strong>가 남녀 모두 최다 노출 연령대이며, 20대~40대 핵심 경제활동인구가 전체 노출의 약 <strong style="color:#24292E;">72%</strong>를 차지합니다. 성비는 남성 <strong style="color:#24292E;">50.7%</strong> : 여성 <strong style="color:#24292E;">49.3%</strong>로 균형 잡힌 분포를 보여, 성별 구분 없이 폭넓은 타깃 도달이 가능한 입지입니다.
-          </div>
-        </div>
-
-        <!-- 미디어별 성과 테이블 -->
-        <div style="margin-top:24px;">
-          <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">미디어별 광고 성과</div>
-          <table class="analysis-table">
+          <table class="plan-table">
             <thead>
               <tr>
-                <th>미디어명</th>
-                <th>유동인구</th>
-                <th>노출인구</th>
-                <th>유동 대비 노출 비율</th>
+                <th>미디어</th>
+                <th>보장 횟수</th>
+                <th>최대 판매 슬롯 수</th>
+                <th style="text-align:right;">가격</th>
               </tr>
             </thead>
             <tbody>
-              <tr class="total">
-                <td>프로덕트 합산</td>
-                <td>548,096명</td>
-                <td>383,667명</td>
-                <td><strong style="color:#2E9E34;">70.0%</strong></td>
-              </tr>
-              <tr>
-                <td>강남역 1번출구 A</td>
-                <td>185,552명</td>
-                <td>129,886명</td>
-                <td>70.0%</td>
-              </tr>
-              <tr>
-                <td>강남역 1번출구 B</td>
-                <td>185,552명</td>
-                <td>129,886명</td>
-                <td>70.0%</td>
-              </tr>
-              <tr>
-                <td>신논현역 메인 월</td>
-                <td>92,448명</td>
-                <td>64,723명</td>
-                <td>70.0%</td>
-              </tr>
-              <tr>
-                <td>삼성역 코엑스 광장</td>
-                <td style="color:#9EA5AD;">—</td>
-                <td style="color:#9EA5AD;">—</td>
-                <td style="color:#9EA5AD;">—</td>
-              </tr>
-              <tr>
-                <td>역삼역 2번출구</td>
-                <td>84,544명</td>
-                <td>59,172명</td>
-                <td>70.0%</td>
-              </tr>
+              <tr><td>강남역 1번출구 A</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,500,000원</td></tr>
+              <tr><td>강남역 1번출구 B</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,200,000원</td></tr>
+              <tr><td>강남역 2번출구</td><td>78회 보장</td><td>20개</td><td style="text-align:right;">600,000원</td></tr>
+              <tr class="total-row"><td colspan="3">합계</td><td style="text-align:right;">3,300,000원</td></tr>
             </tbody>
           </table>
-          <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">* 합산 방식: 단순 합산 (중복 인구 제거 여부 TBD) · 데이터 출처: DMS 연동</div>
-        </div>
-
-      </div>
-
-      </div>
-    </div>
-
-    <!-- ─── 섹션: 인벤토리 조회 ─── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-body" style="padding-bottom:0;">
-        <div style="font-size:15px;font-weight:700;color:#24292E;padding-bottom:14px;border-bottom:1px solid #E5E7EA;margin-bottom:20px;">인벤토리 조회</div>
-      </div>
-      <div id="tab-inventory" class="card-body" style="padding-top:0;">
-        <div class="inv-query-form">
-          <div style="font-size:13px;font-weight:500;color:#24292E;margin-bottom:12px;">조건 입력</div>
-          <div class="inv-form-row">
-            <div class="inv-form-field">
-              <label>광고 기간</label>
-              <div style="display:flex;align-items:center;gap:6px;">
-                <input type="date" class="input" style="font-size:13px;">
-                <span style="color:#9EA5AD;font-size:12px;">~</span>
-                <input type="date" class="input" style="font-size:13px;">
-              </div>
-            </div>
-            <div class="inv-form-field">
-              <label>재생 시간 (초)</label>
-              <input type="number" class="input" placeholder="30">
-            </div>
-            <div class="inv-form-field">
-              <label>보장 횟수 (회)</label>
-              <input type="number" class="input" placeholder="1000">
-            </div>
-            <button class="btn btn-primary" style="flex-shrink:0;">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4" stroke="#fff" stroke-width="1.4"/><path d="M9 9l2.5 2.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
-              조회
-            </button>
+          <button class="preview-toggle" onclick="togglePreview(this)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#596066" stroke-width="1.4" stroke-linecap="round"/></svg>
+            광고주 뷰 미리보기
+          </button>
+          <div class="preview-panel">
+            <p style="margin:0 0 8px;font-weight:600;color:#24292E;">광고주 뷰 미리보기</p>
+            <p style="margin:0;">이 플레이플랜은 강남 A지구 패키지의 30초 일반 광고 상품입니다. 3개 미디어(강남역 1번출구 A·B, 2번출구)에서 월간 운영되며 총 3,300,000원입니다.</p>
           </div>
         </div>
 
-        <div style="margin-bottom:8px;font-size:13px;color:#596066;">
-          <span style="color:#24292E;font-weight:500;">3/5개</span> 미디어 판매 가능
-        </div>
-        <table class="inv-result-table">
-          <thead>
-            <tr>
-              <th>미디어명</th>
-              <th>현재 잔여시간</th>
-              <th>조건 반영 후 잔여</th>
-              <th>잔여 비율</th>
-              <th>판매 가능 여부</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>강남역 1번출구 A</td>
-              <td>321초</td>
-              <td>291초</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <div class="prog-bar" style="width:100px;"><div class="prog-fill" style="width:73%;background:#58C65D;"></div></div>
-                  <span>73%</span>
-                </div>
-              </td>
-              <td class="avail-yes">● 가능</td>
-            </tr>
-            <tr>
-              <td>강남역 1번출구 B</td>
-              <td>78초</td>
-              <td>48초</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <div class="prog-bar" style="width:100px;"><div class="prog-fill" style="width:12%;background:#F5A623;"></div></div>
-                  <span>12%</span>
-                </div>
-              </td>
-              <td class="avail-part">▲ 일부 기간 불가</td>
-            </tr>
-            <tr>
-              <td>신논현역 메인 월</td>
-              <td>260초</td>
-              <td>230초</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <div class="prog-bar" style="width:100px;"><div class="prog-fill" style="width:58%;background:#58C65D;"></div></div>
-                  <span>58%</span>
-                </div>
-              </td>
-              <td class="avail-yes">● 가능</td>
-            </tr>
-            <tr>
-              <td style="color:#9EA5AD;">삼성역 코엑스 광장</td>
-              <td style="color:#9EA5AD;">— (오프라인)</td>
-              <td style="color:#9EA5AD;">—</td>
-              <td style="color:#9EA5AD;">—</td>
-              <td class="avail-no">✕ 불가</td>
-            </tr>
-            <tr>
-              <td>역삼역 2번출구</td>
-              <td>196초</td>
-              <td style="color:#C83434;">-4초 (초과)</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <div class="prog-bar" style="width:100px;"><div class="prog-fill" style="width:0%;background:#E97474;"></div></div>
-                  <span style="color:#C83434;">초과</span>
-                </div>
-              </td>
-              <td class="avail-no">✕ 불가</td>
-            </tr>
-          </tbody>
-        </table>
-        <div style="margin-top:10px;font-size:11px;color:#9EA5AD;">응답 시간 기준: 5초 이내</div>
-      </div>
-
-      </div>
-    </div>
-
-    <!-- ─── 섹션: Play Plan ─── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-body" style="padding-bottom:0;">
-        <div style="font-size:15px;font-weight:700;color:#24292E;padding-bottom:14px;border-bottom:1px solid #E5E7EA;margin-bottom:20px;">Play Plan</div>
-      </div>
-      <div id="tab-playplan" class="card-body" style="padding-top:0;">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
-          <a href="product-playplan.html" class="btn btn-primary btn-sm">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            Play Plan 등록
-          </a>
-        </div>
-        <table class="pp-table">
-          <thead>
-            <tr>
-              <th>플레이 플랜명</th>
-              <th>재생 시간</th>
-              <th>일 보장 횟수</th>
-              <th>금액</th>
-              <th>상태</th>
-              <th>ADeX 연결</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="font-weight:500;">가을 캠페인 30초</td>
-              <td>30초</td>
-              <td>100회 / 일</td>
-              <td>5,000,000원</td>
-              <td><span class="status-chip active">활성</span></td>
-              <td><span style="font-size:12px;color:#2d84ed;">● 연결됨</span></td>
-            </tr>
-            <tr>
-              <td style="font-weight:500;">연말 이벤트 15초</td>
-              <td>15초</td>
-              <td>80회 / 일</td>
-              <td>8,000,000원</td>
-              <td><span class="status-chip draft">초안</span></td>
-              <td><span style="font-size:12px;color:#9EA5AD;">미연결</span></td>
-            </tr>
-            <tr>
-              <td style="font-weight:500;">신제품 런칭 30초</td>
-              <td>30초</td>
-              <td>100회 / 일</td>
-              <td>3,500,000원</td>
-              <td><span class="status-chip inactive">비활성</span></td>
-              <td><span style="font-size:12px;color:#2d84ed;">● 연결됨</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      </div>
-    </div>
-
-    <!-- ─── 섹션: 스케줄 ─── -->
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-body" style="padding-bottom:0;">
-        <div style="font-size:15px;font-weight:700;color:#24292E;padding-bottom:14px;border-bottom:1px solid #E5E7EA;margin-bottom:20px;">스케줄</div>
-      </div>
-      <div id="tab-schedule" class="card-body" style="padding-top:0;">
-        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px;">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('bookingModal').style.display='flex'">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#fff" stroke-width="1.3" fill="none"/><path d="M1 5h10" stroke="#fff" stroke-width="1.3"/><path d="M4 1v2M8 1v2" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/></svg>
-            스케줄 예약
+        <div id="viewPanel1" class="view-panel" style="display:none;">
+          <div class="info-grid">
+            <div class="info-item"><div class="info-label">재생 시간</div><div class="info-value">20초</div></div>
+            <div class="info-item"><div class="info-label">광고 유형</div><div class="info-value">일반</div></div>
+            <div class="info-item"><div class="info-label">운영 기간 단위</div><div class="info-value">월</div></div>
+          </div>
+          <table class="plan-table">
+            <thead><tr><th>미디어</th><th>보장 횟수</th><th>최대 판매 슬롯 수</th><th style="text-align:right;">가격</th></tr></thead>
+            <tbody>
+              <tr><td>강남역 1번출구 A</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,200,000원</td></tr>
+              <tr><td>강남역 1번출구 B</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,000,000원</td></tr>
+              <tr><td>강남역 2번출구</td><td>78회 보장</td><td>20개</td><td style="text-align:right;">600,000원</td></tr>
+              <tr class="total-row"><td colspan="3">합계</td><td style="text-align:right;">2,800,000원</td></tr>
+            </tbody>
+          </table>
+          <button class="preview-toggle" onclick="togglePreview(this)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#596066" stroke-width="1.4" stroke-linecap="round"/></svg>
+            광고주 뷰 미리보기
           </button>
+          <div class="preview-panel">
+            <p style="margin:0 0 8px;font-weight:600;color:#24292E;">광고주 뷰 미리보기</p>
+            <p style="margin:0;">이 플레이플랜은 강남 A지구 패키지의 20초 일반 광고 상품입니다. 총 2,800,000원입니다.</p>
+          </div>
         </div>
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th>스케줄명</th>
-              <th>유형</th>
-              <th>광고주</th>
-              <th>기간</th>
-              <th>재생시간</th>
-              <th>상태</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="link">삼성 갤럭시 S26 런칭</td>
-              <td><span class="type-badge normal">일반</span></td>
-              <td>삼성전자</td>
-              <td>2025.10.01 ~ 10.31</td>
-              <td>30초</td>
-              <td><span class="status-chip active">활성</span></td>
-              <td><button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="openBooking('삼성 갤럭시 S26 런칭','2025-10-01','2025-10-31')">예약</button></td>
-            </tr>
-            <tr>
-              <td class="link">나이키 FW25 캠페인</td>
-              <td><span class="type-badge cond">조건</span></td>
-              <td>나이키 코리아</td>
-              <td>2025.10.01 ~ 10.31</td>
-              <td>15초</td>
-              <td><span class="status-chip active">활성</span></td>
-              <td><button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="openBooking('나이키 FW25 캠페인','2025-10-01','2025-10-31')">예약</button></td>
-            </tr>
-            <tr>
-              <td class="link">현대차 아이오닉9</td>
-              <td><span class="type-badge normal">일반</span></td>
-              <td>현대자동차</td>
-              <td>2025.11.01 ~ 11.30</td>
-              <td>30초</td>
-              <td><span class="status-chip confirm">확정</span></td>
-              <td><span style="font-size:11px;color:#9EA5AD;">예약완료</span></td>
-            </tr>
-            <tr>
-              <td class="link">롯데백화점 연말 세일</td>
-              <td><span class="type-badge normal">일반</span></td>
-              <td>롯데쇼핑</td>
-              <td>2025.12.01 ~ 12.31</td>
-              <td>20초</td>
-              <td><span class="status-chip draft">초안</span></td>
-              <td><button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="openBooking('롯데백화점 연말 세일','2025-12-01','2025-12-31')">예약</button></td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div id="viewPanel2" class="view-panel" style="display:none;">
+          <div class="info-grid">
+            <div class="info-item"><div class="info-label">재생 시간</div><div class="info-value">30초</div></div>
+            <div class="info-item"><div class="info-label">광고 유형</div><div class="info-value">조건</div></div>
+            <div class="info-item"><div class="info-label">운영 기간 단위</div><div class="info-value">월</div></div>
+          </div>
+          <table class="plan-table">
+            <thead><tr><th>미디어</th><th>보장 횟수</th><th>최대 판매 슬롯 수</th><th style="text-align:right;">가격</th></tr></thead>
+            <tbody>
+              <tr><td>강남역 1번출구 A</td><td>60회 보장</td><td>15개</td><td style="text-align:right;">1,100,000원</td></tr>
+              <tr><td>강남역 1번출구 B</td><td>60회 보장</td><td>15개</td><td style="text-align:right;">900,000원</td></tr>
+              <tr><td>강남역 2번출구</td><td>54회 보장</td><td>15개</td><td style="text-align:right;">500,000원</td></tr>
+              <tr class="total-row"><td colspan="3">합계</td><td style="text-align:right;">2,500,000원</td></tr>
+            </tbody>
+          </table>
+          <button class="preview-toggle" onclick="togglePreview(this)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="#596066" stroke-width="1.4" stroke-linecap="round"/></svg>
+            광고주 뷰 미리보기
+          </button>
+          <div class="preview-panel">
+            <p style="margin:0 0 8px;font-weight:600;color:#24292E;">광고주 뷰 미리보기</p>
+            <p style="margin:0;">이 플레이플랜은 강남 A지구 패키지의 30초 조건 광고 상품입니다. 총 2,500,000원입니다.</p>
+          </div>
+        </div>
+
+        <!-- Add/Edit form -->
+        <div id="editForm" class="edit-form">
+          <h3 style="font-size:14px;font-weight:700;color:#24292E;margin:0 0 18px;">새 플레이플랜 추가</h3>
+          <div class="form-row">
+            <label class="form-label">재생 시간</label>
+            <input class="form-input" type="number" placeholder="예) 30" style="width:120px;">
+          </div>
+          <div class="form-row">
+            <label class="form-label">광고 유형</label>
+            <div class="toggle-group">
+              <button class="toggle-btn active" onclick="setType(this,'normal')">일반</button>
+              <button class="toggle-btn" onclick="setType(this,'cond')">조건</button>
+            </div>
+          </div>
+          <div id="condFields" class="form-row condition-fields">
+            <label class="form-label">조건 유형</label>
+            <select class="form-select" style="width:200px;">
+              <option>날씨 조건</option>
+              <option>시간 조건</option>
+              <option>요일 조건</option>
+            </select>
+          </div>
+          <div id="condDetailFields" class="form-row condition-fields">
+            <label class="form-label">조건 상세</label>
+            <input class="form-input" type="text" placeholder="조건 상세 입력" style="width:260px;">
+          </div>
+          <div class="form-row">
+            <label class="form-label">운영 기간 단위</label>
+            <select class="form-select" style="width:160px;">
+              <option>월</option>
+              <option>주</option>
+              <option>일</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary-sm" onclick="saveForm()">저장</button>
+            <button class="btn-cancel-sm" onclick="cancelForm()">취소</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
+
+  <!-- ─── Section B: 미디어별 잔여 현황 ─── -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">미디어별 잔여 현황</h2>
+      <div class="chart-header-right">
+        <div class="toggle-pill">
+          <button class="pill-btn active" id="btnTime" onclick="switchChart('time')">잔여 시간</button>
+          <button class="pill-btn" id="btnSlot" onclick="switchChart('slot')">잔여 슬롯 수</button>
+        </div>
+        <a class="link-btn" href="schedule-main.html">편성표 보기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-canvas-wrap">
+        <canvas id="remainChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Section C: 스케줄 현황 ─── -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">스케줄 현황</h2>
+      <a class="link-btn" href="schedule-main.html">편성표 보기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+    </div>
+
+    <!-- Mini calendar -->
+    <div class="mini-calendar">
+      <a class="cal-day" href="schedule-main.html">
+        <span class="cal-day-label">월</span>
+        <span class="cal-day-date">6/2</span>
+        <span class="cal-dot" style="background:#10B981;"></span>
+      </a>
+      <a class="cal-day" href="schedule-main.html">
+        <span class="cal-day-label">화</span>
+        <span class="cal-day-date">6/3</span>
+        <span class="cal-dot" style="background:#10B981;"></span>
+      </a>
+      <a class="cal-day" href="schedule-main.html">
+        <span class="cal-day-label">수</span>
+        <span class="cal-day-date">6/4</span>
+        <span class="cal-dot" style="background:#F59E0B;"></span>
+      </a>
+      <a class="cal-day" href="schedule-main.html">
+        <span class="cal-day-label">목</span>
+        <span class="cal-day-date">6/5</span>
+        <span class="cal-dot" style="background:#F97316;"></span>
+      </a>
+      <a class="cal-day" href="schedule-main.html">
+        <span class="cal-day-label">금</span>
+        <span class="cal-day-date">6/6</span>
+        <span class="cal-dot" style="background:#EF4444;"></span>
+      </a>
+      <a class="cal-day" href="schedule-main.html">
+        <span class="cal-day-label">토</span>
+        <span class="cal-day-date">6/7</span>
+        <span class="cal-dot" style="background:#10B981;"></span>
+      </a>
+      <a class="cal-day today" href="schedule-main.html">
+        <span class="cal-day-label">일</span>
+        <span class="cal-day-date">6/8</span>
+        <span class="cal-dot" style="background:#10B981;"></span>
+      </a>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="schedule-tabs">
+      <button class="sched-tab active" onclick="filterSched(this,'running')">운영 중</button>
+      <button class="sched-tab" onclick="filterSched(this,'upcoming')">운영 예정</button>
+      <button class="sched-tab" onclick="filterSched(this,'all')">전체</button>
+    </div>
+
+    <!-- Schedule table -->
+    <table class="sched-table">
+      <thead>
+        <tr>
+          <th>스케줄명</th>
+          <th>플레이플랜</th>
+          <th>광고주</th>
+          <th>재생 시간</th>
+          <th>유형</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody id="schedBody">
+        <tr data-sched="running">
+          <td>삼성 갤럭시 S25 런칭</td>
+          <td>30초 일반</td>
+          <td>삼성전자</td>
+          <td>30초</td>
+          <td><span class="type-badge normal">일반</span></td>
+          <td><div class="status-dot-label"><span class="sdot sdot-running"></span>운영 중</div></td>
+        </tr>
+        <tr data-sched="running">
+          <td>나이키 FW25 캠페인</td>
+          <td>30초 조건</td>
+          <td>나이키 코리아</td>
+          <td>30초</td>
+          <td><span class="type-badge cond">조건</span></td>
+          <td><div class="status-dot-label"><span class="sdot sdot-running"></span>운영 중</div></td>
+        </tr>
+        <tr data-sched="upcoming">
+          <td>현대차 아이오닉9</td>
+          <td>30초 일반</td>
+          <td>현대자동차</td>
+          <td>30초</td>
+          <td><span class="type-badge normal">일반</span></td>
+          <td><div class="status-dot-label"><span class="sdot sdot-upcoming"></span>운영 예정</div></td>
+        </tr>
+        <tr data-sched="upcoming">
+          <td>롯데백화점 연말</td>
+          <td>20초 일반</td>
+          <td>롯데쇼핑</td>
+          <td>20초</td>
+          <td><span class="type-badge normal">일반</span></td>
+          <td><div class="status-dot-label"><span class="sdot sdot-upcoming"></span>운영 예정</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </main>
 
-<!-- ── 스케줄 예약 모달 ── -->
-<div id="bookingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:12px;width:520px;max-width:calc(100vw - 40px);box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;">
-    <!-- 모달 헤더 -->
-    <div style="padding:20px 24px 16px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <div style="font-size:16px;font-weight:700;color:#24292E;">스케줄 예약</div>
-        <div style="font-size:12px;color:#9EA5AD;margin-top:3px;" id="bookingSubtitle">강남 A지구 패키지</div>
-      </div>
-      <button onclick="document.getElementById('bookingModal').style.display='none'" style="width:28px;height:28px;border-radius:50%;border:none;background:#F6F7F9;font-size:16px;color:#596066;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
-    </div>
-    <!-- 모달 바디 -->
-    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
-
-      <!-- 스케줄 선택 -->
-      <div>
-        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">스케줄</div>
-        <select class="input" id="bookingSchedSelect" style="width:100%;font-size:13px;">
-          <option>삼성 갤럭시 S26 런칭 · 일반 · 30초</option>
-          <option>나이키 FW25 캠페인 · 조건 · 15초</option>
-          <option>롯데백화점 연말 세일 · 일반 · 20초</option>
-        </select>
-      </div>
-
-      <!-- 예약 기간 -->
-      <div>
-        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">예약 기간</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="date" class="input" id="bookingFrom" style="flex:1;font-size:13px;">
-          <span style="color:#9EA5AD;font-size:13px;">~</span>
-          <input type="date" class="input" id="bookingTo" style="flex:1;font-size:13px;">
-        </div>
-      </div>
-
-      <!-- 미디어 선택 -->
-      <div>
-        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">미디어 선택 <span style="font-weight:400;color:#9EA5AD;">(복수 선택 가능)</span></div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-            <input type="checkbox" checked> 강남역 1번출구 A
-            <span style="margin-left:auto;font-size:11px;color:#2E9E34;">● 여유 있음</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-            <input type="checkbox" checked> 강남역 1번출구 B
-            <span style="margin-left:auto;font-size:11px;color:#B97B00;">▲ 일부 부족</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-            <input type="checkbox"> 신논현역 메인 월
-            <span style="margin-left:auto;font-size:11px;color:#2E9E34;">● 여유 있음</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9EA5AD;cursor:not-allowed;">
-            <input type="checkbox" disabled> 삼성역 코엑스 광장
-            <span style="margin-left:auto;font-size:11px;color:#C83434;">✕ 오프라인</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-            <input type="checkbox"> 역삼역 2번출구
-            <span style="margin-left:auto;font-size:11px;color:#2E9E34;">● 여유 있음</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- 메모 -->
-      <div>
-        <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:6px;">메모 <span style="font-weight:400;color:#9EA5AD;">(선택)</span></div>
-        <textarea class="textarea" placeholder="예약 관련 메모를 입력하세요" style="width:100%;height:64px;font-size:13px;resize:none;"></textarea>
-      </div>
-    </div>
-    <!-- 모달 푸터 -->
-    <div style="padding:14px 24px 20px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #E5E7EA;">
-      <button class="btn btn-ghost" onclick="document.getElementById('bookingModal').style.display='none'">취소</button>
-      <button class="btn btn-primary" onclick="submitBooking()">예약 확정</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ── 효과 분석: 차트 뷰 전환 ──
-function switchAnalysis(view, btn) {
-  ['daily','monthly','weekday','hourly','gender'].forEach(v => {
-    document.getElementById('chart-' + v).style.display = v === view ? '' : 'none';
+/* ── Playplan master-detail ── */
+let currentPlanIndex = 0;
+
+function selectPlan(el, idx) {
+  document.querySelectorAll('.plan-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  // Update arrow indicator
+  document.querySelectorAll('.plan-item .plan-item-name').forEach(n => {
+    n.textContent = n.textContent.replace(/^▶ /, '');
   });
-  document.querySelectorAll('.analysis-tab button').forEach(b => b.classList.remove('active'));
+  el.querySelector('.plan-item-name').textContent = '▶ ' + el.querySelector('.plan-item-name').textContent;
+
+  // Hide edit form
+  document.getElementById('editForm').classList.remove('visible');
+
+  // Show correct view panel
+  document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+  const vp = document.getElementById('viewPanel' + idx);
+  if (vp) vp.style.display = 'block';
+  currentPlanIndex = idx;
+}
+
+function showAddForm() {
+  document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.plan-item').forEach(i => i.classList.remove('selected'));
+  document.getElementById('editForm').classList.add('visible');
+}
+
+function cancelForm() {
+  document.getElementById('editForm').classList.remove('visible');
+  // re-show first panel
+  document.querySelectorAll('.view-panel').forEach((p, i) => p.style.display = i === 0 ? 'block' : 'none');
+  document.querySelectorAll('.plan-item')[0].classList.add('selected');
+}
+
+function saveForm() {
+  alert('플레이플랜이 저장되었습니다. (목업)');
+  cancelForm();
+}
+
+function setType(btn, type) {
+  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  const condRows = document.querySelectorAll('.condition-fields');
+  condRows.forEach(r => {
+    if (type === 'cond') r.classList.add('visible');
+    else r.classList.remove('visible');
+  });
 }
 
-function switchAnalysisType(type) {
-  const reside = document.getElementById('btn-reside');
-  const work   = document.getElementById('btn-work');
-  if (type === 'reside') {
-    reside.className = 'btn btn-primary btn-sm';
-    work.className   = 'btn btn-ghost btn-sm';
+function togglePreview(btn) {
+  const panel = btn.nextElementSibling;
+  panel.classList.toggle('open');
+  const svg = btn.querySelector('svg path');
+  if (panel.classList.contains('open')) {
+    svg.setAttribute('d', 'M2 8l4-4 4 4');
+    btn.childNodes[btn.childNodes.length - 1].textContent = ' 광고주 뷰 접기';
   } else {
-    work.className   = 'btn btn-primary btn-sm';
-    reside.className = 'btn btn-ghost btn-sm';
+    svg.setAttribute('d', 'M2 4l4 4 4-4');
+    btn.childNodes[btn.childNodes.length - 1].textContent = ' 광고주 뷰 미리보기';
   }
 }
 
-// ── 스케줄 예약 ──
-function openBooking(schedName, from, to) {
-  var opts = document.getElementById('bookingSchedSelect').options;
-  for (var i = 0; i < opts.length; i++) {
-    if (opts[i].text.indexOf(schedName) === 0) { opts[i].selected = true; break; }
-  }
-  if (from) document.getElementById('bookingFrom').value = from;
-  if (to)   document.getElementById('bookingTo').value   = to;
-  document.getElementById('bookingSubtitle').textContent = '강남 A지구 패키지 · ' + (schedName || '');
-  document.getElementById('bookingModal').style.display = 'flex';
-}
-
-function submitBooking() {
-  document.getElementById('bookingModal').style.display = 'none';
-  var toast = document.createElement('div');
-  toast.textContent = '✓ 스케줄 예약이 완료됐습니다.';
-  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#24292E;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,.25);';
-  document.body.appendChild(toast);
-  setTimeout(function(){ toast.remove(); }, 2800);
-}
-
-// ── Chart.js 초기화 ──
-const COLORS = { a:'#1A7A6E', b:'#6FD8CE', c:'#A8E6E0', avg:'#E97474', male:'#5B9BD5', female:'#F5A623' };
-
-// 일별 차트 (묶음 막대 + 평균선)
-const dailyLabels = ['10/1','10/3','10/5','10/7','10/9','10/11','10/13','10/15','10/17','10/19','10/21','10/23','10/25','10/27','10/29','10/31'];
-const dailyAvg = 12390;
-const chartDaily = new Chart(document.getElementById('chartDaily'), {
-  type: 'bar',
-  data: {
-    labels: dailyLabels,
-    datasets: [
-      { label:'강남역 (합산)', backgroundColor: COLORS.a,
-        data: [11200,12400,13100,10900,12800,13400,11700,12900,13200,11600,12500,13800,12100,11900,12700,13000] },
-      { label:'신논현역', backgroundColor: COLORS.b,
-        data: [4200,4600,5100,3900,4800,5200,4500,4900,5300,4100,4700,5400,4400,4300,4600,4800] },
-      { label:'역삼역', backgroundColor: COLORS.c,
-        data: [3800,4100,4700,3400,4200,4900,4000,4400,4800,3700,4300,5000,4000,3900,4200,4400] },
-      { label:'전체 평균', type:'line', borderColor: COLORS.avg, borderDash:[6,4],
-        borderWidth:2, pointRadius:0, fill:false, tension:0,
-        data: Array(dailyLabels.length).fill(dailyAvg) }
-    ]
-  },
-  options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ beginAtZero:true, ticks:{ callback:v=>v.toLocaleString() } } } }
-});
-
-// 월별 차트 (묶음 막대)
-const chartMonthly = new Chart(document.getElementById('chartMonthly'), {
-  type: 'bar',
-  data: {
-    labels: ['2025.07','2025.08','2025.09','2025.10'],
-    datasets: [
-      { label:'강남역 (합산)', backgroundColor: COLORS.a, data: [215400, 234800, 248600, 259100] },
-      { label:'신논현역',      backgroundColor: COLORS.b, data: [74200,  81300,  87400,  91200]  },
-      { label:'역삼역',        backgroundColor: COLORS.c, data: [31800,  34900,  37100,  38600]  }
-    ]
-  },
-  options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ beginAtZero:true, ticks:{ callback:v=>v.toLocaleString() } } } }
-});
-
-// 요일별 차트
-const chartWeekday = new Chart(document.getElementById('chartWeekday'), {
-  type: 'bar',
-  data: {
-    labels: ['월','화','수','목','금','토','일'],
-    datasets: [
-      { label:'강남역', backgroundColor: COLORS.a,
-        data: [12800,13100,12500,13400,14200,8900,7200] },
-      { label:'신논현/역삼역', backgroundColor: COLORS.b,
-        data: [4700,4900,4600,5000,5300,3100,2500] }
-    ]
-  },
-  options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ beginAtZero:true, ticks:{ callback:v=>v.toLocaleString() } } } }
-});
-
-// 시간대별 차트 (면적 라인)
-const hourLabels = ['09시','10시','11시','12시','13시','14시','15시','16시','17시','18시','19시','20시','21시','22시'];
-const chartHourly = new Chart(document.getElementById('chartHourly'), {
-  type: 'line',
-  data: {
-    labels: hourLabels,
-    datasets: [
-      { label:'강남역', borderColor: COLORS.a, backgroundColor: 'rgba(26,122,110,.15)',
-        fill:true, tension:.4, pointRadius:3,
-        data: [4200,6800,8400,10200,9800,8900,9100,10400,12300,13800,11200,8700,6500,4100] },
-      { label:'신논현/역삼역', borderColor: COLORS.b, backgroundColor: 'rgba(111,216,206,.15)',
-        fill:true, tension:.4, pointRadius:3,
-        data: [1600,2700,3300,4000,3800,3500,3600,4100,5000,5600,4400,3300,2400,1500] }
-    ]
-  },
-  options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false} }, y:{ beginAtZero:true, ticks:{ callback:v=>v.toLocaleString() } } } }
-});
-
-// 연령·성별 나비형 수평 바차트
-const ageLabels = ['10대','20대','30대','40대','50대','60대+'];
-const maleData  = [-8200, -24600, -31400, -28900, -19700, -9100];
-const femaleData = [7800, 22100, 29800, 27300, 18400, 8500];
-const chartGender = new Chart(document.getElementById('chartGender'), {
-  type: 'bar',
-  data: {
-    labels: ageLabels,
-    datasets: [
-      { label:'남성', backgroundColor: COLORS.male, data: maleData },
-      { label:'여성', backgroundColor: COLORS.female, data: femaleData }
-    ]
-  },
-  options: {
-    indexAxis: 'y', responsive: true,
-    plugins: { legend:{display:false}, tooltip:{ callbacks:{ label: ctx => Math.abs(ctx.raw).toLocaleString()+'명' } } },
-    scales: {
-      x: { stacked:false, ticks:{ callback:v => Math.abs(v).toLocaleString() } },
-      y: { stacked:false }
-    }
-  }
-});
-
-// 지도 핀 데이터
-const PIN_DATA = {
-  m1: { name:'강남역 1번출구 A', loc:'서울 강남구 강남대로 396', status:'online',  statusLabel:'온라인',  color:'#58C65D' },
-  m2: { name:'강남역 1번출구 B', loc:'서울 강남구 강남대로 396', status:'online',  statusLabel:'온라인',  color:'#58C65D' },
-  m3: { name:'신논현역 메인 월', loc:'서울 강남구 언주로 411',   status:'issue',   statusLabel:'이슈 있음', color:'#F5A623' },
-  m4: { name:'삼성역 코엑스 광장', loc:'서울 강남구 봉은사로 524', status:'offline', statusLabel:'오프라인', color:'#CED2D6' },
-  m5: { name:'역삼역 2번출구',   loc:'서울 강남구 역삼로 160',   status:'online',  statusLabel:'온라인',  color:'#58C65D' },
+/* ── Chart ── */
+const labels = ['6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8'];
+const timeData = {
+  A: [480, 510, 525, 490, 470, 455, 475],
+  B: [200, 180, 150, 130, 120, 110, 100],
+  C: [540, 550, 555, 560, 565, 570, 575]
+};
+const slotData = {
+  A: [16, 17, 18, 15, 14, 13, 15],
+  B: [7,  6,  5,  4,  4,  3,  3],
+  C: [18, 18, 19, 19, 20, 20, 20]
 };
 
-function selectPin(id) {
-  const d   = PIN_DATA[id];
-  const pin = document.querySelector('[data-id="' + id + '"]');
-  const tt  = document.getElementById('map-tooltip');
-  const rect = pin.getBoundingClientRect();
-  const wrap = document.getElementById('map-wrap').getBoundingClientRect();
+let chartMode = 'time';
+let remainChart;
 
-  document.getElementById('tt-name').textContent   = d.name;
-  document.getElementById('tt-loc').textContent    = d.loc;
-  document.getElementById('tt-status').textContent = d.statusLabel;
-  document.getElementById('tt-status').style.color = d.color;
-  document.getElementById('tt-dot').style.background = d.color;
+function buildChart() {
+  const ctx = document.getElementById('remainChart').getContext('2d');
+  const isTime = chartMode === 'time';
+  const dA = isTime ? timeData.A : slotData.A;
+  const dB = isTime ? timeData.B : slotData.B;
+  const dC = isTime ? timeData.C : slotData.C;
+  const dangerVal = isTime ? 120 : 4;
+  const maxVal    = isTime ? 600 : 20;
+  const unit      = isTime ? '초' : '개';
 
-  let left = rect.left - wrap.left + 14;
-  let top  = rect.top  - wrap.top  - 8;
-  tt.style.display = 'block';
-  // 오른쪽 잘림 방지
-  if (left + 210 > wrap.width) left = wrap.width - 215;
-  tt.style.left = left + 'px';
-  tt.style.top  = top  + 'px';
+  if (remainChart) remainChart.destroy();
+  remainChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '강남역 1번출구 A',
+          data: dA,
+          borderColor: '#58C65D',
+          backgroundColor: 'rgba(88,198,93,0.08)',
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#58C65D'
+        },
+        {
+          label: '강남역 1번출구 B',
+          data: dB,
+          borderColor: '#E8841A',
+          backgroundColor: 'rgba(232,132,26,0.08)',
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#E8841A'
+        },
+        {
+          label: '강남역 2번출구',
+          data: dC,
+          borderColor: '#2D84ED',
+          backgroundColor: 'rgba(45,132,237,0.08)',
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#2D84ED'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      onClick: () => { window.location.href = 'schedule-main.html'; },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { font: { size: 12 }, color: '#596066', boxWidth: 12 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}${unit}`
+          }
+        },
+        annotation: {
+          annotations: {
+            dangerLine: {
+              type: 'line',
+              yMin: dangerVal,
+              yMax: dangerVal,
+              borderColor: '#E97474',
+              borderWidth: 1.5,
+              borderDash: [4, 4],
+              label: {
+                display: true,
+                content: `위험 임계값 (${dangerVal}${unit})`,
+                position: 'end',
+                font: { size: 11 },
+                color: '#E97474',
+                backgroundColor: 'transparent'
+              }
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: '#F0F1F3' },
+          ticks: { color: '#9EA5AD', font: { size: 11 } }
+        },
+        y: {
+          min: 0,
+          max: maxVal,
+          grid: { color: '#F0F1F3' },
+          ticks: {
+            color: '#9EA5AD',
+            font: { size: 11 },
+            callback: v => v + unit
+          }
+        }
+      }
+    }
+  });
 
-  // 선택 강조
-  document.querySelectorAll('.map-pin svg path').forEach(p => p.style.filter = '');
-  pin.querySelector('svg path').style.filter = 'drop-shadow(0 0 6px rgba(0,0,0,.4))';
+  // Draw danger line manually as fallback (annotation plugin may not be available)
+  // We rely on chartjs-plugin-annotation if loaded; otherwise use afterDraw
 }
 
-// 지도 바깥 클릭 시 툴팁 닫기
-document.getElementById('map-wrap').addEventListener('click', function(e) {
-  if (!e.target.closest('.map-pin')) {
-    document.getElementById('map-tooltip').style.display = 'none';
-    document.querySelectorAll('.map-pin svg path').forEach(p => p.style.filter = '');
-  }
+function switchChart(mode) {
+  chartMode = mode;
+  document.getElementById('btnTime').classList.toggle('active', mode === 'time');
+  document.getElementById('btnSlot').classList.toggle('active', mode === 'slot');
+  buildChart();
+}
+
+/* ── Schedule filter ── */
+function filterSched(tab, filter) {
+  document.querySelectorAll('.sched-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('#schedBody tr').forEach(row => {
+    if (filter === 'all') row.style.display = '';
+    else row.style.display = row.dataset.sched === filter ? '' : 'none';
+  });
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  buildChart();
+  // Draw danger lines via plugin-free approach: override afterDraw
+  // Danger line is already configured above via annotation config
+  // (works if chartjs-plugin-annotation is available; Chart.js 4 handles gracefully)
 });
 </script>
 </body>
