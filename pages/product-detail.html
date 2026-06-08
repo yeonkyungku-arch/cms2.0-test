@@ -588,6 +588,22 @@
       margin-bottom: 14px;
     }
     .effect-canvas-wrap { position: relative; height: 200px; }
+    .effect-tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      color: #9EA5AD;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-weight: 500;
+      font-family: inherit;
+      transition: color 0.1s;
+    }
+    .effect-tab.active { color: #24292E; border-bottom-color: #24292E; font-weight: 600; }
+    .effect-tab:hover { color: #596066; }
     .effect-compare-table {
       width: 100%;
       border-collapse: collapse;
@@ -1088,161 +1104,190 @@
   <div class="section-card">
     <div class="section-header">
       <h2 class="section-title">미디어 효과 분석</h2>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <select id="effectPeriodSel" onchange="updateEffectPeriod()" style="height:30px;padding:0 10px;border:1px solid #CED2D6;border-radius:6px;font-size:12px;font-family:inherit;color:#24292E;background:#fff;cursor:pointer;">
-          <option value="7">최근 7일</option>
-          <option value="30">최근 30일</option>
-          <option value="90">최근 90일</option>
-        </select>
-        <span style="font-size:11px;color:#9EA5AD;">기준: 2026.06.08</span>
-      </div>
+      <span style="font-size:11px;color:#9EA5AD;">최신 업로드: 2026.06.08</span>
     </div>
 
-    <!-- KPI 카드 행: 사이클 기반 평균값 -->
+    <!-- KPI 요약 -->
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-label">사이클당 평균 노출</div>
-        <div class="kpi-value" style="font-size:28px;">94<span style="font-size:14px;font-weight:600;color:#596066;">명/회</span></div>
-        <div class="kpi-sub">3개 미디어 가중 평균 · (45,000+49,500+27,000) ÷ 1,290회</div>
-        <div class="kpi-delta up" style="margin-top:4px;">▲ 2.1명 전주 대비</div>
+        <div class="kpi-value">94<span style="font-size:14px;font-weight:600;color:#596066;">명/회</span></div>
+        <div class="kpi-sub">3개 미디어 가중 평균</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">미디어당 일평균 노출</div>
-        <div class="kpi-value" style="font-size:28px;">40,500<span style="font-size:12px;font-weight:600;color:#596066;">회</span></div>
+        <div class="kpi-value">40,500<span style="font-size:12px;font-weight:500;color:#596066;">명</span></div>
         <div class="kpi-sub">121,500 ÷ 3개 미디어</div>
-        <div class="kpi-delta up" style="margin-top:4px;">▲ 5.1% 전주 대비</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">평균 재생 완료율</div>
         <div class="kpi-value">98.6<span style="font-size:14px;font-weight:600;">%</span></div>
-        <div class="kpi-sub">사이클 내 정상 재생 기준 · 미디어 평균</div>
-        <div class="kpi-delta down" style="margin-top:4px;">▼ 0.4%p 전주 대비</div>
+        <div class="kpi-sub">사이클 내 정상 재생 · 미디어 평균</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">평균 운영률</div>
         <div class="kpi-value">97.2<span style="font-size:14px;font-weight:600;">%</span></div>
-        <div class="kpi-sub">가동 시간 ÷ 설정 운영 시간 · 미디어 평균</div>
-        <div class="kpi-delta up" style="margin-top:4px;">▲ 1.1%p 전주 대비</div>
+        <div class="kpi-sub">가동 시간 ÷ 설정 운영 시간</div>
       </div>
     </div>
 
-    <!-- 차트 행 -->
-    <div class="effect-charts-row">
-      <!-- 시간대별 사이클당 평균 노출 -->
-      <div class="effect-chart-block">
-        <div class="effect-chart-title">시간대별 사이클당 평균 노출</div>
-        <div class="effect-chart-sub">시보 구간별 · 1사이클 재생당 평균 노출 인원 (명/회)</div>
-        <div class="effect-canvas-wrap">
-          <canvas id="timeSlotChart"></canvas>
-        </div>
-      </div>
-      <!-- 일간 사이클당 평균 노출 추이 — Section B 스타일 -->
-      <div class="effect-chart-block">
-        <div class="effect-chart-title">사이클당 평균 노출 추이</div>
-        <div class="effect-chart-sub">최근 7일 · 미디어별 1사이클당 평균 노출 (명/회)</div>
-        <div class="effect-canvas-wrap">
-          <canvas id="dailyTrendChart"></canvas>
-        </div>
+    <!-- 분석 탭 -->
+    <div style="border-bottom:1px solid #E5E7EA;">
+      <div style="display:flex;gap:0;padding:0 20px;" id="effectTabNav">
+        <button class="effect-tab active" onclick="switchEffectTab(this,'daily')">일별</button>
+        <button class="effect-tab" onclick="switchEffectTab(this,'weekday')">요일별</button>
+        <button class="effect-tab" onclick="switchEffectTab(this,'monthly')">월별</button>
+        <button class="effect-tab" onclick="switchEffectTab(this,'demo')">성별·연령대</button>
       </div>
     </div>
 
-    <!-- 미디어별 비교 테이블 -->
-    <div style="padding:18px 20px 0;">
-      <div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:12px;">미디어별 효과 비교</div>
-      <table class="effect-compare-table" style="margin-bottom:20px;">
-        <thead>
-          <tr>
-            <th>미디어</th>
-            <th>일간 사이클</th>
-            <th>사이클당 평균 노출</th>
-            <th>재생 완료율</th>
-            <th>운영률</th>
-            <th>슬롯 사용률</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <span class="bar-inline" style="width:10px;background:#58C65D;height:10px;border-radius:2px;"></span>
-              <strong>강남역 1번출구 A</strong>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">실외 · 세로 · 1920×1080</div>
-            </td>
-            <td>450회/일</td>
-            <td>
-              <strong>100명/회</strong>
-              <div style="font-size:11px;color:#9EA5AD;">일간 45,000 ÷ 450</div>
-            </td>
-            <td><span style="color:#2E9E34;font-weight:700;">98.9%</span></td>
-            <td><span style="color:#2E9E34;font-weight:700;">97.8%</span></td>
-            <td>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div style="flex:1;height:6px;background:#F0F1F3;border-radius:3px;overflow:hidden;">
-                  <div style="width:15%;height:100%;background:#58C65D;border-radius:3px;"></div>
+    <!-- 탭별 콘텐츠 -->
+    <div style="padding:20px 24px;">
+
+      <!-- 일별 -->
+      <div id="tabDaily" class="effect-tab-panel">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div class="effect-chart-title">일별 사이클당 평균 노출</div>
+            <div class="effect-chart-sub">일자별 · 미디어당 1사이클 재생당 평균 노출 (명/회)</div>
+            <div class="effect-canvas-wrap" style="height:220px;">
+              <canvas id="chartDaily"></canvas>
+            </div>
+          </div>
+          <div>
+            <div class="effect-chart-title">시간대별 사이클당 평균 노출</div>
+            <div class="effect-chart-sub">시보 구간별 · 미디어별 비교 (명/회)</div>
+            <div class="effect-canvas-wrap" style="height:220px;">
+              <canvas id="chartTimeSlot"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 요일별 -->
+      <div id="tabWeekday" class="effect-tab-panel" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div class="effect-chart-title">요일별 평균 노출</div>
+            <div class="effect-chart-sub">월~일 · 미디어 합산 평균 (명/회)</div>
+            <div class="effect-canvas-wrap" style="height:220px;">
+              <canvas id="chartWeekday"></canvas>
+            </div>
+          </div>
+          <div>
+            <div class="effect-chart-title">평일 vs 주말</div>
+            <div class="effect-chart-sub">평일 5일 / 주말 2일 평균 비교</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+              <div style="background:#F6F7F9;border-radius:8px;padding:16px 18px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">평일 평균 (월~금)</div>
+                <div style="font-size:22px;font-weight:800;color:#24292E;">91<span style="font-size:13px;font-weight:500;color:#596066;">명/회</span></div>
+                <div style="margin-top:8px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
+                  <div style="width:72%;height:100%;background:#58C65D;border-radius:3px;"></div>
                 </div>
-                <span style="font-size:11px;color:#596066;white-space:nowrap;">3/20</span>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span class="bar-inline" style="width:10px;background:#E8841A;height:10px;border-radius:2px;"></span>
-              <strong>강남역 1번출구 B</strong>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">실외 · 가로 · 1920×1080</div>
-            </td>
-            <td>450회/일</td>
-            <td>
-              <strong>110명/회</strong>
-              <div style="font-size:11px;color:#9EA5AD;">일간 49,500 ÷ 450</div>
-            </td>
-            <td><span style="color:#2E9E34;font-weight:700;">98.4%</span></td>
-            <td><span style="color:#2E9E34;font-weight:700;">96.9%</span></td>
-            <td>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div style="flex:1;height:6px;background:#F0F1F3;border-radius:3px;overflow:hidden;">
-                  <div style="width:25%;height:100%;background:#E8841A;border-radius:3px;"></div>
+              <div style="background:#F6F7F9;border-radius:8px;padding:16px 18px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">주말 평균 (토~일)</div>
+                <div style="font-size:22px;font-weight:800;color:#24292E;">118<span style="font-size:13px;font-weight:500;color:#596066;">명/회</span></div>
+                <div style="margin-top:8px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
+                  <div style="width:93%;height:100%;background:#2D84ED;border-radius:3px;"></div>
                 </div>
-                <span style="font-size:11px;color:#596066;white-space:nowrap;">4/16</span>
+                <div style="font-size:11px;color:#2D84ED;margin-top:4px;font-weight:600;">▲ 29.7% 평일 대비</div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span class="bar-inline" style="width:10px;background:#2D84ED;height:10px;border-radius:2px;"></span>
-              <strong>강남역 2번출구</strong>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">실외 · 세로 · 1080×1920</div>
-            </td>
-            <td>390회/일</td>
-            <td>
-              <strong>69명/회</strong>
-              <div style="font-size:11px;color:#9EA5AD;">일간 27,000 ÷ 390</div>
-            </td>
-            <td><span style="color:#E8841A;font-weight:700;">98.2%</span></td>
-            <td>
-              <span style="color:#E97474;font-weight:700;">—</span>
-              <div style="font-size:11px;color:#E97474;">점검 중</div>
-            </td>
-            <td>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <div style="flex:1;height:6px;background:#F0F1F3;border-radius:3px;overflow:hidden;">
-                  <div style="width:11%;height:100%;background:#2D84ED;border-radius:3px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 월별 -->
+      <div id="tabMonthly" class="effect-tab-panel" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div class="effect-chart-title">월별 일평균 노출</div>
+            <div class="effect-chart-sub">월별 일평균 노출 (미디어 합산, 명/일)</div>
+            <div class="effect-canvas-wrap" style="height:220px;">
+              <canvas id="chartMonthly"></canvas>
+            </div>
+          </div>
+          <div>
+            <div class="effect-chart-title">월별 미디어별 비교</div>
+            <div class="effect-chart-sub">미디어별 사이클당 평균 노출 추이 (명/회)</div>
+            <div class="effect-canvas-wrap" style="height:220px;">
+              <canvas id="chartMonthlyMedia"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 성별·연령대 -->
+      <div id="tabDemo" class="effect-tab-panel" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <!-- 성별 -->
+          <div>
+            <div class="effect-chart-title">연령대별 노출 비율</div>
+            <div class="effect-chart-sub">전체 미디어 합산 · 성별 구분</div>
+            <div class="effect-canvas-wrap" style="height:220px;">
+              <canvas id="chartAge"></canvas>
+            </div>
+          </div>
+          <!-- 성별 요약 + 연령 피크 -->
+          <div>
+            <div class="effect-chart-title">성별 분포</div>
+            <div class="effect-chart-sub">전체 노출 중 성별 비율</div>
+            <div style="display:flex;gap:12px;margin-top:12px;margin-bottom:20px;">
+              <div style="flex:1;background:#EAF3FF;border-radius:8px;padding:14px 16px;text-align:center;">
+                <div style="font-size:11px;color:#2D84ED;font-weight:600;margin-bottom:4px;">남성</div>
+                <div style="font-size:26px;font-weight:800;color:#2D84ED;">54<span style="font-size:14px;">%</span></div>
+                <div style="font-size:11px;color:#596066;margin-top:2px;">65,610명/일</div>
+              </div>
+              <div style="flex:1;background:#FFF0F5;border-radius:8px;padding:14px 16px;text-align:center;">
+                <div style="font-size:11px;color:#C9317A;font-weight:600;margin-bottom:4px;">여성</div>
+                <div style="font-size:26px;font-weight:800;color:#C9317A;">46<span style="font-size:14px;">%</span></div>
+                <div style="font-size:11px;color:#596066;margin-top:2px;">55,890명/일</div>
+              </div>
+            </div>
+            <div class="effect-chart-title" style="margin-bottom:4px;">피크 연령대</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+                <span style="min-width:32px;color:#596066;">30대</span>
+                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+                  <div style="width:28%;height:100%;background:#58C65D;border-radius:4px;"></div>
                 </div>
-                <span style="font-size:11px;color:#596066;white-space:nowrap;">2/18</span>
+                <span style="min-width:36px;text-align:right;font-weight:700;">28%</span>
               </div>
-            </td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr style="background:#F6F7F9;">
-            <td style="font-weight:700;color:#24292E;">3개 미디어 평균</td>
-            <td style="font-weight:700;">430회/일</td>
-            <td style="font-weight:700;">94명/회</td>
-            <td style="font-weight:700;color:#2E9E34;">98.5%</td>
-            <td style="font-weight:700;color:#2E9E34;">97.2%</td>
-            <td style="color:#596066;">—</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+                <span style="min-width:32px;color:#596066;">20대</span>
+                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+                  <div style="width:24%;height:100%;background:#58C65D;border-radius:4px;"></div>
+                </div>
+                <span style="min-width:36px;text-align:right;font-weight:700;">24%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+                <span style="min-width:32px;color:#596066;">40대</span>
+                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+                  <div style="width:22%;height:100%;background:#E8841A;border-radius:4px;"></div>
+                </div>
+                <span style="min-width:36px;text-align:right;font-weight:700;">22%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+                <span style="min-width:32px;color:#596066;">50대+</span>
+                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+                  <div style="width:16%;height:100%;background:#CED2D6;border-radius:4px;"></div>
+                </div>
+                <span style="min-width:36px;text-align:right;font-weight:700;">16%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+                <span style="min-width:32px;color:#596066;">10대</span>
+                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+                  <div style="width:10%;height:100%;background:#CED2D6;border-radius:4px;"></div>
+                </div>
+                <span style="min-width:36px;text-align:right;font-weight:700;">10%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /padding -->
   </div>
 
   </div><!-- /content-inner -->
@@ -1463,144 +1508,221 @@ function filterSched(tab, filter) {
   });
 }
 
-/* ── Effect period selector ── */
-function updateEffectPeriod() {
-  const days = parseInt(document.getElementById('effectPeriodSel').value);
-  const multiplier = days / 7;
-  /* 실제로는 서버 데이터를 다시 불러오는 시점 — 목업에서는 차트만 재구성 */
-  buildEffectCharts();
+/* ── Effect analysis: 4-tab chart system ── */
+
+/* 미디어 설정 */
+const effectMediaCfg = [
+  { name: '강남역 1번출구 A', avgPerCycle: 100, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
+  { name: '강남역 1번출구 B', avgPerCycle: 110, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
+  { name: '강남역 2번출구',   avgPerCycle:  69, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
+];
+
+/* 일별 데이터 (6/1~6/8, 미디어별 사이클당 평균 노출 명/회) */
+const dailyData = {
+  labels: ['6/1', '6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8'],
+  A: [102, 98, 100, 97, 101, 100, 102, 100],
+  B: [112, 108, 110, 107, 112, 109, 113, 110],
+  C: [70,  67,  69,  66,  70,  68, null,  69]  /* 6/7 점검 */
+};
+
+/* 요일별 데이터 (월~일 평균, 미디어 합산) */
+const weekdayData = {
+  labels: ['월', '화', '수', '목', '금', '토', '일'],
+  values: [89, 92, 91, 93, 98, 120, 116]
+};
+
+/* 월별 데이터 (1~6월 미디어 합산 일평균, 명/일) */
+const monthlyData = {
+  labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+  total: [108000, 112000, 118000, 120000, 119500, 121500],
+  A: [93, 95, 97, 99, 100, 100],
+  B: [103, 105, 107, 108, 110, 110],
+  C: [65,  66,  67,  68,  69,  69]
+};
+
+/* 성별·연령대 데이터 (%) */
+const ageData = {
+  labels: ['10대', '20대', '30대', '40대', '50대+'],
+  male:   [6,  12, 16, 13, 7],
+  female: [4,  12, 12,  9, 9]
+};
+
+const effectCharts = {};
+
+function makeLineDatasets(keys) {
+  return effectMediaCfg.map((cfg, i) => ({
+    label: cfg.name,
+    data: keys[i],
+    borderColor: cfg.color,
+    backgroundColor: cfg.bg,
+    borderWidth: 2,
+    pointRadius: 3,
+    pointBackgroundColor: keys[i].map(v =>
+      (v !== null && v < cfg.avgPerCycle * 0.85) ? '#E97474' : cfg.color
+    ),
+    tension: 0.3,
+    fill: true,
+    spanGaps: false
+  }));
 }
 
-/* ── Effect analysis charts ── */
-/*
- * 사이클당 평균 노출 (명/회):
- *   강남역 1번출구 A : 100명/회  (일 45,000 ÷ 450사이클)
- *   강남역 1번출구 B : 110명/회  (일 49,500 ÷ 450사이클)
- *   강남역 2번출구   :  69명/회  (일 27,000 ÷ 390사이클)
- * 시간대별 평균:
- *   07~12 (150회) : A=100, B=110, C=60  — 2번출구는 08시 개시라 07~08 미포함 → 60으로 반영
- *   12~18 (180회) : A=100, B=110, C=69
- *   18~22 (120회) : A=100, B=110, C=69
- */
-const effectMediaCfg = {
-  A: { name: '강남역 1번출구 A', avgPerCycle: 100, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
-  B: { name: '강남역 1번출구 B', avgPerCycle: 110, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
-  C: { name: '강남역 2번출구',   avgPerCycle:  69, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
-};
+function lineOpts(unit) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
+      tooltip: {
+        mode: 'index', intersect: false,
+        callbacks: { label: ctx => ctx.raw === null ? ` ${ctx.dataset.label}: 점검 중` : ` ${ctx.dataset.label}: ${ctx.raw}${unit}` }
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + unit }, suggestedMin: 50, suggestedMax: 130 }
+    }
+  };
+}
 
-/* 사이클당 평균 노출 추이 — 최근 7일, 미디어별 */
-const avgTrendData = {
-  A: [98, 100, 97, 101, 100, 102, 100],
-  B: [108, 110, 107, 112, 109, 113, 110],
-  C: [67,  69,  66,  70,  68,   0,  69]  /* 6/7(토) 점검 중 → null 처리 */
-};
+function buildDailyCharts() {
+  /* 일별 라인 — Section B 잔여 현황 동일 스타일 */
+  if (effectCharts.daily) effectCharts.daily.destroy();
+  effectCharts.daily = new Chart(document.getElementById('chartDaily').getContext('2d'), {
+    type: 'line',
+    data: { labels: dailyData.labels, datasets: makeLineDatasets([dailyData.A, dailyData.B, dailyData.C]) },
+    options: lineOpts('명/회')
+  });
 
-let timeSlotChartInst = null;
-let dailyTrendChartInst = null;
-
-function buildEffectCharts() {
-  const DAYS = ['6/2(월)', '6/3(화)', '6/4(수)', '6/5(목)', '6/6(금)', '6/7(토)', '6/8(일)'];
-
-  /* ── 시간대별 사이클당 평균 노출 — grouped bar ── */
-  const tsCtx = document.getElementById('timeSlotChart').getContext('2d');
-  if (timeSlotChartInst) timeSlotChartInst.destroy();
-  /* 07~12 2번출구 60 (08시 개시, 07~08 1시간 미포함) */
-  timeSlotChartInst = new Chart(tsCtx, {
+  /* 시간대별 grouped bar */
+  if (effectCharts.timeSlot) effectCharts.timeSlot.destroy();
+  effectCharts.timeSlot = new Chart(document.getElementById('chartTimeSlot').getContext('2d'), {
     type: 'bar',
     data: {
-      labels: ['07~12시\n(150사이클)', '12~18시\n(180사이클)', '18~22시\n(120사이클)'],
-      datasets: Object.entries(effectMediaCfg).map(([k, cfg]) => ({
+      labels: ['07~12시', '12~18시', '18~22시'],
+      datasets: effectMediaCfg.map((cfg, i) => ({
         label: cfg.name,
-        data: k === 'C' ? [60, 69, 69] : [cfg.avgPerCycle, cfg.avgPerCycle, cfg.avgPerCycle],
-        backgroundColor: cfg.color + 'BF',  /* 75% opacity */
-        borderColor: cfg.color,
-        borderWidth: 1,
-        borderRadius: 3
+        data: i === 2 ? [60, 69, 69] : [cfg.avgPerCycle, cfg.avgPerCycle, cfg.avgPerCycle],
+        backgroundColor: cfg.color + 'BF', borderColor: cfg.color, borderWidth: 1, borderRadius: 3
       }))
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            title: ctx => ctx[0].label.replace('\n', ' '),
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}명/회`
-          }
-        }
+        tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}명/회` } }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-        y: {
-          beginAtZero: true,
-          grid: { color: '#F0F1F3' },
-          ticks: { font: { size: 11 }, callback: v => v + '명' },
-          suggestedMax: 130
-        }
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '명' }, suggestedMax: 130 }
+      }
+    }
+  });
+}
+
+function buildWeekdayChart() {
+  if (effectCharts.weekday) effectCharts.weekday.destroy();
+  effectCharts.weekday = new Chart(document.getElementById('chartWeekday').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: weekdayData.labels,
+      datasets: [{
+        label: '평균 노출 (명/회)',
+        data: weekdayData.values,
+        backgroundColor: weekdayData.labels.map((d, i) => i >= 5 ? '#2D84EDBF' : '#58C65DBF'),
+        borderColor: weekdayData.labels.map((d, i) => i >= 5 ? '#2D84ED' : '#58C65D'),
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw}명/회` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '명' }, suggestedMax: 140 }
+      }
+    }
+  });
+}
+
+function buildMonthlyCharts() {
+  /* 월별 미디어 합산 일평균 bar */
+  if (effectCharts.monthly) effectCharts.monthly.destroy();
+  effectCharts.monthly = new Chart(document.getElementById('chartMonthly').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: monthlyData.labels,
+      datasets: [{ label: '일평균 노출 (명)', data: monthlyData.total, backgroundColor: '#58C65DBF', borderColor: '#58C65D', borderWidth: 1, borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toLocaleString()}명/일` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K' }, beginAtZero: false, suggestedMin: 100000 }
       }
     }
   });
 
-  /* ── 사이클당 평균 노출 추이 — Section B 잔여 현황과 동일 스타일 ── */
-  const dtCtx = document.getElementById('dailyTrendChart').getContext('2d');
-  if (dailyTrendChartInst) dailyTrendChartInst.destroy();
-  dailyTrendChartInst = new Chart(dtCtx, {
+  /* 미디어별 사이클당 평균 월별 추이 라인 */
+  if (effectCharts.monthlyMedia) effectCharts.monthlyMedia.destroy();
+  effectCharts.monthlyMedia = new Chart(document.getElementById('chartMonthlyMedia').getContext('2d'), {
     type: 'line',
+    data: { labels: monthlyData.labels, datasets: makeLineDatasets([monthlyData.A, monthlyData.B, monthlyData.C]) },
+    options: lineOpts('명/회')
+  });
+}
+
+function buildDemoCharts() {
+  /* 연령대×성별 grouped bar */
+  if (effectCharts.age) effectCharts.age.destroy();
+  effectCharts.age = new Chart(document.getElementById('chartAge').getContext('2d'), {
+    type: 'bar',
     data: {
-      labels: DAYS,
-      datasets: Object.entries(effectMediaCfg).map(([k, cfg]) => ({
-        label: cfg.name,
-        data: avgTrendData[k].map(v => v === 0 ? null : v),
-        borderColor: cfg.color,
-        backgroundColor: cfg.bg,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: avgTrendData[k].map(v =>
-          (v > 0 && v < cfg.avgPerCycle * 0.85) ? '#E97474' : cfg.color
-        ),
-        tension: 0.3,
-        fill: true,
-        spanGaps: false  /* null(점검) 구간 끊기 */
-      }))
+      labels: ageData.labels,
+      datasets: [
+        { label: '남성', data: ageData.male,   backgroundColor: '#2D84EDBF', borderColor: '#2D84ED', borderWidth: 1, borderRadius: 3 },
+        { label: '여성', data: ageData.female, backgroundColor: '#C9317ABF', borderColor: '#C9317A', borderWidth: 1, borderRadius: 3 }
+      ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            label(ctx) {
-              const v = ctx.raw;
-              const cfg = Object.values(effectMediaCfg)[ctx.datasetIndex];
-              if (v === null) return ` ${ctx.dataset.label}: 점검 중`;
-              return ` ${ctx.dataset.label}  ${v}명/회  (기준 ${cfg.avgPerCycle}명)`;
-            }
-          }
-        }
+        tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%` } }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-        y: {
-          grid: { color: '#F0F1F3' },
-          ticks: { font: { size: 11 }, callback: v => v + '명' },
-          suggestedMin: 50,
-          suggestedMax: 130
-        }
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '%' }, suggestedMax: 20 }
       }
     }
   });
+}
+
+function switchEffectTab(btn, tab) {
+  document.querySelectorAll('.effect-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.effect-tab-panel').forEach(p => p.style.display = 'none');
+
+  const panelMap = { daily: 'tabDaily', weekday: 'tabWeekday', monthly: 'tabMonthly', demo: 'tabDemo' };
+  document.getElementById(panelMap[tab]).style.display = 'block';
+
+  /* 탭별 차트는 처음 열릴 때 한 번만 그림 */
+  if (tab === 'daily'   && !effectCharts.daily)       buildDailyCharts();
+  if (tab === 'weekday' && !effectCharts.weekday)     buildWeekdayChart();
+  if (tab === 'monthly' && !effectCharts.monthly)     buildMonthlyCharts();
+  if (tab === 'demo'    && !effectCharts.age)         buildDemoCharts();
 }
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
   buildChart();
-  buildEffectCharts();
+  buildDailyCharts();  /* 기본 탭 일별 차트 초기화 */
 });
 </script>
 </body>
