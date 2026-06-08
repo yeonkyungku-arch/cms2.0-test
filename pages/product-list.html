@@ -8,158 +8,147 @@
   <style>
     /* ── Toolbar ── */
     .toolbar {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    .toolbar-search { flex: 1; position: relative; }
-    .toolbar-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .toolbar-search {
+      flex: 1;
+      position: relative;
+    }
+    .toolbar-search svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
     .toolbar-search input {
-      width: 100%; height: 36px; padding: 0 12px 0 34px;
-      border: 1px solid #CED2D6; border-radius: 6px;
-      font-size: 13px; color: #24292E; background: #fff; box-sizing: border-box;
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      background: #fff;
+      box-sizing: border-box;
     }
     .toolbar-search input::placeholder { color: #9EA5AD; }
     .filter-select {
-      height: 36px; padding: 0 28px 0 10px;
-      border: 1px solid #CED2D6; border-radius: 6px;
-      font-size: 13px; color: #24292E;
+      height: 36px;
+      padding: 0 28px 0 10px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
       background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
-      -webkit-appearance: none; appearance: none; cursor: pointer; white-space: nowrap;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      white-space: nowrap;
     }
     .btn-primary {
-      height: 36px; padding: 0 16px; background: #58C65D; color: #fff;
-      border: none; border-radius: 6px; font-size: 13px; font-weight: 600;
-      cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
-      text-decoration: none;
+      height: 36px;
+      padding: 0 16px;
+      background: #58C65D;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn-primary:hover { background: #43B049; }
+    .btn-primary:hover { background: #4ab34f; }
 
     /* ── Table ── */
     .table-card {
-      background: #fff; border: 1px solid #E5E7EA;
-      border-radius: 10px; overflow: hidden;
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
     }
-    table { width: 100%; border-collapse: collapse; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
     thead th {
-      background: #F6F7F9; padding: 10px 16px;
-      font-size: 12px; font-weight: 600; color: #596066;
-      text-align: left; border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EA;
     }
     thead th.center { text-align: center; }
-
-    /* 메인 데이터 행 */
-    tr.main-row {
+    tbody tr {
       border-bottom: 1px solid #E5E7EA;
-      cursor: pointer; transition: background 0.12s;
+      transition: background 0.12s;
     }
-    tr.main-row:hover { background: #F6F7F9; }
-    tr.main-row.expanded { background: #F6F7F9; border-bottom: none; }
-    tr.main-row td {
-      padding: 13px 16px; font-size: 13px; color: #24292E; vertical-align: middle;
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #F6F7F9; }
+    tbody td {
+      padding: 13px 16px;
+      font-size: 13px;
+      color: #24292E;
+      vertical-align: middle;
     }
-    tr.main-row td.center { text-align: center; }
+    tbody td.center { text-align: center; }
+    .product-name-link {
+      color: #24292E;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .product-name-link:hover { color: #2D84ED; text-decoration: underline; }
 
-    /* 확장 행 */
-    tr.expand-row { border-bottom: 1px solid #E5E7EA; }
-    tr.expand-row td { padding: 0; }
-    .expand-panel {
-      display: none; padding: 14px 20px 18px;
-      background: #F6F7F9; border-top: 1px solid #E5E7EA;
+    /* ── Tooltip ── */
+    .tooltip-wrap {
+      position: relative;
+      display: inline-block;
     }
-    .expand-panel.open { display: block; }
+    .tooltip-wrap .tooltip-box {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #24292E;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .tooltip-wrap:hover .tooltip-box { display: block; }
 
-    /* 확장 패널 내 미디어 운영 설정 */
-    .expand-panel-title {
-      font-size: 11px; font-weight: 600; color: #9EA5AD;
-      text-transform: uppercase; letter-spacing: 0.4px;
-      margin-bottom: 10px;
-    }
-    .media-ops-grid {
-      display: flex; gap: 10px; flex-wrap: wrap;
-    }
-    .media-ops-card {
-      background: #fff; border: 1px solid #E5E7EA;
-      border-radius: 8px; overflow: hidden;
-      min-width: 240px; flex: 1;
-    }
-    .media-ops-card-hd {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 12px; background: #fff; border-bottom: 1px solid #F6F7F9;
-    }
-    .media-ops-card-name { font-size: 12px; font-weight: 600; color: #24292E; }
-    .media-ops-card-body {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-    .ops-item {
-      padding: 8px 12px; border-right: 1px solid #F6F7F9; border-bottom: 1px solid #F6F7F9;
-    }
-    .ops-item:nth-child(even) { border-right: none; }
-    .ops-item:nth-last-child(-n+2) { border-bottom: none; }
-    .ops-label { font-size: 10px; color: #9EA5AD; margin-bottom: 2px; }
-    .ops-value { font-size: 12px; font-weight: 600; color: #24292E; }
-    .ops-value.green { color: #2E9E34; }
-
-    /* 펼침 버튼 chevron */
-    .expand-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .chevron {
-      width: 16px; height: 16px; flex-shrink: 0;
-      transition: transform 0.2s;
-      color: #9EA5AD;
-    }
-    .expanded .chevron { transform: rotate(180deg); }
-
-    /* Status badges */
+    /* ── Status badges ── */
     .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
     }
     .badge-active   { background: #E8F8E9; color: #2E9E34; }
     .badge-inactive { background: #F0F1F3; color: #596066; }
     .badge-draft    { background: #FFF8E6; color: #B45309; }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
     .badge-active .badge-dot   { background: #58C65D; }
     .badge-inactive .badge-dot { background: #9EA5AD; }
     .badge-draft .badge-dot    { background: #E8841A; }
-
-    /* 포함 미디어 chip */
-    .media-chip {
-      display: inline-block; background: #F6F7F9; border: 1px solid #E5E7EA;
-      border-radius: 10px; padding: 2px 8px; font-size: 11px; color: #596066;
-      margin: 1px 2px;
-    }
-    .more-count { font-size: 12px; color: #9EA5AD; margin-left: 4px; }
-
-    /* 플레이플랜 chip */
-    .pp-chip {
-      display: inline-block; padding: 2px 8px; border-radius: 10px;
-      font-size: 11px; font-weight: 600; margin: 1px 2px;
-    }
-    .pp-chip.general { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
-    .pp-chip.cond    { background: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; }
-
-    /* 상태 온라인 dot */
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
-    .status-dot.online  { background: #58C65D; }
-    .status-dot.offline { background: #E97474; }
-    .status-dot.check   { background: #E8841A; }
-
-    /* 페이지네이션 */
-    .pagination {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px; border-top: 1px solid #F6F7F9;
-      font-size: 12px; color: #9EA5AD;
-    }
-    .pagination-btns { display: flex; gap: 4px; }
-    .pg-btn {
-      width: 28px; height: 28px; border-radius: 5px;
-      border: 1px solid #E5E7EA; background: #fff;
-      font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-      color: #596066;
-    }
-    .pg-btn.active { background: #2D84ED; color: #fff; border-color: #2D84ED; font-weight: 600; }
-    .pg-btn:hover:not(.active) { background: #F6F7F9; }
   </style>
 </head>
 <body>
@@ -203,323 +192,143 @@
 <!-- ③ Main content -->
 <main class="content">
   <div class="content-inner">
-    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">프로덕트</div>
+  <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">프로덕트</div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="toolbar-search">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <input type="text" id="searchInput" placeholder="프로덕트명 검색" oninput="filterTable()">
-      </div>
-      <select class="filter-select" id="statusFilter" onchange="filterTable()">
-        <option value="">상태 전체</option>
-        <option value="active">활성</option>
-        <option value="inactive">비활성</option>
-        <option value="draft">임시저장</option>
-      </select>
-      <select class="filter-select" id="mediaFilter" onchange="filterTable()">
-        <option value="">미디어 전체</option>
-        <option value="강남역">강남역</option>
-        <option value="홍대입구역">홍대입구역</option>
-        <option value="신촌역">신촌역</option>
-        <option value="여의도역">여의도역</option>
-        <option value="삼성역">삼성역</option>
-      </select>
-      <a href="product-register.html" class="btn-primary">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-        프로덕트 생성
-      </a>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-search">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="프로덕트명 검색" oninput="filterTable()">
     </div>
-
-    <!-- Table -->
-    <div class="table-card">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:36px;"></th>
-            <th>프로덕트명</th>
-            <th style="width:260px;">포함 미디어</th>
-            <th style="width:200px;">플레이플랜</th>
-            <th class="center" style="width:110px;">상태</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-      <div class="pagination">
-        <span id="pageInfo"></span>
-        <div class="pagination-btns" id="pgBtns"></div>
-      </div>
-    </div>
+    <select class="filter-select" id="statusFilter" onchange="filterTable()">
+      <option value="">상태 전체</option>
+      <option value="active">활성</option>
+      <option value="inactive">비활성</option>
+      <option value="draft">임시저장</option>
+    </select>
+    <select class="filter-select" id="mediaFilter" onchange="filterTable()">
+      <option value="">미디어 전체</option>
+      <option value="강남역">강남역</option>
+      <option value="홍대입구역">홍대입구역</option>
+      <option value="신촌역">신촌역</option>
+      <option value="여의도역">여의도역</option>
+      <option value="삼성역">삼성역</option>
+    </select>
+    <button class="btn-primary" onclick="alert('프로덕트 생성 (목업)')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      프로덕트 생성
+    </button>
   </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <table id="productTable">
+      <thead>
+        <tr>
+          <th>프로덕트명</th>
+          <th style="width:200px;">포함 미디어</th>
+          <th class="center" style="width:130px;">플레이플랜 수</th>
+          <th class="center" style="width:130px;">상태</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr data-status="active" data-media="강남역">
+          <td><a class="product-name-link" href="product-detail.html">강남 A지구 패키지</a></td>
+          <td>
+            <div class="tooltip-wrap">
+              강남역 1번출구 A <span style="color:#9EA5AD;">외 2개</span>
+              <div class="tooltip-box">강남역 1번출구 A<br>강남역 1번출구 B<br>강남역 2번출구</div>
+            </div>
+          </td>
+          <td class="center">
+            <div class="tooltip-wrap">
+              3개
+              <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건</div>
+            </div>
+          </td>
+          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
+        </tr>
+        <tr data-status="active" data-media="홍대입구역">
+          <td><a class="product-name-link" href="product-detail.html">홍대 입구역 프리미엄</a></td>
+          <td>
+            <div class="tooltip-wrap">
+              홍대입구역 A <span style="color:#9EA5AD;">외 1개</span>
+              <div class="tooltip-box">홍대입구역 A<br>홍대입구역 B</div>
+            </div>
+          </td>
+          <td class="center">
+            <div class="tooltip-wrap">
+              2개
+              <div class="tooltip-box">30초 일반<br>20초 일반</div>
+            </div>
+          </td>
+          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
+        </tr>
+        <tr data-status="draft" data-media="신촌역">
+          <td><a class="product-name-link" href="product-detail.html">신촌 역세권 디스플레이</a></td>
+          <td>신촌역 메인</td>
+          <td class="center">
+            <div class="tooltip-wrap">
+              1개
+              <div class="tooltip-box">30초 일반</div>
+            </div>
+          </td>
+          <td class="center"><span class="badge badge-draft"><span class="badge-dot"></span>임시저장</span></td>
+        </tr>
+        <tr data-status="inactive" data-media="여의도역">
+          <td><a class="product-name-link" href="product-detail.html">여의도 금융가 패키지</a></td>
+          <td>
+            <div class="tooltip-wrap">
+              여의도역 A <span style="color:#9EA5AD;">외 3개</span>
+              <div class="tooltip-box">여의도역 A<br>여의도역 B<br>여의도역 C<br>여의도역 D</div>
+            </div>
+          </td>
+          <td class="center">
+            <div class="tooltip-wrap">
+              4개
+              <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건<br>15초 일반</div>
+            </div>
+          </td>
+          <td class="center"><span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span></td>
+        </tr>
+        <tr data-status="active" data-media="삼성역">
+          <td><a class="product-name-link" href="product-detail.html">삼성역 COEX 프리미엄</a></td>
+          <td>
+            <div class="tooltip-wrap">
+              삼성역 코엑스 광장 <span style="color:#9EA5AD;"></span>
+              <div class="tooltip-box">삼성역 코엑스 광장<br>삼성역 코엑스 B1</div>
+            </div>
+          </td>
+          <td class="center">
+            <div class="tooltip-wrap">
+              2개
+              <div class="tooltip-box">30초 일반<br>20초 조건</div>
+            </div>
+          </td>
+          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </div><!-- /content-inner -->
 </main>
 
 <script>
-/* ═══════════════════ 데이터 ═══════════════════ */
-const PRODUCTS = [
-  {
-    id: 1, name: '강남 A지구 패키지', status: 'active',
-    mediaKey: '강남역',
-    plans: [
-      { duration: 30, type: 'general' },
-      { duration: 20, type: 'general' },
-      { duration: 30, type: 'cond' }
-    ],
-    media: [
-      {
-        name: '강남역 1번출구 A', status: 'online',
-        installType: '실외 · 세로형', opsHours: '07:00~22:00',
-        cycleMax: 600, refSlots: 20, refSlotSec: 30, guaranteed: 90
-      },
-      {
-        name: '강남역 1번출구 B', status: 'online',
-        installType: '실외 · 가로형', opsHours: '07:00~22:00',
-        cycleMax: 480, refSlots: 16, refSlotSec: 30, guaranteed: 112
-      },
-      {
-        name: '강남역 2번출구', status: 'check',
-        installType: '실외 · 세로형', opsHours: '08:00~21:00',
-        cycleMax: 540, refSlots: 18, refSlotSec: 30, guaranteed: 86
-      }
-    ]
-  },
-  {
-    id: 2, name: '홍대 입구역 프리미엄', status: 'active',
-    mediaKey: '홍대입구역',
-    plans: [
-      { duration: 30, type: 'general' },
-      { duration: 20, type: 'general' }
-    ],
-    media: [
-      {
-        name: '홍대입구역 A', status: 'online',
-        installType: '실외 · 세로형', opsHours: '07:00~23:00',
-        cycleMax: 600, refSlots: 20, refSlotSec: 30, guaranteed: 96
-      },
-      {
-        name: '홍대입구역 B', status: 'online',
-        installType: '실내 · 벽면형', opsHours: '09:00~22:00',
-        cycleMax: 450, refSlots: 15, refSlotSec: 30, guaranteed: 104
-      }
-    ]
-  },
-  {
-    id: 3, name: '신촌 역세권 디스플레이', status: 'draft',
-    mediaKey: '신촌역',
-    plans: [
-      { duration: 30, type: 'general' }
-    ],
-    media: [
-      {
-        name: '신촌역 메인', status: 'online',
-        installType: '실외 · 세로형', opsHours: '07:00~22:00',
-        cycleMax: 600, refSlots: 20, refSlotSec: 30, guaranteed: 90
-      }
-    ]
-  },
-  {
-    id: 4, name: '여의도 금융가 패키지', status: 'inactive',
-    mediaKey: '여의도역',
-    plans: [
-      { duration: 30, type: 'general' },
-      { duration: 20, type: 'general' },
-      { duration: 30, type: 'cond' },
-      { duration: 15, type: 'general' }
-    ],
-    media: [
-      {
-        name: '여의도역 A', status: 'online',
-        installType: '실외 · 세로형', opsHours: '07:00~22:00',
-        cycleMax: 600, refSlots: 20, refSlotSec: 30, guaranteed: 90
-      },
-      {
-        name: '여의도역 B', status: 'online',
-        installType: '실외 · 가로형', opsHours: '07:00~22:00',
-        cycleMax: 600, refSlots: 20, refSlotSec: 30, guaranteed: 90
-      },
-      {
-        name: '여의도역 C', status: 'offline',
-        installType: '실내 · 천장형', opsHours: '08:00~21:00',
-        cycleMax: 480, refSlots: 16, refSlotSec: 30, guaranteed: 112
-      },
-      {
-        name: '여의도역 D', status: 'online',
-        installType: '실외 · 세로형', opsHours: '07:00~22:00',
-        cycleMax: 540, refSlots: 18, refSlotSec: 30, guaranteed: 100
-      }
-    ]
-  },
-  {
-    id: 5, name: '삼성역 COEX 프리미엄', status: 'active',
-    mediaKey: '삼성역',
-    plans: [
-      { duration: 30, type: 'general' },
-      { duration: 20, type: 'cond' }
-    ],
-    media: [
-      {
-        name: '삼성역 코엑스 광장', status: 'online',
-        installType: '실외 · 세로형', opsHours: '07:00~21:00',
-        cycleMax: 600, refSlots: 20, refSlotSec: 30, guaranteed: 84
-      },
-      {
-        name: '삼성역 코엑스 B1', status: 'online',
-        installType: '실내 · 천장형', opsHours: '09:00~22:00',
-        cycleMax: 450, refSlots: 15, refSlotSec: 30, guaranteed: 104
-      }
-    ]
-  }
-];
-
-/* ═══════════════════ 렌더링 ═══════════════════ */
-const STATUS_MAP = {
-  active:   { cls: 'badge-active',   label: '활성' },
-  inactive: { cls: 'badge-inactive', label: '비활성' },
-  draft:    { cls: 'badge-draft',    label: '임시저장' }
-};
-const STATUS_DOT_LABEL = { online: '운영 중', offline: '오프라인', check: '점검 중' };
-
-function mediaChips(product) {
-  const first = product.media[0].name;
-  const rest  = product.media.length - 1;
-  return `<span class="media-chip">${first}</span>${rest > 0 ? `<span class="more-count">외 ${rest}개</span>` : ''}`;
-}
-
-function planChips(product) {
-  return product.plans.map(p =>
-    `<span class="pp-chip ${p.type === 'cond' ? 'cond' : 'general'}">${p.duration}초 ${p.type === 'cond' ? '조건' : '일반'}</span>`
-  ).join('');
-}
-
-function mediaOpsCards(product) {
-  return product.media.map(m => {
-    const maxSlots30 = Math.floor(m.cycleMax / 30);
-    const dotCls = m.status === 'online' ? 'online' : m.status === 'check' ? 'check' : 'offline';
-    const dotLabel = STATUS_DOT_LABEL[m.status] || m.status;
-    return `
-      <div class="media-ops-card">
-        <div class="media-ops-card-hd">
-          <span class="media-ops-card-name">${m.name}</span>
-          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#596066;">
-            <span class="status-dot ${dotCls}"></span>${dotLabel}
-          </span>
-        </div>
-        <div class="media-ops-card-body">
-          <div class="ops-item">
-            <div class="ops-label">설치 유형</div>
-            <div class="ops-value">${m.installType}</div>
-          </div>
-          <div class="ops-item">
-            <div class="ops-label">운영 시간</div>
-            <div class="ops-value">${m.opsHours}</div>
-          </div>
-          <div class="ops-item">
-            <div class="ops-label">기준 슬롯</div>
-            <div class="ops-value">${m.refSlotSec}초 × ${m.refSlots}슬롯</div>
-          </div>
-          <div class="ops-item">
-            <div class="ops-label">사이클 최대</div>
-            <div class="ops-value">${m.cycleMax}초</div>
-          </div>
-          <div class="ops-item" style="grid-column:1/-1;">
-            <div class="ops-label">최소 보장 횟수</div>
-            <div class="ops-value green">${m.guaranteed}회/일</div>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-let expandedId = null;
-
-function renderTable(products) {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-
-  if (products.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#9EA5AD;font-size:13px;">검색 결과가 없습니다.</td></tr>`;
-    return;
-  }
-
-  products.forEach(p => {
-    const st = STATUS_MAP[p.status];
-    const isOpen = expandedId === p.id;
-
-    /* 메인 행 */
-    const mainTr = document.createElement('tr');
-    mainTr.className = 'main-row' + (isOpen ? ' expanded' : '');
-    mainTr.setAttribute('data-id', p.id);
-    mainTr.setAttribute('data-status', p.status);
-    mainTr.setAttribute('data-media', p.mediaKey);
-    mainTr.innerHTML = `
-      <td style="padding:13px 8px 13px 16px;width:36px;">
-        <svg class="chevron" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </td>
-      <td style="padding-left:0;">
-        <a class="product-name-link" href="product-detail.html" onclick="event.stopPropagation()"
-          style="color:#24292E;text-decoration:none;font-weight:500;font-size:13px;">
-          ${p.name}
-        </a>
-        <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">${p.media.length}개 미디어 · 플레이플랜 ${p.plans.length}개</div>
-      </td>
-      <td>${mediaChips(p)}</td>
-      <td>${planChips(p)}</td>
-      <td class="center"><span class="badge ${st.cls}"><span class="badge-dot"></span>${st.label}</span></td>`;
-    mainTr.addEventListener('click', () => toggleExpand(p.id));
-
-    /* 확장 행 */
-    const expandTr = document.createElement('tr');
-    expandTr.className = 'expand-row';
-    expandTr.setAttribute('data-expand-id', p.id);
-    expandTr.innerHTML = `
-      <td colspan="5">
-        <div class="expand-panel${isOpen ? ' open' : ''}">
-          <div class="expand-panel-title">포함 미디어 운영 설정</div>
-          <div class="media-ops-grid">${mediaOpsCards(p)}</div>
-        </div>
-      </td>`;
-
-    tbody.appendChild(mainTr);
-    tbody.appendChild(expandTr);
-  });
-}
-
-function toggleExpand(id) {
-  expandedId = (expandedId === id) ? null : id;
-  applyFilter();
-}
-
-/* ═══════════════════ 필터 & 검색 ═══════════════════ */
-function applyFilter() {
+function filterTable() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   const status = document.getElementById('statusFilter').value;
   const media  = document.getElementById('mediaFilter').value;
-
-  const filtered = PRODUCTS.filter(p => {
-    return (!search || p.name.toLowerCase().includes(search))
-      && (!status || p.status === status)
-      && (!media  || p.mediaKey === media);
+  const rows   = document.querySelectorAll('#tableBody tr');
+  rows.forEach(row => {
+    const name      = row.querySelector('.product-name-link').textContent.toLowerCase();
+    const rowStatus = row.dataset.status;
+    const rowMedia  = row.dataset.media;
+    const matchSearch = !search || name.includes(search);
+    const matchStatus = !status || rowStatus === status;
+    const matchMedia  = !media  || rowMedia  === media;
+    row.style.display = (matchSearch && matchStatus && matchMedia) ? '' : 'none';
   });
-
-  renderTable(filtered);
-  renderPagination(filtered.length);
 }
-
-function filterTable() { expandedId = null; applyFilter(); }
-
-/* ═══════════════════ 페이지네이션 ═══════════════════ */
-function renderPagination(total) {
-  document.getElementById('pageInfo').textContent = `총 ${total}개`;
-  const pgBtns = document.getElementById('pgBtns');
-  pgBtns.innerHTML = `
-    <button class="pg-btn">‹</button>
-    <button class="pg-btn active">1</button>
-    <button class="pg-btn">›</button>`;
-}
-
-/* ═══════════════════ 초기화 ═══════════════════ */
-applyFilter();
 </script>
 </body>
 </html>

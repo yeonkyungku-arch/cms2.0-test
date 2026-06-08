@@ -90,18 +90,31 @@
       border: none; outline: none; background: none;
       font-size: 12px; color: #596066; font-family: inherit; cursor: pointer;
     }
-    .media-list { max-height: 220px; overflow-y: auto; }
+    .media-list { max-height: 420px; overflow-y: auto; }
     .media-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 14px; border-bottom: 1px solid #F6F7F9;
-      cursor: pointer; transition: background 0.12s;
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 14px 0; border-bottom: 1px solid #F6F7F9;
+      transition: background 0.12s;
     }
     .media-item:last-child { border-bottom: none; }
     .media-item:hover { background: #FAFAFA; }
-    .media-item input[type=checkbox] { accent-color: #58C65D; width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
-    .media-item-info { flex: 1; min-width: 0; }
+    .media-item input[type=checkbox] { accent-color: #58C65D; width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; margin-top: 3px; }
+    .media-item-inner { flex: 1; min-width: 0; }
+    .media-item-row { display: flex; align-items: center; gap: 8px; }
     .media-item-name { font-size: 13px; font-weight: 500; color: #24292E; }
     .media-item-sub  { font-size: 12px; color: #9EA5AD; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .media-ops-inline {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0; border: 1px solid #EEF0F2; border-radius: 6px; overflow: hidden;
+      background: #FAFCFF; margin: 8px 0 10px;
+    }
+    .media-ops-inline-item {
+      padding: 6px 10px; border-right: 1px solid #EEF0F2;
+    }
+    .media-ops-inline-item:last-child { border-right: none; }
+    .media-ops-inline-label { font-size: 10px; color: #9EA5AD; margin-bottom: 2px; }
+    .media-ops-inline-value { font-size: 11px; font-weight: 600; color: #24292E; }
+    .media-ops-inline-value.green { color: #2E9E34; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .status-dot.online  { background: #58C65D; }
     .status-dot.offline { background: #CED2D6; }
@@ -775,11 +788,31 @@ function renderMediaList(filter = '', statusFilter = '') {
       label.innerHTML = `
         <input type="checkbox" ${selectedMedia.has(m.id) ? 'checked' : ''}
           data-id="${m.id}" onchange="toggleMedia('${m.id}', this.checked)">
-        <div class="media-item-info">
-          <div class="media-item-name">${m.name}</div>
+        <div class="media-item-inner">
+          <div class="media-item-row">
+            <div class="media-item-name">${m.name}</div>
+            <span class="status-dot ${m.status}"></span>
+          </div>
           <div class="media-item-sub">${m.sub}</div>
-        </div>
-        <span class="status-dot ${m.status}"></span>`;
+          <div class="media-ops-inline">
+            <div class="media-ops-inline-item">
+              <div class="media-ops-inline-label">설치 유형</div>
+              <div class="media-ops-inline-value">${m.installType}</div>
+            </div>
+            <div class="media-ops-inline-item">
+              <div class="media-ops-inline-label">운영 시간</div>
+              <div class="media-ops-inline-value">${m.opsHours}</div>
+            </div>
+            <div class="media-ops-inline-item">
+              <div class="media-ops-inline-label">기준 슬롯</div>
+              <div class="media-ops-inline-value">${m.refSlotSec}초 × ${m.refSlots}슬롯</div>
+            </div>
+            <div class="media-ops-inline-item">
+              <div class="media-ops-inline-label">최소 보장</div>
+              <div class="media-ops-inline-value green">${m.guaranteed}회/일</div>
+            </div>
+          </div>
+        </div>`;
       list.appendChild(label);
     });
 }
