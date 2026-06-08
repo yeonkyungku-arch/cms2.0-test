@@ -142,6 +142,9 @@
     .badge-active   { background: #E8F8E9; color: #2E9E34; }
     .badge-inactive { background: #F0F1F3; color: #596066; }
     .badge-draft    { background: #FFF8E6; color: #B45309; }
+    .badge-adex     { background: #EAF3FF; color: #2D84ED; border: 1px solid #BDD9FF; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-adex svg { flex-shrink: 0; }
+    .badge-no-adex  { background: #F1F2F4; color: #9EA5AD; border: 1px solid #E5E7EA; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
     .badge-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
@@ -228,6 +231,7 @@
           <th>프로덕트명</th>
           <th style="width:200px;">포함 미디어</th>
           <th class="center" style="width:130px;">플레이플랜 수</th>
+          <th class="center" style="width:110px;">ADeX 연동</th>
           <th class="center" style="width:130px;">상태</th>
         </tr>
       </thead>
@@ -246,6 +250,7 @@
               <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건</div>
             </div>
           </td>
+          <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
         <tr data-status="active" data-media="홍대입구역">
@@ -262,6 +267,7 @@
               <div class="tooltip-box">30초 일반<br>20초 일반</div>
             </div>
           </td>
+          <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
         <tr data-status="draft" data-media="신촌역">
@@ -273,6 +279,7 @@
               <div class="tooltip-box">30초 일반</div>
             </div>
           </td>
+          <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-draft"><span class="badge-dot"></span>임시저장</span></td>
         </tr>
         <tr data-status="inactive" data-media="여의도역">
@@ -289,6 +296,7 @@
               <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건<br>15초 일반</div>
             </div>
           </td>
+          <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span></td>
         </tr>
         <tr data-status="active" data-media="삼성역">
@@ -305,6 +313,7 @@
               <div class="tooltip-box">30초 일반<br>20초 조건</div>
             </div>
           </td>
+          <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
       </tbody>
