@@ -6,377 +6,399 @@
   <title>편성표 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    /* ── 공통 ── */
+    /* ─── 공통 ─── */
+    * { box-sizing: border-box; }
+
     .page-back {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 13px; color: #596066; text-decoration: none;
-      margin-bottom: 12px;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; color: #596066; text-decoration: none; margin-bottom: 14px;
     }
     .page-back:hover { color: #24292E; }
-    .page-title-row {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
-    }
-    .page-title-row h1 { font-size: 20px; font-weight: 700; color: #24292E; margin: 0; }
-    .media-chip {
-      display: inline-block; background: #EEF0F2; color: #596066;
-      font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500;
-    }
-    .chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
 
-    /* ── 뷰 전환 툴바 ── */
-    .sched-toolbar {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
-    }
-    .view-btn-group {
-      display: flex; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
-    }
-    .view-btn-group button {
-      height: 34px; padding: 0 18px; border: none; background: transparent;
-      font-size: 13px; font-weight: 500; color: #596066; cursor: pointer; transition: all .15s;
-    }
-    .view-btn-group button + button { border-left: 1px solid #CED2D6; }
-    .view-btn-group button.active { background: #58C65D; color: #fff; font-weight: 700; }
-    .ml-auto { margin-left: auto; }
-
-    /* ── 월간 뷰 ── */
-    .monthly-layout {
-      display: flex; gap: 16px; align-items: flex-start;
-    }
-    .media-status-panel {
-      width: 280px; flex-shrink: 0;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .media-card {
-      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px;
-      padding: 14px 16px; cursor: pointer; transition: box-shadow .15s;
-    }
-    .media-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-    .media-card-header {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-    }
-    .media-card-name { font-size: 14px; font-weight: 600; color: #24292E; flex: 1; }
-    .status-badge {
-      display: inline-block; font-size: 11px; font-weight: 600;
-      padding: 2px 8px; border-radius: 20px;
-    }
-    .status-ok    { background: #D1FAE5; color: #065F46; }
-    .status-warn  { background: #FEF3C7; color: #92400E; }
-    .status-danger{ background: #FFEDD5; color: #9A3412; }
-    .status-full  { background: #FEE2E2; color: #991B1B; }
-    .media-card-meta { font-size: 12px; color: #596066; line-height: 1.7; }
-    .media-card-meta span { color: #24292E; font-weight: 600; }
-
-    .monthly-main { flex: 1; min-width: 0; }
-
-    /* 월 네비 */
-    .month-nav {
-      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
-    }
-    .month-nav-title { font-size: 16px; font-weight: 700; color: #24292E; }
-    .nav-btn {
-      width: 28px; height: 28px; border: 1px solid #CED2D6; border-radius: 6px;
-      background: #fff; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; color: #596066; font-size: 14px;
-    }
-    .nav-btn:hover { background: #F6F7F9; }
-
-    /* 캘린더 */
-    .calendar-grid {
-      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px;
-      overflow: hidden; margin-bottom: 16px;
-    }
-    .cal-header {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      background: #F6F7F9; border-bottom: 1px solid #E4E8EC;
-    }
-    .cal-header div {
-      text-align: center; padding: 8px 4px; font-size: 12px;
-      font-weight: 600; color: #596066;
-    }
-    .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
-    .cal-cell {
-      min-height: 82px; padding: 6px 8px;
-      border-right: 1px solid #E4E8EC; border-bottom: 1px solid #E4E8EC;
-      cursor: pointer; transition: background .1s;
-    }
-    .cal-cell:hover { background: #F6F7F9; }
-    .cal-cell.today { background: #F0F9F1; }
-    .cal-cell.selected { background: #E8F4FF; }
-    .cal-cell.other-month { opacity: .4; pointer-events: none; }
-    .cal-cell:nth-child(7n) { border-right: none; }
-    .cal-date {
-      font-size: 12px; font-weight: 600; color: #24292E; margin-bottom: 4px;
-    }
-    .cal-cell.today .cal-date { color: #58C65D; }
-    .cal-dots { display: flex; flex-direction: column; gap: 2px; }
-    .cal-dot-row {
-      display: flex; align-items: center; gap: 4px; font-size: 10px; color: #596066;
-    }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    }
-
-    /* 스케줄 목록 패널 */
-    .schedule-list-panel {
-      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px; overflow: hidden;
-    }
-    .panel-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 16px; border-bottom: 1px solid #E4E8EC;
-    }
-    .panel-title { font-size: 14px; font-weight: 700; color: #24292E; flex: 1; }
-    .sched-tabs {
-      display: flex; gap: 0; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
-    }
-    .sched-tab {
-      height: 30px; padding: 0 14px; border: none; background: transparent;
-      font-size: 12px; font-weight: 500; color: #596066; cursor: pointer;
-    }
-    .sched-tab + .sched-tab { border-left: 1px solid #CED2D6; }
-    .sched-tab.active { background: #58C65D; color: #fff; font-weight: 600; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .data-table th {
-      background: #F6F7F9; padding: 10px 14px; text-align: left;
-      font-size: 12px; font-weight: 600; color: #596066;
-      border-bottom: 1px solid #E4E8EC;
-    }
-    .data-table td {
-      padding: 11px 14px; border-bottom: 1px solid #F0F2F4; color: #24292E;
-    }
-    .data-table tr:last-child td { border-bottom: none; }
-    .data-table tr:hover td { background: #F8FAFB; cursor: pointer; }
-    .sched-name-link { color: #2D84ED; text-decoration: none; font-weight: 500; }
-    .sched-name-link:hover { text-decoration: underline; }
-    .badge-type {
-      display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;
-    }
-    .badge-general { background: #EAF3FF; color: #1D6DC0; }
-    .badge-condition { background: #F0E9FF; color: #6B21A8; }
-    .badge-running { background: #D1FAE5; color: #065F46; }
-    .badge-scheduled { background: #DBEAFE; color: #1D4ED8; }
-
-    /* ── 일간 타임라인 ── */
-    .daily-header {
+    .page-header { margin-bottom: 20px; }
+    .page-header-row {
       display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
     }
-    .daily-date { font-size: 18px; font-weight: 700; color: #24292E; }
-    .daily-meta {
-      font-size: 13px; color: #596066; margin-bottom: 14px;
-      display: flex; gap: 16px; flex-wrap: wrap;
+    .page-header-row h1 {
+      font-size: 22px; font-weight: 700; color: #24292E; margin: 0;
     }
-    .daily-meta span { color: #24292E; font-weight: 600; }
-
-    /* 미디어 탭 */
-    .media-tabs {
-      display: flex; gap: 0; border-bottom: 2px solid #E4E8EC; margin-bottom: 20px;
-    }
-    .media-tab {
-      height: 38px; padding: 0 20px; border: none; background: transparent;
-      font-size: 14px; font-weight: 500; color: #596066; cursor: pointer;
-      border-bottom: 2px solid transparent; margin-bottom: -2px;
-      display: inline-flex; align-items: center; gap: 7px;
-    }
-    .media-tab.active { color: #24292E; font-weight: 700; border-bottom-color: #58C65D; }
-    .media-tab-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-    /* 타임라인 */
-    .timeline-section {
-      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px;
-      overflow: hidden; margin-bottom: 16px;
-    }
-    .timeline-section-title {
-      padding: 12px 16px; border-bottom: 1px solid #E4E8EC;
-      font-size: 13px; font-weight: 700; color: #24292E;
-      background: #F6F7F9;
-    }
-    .timeline-wrapper { overflow-x: auto; padding: 0; }
-    .timeline-inner { min-width: 900px; }
-
-    /* 시보 라인 */
-    .sibo-row {
-      display: flex; align-items: stretch;
-      border-bottom: 1px solid #E4E8EC;
-    }
-    .timeline-label {
-      width: 80px; flex-shrink: 0; padding: 10px 12px;
-      font-size: 12px; font-weight: 600; color: #596066;
-      background: #F6F7F9; border-right: 1px solid #E4E8EC;
-      display: flex; align-items: center;
-    }
-    .sibo-track {
-      flex: 1; position: relative; height: 48px; background: #fff;
-      display: flex; align-items: center;
-    }
-    .sibo-hour-mark {
-      position: absolute; display: flex; flex-direction: column; align-items: center;
-    }
-    .sibo-hour-mark .hour-label {
-      font-size: 10px; color: #9EA5AC; margin-bottom: 2px;
-    }
-    .sibo-dot { width: 10px; height: 10px; background: #24292E; border-radius: 50%; }
-    .sibo-block {
-      position: absolute; background: #24292E; color: #fff;
-      font-size: 11px; padding: 4px 8px; border-radius: 4px;
-      white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 5px;
-      top: 14px;
-    }
-    .sibo-block:hover { background: #454C52; }
-    .sibo-edit-btn {
-      background: rgba(255,255,255,.2); border: none; border-radius: 3px;
-      color: #fff; font-size: 10px; padding: 1px 4px; cursor: pointer;
-    }
-    .timeline-bg-line {
-      position: absolute; top: 0; bottom: 0; width: 1px; background: #E4E8EC;
-    }
-
-    /* 사이클 행 */
-    .cycle-rows { padding: 0; }
-    .cycle-row {
-      display: flex; align-items: center; border-bottom: 1px solid #F0F2F4;
-      min-height: 36px;
-    }
-    .cycle-row:last-child { border-bottom: none; }
-    .cycle-track {
-      flex: 1; display: flex; align-items: center; padding: 4px 0; gap: 3px;
-      overflow: hidden;
-    }
-    .slot-block {
-      height: 28px; border-radius: 5px; display: flex; align-items: center;
-      padding: 0 8px; font-size: 11px; font-weight: 500; white-space: nowrap;
-      cursor: pointer; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0;
-      position: relative;
-    }
-    .slot-block:hover::after {
-      content: attr(data-tooltip);
-      position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-      background: rgba(36,41,46,.92); color: #fff; font-size: 11px; padding: 5px 9px;
-      border-radius: 5px; white-space: nowrap; z-index: 100; pointer-events: none;
-    }
-
-    /* 사이클 현황 요약 */
-    .summary-card {
-      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px;
-      padding: 18px 20px; margin-bottom: 16px;
-    }
-    .summary-card-title {
-      font-size: 14px; font-weight: 700; color: #24292E; margin-bottom: 14px;
-    }
-    .summary-metrics {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
-      border: 1px solid #E4E8EC; border-radius: 8px; overflow: hidden;
-      margin-bottom: 12px;
-    }
-    .summary-metric {
-      padding: 12px 16px; text-align: center; border-right: 1px solid #E4E8EC;
-    }
-    .summary-metric:last-child { border-right: none; }
-    .metric-label { font-size: 11px; color: #596066; margin-bottom: 4px; }
-    .metric-value { font-size: 18px; font-weight: 700; color: #24292E; }
-    .metric-unit { font-size: 12px; color: #596066; font-weight: 400; }
-    .usage-bar-wrap { margin-bottom: 10px; }
-    .usage-bar-bg {
-      height: 8px; background: #EEF0F2; border-radius: 4px; overflow: hidden;
-    }
-    .usage-bar-fill { height: 100%; border-radius: 4px; background: #58C65D; transition: width .3s; }
-    .usage-bar-fill.warn { background: #F59E0B; }
-    .usage-bar-fill.danger { background: #EF4444; }
-    .summary-slots {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
-      border: 1px solid #E4E8EC; border-radius: 8px; overflow: hidden;
-      margin-bottom: 12px;
-    }
-    .summary-extra {
-      display: flex; gap: 20px; font-size: 13px; color: #596066; flex-wrap: wrap;
-    }
-    .summary-extra .ok { color: #059669; font-weight: 600; }
-    .summary-extra .ng { color: #DC2626; font-weight: 600; }
-
-    /* 일반 광고 송출 현황 */
-    .broadcast-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .broadcast-table th {
-      background: #F6F7F9; padding: 10px 14px; text-align: center;
-      font-size: 12px; font-weight: 600; color: #596066;
-      border-bottom: 1px solid #E4E8EC; border-right: 1px solid #E4E8EC;
-    }
-    .broadcast-table th:first-child { text-align: left; }
-    .broadcast-table th:last-child { border-right: none; }
-    .broadcast-table td {
-      padding: 10px 14px; border-bottom: 1px solid #F0F2F4;
-      border-right: 1px solid #E4E8EC; text-align: center; color: #24292E;
-    }
-    .broadcast-table td:first-child { text-align: left; font-weight: 500; }
-    .broadcast-table td:last-child { border-right: none; }
-    .broadcast-table tr:last-child td { border-bottom: none; }
-    .check-ok { color: #059669; font-weight: 600; }
-    .check-ng { color: #DC2626; font-weight: 600; }
-    .broadcast-summary {
-      padding: 10px 16px; background: #F0F9F1;
-      border-top: 1px solid #E4E8EC; font-size: 13px; color: #059669; font-weight: 600;
-    }
-
-    /* 조건 광고 */
-    .condition-group { padding: 16px 20px; }
-    .condition-group-title {
-      font-size: 13px; font-weight: 700; color: #596066;
-      margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
-    }
-    .condition-cards { display: flex; flex-direction: column; gap: 8px; }
-    .condition-card {
-      background: #F6F7F9; border: 1px solid #E4E8EC; border-radius: 8px;
-      padding: 14px 16px; cursor: pointer; transition: box-shadow .15s;
-    }
-    .condition-card:hover { box-shadow: 0 2px 6px rgba(0,0,0,.08); }
-    .condition-card-header {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-    }
-    .condition-card-name { font-size: 14px; font-weight: 600; color: #24292E; flex: 1; }
-    .condition-card-duration { font-size: 12px; color: #596066; }
-    .condition-card-meta { font-size: 12px; color: #596066; line-height: 1.7; }
-    .condition-card-meta span { color: #24292E; font-weight: 500; }
-
-    /* ADeX 인벤토리 */
-    .adex-header-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 16px; border-bottom: 1px solid #E4E8EC; background: #F6F7F9;
-    }
-    .badge-adex-sm {
+    .badge-adex {
       background: #EAF3FF; color: #2D84ED; border: 1px solid #BDD9FF;
-      font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 700;
+      font-size: 12px; padding: 3px 10px; border-radius: 5px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
     }
-    .adex-sub { font-size: 12px; color: #596066; margin-left: 4px; }
+    .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .media-chip {
+      background: #EEF0F2; color: #596066; font-size: 12px;
+      padding: 3px 10px; border-radius: 20px; font-weight: 500;
+    }
 
-    /* + 스케줄 예약 버튼 */
-    .add-sched-bar {
-      display: flex; justify-content: flex-end; margin-top: 20px;
+    /* ─── 뷰 전환 버튼 ─── */
+    .view-toggle {
+      display: inline-flex; border: 1px solid #CED2D6; border-radius: 8px;
+      overflow: hidden; margin-bottom: 20px;
     }
+    .view-toggle button {
+      height: 36px; padding: 0 20px; border: none; background: transparent;
+      font-size: 13px; font-weight: 500; color: #596066; cursor: pointer;
+    }
+    .view-toggle button + button { border-left: 1px solid #CED2D6; }
+    .view-toggle button.active {
+      background: #58C65D; color: #fff; font-weight: 700;
+    }
+
+    /* ─── 공통 버튼 ─── */
     .btn-primary {
-      height: 38px; padding: 0 20px;
-      background: #58C65D; color: #fff; border: none; border-radius: 7px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 7px;
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 34px; padding: 0 16px; background: #58C65D; color: #fff;
+      border: none; border-radius: 7px; font-size: 13px; font-weight: 600;
+      cursor: pointer;
     }
     .btn-primary:hover { background: #4DB352; }
     .btn-ghost {
-      height: 38px; padding: 0 16px;
-      background: #fff; color: #596066; border: 1px solid #CED2D6; border-radius: 7px;
-      font-size: 14px; font-weight: 500; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 34px; padding: 0 14px; background: #fff; color: #596066;
+      border: 1px solid #CED2D6; border-radius: 7px; font-size: 13px;
+      font-weight: 500; cursor: pointer;
     }
     .btn-ghost:hover { background: #F6F7F9; }
 
-    /* ── 스케줄 등록 모달 ── */
+    /* ─── 카드 베이스 ─── */
+    .card {
+      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 16px; border-bottom: 1px solid #E4E8EC;
+      background: #F8F9FA;
+    }
+    .card-title { font-size: 13px; font-weight: 700; color: #24292E; flex: 1; }
+
+    /* ─── 상태 배지 ─── */
+    .status-badge {
+      font-size: 11px; font-weight: 700; padding: 2px 9px;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .s-ok     { background: #D1FAE5; color: #065F46; }
+    .s-warn   { background: #FEF3C7; color: #92400E; }
+    .s-danger { background: #FFEDD5; color: #9A3412; }
+    .s-full   { background: #FEE2E2; color: #991B1B; }
+
+    /* ═══════════════════════════════════
+       월간 뷰
+    ═══════════════════════════════════ */
+    .monthly-view { display: flex; gap: 16px; align-items: flex-start; }
+
+    /* 좌측 패널 */
+    .left-panel { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+    .left-panel-title {
+      font-size: 12px; font-weight: 700; color: #9EA5AC;
+      text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px;
+    }
+    .media-status-card {
+      background: #fff; border: 1px solid #E4E8EC; border-radius: 10px;
+      padding: 14px 15px; cursor: pointer; transition: box-shadow .15s;
+    }
+    .media-status-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.09); }
+    .msc-top {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    }
+    .msc-name { font-size: 14px; font-weight: 600; color: #24292E; flex: 1; min-width: 0; }
+    .msc-meta { font-size: 12px; color: #596066; line-height: 1.8; }
+    .msc-meta b { color: #24292E; font-weight: 600; }
+
+    /* 우측 영역 */
+    .right-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+
+    /* 캘린더 */
+    .cal-card { background: #fff; border: 1px solid #E4E8EC; border-radius: 10px; overflow: hidden; }
+    .cal-nav {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-bottom: 1px solid #E4E8EC;
+    }
+    .cal-nav-title { font-size: 15px; font-weight: 700; color: #24292E; flex: 1; }
+    .nav-arrow {
+      width: 28px; height: 28px; border: 1px solid #E4E8EC; border-radius: 6px;
+      background: #fff; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 14px; color: #596066;
+    }
+    .nav-arrow:hover { background: #F6F7F9; }
+    .cal-dow-row {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      background: #F6F7F9; border-bottom: 1px solid #E4E8EC;
+    }
+    .cal-dow { text-align: center; padding: 7px 0; font-size: 11px; font-weight: 700; color: #9EA5AC; }
+    .cal-dow:first-child { color: #E97474; }
+    .cal-dow:last-child  { color: #2D84ED; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-cell {
+      min-height: 78px; padding: 7px 8px;
+      border-right: 1px solid #F0F2F4;
+      border-bottom: 1px solid #F0F2F4;
+      cursor: pointer; transition: background .1s;
+    }
+    .cal-cell:nth-child(7n) { border-right: none; }
+    .cal-cell:hover { background: #F8FAFB; }
+    .cal-cell.today { background: #F0F9F1; }
+    .cal-cell.selected { background: #EAF3FF; outline: 2px solid #2D84ED; outline-offset: -2px; }
+    .cal-cell.other-month { opacity: .35; pointer-events: none; }
+    .cal-date {
+      font-size: 12px; font-weight: 600; color: #24292E; margin-bottom: 5px;
+    }
+    .cal-cell.today .cal-date {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; background: #58C65D; color: #fff;
+      border-radius: 50%; font-size: 11px;
+    }
+    .cal-dots { display: flex; flex-direction: column; gap: 2px; }
+    .cal-dot-row { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #596066; line-height: 1.3; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* 스케줄 목록 */
+    .sched-tabs {
+      display: flex; gap: 0;
+    }
+    .sched-tab {
+      height: 28px; padding: 0 13px; border: 1px solid #CED2D6;
+      background: transparent; font-size: 12px; font-weight: 500; color: #596066;
+      cursor: pointer; margin-right: -1px;
+    }
+    .sched-tab:first-child { border-radius: 6px 0 0 6px; }
+    .sched-tab:last-child  { border-radius: 0 6px 6px 0; margin-right: 0; }
+    .sched-tab.active { background: #58C65D; color: #fff; font-weight: 700; border-color: #58C65D; z-index: 1; position: relative; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      background: #F6F7F9; padding: 9px 14px;
+      font-size: 11px; font-weight: 700; color: #9EA5AC; text-align: left;
+      border-bottom: 1px solid #E4E8EC;
+    }
+    .data-table th.c { text-align: center; }
+    .data-table td {
+      padding: 11px 14px; border-bottom: 1px solid #F0F2F4; color: #24292E;
+    }
+    .data-table td.c { text-align: center; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr { cursor: pointer; }
+    .data-table tbody tr:hover td { background: #F8FAFB; }
+    .link-blue { color: #2D84ED; text-decoration: none; font-weight: 500; }
+    .link-blue:hover { text-decoration: underline; }
+    .badge-type {
+      display: inline-block; font-size: 11px; padding: 2px 8px;
+      border-radius: 4px; font-weight: 600;
+    }
+    .bt-general   { background: #EAF3FF; color: #1D6DC0; }
+    .bt-condition { background: #F3E8FF; color: #6B21A8; }
+    .bt-running   { background: #D1FAE5; color: #065F46; }
+    .bt-planned   { background: #DBEAFE; color: #1D4ED8; }
+
+    /* ═══════════════════════════════════
+       일간 타임라인
+    ═══════════════════════════════════ */
+    .daily-view { display: flex; flex-direction: column; gap: 14px; }
+
+    /* 날짜 네비 */
+    .date-nav-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px; background: #fff; border: 1px solid #E4E8EC;
+      border-radius: 10px;
+    }
+    .date-nav-date { font-size: 17px; font-weight: 700; color: #24292E; flex: 1; }
+    .date-meta-row {
+      display: flex; gap: 20px; padding: 0 2px; font-size: 13px; color: #596066;
+      flex-wrap: wrap;
+    }
+    .date-meta-row b { color: #24292E; }
+
+    /* 미디어 탭 */
+    .media-tab-bar {
+      display: flex; border-bottom: 2px solid #E4E8EC; background: #fff;
+      border-radius: 10px 10px 0 0; overflow: hidden;
+      border: 1px solid #E4E8EC; border-bottom: none;
+    }
+    .m-tab {
+      flex: 1; height: 44px; border: none; background: transparent;
+      font-size: 14px; font-weight: 500; color: #596066;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 8px; border-bottom: 3px solid transparent; transition: all .15s;
+    }
+    .m-tab + .m-tab { border-left: 1px solid #E4E8EC; }
+    .m-tab.active {
+      color: #24292E; font-weight: 700;
+      border-bottom-color: #58C65D; background: #F0F9F1;
+    }
+    .m-tab-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+    /* 타임라인 섹션 */
+    .tl-section { background: #fff; border: 1px solid #E4E8EC; border-radius: 10px; overflow: hidden; }
+    .tl-section + .tl-section { margin-top: 0; }
+    .tl-section-head {
+      display: flex; align-items: center; gap: 8px;
+      padding: 11px 16px; background: #F8F9FA; border-bottom: 1px solid #E4E8EC;
+    }
+    .tl-section-title { font-size: 13px; font-weight: 700; color: #24292E; flex: 1; }
+
+    /* 타임라인 그리드 */
+    .tl-body { overflow-x: auto; }
+    .tl-inner { min-width: 820px; }
+    .tl-row {
+      display: flex; align-items: stretch;
+      border-bottom: 1px solid #F0F2F4;
+    }
+    .tl-row:last-child { border-bottom: none; }
+    .tl-label {
+      width: 76px; flex-shrink: 0;
+      display: flex; align-items: center;
+      padding: 0 12px; font-size: 12px; font-weight: 600; color: #596066;
+      background: #F8F9FA; border-right: 1px solid #E4E8EC;
+      min-height: 40px;
+    }
+    .tl-track { flex: 1; position: relative; display: flex; align-items: center; }
+
+    /* 시보 라인 */
+    .sibo-track {
+      flex: 1; height: 56px; position: relative;
+      display: flex; align-items: flex-start;
+    }
+    /* 구간 배경 */
+    .sibo-seg {
+      position: absolute; top: 0; bottom: 0; border-right: 1px dashed #E4E8EC;
+      display: flex; align-items: flex-end; padding-bottom: 3px;
+    }
+    .sibo-seg-label { font-size: 10px; color: #C0C5CA; padding-right: 4px; }
+    /* 시보 마커 */
+    .sibo-marker {
+      position: absolute; top: 6px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .sibo-dot { width: 10px; height: 10px; background: #24292E; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #24292E; }
+    .sibo-block {
+      background: #24292E; color: #fff; font-size: 11px; font-weight: 500;
+      padding: 4px 9px; border-radius: 5px; white-space: nowrap;
+      display: flex; align-items: center; gap: 5px; cursor: pointer;
+    }
+    .sibo-block:hover { background: #454C52; }
+    .sibo-edit {
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      font-size: 10px; padding: 1px 5px; border-radius: 3px;
+      cursor: pointer; font-family: inherit;
+    }
+    .sibo-edit:hover { background: rgba(255,255,255,.3); }
+
+    /* 사이클 슬롯 */
+    .cycle-track-inner {
+      display: flex; align-items: center;
+      gap: 3px; padding: 5px 8px; flex-wrap: nowrap; overflow: hidden;
+    }
+    .slot-block {
+      height: 28px; border-radius: 5px;
+      display: flex; align-items: center; padding: 0 9px;
+      font-size: 11px; font-weight: 500; white-space: nowrap;
+      cursor: pointer; flex-shrink: 0; position: relative;
+    }
+    .slot-block:hover { filter: brightness(.93); }
+    .slot-tooltip {
+      display: none; position: absolute; bottom: calc(100% + 6px); left: 50%;
+      transform: translateX(-50%); background: rgba(36,41,46,.92); color: #fff;
+      font-size: 11px; padding: 5px 9px; border-radius: 6px;
+      white-space: nowrap; z-index: 50; pointer-events: none;
+    }
+    .slot-block:hover .slot-tooltip { display: block; }
+
+    /* 사이클 현황 요약 */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid #E4E8EC;
+    }
+    .summary-grid + .summary-grid { border-bottom: none; }
+    .summary-item {
+      padding: 14px 18px; text-align: center;
+      border-right: 1px solid #E4E8EC;
+    }
+    .summary-item:last-child { border-right: none; }
+    .si-label { font-size: 11px; color: #9EA5AC; margin-bottom: 4px; }
+    .si-value { font-size: 20px; font-weight: 700; color: #24292E; }
+    .si-unit  { font-size: 12px; color: #9EA5AC; font-weight: 400; margin-left: 1px; }
+    .si-value.green { color: #10B981; }
+    .usage-bar-wrap { padding: 8px 18px 14px; }
+    .usage-bar-bg { height: 8px; background: #EEF0F2; border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+    .usage-bar-fill { height: 100%; border-radius: 4px; background: #58C65D; }
+    .usage-bar-fill.warn { background: #F59E0B; }
+    .usage-bar-fill.danger { background: #EF4444; }
+    .usage-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: #9EA5AC; }
+    .summary-footer {
+      padding: 12px 18px; border-top: 1px solid #E4E8EC;
+      display: flex; gap: 24px; font-size: 13px; color: #596066; flex-wrap: wrap;
+    }
+    .summary-footer b { color: #24292E; }
+    .text-ok { color: #059669; font-weight: 600; }
+    .text-ng { color: #DC2626; font-weight: 600; }
+
+    /* 일반 광고 / 조건 광고 테이블 */
+    .bcast-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .bcast-table th {
+      background: #F8F9FA; padding: 9px 14px; text-align: center;
+      font-size: 11px; font-weight: 700; color: #9EA5AC;
+      border-bottom: 1px solid #E4E8EC; border-right: 1px solid #E4E8EC;
+    }
+    .bcast-table th:first-child { text-align: left; }
+    .bcast-table th:last-child  { border-right: none; }
+    .bcast-table td {
+      padding: 10px 14px; text-align: center; color: #24292E;
+      border-bottom: 1px solid #F0F2F4; border-right: 1px solid #F0F2F4;
+    }
+    .bcast-table td:first-child { text-align: left; }
+    .bcast-table td:last-child  { border-right: none; }
+    .bcast-table tr:last-child td { border-bottom: none; }
+    .bcast-footer {
+      padding: 10px 14px; font-size: 13px; color: #059669; font-weight: 600;
+      border-top: 1px solid #E4E8EC; background: #F0FDF4;
+    }
+
+    /* 조건 광고 카드 */
+    .cond-section { padding: 14px 16px; border-bottom: 1px solid #E4E8EC; }
+    .cond-section:last-child { border-bottom: none; }
+    .cond-section-label {
+      font-size: 12px; font-weight: 700; color: #9EA5AC;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 5px;
+    }
+    .cond-card {
+      background: #F8F9FA; border: 1px solid #E4E8EC; border-radius: 8px;
+      padding: 13px 15px; cursor: pointer; transition: box-shadow .15s;
+    }
+    .cond-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .cond-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .cond-card-name { font-size: 14px; font-weight: 600; color: #24292E; flex: 1; }
+    .cond-card-dur  { font-size: 12px; color: #596066; }
+    .cond-card-meta { font-size: 12px; color: #596066; line-height: 1.8; }
+    .cond-card-meta b { color: #24292E; }
+
+    /* ADeX 인벤토리 */
+    .adex-sub { font-size: 12px; color: #596066; }
+    .badge-adex-sm {
+      background: #EAF3FF; color: #2D84ED; border: 1px solid #BDD9FF;
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700;
+    }
+
+    /* 스케줄 예약 버튼 바 */
+    .add-sched-row {
+      display: flex; justify-content: flex-end; padding-top: 4px;
+    }
+
+    /* ─── 모달 공통 ─── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.45); z-index: 1000;
+      background: rgba(0,0,0,.42); z-index: 1000;
       align-items: center; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
     .modal-box {
-      background: #fff; border-radius: 12px; width: 820px; max-width: 95vw;
-      max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;
-      box-shadow: 0 12px 40px rgba(0,0,0,.2);
+      background: #fff; border-radius: 12px; width: 820px; max-width: 96vw;
+      max-height: 88vh; display: flex; flex-direction: column;
+      box-shadow: 0 12px 48px rgba(0,0,0,.22); overflow: hidden;
     }
     .modal-head {
-      display: flex; align-items: center; padding: 18px 24px;
+      display: flex; align-items: center; padding: 17px 22px;
       border-bottom: 1px solid #E4E8EC;
     }
     .modal-head h3 { font-size: 16px; font-weight: 700; color: #24292E; flex: 1; margin: 0; }
@@ -385,89 +407,88 @@
       font-size: 20px; color: #596066; cursor: pointer; border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
     }
-    .modal-close:hover { background: #F6F7F9; }
-    .modal-body {
-      display: flex; gap: 0; flex: 1; overflow: hidden;
-    }
+    .modal-close:hover { background: #F0F2F4; }
+    .modal-body { display: flex; flex: 1; overflow: hidden; }
     .modal-form {
-      flex: 1; padding: 20px 24px; overflow-y: auto;
+      flex: 1; padding: 20px 22px; overflow-y: auto;
       border-right: 1px solid #E4E8EC;
     }
-    .modal-validation {
-      width: 280px; flex-shrink: 0; padding: 20px; background: #F6F7F9;
-      overflow-y: auto;
+    .modal-valid {
+      width: 270px; flex-shrink: 0; padding: 18px 20px;
+      background: #F8F9FA; overflow-y: auto;
     }
     .modal-foot {
-      display: flex; align-items: center; justify-content: flex-end;
-      gap: 10px; padding: 14px 24px; border-top: 1px solid #E4E8EC;
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 13px 22px; border-top: 1px solid #E4E8EC;
     }
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 15px; }
     .form-label {
-      display: block; font-size: 12px; font-weight: 600; color: #596066;
-      margin-bottom: 6px;
+      display: block; font-size: 12px; font-weight: 700; color: #596066;
+      margin-bottom: 5px;
     }
-    .form-input, .form-select {
+    .form-control {
       width: 100%; height: 38px; padding: 0 12px;
       border: 1px solid #CED2D6; border-radius: 7px;
       font-size: 14px; color: #24292E; background: #fff;
-      box-sizing: border-box; outline: none; font-family: inherit;
+      font-family: inherit; outline: none;
     }
-    .form-input:focus, .form-select:focus { border-color: #58C65D; }
-    .form-input[readonly] { background: #F6F7F9; color: #596066; }
-    .type-toggle {
+    .form-control:focus { border-color: #58C65D; box-shadow: 0 0 0 3px rgba(88,198,93,.12); }
+    .form-control[readonly] { background: #F6F7F9; color: #596066; cursor: default; }
+    .type-toggle-btn {
       display: flex; border: 1px solid #CED2D6; border-radius: 7px; overflow: hidden;
     }
-    .type-toggle button {
+    .type-toggle-btn button {
       flex: 1; height: 38px; border: none; background: transparent;
       font-size: 13px; font-weight: 500; color: #596066; cursor: pointer;
     }
-    .type-toggle button + button { border-left: 1px solid #CED2D6; }
-    .type-toggle button.active { background: #58C65D; color: #fff; font-weight: 600; }
-    .cond-extra { display: none; }
-    .cond-extra.show { display: block; }
+    .type-toggle-btn button + button { border-left: 1px solid #CED2D6; }
+    .type-toggle-btn button.active { background: #58C65D; color: #fff; font-weight: 600; }
+    .cond-fields { display: none; }
+    .cond-fields.show { display: block; }
 
     /* 검증 패널 */
-    .validation-title { font-size: 13px; font-weight: 700; color: #24292E; margin-bottom: 12px; }
-    .validation-item {
-      padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
+    .vi-title { font-size: 13px; font-weight: 700; color: #24292E; margin-bottom: 10px; }
+    .vi-item {
+      border-radius: 7px; padding: 10px 12px; margin-bottom: 8px;
     }
-    .validation-item.ok { background: #D1FAE5; color: #065F46; }
-    .validation-item.ng { background: #FEE2E2; color: #991B1B; }
-    .validation-item .vi-title { font-weight: 700; margin-bottom: 3px; font-size: 13px; }
-    .validation-item .vi-sub { font-size: 12px; opacity: .85; }
-    .validation-divider { border: none; border-top: 1px solid #E4E8EC; margin: 12px 0; }
-    .validation-extra { font-size: 12px; color: #596066; line-height: 1.8; }
-    .validation-extra .ok { color: #059669; font-weight: 600; }
-    .validation-extra .ng { color: #DC2626; font-weight: 600; }
+    .vi-item.ok { background: #D1FAE5; }
+    .vi-item.ng { background: #FEE2E2; }
+    .vi-item-head { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .vi-item.ok .vi-item-head { color: #065F46; }
+    .vi-item.ng .vi-item-head { color: #991B1B; }
+    .vi-item-sub { font-size: 12px; }
+    .vi-item.ok .vi-item-sub { color: #047857; }
+    .vi-item.ng .vi-item-sub { color: #B91C1C; }
+    .vi-hr { border: none; border-top: 1px solid #E4E8EC; margin: 12px 0; }
+    .vi-extra { font-size: 12px; color: #596066; line-height: 1.9; }
 
-    /* 시보 순서 변경 모달 */
-    .sibo-modal-box {
-      background: #fff; border-radius: 12px; width: 420px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.2); overflow: hidden;
-    }
-    .sibo-order-list { display: flex; flex-direction: column; gap: 6px; padding: 16px 20px; }
-    .sibo-order-item {
+    /* 시보 순서 모달 */
+    .sibo-modal { width: 400px; max-width: 95vw; }
+    .sibo-list { padding: 14px 18px; display: flex; flex-direction: column; gap: 7px; }
+    .sibo-item {
       display: flex; align-items: center; gap: 10px;
-      background: #F6F7F9; border: 1px solid #E4E8EC; border-radius: 7px; padding: 10px 12px;
+      background: #F6F7F9; border: 1px solid #E4E8EC;
+      border-radius: 7px; padding: 9px 12px;
     }
-    .sibo-order-rank { font-size: 12px; color: #596066; width: 36px; }
-    .sibo-order-name { flex: 1; font-size: 13px; font-weight: 500; color: #24292E; }
-    .sibo-order-btn {
-      width: 26px; height: 26px; border: 1px solid #CED2D6; border-radius: 5px;
-      background: #fff; cursor: pointer; font-size: 13px; display: flex;
-      align-items: center; justify-content: center;
+    .sibo-rank { font-size: 12px; color: #9EA5AC; width: 36px; }
+    .sibo-item-name { flex: 1; font-size: 13px; font-weight: 500; color: #24292E; }
+    .order-btn {
+      width: 26px; height: 26px; border: 1px solid #D0D4D8; border-radius: 5px;
+      background: #fff; cursor: pointer; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .apply-scope { padding: 0 20px 16px; }
-    .apply-scope-title { font-size: 12px; font-weight: 700; color: #596066; margin-bottom: 8px; }
-    .radio-item {
+    .scope-section { padding: 0 18px 14px; }
+    .scope-title { font-size: 12px; font-weight: 700; color: #9EA5AC; margin-bottom: 8px; }
+    .radio-row {
       display: flex; align-items: center; gap: 8px;
-      font-size: 13px; color: #24292E; margin-bottom: 6px; cursor: pointer;
+      font-size: 13px; color: #24292E; margin-bottom: 7px; cursor: pointer;
     }
   </style>
 </head>
 <body>
 <div class="app-layout">
-  <!-- GNB (sidebar) -->
+
+  <!-- GNB -->
   <nav class="gnb">
     <div class="gnb-logo">D'ooh</div>
     <ul class="gnb-menu">
@@ -481,7 +502,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
       </li>
       <li class="gnb-item" title="광고주">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
       </li>
     </ul>
   </nav>
@@ -494,225 +515,223 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         프로덕트 상세로
       </a>
-      <div class="page-title-row">
-        <h1>강남 A지구 패키지</h1>
-        <span class="badge-adex" style="background:#EAF3FF;color:#2D84ED;border:1px solid #BDD9FF;font-size:12px;padding:3px 10px;border-radius:5px;font-weight:700;display:inline-flex;align-items:center;gap:5px;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          ADeX 연동
-        </span>
-      </div>
-      <div class="chip-row">
-        <span class="media-chip">강남역 A</span>
-        <span class="media-chip">강남역 B</span>
-        <span class="media-chip">강남역 C</span>
-      </div>
-
-      <!-- 뷰 전환 툴바 -->
-      <div class="sched-toolbar">
-        <div class="view-btn-group">
-          <button id="btnMonthly" class="active" onclick="switchView('monthly')">월간 뷰</button>
-          <button id="btnDaily" onclick="switchView('daily')">일간 타임라인</button>
+      <div class="page-header">
+        <div class="page-header-row">
+          <h1>강남 A지구 패키지</h1>
+          <span class="badge-adex">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            ADeX 연동
+          </span>
+        </div>
+        <div class="chip-row">
+          <span class="media-chip">강남역 A</span>
+          <span class="media-chip">강남역 B</span>
+          <span class="media-chip">강남역 C</span>
         </div>
       </div>
 
-      <!-- ══════════════ 월간 뷰 ══════════════ -->
-      <div id="viewMonthly">
-        <div class="monthly-layout">
+      <!-- 뷰 전환 -->
+      <div class="view-toggle">
+        <button id="btnMonthly" class="active" onclick="switchView('monthly')">월간 뷰</button>
+        <button id="btnDaily" onclick="switchView('daily')">일간 타임라인</button>
+      </div>
 
-          <!-- 좌측: 미디어별 현황 패널 -->
-          <div class="media-status-panel">
-            <div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:6px;">미디어별 현황</div>
+      <!-- ══ 월간 뷰 ══ -->
+      <div id="viewMonthly" class="monthly-view">
 
-            <div class="media-card" onclick="switchView('daily')">
-              <div class="media-card-header">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#596066" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
-                <div class="media-card-name">강남역 A</div>
-                <span class="status-badge status-ok">여유</span>
-              </div>
-              <div class="media-card-meta">
-                사이클 최대: <span>600초</span><br>
-                잔여: <span>475초</span> · 잔여 슬롯: <span>15개</span>
-              </div>
+        <!-- 좌측: 미디어별 현황 패널 -->
+        <div class="left-panel">
+          <div class="left-panel-title">미디어별 현황</div>
+
+          <div class="media-status-card" onclick="switchView('daily')">
+            <div class="msc-top">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9EA5AC" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+              <div class="msc-name">강남역 A</div>
+              <span class="status-badge s-ok">여유</span>
             </div>
-
-            <div class="media-card" onclick="switchView('daily')">
-              <div class="media-card-header">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#596066" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
-                <div class="media-card-name">강남역 B</div>
-                <span class="status-badge status-warn">위험</span>
-              </div>
-              <div class="media-card-meta">
-                사이클 최대: <span>600초</span><br>
-                잔여: <span>120초</span> · 잔여 슬롯: <span>4개</span>
-              </div>
-            </div>
-
-            <div class="media-card" onclick="switchView('daily')">
-              <div class="media-card-header">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#596066" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
-                <div class="media-card-name">강남역 C</div>
-                <span class="status-badge status-danger">매우 위험</span>
-              </div>
-              <div class="media-card-meta">
-                사이클 최대: <span>600초</span><br>
-                잔여: <span>20초</span> · 잔여 슬롯: <span>1개</span>
-              </div>
+            <div class="msc-meta">
+              사이클 최대 <b>600초</b><br>
+              잔여 <b>475초</b> · 잔여 슬롯 <b>15개</b>
             </div>
           </div>
 
-          <!-- 우측: 캘린더 + 스케줄 목록 -->
-          <div class="monthly-main">
-            <!-- 월 네비 -->
-            <div class="month-nav">
-              <button class="nav-btn">&#8249;</button>
-              <div class="month-nav-title">2026년 6월</div>
-              <button class="nav-btn">&#8250;</button>
+          <div class="media-status-card" onclick="switchView('daily')">
+            <div class="msc-top">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9EA5AC" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+              <div class="msc-name">강남역 B</div>
+              <span class="status-badge s-warn">위험</span>
             </div>
-
-            <!-- 캘린더 -->
-            <div class="calendar-grid">
-              <div class="cal-header">
-                <div>일</div><div>월</div><div>화</div><div>수</div>
-                <div>목</div><div>금</div><div>토</div>
-              </div>
-              <div class="cal-body" id="calBody"></div>
+            <div class="msc-meta">
+              사이클 최대 <b>600초</b><br>
+              잔여 <b>120초</b> · 잔여 슬롯 <b>4개</b>
             </div>
+          </div>
 
-            <!-- 스케줄 목록 -->
-            <div class="schedule-list-panel">
-              <div class="panel-header">
-                <div class="panel-title">스케줄 목록</div>
-                <div class="sched-tabs">
-                  <button class="sched-tab active" onclick="setSchedTab(this,'전체')">전체</button>
-                  <button class="sched-tab" onclick="setSchedTab(this,'운영')">운영</button>
-                  <button class="sched-tab" onclick="setSchedTab(this,'확정')">확정</button>
-                  <button class="sched-tab" onclick="setSchedTab(this,'미확정')">미확정</button>
-                  <button class="sched-tab" onclick="setSchedTab(this,'예약')">예약</button>
-                </div>
-              </div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>스케줄명</th>
-                    <th>플레이플랜</th>
-                    <th>광고주</th>
-                    <th style="text-align:center;">재생 시간</th>
-                    <th style="text-align:center;">유형</th>
-                    <th style="text-align:center;">상태</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr onclick="location.href='schedule-detail.html'">
-                    <td><a href="schedule-detail.html" class="sched-name-link">나이키 여름 캠페인</a></td>
-                    <td>30초 일반</td>
-                    <td>나이키 코리아</td>
-                    <td style="text-align:center;">30초</td>
-                    <td style="text-align:center;"><span class="badge-type badge-general">일반</span></td>
-                    <td style="text-align:center;"><span class="badge-type badge-running">운영 중</span></td>
-                  </tr>
-                  <tr onclick="location.href='schedule-detail.html'">
-                    <td><a href="schedule-detail.html" class="sched-name-link">삼성 갤럭시 론칭</a></td>
-                    <td>30초 일반</td>
-                    <td>삼성전자</td>
-                    <td style="text-align:center;">30초</td>
-                    <td style="text-align:center;"><span class="badge-type badge-general">일반</span></td>
-                    <td style="text-align:center;"><span class="badge-type badge-running">운영 중</span></td>
-                  </tr>
-                  <tr onclick="location.href='schedule-detail.html'">
-                    <td><a href="schedule-detail.html" class="sched-name-link">현대 날씨 조건</a></td>
-                    <td>40초 조건</td>
-                    <td>현대자동차</td>
-                    <td style="text-align:center;">40초</td>
-                    <td style="text-align:center;"><span class="badge-type badge-condition">조건</span></td>
-                    <td style="text-align:center;"><span class="badge-type badge-running">운영 중</span></td>
-                  </tr>
-                  <tr onclick="location.href='schedule-detail.html'">
-                    <td><a href="schedule-detail.html" class="sched-name-link">롯데 시보 광고</a></td>
-                    <td>30초 일반</td>
-                    <td>롯데쇼핑</td>
-                    <td style="text-align:center;">30초</td>
-                    <td style="text-align:center;"><span class="badge-type badge-general">일반</span></td>
-                    <td style="text-align:center;"><span class="badge-type badge-scheduled">운영 예정</span></td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="media-status-card" onclick="switchView('daily')">
+            <div class="msc-top">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9EA5AC" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+              <div class="msc-name">강남역 C</div>
+              <span class="status-badge s-danger">매우 위험</span>
+            </div>
+            <div class="msc-meta">
+              사이클 최대 <b>600초</b><br>
+              잔여 <b>20초</b> · 잔여 슬롯 <b>1개</b>
             </div>
           </div>
         </div>
-      </div><!-- /viewMonthly -->
 
-      <!-- ══════════════ 일간 타임라인 ══════════════ -->
-      <div id="viewDaily" style="display:none;">
+        <!-- 우측: 캘린더 + 스케줄 목록 -->
+        <div class="right-panel">
+
+          <!-- 월 캘린더 -->
+          <div class="cal-card">
+            <div class="cal-nav">
+              <button class="nav-arrow">&#8249;</button>
+              <div class="cal-nav-title">2026년 6월</div>
+              <button class="nav-arrow">&#8250;</button>
+            </div>
+            <div class="cal-dow-row">
+              <div class="cal-dow">일</div><div class="cal-dow">월</div>
+              <div class="cal-dow">화</div><div class="cal-dow">수</div>
+              <div class="cal-dow">목</div><div class="cal-dow">금</div>
+              <div class="cal-dow">토</div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+
+          <!-- 스케줄 목록 -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">스케줄 목록</div>
+              <div class="sched-tabs">
+                <button class="sched-tab active" onclick="setSchedTab(this)">전체</button>
+                <button class="sched-tab" onclick="setSchedTab(this)">운영</button>
+                <button class="sched-tab" onclick="setSchedTab(this)">확정</button>
+                <button class="sched-tab" onclick="setSchedTab(this)">미확정</button>
+                <button class="sched-tab" onclick="setSchedTab(this)">예약</button>
+              </div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>스케줄명</th>
+                  <th>플레이플랜</th>
+                  <th>광고주</th>
+                  <th class="c" style="width:90px;">재생 시간</th>
+                  <th class="c" style="width:80px;">유형</th>
+                  <th class="c" style="width:90px;">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="location.href='schedule-detail.html'">
+                  <td><a href="schedule-detail.html" class="link-blue" onclick="event.stopPropagation()">나이키 여름 캠페인</a></td>
+                  <td>30초 일반</td><td>나이키 코리아</td>
+                  <td class="c">30초</td>
+                  <td class="c"><span class="badge-type bt-general">일반</span></td>
+                  <td class="c"><span class="badge-type bt-running">운영 중</span></td>
+                </tr>
+                <tr onclick="location.href='schedule-detail.html'">
+                  <td><a href="schedule-detail.html" class="link-blue" onclick="event.stopPropagation()">삼성 갤럭시 론칭</a></td>
+                  <td>30초 일반</td><td>삼성전자</td>
+                  <td class="c">30초</td>
+                  <td class="c"><span class="badge-type bt-general">일반</span></td>
+                  <td class="c"><span class="badge-type bt-running">운영 중</span></td>
+                </tr>
+                <tr onclick="location.href='schedule-detail.html'">
+                  <td><a href="schedule-detail.html" class="link-blue" onclick="event.stopPropagation()">현대 날씨 조건</a></td>
+                  <td>40초 조건</td><td>현대자동차</td>
+                  <td class="c">40초</td>
+                  <td class="c"><span class="badge-type bt-condition">조건</span></td>
+                  <td class="c"><span class="badge-type bt-running">운영 중</span></td>
+                </tr>
+                <tr onclick="location.href='schedule-detail.html'">
+                  <td><a href="schedule-detail.html" class="link-blue" onclick="event.stopPropagation()">롯데 시보 광고</a></td>
+                  <td>30초 일반</td><td>롯데쇼핑</td>
+                  <td class="c">30초</td>
+                  <td class="c"><span class="badge-type bt-general">일반</span></td>
+                  <td class="c"><span class="badge-type bt-planned">운영 예정</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div><!-- /right-panel -->
+      </div><!-- /monthly-view -->
+
+      <!-- ══ 일간 타임라인 ══ -->
+      <div id="viewDaily" class="daily-view" style="display:none;">
 
         <!-- 날짜 네비 -->
-        <div class="daily-header">
-          <button class="nav-btn" style="width:32px;height:32px;">&#8249;</button>
-          <div class="daily-date">📅 2026년 6월 8일 (월)</div>
-          <button class="nav-btn" style="width:32px;height:32px;">&#8250;</button>
-          <div class="ml-auto">
-            <button class="btn-ghost" onclick="switchView('monthly')" style="height:32px;font-size:13px;">월간 뷰</button>
+        <div class="date-nav-bar">
+          <button class="nav-arrow" style="width:32px;height:32px;">&#8249;</button>
+          <div class="date-nav-date">📅 2026년 6월 8일 월요일</div>
+          <button class="nav-arrow" style="width:32px;height:32px;">&#8250;</button>
+          <div style="margin-left:auto;">
+            <button class="btn-ghost" onclick="switchView('monthly')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              월간 뷰
+            </button>
           </div>
+        </div>
+
+        <!-- 메타 -->
+        <div class="date-meta-row">
+          <span>사이클 최대 <b>600초</b></span>
+          <span>기준 슬롯 <b>20개</b></span>
+          <span>최소 보장 <b>138회/일</b></span>
+          <span>운영 시간 <b>09:00 ~ 22:00</b></span>
         </div>
 
         <!-- 미디어 탭 -->
-        <div class="media-tabs">
-          <button class="media-tab active" onclick="setMediaTab(this)">
-            <span class="media-tab-dot" style="background:#10B981;"></span>강남역 A
+        <div class="media-tab-bar">
+          <button class="m-tab active" onclick="setMediaTab(this)">
+            <span class="m-tab-dot" style="background:#10B981;"></span>강남역 A
           </button>
-          <button class="media-tab" onclick="setMediaTab(this)">
-            <span class="media-tab-dot" style="background:#F59E0B;"></span>강남역 B
+          <button class="m-tab" onclick="setMediaTab(this)">
+            <span class="m-tab-dot" style="background:#F59E0B;"></span>강남역 B
           </button>
-          <button class="media-tab" onclick="setMediaTab(this)">
-            <span class="media-tab-dot" style="background:#F97316;"></span>강남역 C
+          <button class="m-tab" onclick="setMediaTab(this)">
+            <span class="m-tab-dot" style="background:#F97316;"></span>강남역 C
           </button>
-        </div>
-
-        <!-- 메타 정보 -->
-        <div class="daily-meta">
-          사이클 최대 <span>600초</span> · 기준 슬롯 <span>20개</span> · 최소 보장 <span>138회/일</span>
         </div>
 
         <!-- 타임라인 -->
-        <div class="timeline-section">
-          <div class="timeline-section-title">타임라인 (09:00 ~ 22:00)</div>
-          <div class="timeline-wrapper">
-            <div class="timeline-inner">
+        <div class="tl-section">
+          <div class="tl-section-head">
+            <div class="tl-section-title">타임라인</div>
+            <span style="font-size:12px;color:#9EA5AC;">09:00 — 22:00 (13시간)</span>
+          </div>
+          <div class="tl-body">
+            <div class="tl-inner">
 
               <!-- 시보 라인 -->
-              <div class="sibo-row">
-                <div class="timeline-label">시보</div>
-                <div class="sibo-track" style="position:relative; padding: 6px 0;">
-                  <!-- 배경 시간 눈금 -->
-                  <div style="position:absolute;left:0;right:0;top:0;bottom:0;display:flex;pointer-events:none;">
-                    <div style="flex:1;border-right:1px solid #EEF0F2;"></div>
-                    <div style="flex:1;border-right:1px solid #EEF0F2;"></div>
-                    <div style="flex:1;border-right:1px solid #EEF0F2;"></div>
-                    <div style="flex:1;"></div>
-                  </div>
-                  <!-- 시간 레이블 -->
-                  <div style="position:absolute;left:0;right:0;bottom:2px;display:flex;pointer-events:none;padding:0 4px;">
-                    <div style="flex:0 0 0%;font-size:10px;color:#9EA5AC;">09:00</div>
-                    <div style="flex:1;text-align:center;font-size:10px;color:#9EA5AC;">12:00</div>
-                    <div style="flex:1;text-align:center;font-size:10px;color:#9EA5AC;">18:00</div>
-                    <div style="flex:0 0 0%;margin-left:auto;font-size:10px;color:#9EA5AC;">22:00</div>
-                  </div>
-                  <!-- 12:00 시보 블록 -->
-                  <div style="position:absolute;left:23%;top:4px;">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-                      <div style="width:10px;height:10px;background:#24292E;border-radius:50%;"></div>
-                      <div class="sibo-block" style="position:relative;top:0;left:0;">
+              <div class="tl-row">
+                <div class="tl-label">시보</div>
+                <div class="tl-track" style="height:60px;">
+                  <div class="sibo-track" style="width:100%;height:100%;">
+                    <!-- 구간 분할선 -->
+                    <div class="sibo-seg" style="left:0%;width:23.1%;"></div>
+                    <div class="sibo-seg" style="left:23.1%;width:46.1%;"></div>
+                    <div class="sibo-seg" style="left:69.2%;width:30.8%;"></div>
+                    <!-- 시간 레이블 -->
+                    <div style="position:absolute;bottom:3px;left:0;font-size:10px;color:#C0C5CA;">09:00</div>
+                    <div style="position:absolute;bottom:3px;left:23%;transform:translateX(-50%);font-size:10px;color:#C0C5CA;">12:00</div>
+                    <div style="position:absolute;bottom:3px;left:69%;transform:translateX(-50%);font-size:10px;color:#C0C5CA;">18:00</div>
+                    <div style="position:absolute;bottom:3px;right:0;font-size:10px;color:#C0C5CA;">22:00</div>
+                    <!-- 12시 시보 -->
+                    <div class="sibo-marker" style="left:23%;">
+                      <div class="sibo-dot"></div>
+                      <div class="sibo-block">
                         🕛 롯데 30초
-                        <button class="sibo-edit-btn" onclick="openSiboModal(event,'12:00')">✎</button>
+                        <button class="sibo-edit" onclick="openSiboModal(event,'12:00')">✎</button>
                       </div>
                     </div>
-                  </div>
-                  <!-- 18:00 시보 블록 -->
-                  <div style="position:absolute;left:69%;top:4px;">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-                      <div style="width:10px;height:10px;background:#24292E;border-radius:50%;"></div>
-                      <div class="sibo-block" style="position:relative;top:0;left:0;">
+                    <!-- 18시 시보 -->
+                    <div class="sibo-marker" style="left:69%;">
+                      <div class="sibo-dot"></div>
+                      <div class="sibo-block">
                         🕕 현대 30초
-                        <button class="sibo-edit-btn" onclick="openSiboModal(event,'18:00')">✎</button>
+                        <button class="sibo-edit" onclick="openSiboModal(event,'18:00')">✎</button>
                       </div>
                     </div>
                   </div>
@@ -720,133 +739,129 @@
               </div>
 
               <!-- 사이클 행 -->
-              <div class="cycle-rows">
-                <div id="cycleRowsBody"></div>
-              </div>
+              <div id="cycleRows"></div>
 
             </div>
           </div>
         </div>
 
         <!-- 사이클 현황 요약 -->
-        <div class="summary-card">
-          <div class="summary-card-title">사이클 현황 요약</div>
-          <div class="summary-metrics">
-            <div class="summary-metric">
-              <div class="metric-label">사이클 최대 시간</div>
-              <div class="metric-value">600<span class="metric-unit">초</span></div>
+        <div class="tl-section">
+          <div class="tl-section-head">
+            <div class="tl-section-title">사이클 현황 요약</div>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="si-label">사이클 최대 시간</div>
+              <div class="si-value">600<span class="si-unit">초</span></div>
             </div>
-            <div class="summary-metric">
-              <div class="metric-label">사용 시간</div>
-              <div class="metric-value">125<span class="metric-unit">초</span></div>
+            <div class="summary-item">
+              <div class="si-label">사용 시간</div>
+              <div class="si-value">125<span class="si-unit">초</span></div>
             </div>
-            <div class="summary-metric">
-              <div class="metric-label">잔여 시간</div>
-              <div class="metric-value" style="color:#10B981;">475<span class="metric-unit" style="color:#10B981;">초</span></div>
+            <div class="summary-item">
+              <div class="si-label">잔여 시간</div>
+              <div class="si-value green">475<span class="si-unit">초</span></div>
             </div>
           </div>
           <div class="usage-bar-wrap">
             <div class="usage-bar-bg">
               <div class="usage-bar-fill" style="width:21%;"></div>
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:#596066;margin-top:3px;">
-              <span>사용 21%</span><span>잔여 79%</span>
+            <div class="usage-bar-label"><span>사용 21%</span><span>잔여 79%</span></div>
+          </div>
+          <div class="summary-grid" style="border-top:1px solid #E4E8EC;">
+            <div class="summary-item">
+              <div class="si-label">기준 슬롯 수</div>
+              <div class="si-value">20<span class="si-unit">개</span></div>
+            </div>
+            <div class="summary-item">
+              <div class="si-label">등록 슬롯 수</div>
+              <div class="si-value">5<span class="si-unit">개</span></div>
+            </div>
+            <div class="summary-item">
+              <div class="si-label">잔여 슬롯 수</div>
+              <div class="si-value green">15<span class="si-unit">개</span></div>
             </div>
           </div>
-          <div class="summary-slots">
-            <div class="summary-metric">
-              <div class="metric-label">기준 슬롯 수</div>
-              <div class="metric-value">20<span class="metric-unit">개</span></div>
-            </div>
-            <div class="summary-metric">
-              <div class="metric-label">등록 슬롯 수</div>
-              <div class="metric-value">5<span class="metric-unit">개</span></div>
-            </div>
-            <div class="summary-metric">
-              <div class="metric-label">잔여 슬롯 수</div>
-              <div class="metric-value" style="color:#10B981;">15<span class="metric-unit" style="color:#10B981;">개</span></div>
-            </div>
-          </div>
-          <div class="summary-extra">
-            <div>예상 실제 사이클 시간: <strong>125초</strong></div>
-            <div>예상 일 송출 횟수: <strong>662회</strong> <span class="ok">✅ 138회 이상</span></div>
+          <div class="summary-footer">
+            <span>예상 실제 사이클 시간 <b>125초</b></span>
+            <span>예상 일 송출 횟수 <b>662회</b> <span class="text-ok">✅ 138회 이상</span></span>
           </div>
         </div>
 
         <!-- 일반 광고 송출 현황 -->
-        <div class="timeline-section" style="margin-bottom:16px;">
-          <div class="timeline-section-title">일반 광고 송출 현황</div>
-          <table class="broadcast-table">
+        <div class="tl-section">
+          <div class="tl-section-head">
+            <div class="tl-section-title">일반 광고 송출 현황</div>
+          </div>
+          <table class="bcast-table">
             <thead>
               <tr>
                 <th>스케줄명</th>
-                <th>09~12시 <br><small style="font-weight:400;color:#9EA5AC;">(120회)</small></th>
-                <th>12~18시 <br><small style="font-weight:400;color:#9EA5AC;">(240회)</small></th>
-                <th>18~22시 <br><small style="font-weight:400;color:#9EA5AC;">(160회)</small></th>
+                <th>09~12시<br><small style="font-weight:400;opacity:.7;">(120회)</small></th>
+                <th>12~18시<br><small style="font-weight:400;opacity:.7;">(240회)</small></th>
+                <th>18~22시<br><small style="font-weight:400;opacity:.7;">(160회)</small></th>
                 <th>일 총계</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><a href="schedule-detail.html" class="sched-name-link">나이키 여름 캠페인</a></td>
+                <td><a href="schedule-detail.html" class="link-blue">나이키 여름 캠페인</a></td>
                 <td>120회</td><td>240회</td><td>160회</td>
-                <td><strong>520회</strong> <span class="check-ok">✅</span></td>
+                <td><b>520회</b> <span class="text-ok">✅</span></td>
               </tr>
               <tr>
-                <td><a href="schedule-detail.html" class="sched-name-link">삼성 갤럭시 론칭</a></td>
+                <td><a href="schedule-detail.html" class="link-blue">삼성 갤럭시 론칭</a></td>
                 <td>120회</td><td>240회</td><td>160회</td>
-                <td><strong>520회</strong> <span class="check-ok">✅</span></td>
+                <td><b>520회</b> <span class="text-ok">✅</span></td>
               </tr>
             </tbody>
           </table>
-          <div class="broadcast-summary">✅ 전체 스케줄 최소 보장 횟수 138회 이상 충족</div>
+          <div class="bcast-footer">✅ 전체 스케줄 최소 보장 횟수 138회 이상 충족</div>
         </div>
 
         <!-- 조건 광고 현황 -->
-        <div class="timeline-section" style="margin-bottom:16px;">
-          <div class="timeline-section-title">조건 광고 현황</div>
-          <div class="condition-group">
-            <div class="condition-group-title">🌤️ 환경 조건</div>
-            <div class="condition-cards">
-              <div class="condition-card" onclick="location.href='schedule-detail.html'">
-                <div class="condition-card-header">
-                  <div class="condition-card-name">현대 날씨 조건 광고</div>
-                  <div class="condition-card-duration">재생 시간: 40초</div>
-                </div>
-                <div class="condition-card-meta">
-                  조건: <span>기온 10도 이하 · 강수량 5mm 이상</span><br>
-                  최대 가능 횟수: <span>520회</span><br>
-                  조건 미충족 시: 빈 시간 누적 → 일반 광고 추가 운영
-                </div>
+        <div class="tl-section">
+          <div class="tl-section-head">
+            <div class="tl-section-title">조건 광고 현황</div>
+          </div>
+          <div class="cond-section">
+            <div class="cond-section-label">🌤️ 환경 조건</div>
+            <div class="cond-card" onclick="location.href='schedule-detail.html'">
+              <div class="cond-card-top">
+                <div class="cond-card-name">현대 날씨 조건 광고</div>
+                <div class="cond-card-dur">재생 시간: 40초</div>
+              </div>
+              <div class="cond-card-meta">
+                조건: <b>기온 10도 이하 · 강수량 5mm 이상</b><br>
+                최대 가능 횟수: <b>520회</b> · 조건 미충족 시 빈 시간 누적 → 일반 광고 추가 운영
               </div>
             </div>
           </div>
-          <div class="condition-group" style="padding-top:0;">
-            <div class="condition-group-title">👥 타겟 조건</div>
-            <div class="condition-cards">
-              <div class="condition-card" onclick="location.href='schedule-detail.html'">
-                <div class="condition-card-header">
-                  <div class="condition-card-name">나이키 타겟 조건 광고</div>
-                  <div class="condition-card-duration">재생 시간: 30초</div>
-                </div>
-                <div class="condition-card-meta">
-                  조건: <span>20~30대 · 반경 500m 이내</span><br>
-                  최대 가능 횟수: <span>520회</span><br>
-                  조건 미충족 시: 빈 시간 누적 → 일반 광고 추가 운영
-                </div>
+          <div class="cond-section">
+            <div class="cond-section-label">👥 타겟 조건</div>
+            <div class="cond-card" onclick="location.href='schedule-detail.html'">
+              <div class="cond-card-top">
+                <div class="cond-card-name">나이키 타겟 조건 광고</div>
+                <div class="cond-card-dur">재생 시간: 30초</div>
+              </div>
+              <div class="cond-card-meta">
+                조건: <b>20~30대 · 반경 500m 이내</b><br>
+                최대 가능 횟수: <b>520회</b> · 조건 미충족 시 빈 시간 누적 → 일반 광고 추가 운영
               </div>
             </div>
           </div>
         </div>
 
         <!-- ADeX 연동 인벤토리 -->
-        <div class="timeline-section" style="margin-bottom:16px;">
-          <div class="adex-header-row">
-            <span style="font-size:14px;font-weight:700;color:#24292E;">🔗 ADeX 연동 인벤토리</span>
+        <div class="tl-section">
+          <div class="tl-section-head">
+            <div class="tl-section-title">🔗 ADeX 연동 인벤토리</div>
             <span class="badge-adex-sm">연동</span>
             <span class="adex-sub">잔여 475초 · 잔여 15슬롯 기준</span>
           </div>
-          <table class="broadcast-table">
+          <table class="bcast-table">
             <thead>
               <tr>
                 <th>플레이플랜</th>
@@ -856,34 +871,28 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>가-1</td><td>20초</td><td>15개</td><td style="color:#596066;">슬롯 수 상한</td>
-              </tr>
-              <tr>
-                <td>가-2</td><td>30초</td><td>15개</td><td style="color:#596066;">슬롯 수 상한</td>
-              </tr>
-              <tr>
-                <td>가-3</td><td>40초</td><td>11개</td><td style="color:#596066;">시간 상한</td>
-              </tr>
+              <tr><td>가-1</td><td>20초</td><td>15개</td><td style="color:#596066;">슬롯 수 상한</td></tr>
+              <tr><td>가-2</td><td>30초</td><td>15개</td><td style="color:#596066;">슬롯 수 상한</td></tr>
+              <tr><td>가-3</td><td>40초</td><td>11개</td><td style="color:#596066;">시간 상한</td></tr>
             </tbody>
           </table>
         </div>
 
-        <!-- 스케줄 예약 버튼 -->
-        <div class="add-sched-bar">
+        <!-- 스케줄 예약 -->
+        <div class="add-sched-row">
           <button class="btn-primary" onclick="openSchedModal()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             스케줄 예약
           </button>
         </div>
 
-      </div><!-- /viewDaily -->
+      </div><!-- /daily-view -->
 
     </div><!-- /content-inner -->
   </div><!-- /content -->
 </div><!-- /app-layout -->
 
-<!-- ── 스케줄 등록 모달 ── -->
+<!-- ══ 스케줄 등록 모달 ══ -->
 <div class="modal-overlay" id="schedModal">
   <div class="modal-box">
     <div class="modal-head">
@@ -891,139 +900,117 @@
       <button class="modal-close" onclick="closeSchedModal()">×</button>
     </div>
     <div class="modal-body">
-      <!-- 좌: 입력 폼 -->
       <div class="modal-form">
         <div class="form-group">
           <label class="form-label">미디어 선택 *</label>
-          <select class="form-select" onchange="updateSchedValidation()">
-            <option value="">미디어를 선택하세요</option>
-            <option value="A">강남역 A</option>
-            <option value="B">강남역 B</option>
-            <option value="C">강남역 C</option>
+          <select class="form-control" onchange="updateValidation()">
+            <option value="">선택하세요</option>
+            <option>강남역 A</option><option>강남역 B</option><option>강남역 C</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">플레이플랜 선택 *</label>
-          <select class="form-select" id="ppSelect" onchange="onPPChange()">
-            <option value="">플레이플랜을 선택하세요</option>
-            <option value="pp1" data-sec="30" data-type="general">30초 일반</option>
-            <option value="pp2" data-sec="40" data-type="general">40초 일반</option>
-            <option value="pp3" data-sec="30" data-type="condition">30초 조건</option>
+          <select class="form-control" id="ppSel" onchange="onPPChange()">
+            <option value="">선택하세요</option>
+            <option value="30g" data-sec="30" data-type="general">30초 일반</option>
+            <option value="40g" data-sec="40" data-type="general">40초 일반</option>
+            <option value="30c" data-sec="30" data-type="condition">30초 조건</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">재생 시간</label>
-          <input type="text" class="form-input" id="ppDuration" readonly placeholder="플레이플랜 선택 시 자동 입력">
+          <input class="form-control" id="ppDur" readonly placeholder="플레이플랜 선택 시 자동 입력">
         </div>
         <div class="form-group">
           <label class="form-label">광고 유형 *</label>
-          <div class="type-toggle">
-            <button id="typeGeneral" class="active" onclick="setAdType('general')">일반</button>
-            <button id="typeCondition" onclick="setAdType('condition')">조건</button>
+          <div class="type-toggle-btn">
+            <button id="typeG" class="active" onclick="setAdType('general')">일반</button>
+            <button id="typeC" onclick="setAdType('condition')">조건</button>
           </div>
         </div>
-        <div class="cond-extra" id="condExtra">
+        <div class="cond-fields" id="condFields">
           <div class="form-group">
             <label class="form-label">조건 유형 *</label>
-            <select class="form-select" id="condType" onchange="onCondTypeChange()">
-              <option value="">조건 유형 선택</option>
+            <select class="form-control" id="condTypeSel" onchange="onCondType()">
+              <option value="">선택하세요</option>
               <option value="env">환경 조건</option>
               <option value="target">타겟 조건</option>
             </select>
           </div>
-          <div class="cond-extra" id="envFields">
+          <div class="cond-fields" id="envF">
             <div class="form-group">
               <label class="form-label">날씨 상태</label>
-              <select class="form-select"><option>맑음</option><option>흐림</option><option>비</option><option>눈</option></select>
+              <select class="form-control"><option>맑음</option><option>흐림</option><option>비</option><option>눈</option></select>
             </div>
             <div class="form-group">
               <label class="form-label">온도 범위 (°C)</label>
               <div style="display:flex;gap:8px;align-items:center;">
-                <input type="number" class="form-input" placeholder="최솟값">
-                <span style="color:#596066;">~</span>
-                <input type="number" class="form-input" placeholder="최댓값">
+                <input type="number" class="form-control" placeholder="최솟값" style="flex:1;">
+                <span style="color:#9EA5AC;font-size:13px;">~</span>
+                <input type="number" class="form-control" placeholder="최댓값" style="flex:1;">
               </div>
             </div>
           </div>
-          <div class="cond-extra" id="targetFields">
+          <div class="cond-fields" id="targetF">
             <div class="form-group">
               <label class="form-label">연령대</label>
-              <select class="form-select"><option>10대</option><option>20대</option><option>30대</option><option>40대</option><option>50대 이상</option></select>
+              <select class="form-control"><option>10대</option><option>20대</option><option>30대</option><option>40대</option><option>50대 이상</option></select>
             </div>
             <div class="form-group">
               <label class="form-label">성별</label>
-              <select class="form-select"><option>전체</option><option>남성</option><option>여성</option></select>
+              <select class="form-control"><option>전체</option><option>남성</option><option>여성</option></select>
             </div>
             <div class="form-group">
               <label class="form-label">반경 거리 (m)</label>
-              <input type="number" class="form-input" placeholder="예: 500">
+              <input type="number" class="form-control" placeholder="예: 500">
             </div>
           </div>
         </div>
       </div>
-
-      <!-- 우: 실시간 검증 -->
-      <div class="modal-validation">
-        <div class="validation-title">실시간 검증</div>
-
-        <div class="validation-item ok" id="vi-time">
-          <div class="vi-title">✅ 시간 기준</div>
-          <div class="vi-sub">합산 125초 ≤ 사이클 최대 600초</div>
+      <div class="modal-valid">
+        <div class="vi-title">실시간 검증</div>
+        <div class="vi-item ok" id="viTime">
+          <div class="vi-item-head">✅ 시간 기준</div>
+          <div class="vi-item-sub">합산 125초 ≤ 사이클 최대 600초</div>
         </div>
-        <div class="validation-item ok" id="vi-slot">
-          <div class="vi-title">✅ 슬롯 수 기준</div>
-          <div class="vi-sub">등록 5개 ≤ 기준 슬롯 수 20개</div>
+        <div class="vi-item ok" id="viSlot">
+          <div class="vi-item-head">✅ 슬롯 수 기준</div>
+          <div class="vi-item-sub">등록 5개 ≤ 기준 슬롯 수 20개</div>
         </div>
-
-        <hr class="validation-divider">
-        <div class="validation-extra" id="vi-extra">
-          예상 실제 사이클 시간: <strong>125초</strong><br>
-          예상 일 송출 횟수: <strong>662회</strong><br>
-          <span class="ok">✅ 최소 보장 138회 이상</span>
+        <hr class="vi-hr">
+        <div class="vi-extra" id="viExtra">
+          예상 실제 사이클 시간: <b>125초</b><br>
+          예상 일 송출 횟수: <b>662회</b><br>
+          <span class="text-ok">✅ 최소 보장 138회 이상</span>
         </div>
       </div>
     </div>
     <div class="modal-foot">
       <button class="btn-ghost" onclick="closeSchedModal()">취소</button>
-      <button class="btn-primary" id="btnRegSched">등록</button>
+      <button class="btn-primary" id="btnReg">등록</button>
     </div>
   </div>
 </div>
 
-<!-- ── 시보 순서 변경 모달 ── -->
+<!-- ══ 시보 순서 변경 모달 ══ -->
 <div class="modal-overlay" id="siboModal">
-  <div class="sibo-modal-box">
+  <div class="modal-box sibo-modal">
     <div class="modal-head">
-      <h3 id="siboModalTitle">12:00 시보 순서 변경</h3>
+      <h3 id="siboTitle">12:00 시보 순서 변경</h3>
       <button class="modal-close" onclick="closeSiboModal()">×</button>
     </div>
-    <div class="sibo-order-list">
-      <div class="sibo-order-item">
-        <div class="sibo-order-rank">1순위</div>
-        <div class="sibo-order-name">롯데 30초</div>
-        <button class="sibo-order-btn" title="위로">↑</button>
-        <button class="sibo-order-btn" title="아래로">↓</button>
-      </div>
-      <div class="sibo-order-item">
-        <div class="sibo-order-rank">2순위</div>
-        <div class="sibo-order-name">현대 30초</div>
-        <button class="sibo-order-btn">↑</button>
-        <button class="sibo-order-btn">↓</button>
-      </div>
-      <div class="sibo-order-item">
-        <div class="sibo-order-rank">3순위</div>
-        <div class="sibo-order-name">나이키 30초</div>
-        <button class="sibo-order-btn">↑</button>
-        <button class="sibo-order-btn">↓</button>
-      </div>
+    <div class="sibo-list">
+      <div class="sibo-item"><div class="sibo-rank">1순위</div><div class="sibo-item-name">롯데 30초</div><button class="order-btn">↑</button><button class="order-btn">↓</button></div>
+      <div class="sibo-item"><div class="sibo-rank">2순위</div><div class="sibo-item-name">현대 30초</div><button class="order-btn">↑</button><button class="order-btn">↓</button></div>
+      <div class="sibo-item"><div class="sibo-rank">3순위</div><div class="sibo-item-name">나이키 30초</div><button class="order-btn">↑</button><button class="order-btn">↓</button></div>
     </div>
-    <div class="apply-scope">
-      <div class="apply-scope-title">적용 범위</div>
-      <label class="radio-item"><input type="radio" name="siboScope" value="today"> 오늘만</label>
-      <label class="radio-item"><input type="radio" name="siboScope" value="from"> 오늘부터
-        <input type="date" style="margin-left:8px;font-size:12px;border:1px solid #CED2D6;border-radius:5px;padding:2px 6px;">
+    <div class="scope-section">
+      <div class="scope-title">적용 범위</div>
+      <label class="radio-row"><input type="radio" name="scope" value="today"> 오늘만</label>
+      <label class="radio-row"><input type="radio" name="scope" value="from"> 오늘부터 &nbsp;
+        <input type="date" style="font-size:12px;border:1px solid #CED2D6;border-radius:5px;padding:2px 7px;">
       </label>
-      <label class="radio-item"><input type="radio" name="siboScope" value="all" checked> 전체 기간</label>
+      <label class="radio-row"><input type="radio" name="scope" value="all" checked> 전체 기간</label>
     </div>
     <div class="modal-foot">
       <button class="btn-ghost" onclick="closeSiboModal()">취소</button>
@@ -1033,197 +1020,159 @@
 </div>
 
 <script>
-  /* ── 뷰 전환 ── */
-  function switchView(v) {
-    document.getElementById('viewMonthly').style.display = v === 'monthly' ? '' : 'none';
-    document.getElementById('viewDaily').style.display   = v === 'daily'   ? '' : 'none';
-    document.getElementById('btnMonthly').classList.toggle('active', v === 'monthly');
-    document.getElementById('btnDaily').classList.toggle('active', v === 'daily');
+/* ── 뷰 전환 ── */
+function switchView(v) {
+  document.getElementById('viewMonthly').style.display = v === 'monthly' ? '' : 'none';
+  document.getElementById('viewDaily').style.display   = v === 'daily'   ? '' : 'none';
+  document.getElementById('btnMonthly').classList.toggle('active', v === 'monthly');
+  document.getElementById('btnDaily').classList.toggle('active', v === 'daily');
+}
+
+/* ── 탭 ── */
+function setSchedTab(el) {
+  el.closest('.sched-tabs').querySelectorAll('.sched-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function setMediaTab(el) {
+  document.querySelectorAll('.m-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── 캘린더 렌더 ── */
+(function() {
+  const grid = document.getElementById('calGrid');
+  const TODAY = 8;
+  const START_DOW = 1; // June 2026 starts Monday
+  const DAYS = 30;
+  const COLOR = { ok:'#10B981', warn:'#F59E0B', danger:'#F97316', full:'#EF4444' };
+  const DATA = {
+    1:['ok','ok','ok'],2:['ok','warn','ok'],3:['ok','warn','danger'],
+    4:['ok','warn','danger'],5:['ok','warn','danger'],6:['ok','warn','danger'],
+    7:['ok','warn','danger'],8:['ok','warn','danger'],9:['ok','warn','danger'],
+    10:['ok','ok','ok']
+  };
+  for (let i = 0; i < START_DOW; i++) {
+    const d = document.createElement('div');
+    d.className = 'cal-cell other-month';
+    grid.appendChild(d);
   }
-
-  /* ── 스케줄 탭 ── */
-  function setSchedTab(el) {
-    el.closest('.sched-tabs').querySelectorAll('.sched-tab').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  /* ── 미디어 탭 ── */
-  function setMediaTab(el) {
-    document.querySelectorAll('.media-tab').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  /* ── 월간 캘린더 렌더 ── */
-  (function renderCalendar() {
-    const body = document.getElementById('calBody');
-    const today = 8; // June 8
-    // June 2026 starts on Monday (day index 1)
-    const startDay = 1; // Mon
-    const daysInMonth = 30;
-
-    // fill leading blanks (Sun=0)
-    for (let i = 0; i < startDay; i++) {
-      const d = document.createElement('div');
-      d.className = 'cal-cell other-month';
-      body.appendChild(d);
-    }
-
-    const STATUS_DATA = {
-      1: ['ok','ok','ok'], 2: ['ok','warn','ok'], 3: ['ok','warn','danger'],
-      4: ['ok','warn','danger'], 5: ['ok','warn','danger'], 6: ['ok','warn','danger'],
-      7: ['ok','warn','danger'], 8: ['ok','warn','danger'], 9: ['ok','warn','danger'],
-      10: ['ok','ok','ok'],
-    };
-    const STATUS_COLOR = { ok: '#10B981', warn: '#F59E0B', danger: '#F97316', full: '#EF4444' };
-    const MEDIA_LABELS = ['A', 'B', 'C'];
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement('div');
-      cell.className = 'cal-cell' + (d === today ? ' today' : '');
-      cell.onclick = () => switchView('daily');
-      const dateEl = document.createElement('div');
-      dateEl.className = 'cal-date';
-      dateEl.textContent = d;
-      cell.appendChild(dateEl);
-      const dots = document.createElement('div');
-      dots.className = 'cal-dots';
-      const statuses = STATUS_DATA[d] || ['ok','ok','ok'];
-      statuses.forEach((s, i) => {
-        const row = document.createElement('div');
-        row.className = 'cal-dot-row';
-        row.innerHTML = `<span class="dot" style="background:${STATUS_COLOR[s]};"></span><span>${MEDIA_LABELS[i]}</span>`;
-        dots.appendChild(row);
-      });
-      cell.appendChild(dots);
-      body.appendChild(cell);
-    }
-  })();
-
-  /* ── 사이클 행 렌더 ── */
-  (function renderCycleRows() {
-    const container = document.getElementById('cycleRowsBody');
-    const SLOTS = [
-      { name: '나이키', dur: 30, color: '#DBEAFE', textColor: '#1D4ED8' },
-      { name: '삼성', dur: 30, color: '#D1FAE5', textColor: '#065F46' },
-      { name: '현대', dur: 40, color: '#FEF3C7', textColor: '#92400E' },
-    ];
-    for (let c = 1; c <= 6; c++) {
+  for (let d = 1; d <= DAYS; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell' + (d === TODAY ? ' today' : '');
+    cell.onclick = () => switchView('daily');
+    const dateEl = document.createElement('div');
+    dateEl.className = 'cal-date';
+    dateEl.textContent = d;
+    cell.appendChild(dateEl);
+    const dots = document.createElement('div');
+    dots.className = 'cal-dots';
+    const st = DATA[d] || ['ok','ok','ok'];
+    ['A','B','C'].forEach((lbl, i) => {
       const row = document.createElement('div');
-      row.className = 'cycle-row';
-      row.innerHTML = `<div class="timeline-label">사이클 ${c}</div>`;
-      const track = document.createElement('div');
-      track.className = 'cycle-track';
-      track.style.padding = '4px 8px';
-      SLOTS.forEach(s => {
-        const block = document.createElement('div');
-        block.className = 'slot-block';
-        block.style.background = s.color;
-        block.style.color = s.textColor;
-        block.style.width = (s.dur / 600 * 100 * 8) + 'px';
-        block.setAttribute('data-tooltip', `${s.name} · ${s.dur}초`);
-        block.textContent = `${s.name} ${s.dur}초`;
-        block.onclick = () => location.href = 'schedule-detail.html';
-        track.appendChild(block);
-      });
-      row.appendChild(track);
-      container.appendChild(row);
-    }
-  })();
-
-  /* ── 스케줄 등록 모달 ── */
-  function openSchedModal() {
-    document.getElementById('schedModal').classList.add('open');
+      row.className = 'cal-dot-row';
+      row.innerHTML = `<span class="dot" style="background:${COLOR[st[i]]};"></span><span>${lbl}</span>`;
+      dots.appendChild(row);
+    });
+    cell.appendChild(dots);
+    grid.appendChild(cell);
   }
-  function closeSchedModal() {
-    document.getElementById('schedModal').classList.remove('open');
+})();
+
+/* ── 사이클 행 렌더 ── */
+(function() {
+  const container = document.getElementById('cycleRows');
+  const SLOTS = [
+    { name:'나이키', sec:30, bg:'#DBEAFE', fg:'#1D4ED8' },
+    { name:'삼성',   sec:30, bg:'#D1FAE5', fg:'#065F46' },
+    { name:'현대',   sec:40, bg:'#FEF3C7', fg:'#92400E' },
+  ];
+  for (let c = 1; c <= 6; c++) {
+    const row = document.createElement('div');
+    row.className = 'tl-row';
+    row.innerHTML = `<div class="tl-label">사이클 ${c}</div>`;
+    const track = document.createElement('div');
+    track.className = 'tl-track';
+    const inner = document.createElement('div');
+    inner.className = 'cycle-track-inner';
+    SLOTS.forEach(s => {
+      const blk = document.createElement('div');
+      blk.className = 'slot-block';
+      blk.style.cssText = `background:${s.bg};color:${s.fg};width:${s.sec * 1.2}px;`;
+      blk.innerHTML = `${s.name} ${s.sec}초<span class="slot-tooltip">${s.name} · ${s.sec}초</span>`;
+      blk.onclick = () => location.href = 'schedule-detail.html';
+      inner.appendChild(blk);
+    });
+    track.appendChild(inner);
+    row.appendChild(track);
+    container.appendChild(row);
   }
+})();
 
-  function onPPChange() {
-    const sel = document.getElementById('ppSelect');
-    const opt = sel.options[sel.selectedIndex];
-    const sec = opt.dataset.sec;
-    const type = opt.dataset.type;
-    document.getElementById('ppDuration').value = sec ? sec + '초' : '';
-    if (type === 'condition') setAdType('condition');
-    else setAdType('general');
-    updateSchedValidation();
-  }
+/* ── 스케줄 모달 ── */
+function openSchedModal()  { document.getElementById('schedModal').classList.add('open'); }
+function closeSchedModal() { document.getElementById('schedModal').classList.remove('open'); }
 
-  function setAdType(t) {
-    document.getElementById('typeGeneral').classList.toggle('active', t === 'general');
-    document.getElementById('typeCondition').classList.toggle('active', t === 'condition');
-    document.getElementById('condExtra').classList.toggle('show', t === 'condition');
-    updateSchedValidation();
-  }
+function onPPChange() {
+  const opt = document.getElementById('ppSel').selectedOptions[0];
+  document.getElementById('ppDur').value = opt.dataset.sec ? opt.dataset.sec + '초' : '';
+  if (opt.dataset.type === 'condition') setAdType('condition');
+  else setAdType('general');
+  updateValidation();
+}
 
-  function onCondTypeChange() {
-    const v = document.getElementById('condType').value;
-    document.getElementById('envFields').classList.toggle('show', v === 'env');
-    document.getElementById('targetFields').classList.toggle('show', v === 'target');
-  }
+function setAdType(t) {
+  document.getElementById('typeG').classList.toggle('active', t === 'general');
+  document.getElementById('typeC').classList.toggle('active', t === 'condition');
+  document.getElementById('condFields').classList.toggle('show', t === 'condition');
+  updateValidation();
+}
 
-  function updateSchedValidation() {
-    const sel = document.getElementById('ppSelect');
-    const opt = sel.options[sel.selectedIndex];
-    const sec = parseInt(opt.dataset.sec) || 0;
-    const used = 125;
-    const maxTime = 600;
-    const usedSlots = 5;
-    const maxSlots = 20;
-    const isCondition = document.getElementById('typeCondition').classList.contains('active');
+function onCondType() {
+  const v = document.getElementById('condTypeSel').value;
+  document.getElementById('envF').classList.toggle('show', v === 'env');
+  document.getElementById('targetF').classList.toggle('show', v === 'target');
+}
 
-    const newUsed = used + sec;
-    const newSlots = usedSlots + (sec > 0 ? 1 : 0);
-    const timeOk = newUsed <= maxTime;
-    const slotOk = newSlots <= maxSlots;
+function updateValidation() {
+  const opt = document.getElementById('ppSel').selectedOptions[0];
+  const sec = parseInt(opt.dataset.sec) || 0;
+  const isC = document.getElementById('typeC').classList.contains('active');
+  const used = 125, maxT = 600, usedSlot = 5, maxSlot = 20;
+  const newT = used + sec, newS = usedSlot + (sec > 0 ? 1 : 0);
+  const tOk = newT <= maxT, sOk = newS <= maxSlot;
 
-    const viTime = document.getElementById('vi-time');
-    viTime.className = 'validation-item ' + (timeOk ? 'ok' : 'ng');
-    viTime.innerHTML = `<div class="vi-title">${timeOk ? '✅' : '❌'} 시간 기준${timeOk ? '' : ' 초과'}</div>
-      <div class="vi-sub">합산 ${newUsed}초 ${timeOk ? '≤' : '>'} 사이클 최대 ${maxTime}초${timeOk ? '' : `<br>${newUsed - maxTime}초 초과 → 등록 불가`}</div>`;
+  const vt = document.getElementById('viTime');
+  vt.className = 'vi-item ' + (tOk ? 'ok' : 'ng');
+  vt.innerHTML = `<div class="vi-item-head">${tOk ? '✅' : '❌'} 시간 기준${tOk ? '' : ' 초과'}</div>
+    <div class="vi-item-sub">합산 ${newT}초 ${tOk ? '≤' : '>'} 사이클 최대 ${maxT}초${tOk ? '' : `<br>${newT-maxT}초 초과 → 등록 불가`}</div>`;
 
-    const viSlot = document.getElementById('vi-slot');
-    viSlot.className = 'validation-item ' + (slotOk ? 'ok' : 'ng');
-    viSlot.innerHTML = `<div class="vi-title">${slotOk ? '✅' : '❌'} 슬롯 수 기준${slotOk ? '' : ' 초과'}</div>
-      <div class="vi-sub">등록 ${newSlots}개 ${slotOk ? '≤' : '>'} 기준 슬롯 수 ${maxSlots}개</div>`;
+  const vs = document.getElementById('viSlot');
+  vs.className = 'vi-item ' + (sOk ? 'ok' : 'ng');
+  vs.innerHTML = `<div class="vi-item-head">${sOk ? '✅' : '❌'} 슬롯 수 기준${sOk ? '' : ' 초과'}</div>
+    <div class="vi-item-sub">등록 ${newS}개 ${sOk ? '≤' : '>'} 기준 슬롯 수 ${maxSlot}개</div>`;
 
-    const cycleTime = newUsed || 125;
-    const dailyOps = 13 * 3600; // 09~22 = 13h
-    const shots = Math.floor(dailyOps / cycleTime);
-    const minGuarantee = 138;
-    const shotsOk = shots >= minGuarantee;
+  const shots = Math.floor(13 * 3600 / (newT || 125));
+  const sOkM = shots >= 138;
+  document.getElementById('viExtra').innerHTML = isC
+    ? `예상 최대 가능 횟수: <b>${shots}회</b><br><span style="font-size:11px;color:#9EA5AC;">※ 조건 충족 시에만 송출됩니다.<br>미충족 시 빈 시간 누적 → 일반 광고 추가 운영</span>`
+    : `예상 실제 사이클 시간: <b>${newT || 125}초</b><br>예상 일 송출 횟수: <b>${shots}회</b><br><span class="${sOkM ? 'text-ok' : 'text-ng'}">${sOkM ? '✅' : '❌'} 최소 보장 138회 이상</span>`;
 
-    const viExtra = document.getElementById('vi-extra');
-    if (isCondition) {
-      viExtra.innerHTML = `예상 최대 가능 횟수: <strong>${shots}회</strong><br>
-        <span style="font-size:11px;color:#596066;">※ 조건 충족 시에만 송출됩니다.<br>미충족 시 빈 시간 누적 → 일반 광고 추가 운영</span>`;
-    } else {
-      viExtra.innerHTML = `예상 실제 사이클 시간: <strong>${cycleTime}초</strong><br>
-        예상 일 송출 횟수: <strong>${shots}회</strong><br>
-        <span class="${shotsOk ? 'ok' : 'ng'}">${shotsOk ? '✅' : '❌'} 최소 보장 ${minGuarantee}회 이상${shotsOk ? '' : ' 미달'}</span>`;
-    }
+  const btn = document.getElementById('btnReg');
+  btn.disabled = !(tOk && sOk);
+  btn.style.opacity = (tOk && sOk) ? '1' : '.5';
+}
 
-    document.getElementById('btnRegSched').disabled = !(timeOk && slotOk);
-    document.getElementById('btnRegSched').style.opacity = (timeOk && slotOk) ? '1' : '.5';
-  }
+/* ── 시보 모달 ── */
+function openSiboModal(e, time) {
+  e.stopPropagation();
+  document.getElementById('siboTitle').textContent = time + ' 시보 순서 변경';
+  document.getElementById('siboModal').classList.add('open');
+}
+function closeSiboModal() { document.getElementById('siboModal').classList.remove('open'); }
 
-  /* ── 시보 순서 변경 모달 ── */
-  function openSiboModal(e, time) {
-    e.stopPropagation();
-    document.getElementById('siboModalTitle').textContent = time + ' 시보 순서 변경';
-    document.getElementById('siboModal').classList.add('open');
-  }
-  function closeSiboModal() {
-    document.getElementById('siboModal').classList.remove('open');
-  }
-
-  /* ── ESC 닫기 ── */
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeSchedModal();
-      closeSiboModal();
-    }
-  });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeSchedModal(); closeSiboModal(); }
+});
 </script>
 </body>
 </html>
