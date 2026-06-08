@@ -780,7 +780,7 @@
           </div>
           <div class="media-spec-row">
             <span class="media-spec-label">최소 보장</span>
-            <span class="media-spec-value">90회/일</span>
+            <span class="media-spec-value">112회/일</span>
           </div>
           <div class="media-remain-bar-wrap">
             <div class="media-remain-bar-label">
@@ -823,7 +823,7 @@
           </div>
           <div class="media-spec-row">
             <span class="media-spec-label">최소 보장</span>
-            <span class="media-spec-value">87회/일</span>
+            <span class="media-spec-value">86회/일</span>
           </div>
           <div class="media-remain-bar-wrap">
             <div class="media-remain-bar-label">
@@ -889,19 +889,26 @@
               <div class="info-value">월</div>
             </div>
           </div>
+          <!-- 보장 횟수 = 미디어 운영 설정 고정값 (재생 시간과 무관) -->
+          <!-- A: 54,000s ÷ 600s = 90회/일  B: 54,000s ÷ 480s = 112회/일  C: 46,800s ÷ 540s = 86회/일 -->
+          <!-- 최대 판매 슬롯 수는 플랜별 재생 시간에 따라 달라짐: 사이클 최대 시간 ÷ 재생 시간 -->
+          <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#596066;display:flex;align-items:center;gap:6px;">
+            <span style="color:#2D84ED;font-weight:700;">ℹ</span>
+            보장 횟수는 미디어 운영 설정(운영 시간 ÷ 사이클 최대 시간)의 고정값입니다. 재생 시간이 달라져도 변하지 않습니다.
+          </div>
           <table class="plan-table">
             <thead>
               <tr>
                 <th>미디어</th>
-                <th>보장 횟수</th>
-                <th>최대 판매 슬롯 수</th>
+                <th>보장 횟수<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">일 기준 (월간)</span></th>
+                <th>최대 판매 슬롯 수<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">사이클 최대 ÷ 30초</span></th>
                 <th style="text-align:right;">가격</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>강남역 1번출구 A</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,500,000원</td></tr>
-              <tr><td>강남역 1번출구 B</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,200,000원</td></tr>
-              <tr><td>강남역 2번출구</td><td>78회 보장</td><td>20개</td><td style="text-align:right;">600,000원</td></tr>
+              <tr><td>강남역 1번출구 A</td><td>90회 보장<br><span style="font-size:10px;color:#9EA5AD;">2,700회/월</span></td><td>20개</td><td style="text-align:right;">1,500,000원</td></tr>
+              <tr><td>강남역 1번출구 B</td><td>112회 보장<br><span style="font-size:10px;color:#9EA5AD;">3,360회/월</span></td><td>16개</td><td style="text-align:right;">1,200,000원</td></tr>
+              <tr><td>강남역 2번출구</td><td>86회 보장<br><span style="font-size:10px;color:#9EA5AD;">2,580회/월</span></td><td>18개</td><td style="text-align:right;">600,000원</td></tr>
               <tr class="total-row"><td colspan="3">합계</td><td style="text-align:right;">3,300,000원</td></tr>
             </tbody>
           </table>
@@ -921,12 +928,21 @@
             <div class="info-item"><div class="info-label">광고 유형</div><div class="info-value">일반</div></div>
             <div class="info-item"><div class="info-label">운영 기간 단위</div><div class="info-value">월</div></div>
           </div>
+          <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#596066;display:flex;align-items:center;gap:6px;">
+            <span style="color:#2D84ED;font-weight:700;">ℹ</span>
+            보장 횟수는 미디어 운영 설정의 고정값이므로 30초 플랜과 동일합니다. 최대 판매 슬롯 수만 재생 시간(20초)에 따라 달라집니다.
+          </div>
           <table class="plan-table">
-            <thead><tr><th>미디어</th><th>보장 횟수</th><th>최대 판매 슬롯 수</th><th style="text-align:right;">가격</th></tr></thead>
+            <thead><tr>
+              <th>미디어</th>
+              <th>보장 횟수<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">일 기준 (월간)</span></th>
+              <th>최대 판매 슬롯 수<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">사이클 최대 ÷ 20초</span></th>
+              <th style="text-align:right;">가격</th>
+            </tr></thead>
             <tbody>
-              <tr><td>강남역 1번출구 A</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,200,000원</td></tr>
-              <tr><td>강남역 1번출구 B</td><td>90회 보장</td><td>20개</td><td style="text-align:right;">1,000,000원</td></tr>
-              <tr><td>강남역 2번출구</td><td>78회 보장</td><td>20개</td><td style="text-align:right;">600,000원</td></tr>
+              <tr><td>강남역 1번출구 A</td><td>90회 보장<br><span style="font-size:10px;color:#9EA5AD;">2,700회/월</span></td><td>30개</td><td style="text-align:right;">1,200,000원</td></tr>
+              <tr><td>강남역 1번출구 B</td><td>112회 보장<br><span style="font-size:10px;color:#9EA5AD;">3,360회/월</span></td><td>24개</td><td style="text-align:right;">1,000,000원</td></tr>
+              <tr><td>강남역 2번출구</td><td>86회 보장<br><span style="font-size:10px;color:#9EA5AD;">2,580회/월</span></td><td>27개</td><td style="text-align:right;">600,000원</td></tr>
               <tr class="total-row"><td colspan="3">합계</td><td style="text-align:right;">2,800,000원</td></tr>
             </tbody>
           </table>
@@ -946,12 +962,21 @@
             <div class="info-item"><div class="info-label">광고 유형</div><div class="info-value">조건</div></div>
             <div class="info-item"><div class="info-label">운영 기간 단위</div><div class="info-value">월</div></div>
           </div>
+          <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#596066;display:flex;align-items:center;gap:6px;">
+            <span style="color:#2D84ED;font-weight:700;">ℹ</span>
+            조건 광고는 조건 충족 시에만 재생됩니다. 보장 횟수는 조건이 항상 충족된다고 가정한 최대 가능 횟수이며, 미디어 운영 설정 고정값과 동일합니다.
+          </div>
           <table class="plan-table">
-            <thead><tr><th>미디어</th><th>보장 횟수</th><th>최대 판매 슬롯 수</th><th style="text-align:right;">가격</th></tr></thead>
+            <thead><tr>
+              <th>미디어</th>
+              <th>최대 가능 횟수<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">조건 충족 시 (월간)</span></th>
+              <th>최대 판매 슬롯 수<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">사이클 최대 ÷ 30초</span></th>
+              <th style="text-align:right;">가격</th>
+            </tr></thead>
             <tbody>
-              <tr><td>강남역 1번출구 A</td><td>60회 보장</td><td>15개</td><td style="text-align:right;">1,100,000원</td></tr>
-              <tr><td>강남역 1번출구 B</td><td>60회 보장</td><td>15개</td><td style="text-align:right;">900,000원</td></tr>
-              <tr><td>강남역 2번출구</td><td>54회 보장</td><td>15개</td><td style="text-align:right;">500,000원</td></tr>
+              <tr><td>강남역 1번출구 A</td><td>최대 90회 가능<br><span style="font-size:10px;color:#9EA5AD;">최대 2,700회/월</span></td><td>20개</td><td style="text-align:right;">1,100,000원</td></tr>
+              <tr><td>강남역 1번출구 B</td><td>최대 112회 가능<br><span style="font-size:10px;color:#9EA5AD;">최대 3,360회/월</span></td><td>16개</td><td style="text-align:right;">900,000원</td></tr>
+              <tr><td>강남역 2번출구</td><td>최대 86회 가능<br><span style="font-size:10px;color:#9EA5AD;">최대 2,580회/월</span></td><td>18개</td><td style="text-align:right;">500,000원</td></tr>
               <tr class="total-row"><td colspan="3">합계</td><td style="text-align:right;">2,500,000원</td></tr>
             </tbody>
           </table>
