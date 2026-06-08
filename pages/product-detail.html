@@ -79,6 +79,43 @@
     .badge-active   { background: #E8F8E9; color: #2E9E34; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
     .badge-active .badge-dot { background: #58C65D; }
+
+    /* 활성화 토글 */
+    .status-toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .status-toggle-track {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: #CED2D6;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .status-toggle-track.on { background: #58C65D; }
+    .status-toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: left 0.2s;
+    }
+    .status-toggle-track.on .status-toggle-thumb { left: 19px; }
+    .status-toggle-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #9EA5AD;
+    }
+    .status-toggle-track.on + .status-toggle-label { color: #2E9E34; }
     .media-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
     .media-tag {
       padding: 4px 10px;
@@ -700,7 +737,12 @@
     </div>
     <div class="detail-title-row">
       <h1 class="detail-title">강남 A지구 패키지</h1>
-      <span class="badge badge-active"><span class="badge-dot"></span>활성</span>
+      <div class="status-toggle-wrap" onclick="toggleProductStatus()" title="클릭하여 활성/비활성 전환">
+        <div class="status-toggle-track on" id="statusTrack">
+          <div class="status-toggle-thumb"></div>
+        </div>
+        <span class="status-toggle-label" id="statusLabel">활성</span>
+      </div>
     </div>
     <div class="media-tags">
       <span class="media-tag">강남역 1번출구 A</span>
@@ -1911,6 +1953,16 @@ document.addEventListener('DOMContentLoaded', () => {
   buildChart();
   buildTimeslotCharts();  /* 기본 탭 시간대별 차트 초기화 */
 });
+
+function toggleProductStatus() {
+  const track = document.getElementById('statusTrack');
+  const label = document.getElementById('statusLabel');
+  const isOn = track.classList.contains('on');
+  const action = isOn ? '비활성화' : '활성화';
+  if (!confirm(`프로덕트를 ${action}하시겠습니까?`)) return;
+  track.classList.toggle('on');
+  label.textContent = isOn ? '비활성' : '활성';
+}
 </script>
 </body>
 </html>
