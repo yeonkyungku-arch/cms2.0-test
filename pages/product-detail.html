@@ -679,6 +679,46 @@
       vertical-align: middle;
       margin-right: 6px;
     }
+    /* ─── 인벤토리 현황 섹션 ─── */
+    .inv-tab-bar { display:flex; gap:4px; margin-bottom:16px; }
+    .inv-tab { padding:5px 14px; border-radius:16px; border:1px solid #E5E7EA; background:#fff; font-size:12px; color:#596066; cursor:pointer; font-weight:500; }
+    .inv-tab.active { background:#24292E; color:#fff; border-color:#24292E; }
+    .inv-panel { display:none; }
+    .inv-panel.active { display:block; }
+    .cycle-card { background:#F6F7F9; border-radius:8px; padding:16px 20px; margin-bottom:16px; }
+    .cycle-row { display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin-bottom:12px; }
+    .cycle-item { }
+    .cycle-label { font-size:11px; color:#9EA5AD; margin-bottom:4px; }
+    .cycle-value { font-size:18px; font-weight:800; color:#24292E; }
+    .cycle-unit { font-size:12px; font-weight:500; color:#596066; }
+    .cycle-bar-wrap { height:8px; background:#E5E7EA; border-radius:4px; overflow:hidden; margin-bottom:12px; }
+    .cycle-bar-fill { height:100%; border-radius:4px; transition:width 0.3s; }
+    .cycle-bar-label { font-size:11px; color:#596066; margin-bottom:12px; }
+    .cycle-footer { display:flex; align-items:center; gap:16px; font-size:12px; color:#596066; padding-top:12px; border-top:1px solid #E5E7EA; }
+    .cycle-footer strong { color:#24292E; }
+    .adex-card { border:1px solid #E5E7EA; border-radius:8px; overflow:hidden; }
+    .adex-header { background:#F6F7F9; padding:10px 16px; border-bottom:1px solid #E5E7EA; display:flex; align-items:center; gap:8px; }
+    .adex-title { font-size:13px; font-weight:700; color:#24292E; }
+    .adex-sub { font-size:11px; color:#9EA5AD; }
+    /* ─── 스케줄 예약 모달 ─── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:#fff; border-radius:12px; width:860px; max-width:95vw; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid #E5E7EA; }
+    .modal-title { font-size:16px; font-weight:700; color:#24292E; }
+    .modal-body { display:flex; gap:0; flex:1; overflow:hidden; }
+    .modal-form { flex:1; padding:24px; overflow-y:auto; border-right:1px solid #E5E7EA; }
+    .modal-validation { width:280px; padding:20px; background:#F6F7F9; overflow-y:auto; flex-shrink:0; }
+    .modal-footer { padding:14px 24px; border-top:1px solid #E5E7EA; display:flex; justify-content:flex-end; gap:8px; }
+    .val-title { font-size:12px; font-weight:700; color:#24292E; margin-bottom:12px; }
+    .val-item { margin-bottom:10px; }
+    .val-status { font-size:12px; font-weight:700; margin-bottom:2px; }
+    .val-status.ok { color:#2E9E34; }
+    .val-status.ng { color:#E97474; }
+    .val-detail { font-size:11px; color:#596066; line-height:1.5; }
+    .val-divider { height:1px; background:#E5E7EA; margin:12px 0; }
+    .val-summary { font-size:12px; color:#596066; line-height:1.8; }
+    .val-summary strong { color:#24292E; }
   </style>
 </head>
 <body>
@@ -731,6 +771,7 @@
         프로덕트 목록
       </a>
       <div class="header-actions">
+        <button class="btn-primary" onclick="openSchedModal()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px;"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>스케줄 예약</button>
         <button class="btn-outline" onclick="alert('편집 모드 (목업)')">편집</button>
         <button class="btn-danger-outline" onclick="alert('삭제 확인 (목업)')">삭제</button>
       </div>
@@ -1091,6 +1132,126 @@
     <div class="chart-wrap">
       <div class="chart-canvas-wrap">
         <canvas id="remainChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Section B-2: 인벤토리 현황 ─── -->
+  <div class="section-card">
+    <div class="section-header">
+      <h2 class="section-title">인벤토리 현황</h2>
+      <div class="inv-tab-bar">
+        <button class="inv-tab active" onclick="switchInvTab('A')">강남역 A</button>
+        <button class="inv-tab" onclick="switchInvTab('B')">강남역 B</button>
+        <button class="inv-tab" onclick="switchInvTab('C')">강남역 C</button>
+      </div>
+    </div>
+
+    <!-- 강남역 A 패널 -->
+    <div class="inv-panel active" id="inv-panel-A">
+      <div class="cycle-card">
+        <div class="cycle-row">
+          <div class="cycle-item"><div class="cycle-label">사이클 최대 시간</div><div class="cycle-value">600<span class="cycle-unit">초</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">사용 시간</div><div class="cycle-value">125<span class="cycle-unit">초</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">잔여 시간</div><div class="cycle-value">475<span class="cycle-unit">초</span></div></div>
+        </div>
+        <div class="cycle-bar-wrap"><div class="cycle-bar-fill" style="width:20.8%;background:#2D84ED;"></div></div>
+        <div class="cycle-bar-label">20.8% 사용&nbsp;&nbsp;<span style="color:#9EA5AD;">(잔여 79.2%)</span></div>
+        <div class="cycle-row">
+          <div class="cycle-item"><div class="cycle-label">기준 슬롯 수</div><div class="cycle-value">20<span class="cycle-unit">개</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">등록 슬롯 수</div><div class="cycle-value">5<span class="cycle-unit">개</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">잔여 슬롯 수</div><div class="cycle-value">15<span class="cycle-unit">개</span></div></div>
+        </div>
+        <div class="cycle-footer">
+          <span>예상 실제 사이클 시간: <strong>125초</strong></span>
+          <span>예상 일 송출 횟수: <strong>432회</strong>&nbsp;✅ 90회 이상</span>
+        </div>
+      </div>
+      <div class="adex-card">
+        <div class="adex-header">
+          <span class="adex-title">🔗 ADeX 연동 인벤토리</span>
+          <span class="adex-sub">잔여 475초 · 잔여 15슬롯 기준</span>
+        </div>
+        <table class="sched-table">
+          <thead><tr><th>플레이플랜</th><th>재생 시간</th><th>추가 판매 가능 슬롯 수</th><th>제한 기준</th></tr></thead>
+          <tbody>
+            <tr><td>30초 일반</td><td>30초</td><td>15개</td><td>슬롯 수 상한</td></tr>
+            <tr><td>20초 일반</td><td>20초</td><td>15개</td><td>슬롯 수 상한</td></tr>
+            <tr><td>30초 조건</td><td>30초</td><td>15개</td><td>슬롯 수 상한</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 강남역 B 패널 -->
+    <div class="inv-panel" id="inv-panel-B">
+      <div class="cycle-card">
+        <div class="cycle-row">
+          <div class="cycle-item"><div class="cycle-label">사이클 최대 시간</div><div class="cycle-value">480<span class="cycle-unit">초</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">사용 시간</div><div class="cycle-value">90<span class="cycle-unit">초</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">잔여 시간</div><div class="cycle-value">390<span class="cycle-unit">초</span></div></div>
+        </div>
+        <div class="cycle-bar-wrap"><div class="cycle-bar-fill" style="width:18.75%;background:#2D84ED;"></div></div>
+        <div class="cycle-bar-label">18.8% 사용&nbsp;&nbsp;<span style="color:#9EA5AD;">(잔여 81.2%)</span></div>
+        <div class="cycle-row">
+          <div class="cycle-item"><div class="cycle-label">기준 슬롯 수</div><div class="cycle-value">16<span class="cycle-unit">개</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">등록 슬롯 수</div><div class="cycle-value">3<span class="cycle-unit">개</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">잔여 슬롯 수</div><div class="cycle-value">13<span class="cycle-unit">개</span></div></div>
+        </div>
+        <div class="cycle-footer">
+          <span>예상 실제 사이클 시간: <strong>90초</strong></span>
+          <span>예상 일 송출 횟수: <strong>600회</strong>&nbsp;✅ 112회 이상</span>
+        </div>
+      </div>
+      <div class="adex-card">
+        <div class="adex-header">
+          <span class="adex-title">🔗 ADeX 연동 인벤토리</span>
+          <span class="adex-sub">잔여 390초 · 잔여 13슬롯 기준</span>
+        </div>
+        <table class="sched-table">
+          <thead><tr><th>플레이플랜</th><th>재생 시간</th><th>추가 판매 가능 슬롯 수</th><th>제한 기준</th></tr></thead>
+          <tbody>
+            <tr><td>30초 일반</td><td>30초</td><td>13개</td><td>슬롯 수 상한</td></tr>
+            <tr><td>20초 일반</td><td>20초</td><td>13개</td><td>슬롯 수 상한</td></tr>
+            <tr><td>30초 조건</td><td>30초</td><td>13개</td><td>슬롯 수 상한</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 강남역 C 패널 -->
+    <div class="inv-panel" id="inv-panel-C">
+      <div class="cycle-card">
+        <div class="cycle-row">
+          <div class="cycle-item"><div class="cycle-label">사이클 최대 시간</div><div class="cycle-value">540<span class="cycle-unit">초</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">사용 시간</div><div class="cycle-value">108<span class="cycle-unit">초</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">잔여 시간</div><div class="cycle-value">432<span class="cycle-unit">초</span></div></div>
+        </div>
+        <div class="cycle-bar-wrap"><div class="cycle-bar-fill" style="width:20%;background:#2D84ED;"></div></div>
+        <div class="cycle-bar-label">20.0% 사용&nbsp;&nbsp;<span style="color:#9EA5AD;">(잔여 80.0%)</span></div>
+        <div class="cycle-row">
+          <div class="cycle-item"><div class="cycle-label">기준 슬롯 수</div><div class="cycle-value">18<span class="cycle-unit">개</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">등록 슬롯 수</div><div class="cycle-value">4<span class="cycle-unit">개</span></div></div>
+          <div class="cycle-item"><div class="cycle-label">잔여 슬롯 수</div><div class="cycle-value">14<span class="cycle-unit">개</span></div></div>
+        </div>
+        <div class="cycle-footer">
+          <span>예상 실제 사이클 시간: <strong>108초</strong></span>
+          <span>예상 일 송출 횟수: <strong>433회</strong>&nbsp;✅ 86회 이상</span>
+        </div>
+      </div>
+      <div class="adex-card">
+        <div class="adex-header">
+          <span class="adex-title">🔗 ADeX 연동 인벤토리</span>
+          <span class="adex-sub">잔여 432초 · 잔여 14슬롯 기준</span>
+        </div>
+        <table class="sched-table">
+          <thead><tr><th>플레이플랜</th><th>재생 시간</th><th>추가 판매 가능 슬롯 수</th><th>제한 기준</th></tr></thead>
+          <tbody>
+            <tr><td>30초 일반</td><td>30초</td><td>14개</td><td>슬롯 수 상한</td></tr>
+            <tr><td>20초 일반</td><td>20초</td><td>14개</td><td>슬롯 수 상한</td></tr>
+            <tr><td>30초 조건</td><td>30초</td><td>14개</td><td>슬롯 수 상한</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -1962,6 +2123,164 @@ function toggleProductStatus() {
   track.classList.toggle('on');
   label.textContent = isOn ? '비활성' : '활성';
 }
+
+// ─── 인벤토리 탭 전환 ───
+function switchInvTab(key) {
+  document.querySelectorAll('.inv-tab').forEach((btn, i) => {
+    const keys = ['A','B','C'];
+    btn.classList.toggle('active', keys[i] === key);
+  });
+  document.querySelectorAll('.inv-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('inv-panel-' + key);
+  if (panel) panel.classList.add('active');
+}
+
+// ─── 스케줄 예약 모달 ───
+const INV_DATA = {
+  'A': { name:'강남역 1번출구 A', cycleMax:600, usedTime:125, usedSlots:5, baseSlots:20, opsTime:54000, guaranteed:90 },
+  'B': { name:'강남역 1번출구 B', cycleMax:480, usedTime:90,  usedSlots:3, baseSlots:16, opsTime:54000, guaranteed:112 },
+  'C': { name:'강남역 2번출구',   cycleMax:540, usedTime:108, usedSlots:4, baseSlots:18, opsTime:46800, guaranteed:86 }
+};
+const PP_DATA = {
+  'pp0': { label:'30초 일반', duration:30 },
+  'pp1': { label:'20초 일반', duration:20 },
+  'pp2': { label:'30초 조건', duration:30 }
+};
+
+function openSchedModal() {
+  document.getElementById('schedModal').classList.add('open');
+  updateSchedValidation();
+}
+function closeSchedModal() {
+  document.getElementById('schedModal').classList.remove('open');
+}
+function updateSchedValidation() {
+  const mediaKey = document.getElementById('schedMedia').value;
+  const ppKey    = document.getElementById('schedPP').value;
+  const inv = INV_DATA[mediaKey];
+  const pp  = PP_DATA[ppKey];
+
+  // auto-fill duration
+  document.getElementById('schedDuration').value = pp.duration + '초';
+
+  const newUsedTime  = inv.usedTime  + pp.duration;
+  const newUsedSlots = inv.usedSlots + 1;
+  const timeOK  = newUsedTime  <= inv.cycleMax;
+  const slotOK  = newUsedSlots <= inv.baseSlots;
+  const remainTime  = inv.cycleMax  - newUsedTime;
+  const remainSlots = inv.baseSlots - newUsedSlots;
+  const estCycle = newUsedTime;
+  const estPlays = Math.floor(inv.opsTime / estCycle);
+  const guarOK   = estPlays >= inv.guaranteed;
+
+  const valEl = document.getElementById('schedValidation');
+  valEl.innerHTML = `
+    <div class="val-title">실시간 인벤토리 확인</div>
+    <div class="val-item">
+      <div class="val-status ${timeOK?'ok':'ng'}">${timeOK?'✅':'❌'} 시간 기준</div>
+      <div class="val-detail">합산 ${newUsedTime}초 ${timeOK?'≤':'>'} 사이클 최대 ${inv.cycleMax}초&nbsp;&nbsp;잔여 ${remainTime}초</div>
+    </div>
+    <div class="val-item">
+      <div class="val-status ${slotOK?'ok':'ng'}">${slotOK?'✅':'❌'} 슬롯 수 기준</div>
+      <div class="val-detail">등록 ${newUsedSlots}개 ${slotOK?'≤':'>'} 기준 슬롯 수 ${inv.baseSlots}개&nbsp;&nbsp;잔여 ${remainSlots}개</div>
+    </div>
+    <div class="val-divider"></div>
+    <div class="val-summary">
+      예상 실제 사이클 시간: <strong>${estCycle}초</strong>&nbsp;&nbsp;(+${pp.duration}초 추가 시)<br>
+      예상 일 송출 횟수: <strong>${estPlays}회</strong><br>
+      <span class="${guarOK?'val-status ok':'val-status ng'}">${guarOK?'✅':'❌'} 최소 보장 ${inv.guaranteed}회 이상</span>
+    </div>
+  `;
+
+  const submitBtn = document.getElementById('schedSubmitBtn');
+  submitBtn.disabled = !(timeOK && slotOK);
+  submitBtn.style.opacity = (timeOK && slotOK) ? '1' : '0.5';
+}
+
+function toggleCondFields() {
+  const adType = document.querySelector('input[name="adType"]:checked').value;
+  const condSection = document.getElementById('condSection');
+  condSection.style.display = adType === 'cond' ? 'block' : 'none';
+}
 </script>
+
+<!-- ─── 스케줄 예약 모달 ─── -->
+<div class="modal-overlay" id="schedModal" onclick="if(event.target===this)closeSchedModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title">스케줄 예약</span>
+      <button onclick="closeSchedModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:#9EA5AD;line-height:1;">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- 왼쪽: 입력 폼 -->
+      <div class="modal-form">
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">미디어 선택</label>
+          <select id="schedMedia" onchange="updateSchedValidation()" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
+            <option value="A">강남역 1번출구 A</option>
+            <option value="B">강남역 1번출구 B</option>
+            <option value="C">강남역 2번출구</option>
+          </select>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">스케줄명</label>
+          <input type="text" placeholder="스케줄명 입력" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">광고주명</label>
+          <input type="text" placeholder="광고주명 입력" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">플레이플랜 선택</label>
+          <select id="schedPP" onchange="updateSchedValidation()" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
+            <option value="pp0">30초 일반</option>
+            <option value="pp1">20초 일반</option>
+            <option value="pp2">30초 조건</option>
+          </select>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">재생 시간</label>
+          <input type="text" id="schedDuration" readonly style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#596066;background:#F6F7F9;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">광고 유형</label>
+          <div style="display:flex;gap:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="radio" name="adType" value="normal" checked onchange="toggleCondFields()"> 일반</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="radio" name="adType" value="cond" onchange="toggleCondFields()"> 조건</label>
+          </div>
+        </div>
+        <div id="condSection" style="display:none;">
+          <div style="margin-bottom:16px;">
+            <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">조건 유형</label>
+            <select style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
+              <option>환경 조건</option>
+              <option>타겟 조건</option>
+            </select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">조건 상세</label>
+            <input type="text" placeholder="조건 상세 입력" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">광고 기간</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="date" style="flex:1;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
+            <span style="color:#9EA5AD;font-size:12px;">~</span>
+            <input type="date" style="flex:1;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
+          </div>
+        </div>
+      </div>
+      <!-- 오른쪽: 실시간 검증 패널 -->
+      <div class="modal-validation" id="schedValidation">
+        <div class="val-title">실시간 인벤토리 확인</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeSchedModal()">취소</button>
+      <button class="btn-primary" id="schedSubmitBtn" onclick="alert('스케줄 예약 완료 (목업)')">스케줄 예약</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
