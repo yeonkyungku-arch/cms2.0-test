@@ -152,6 +152,56 @@
     .badge-active .badge-dot   { background: #58C65D; }
     .badge-inactive .badge-dot { background: #9EA5AD; }
     .badge-draft .badge-dot    { background: #E8841A; }
+
+    /* ── Bulk action bar ── */
+    .bulk-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: #EAF3FF;
+      border: 1px solid #BDD9FF;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .bulk-bar.show { display: flex; }
+    .bulk-bar-count {
+      font-size: 13px;
+      font-weight: 600;
+      color: #24292E;
+      flex: 1;
+    }
+    .btn-bulk {
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-bulk-activate {
+      background: #E8F8E9; color: #2E9E34; border-color: #B2DFB3;
+    }
+    .btn-bulk-activate:hover { background: #d4f0d5; }
+    .btn-bulk-deactivate {
+      background: #F0F1F3; color: #596066; border-color: #D0D4D8;
+    }
+    .btn-bulk-deactivate:hover { background: #e4e6e9; }
+    .btn-bulk-delete {
+      background: #FEE2E2; color: #991B1B; border-color: #FECACA;
+    }
+    .btn-bulk-delete:hover { background: #fdd5d5; }
+    .btn-bulk-delete:disabled {
+      opacity: .45; cursor: not-allowed;
+    }
+
+    /* ── Checkbox styles ── */
+    .row-check, .all-check {
+      width: 16px; height: 16px; cursor: pointer; accent-color: #58C65D;
+    }
+    tbody tr.selected { background: #F0F7FF; }
+    tbody tr.selected:hover { background: #E6F0FD; }
   </style>
 </head>
 <body>
@@ -223,11 +273,20 @@
     </button>
   </div>
 
+  <!-- Bulk action bar -->
+  <div class="bulk-bar" id="bulkBar">
+    <span class="bulk-bar-count" id="bulkCount">0개 선택됨</span>
+    <button class="btn-bulk btn-bulk-activate" onclick="bulkActivate()">활성화</button>
+    <button class="btn-bulk btn-bulk-deactivate" onclick="bulkDeactivate()">비활성화</button>
+    <button class="btn-bulk btn-bulk-delete" id="btnBulkDelete" onclick="bulkDelete()">삭제</button>
+  </div>
+
   <!-- Table -->
   <div class="table-card">
     <table id="productTable">
       <thead>
         <tr>
+          <th style="width:40px;text-align:center;"><input type="checkbox" class="all-check" id="checkAll" onchange="toggleAll(this)"></th>
           <th>프로덕트명</th>
           <th style="width:200px;">포함 미디어</th>
           <th class="center" style="width:130px;">플레이플랜 수</th>
@@ -236,7 +295,8 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <tr data-status="active" data-media="강남역">
+        <tr data-status="active" data-media="강남역" data-has-schedule="true">
+          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
           <td><a class="product-name-link" href="product-detail.html">강남 A지구 패키지</a></td>
           <td>
             <div class="tooltip-wrap">
@@ -253,7 +313,8 @@
           <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
-        <tr data-status="active" data-media="홍대입구역">
+        <tr data-status="active" data-media="홍대입구역" data-has-schedule="true">
+          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
           <td><a class="product-name-link" href="product-detail.html">홍대 입구역 프리미엄</a></td>
           <td>
             <div class="tooltip-wrap">
@@ -270,7 +331,8 @@
           <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
-        <tr data-status="draft" data-media="신촌역">
+        <tr data-status="draft" data-media="신촌역" data-has-schedule="false">
+          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
           <td><a class="product-name-link" href="product-register.html">신촌 역세권 디스플레이</a></td>
           <td>신촌역 메인</td>
           <td class="center">
@@ -282,7 +344,8 @@
           <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-draft"><span class="badge-dot"></span>임시저장</span></td>
         </tr>
-        <tr data-status="inactive" data-media="여의도역">
+        <tr data-status="inactive" data-media="여의도역" data-has-schedule="false">
+          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
           <td><a class="product-name-link" href="product-detail.html">여의도 금융가 패키지</a></td>
           <td>
             <div class="tooltip-wrap">
@@ -299,7 +362,8 @@
           <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span></td>
         </tr>
-        <tr data-status="active" data-media="삼성역">
+        <tr data-status="active" data-media="삼성역" data-has-schedule="true">
+          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
           <td><a class="product-name-link" href="product-detail.html">삼성역 COEX 프리미엄</a></td>
           <td>
             <div class="tooltip-wrap">
@@ -323,6 +387,7 @@
 </main>
 
 <script>
+/* ── 필터 ── */
 function filterTable() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   const status = document.getElementById('statusFilter').value;
@@ -336,7 +401,102 @@ function filterTable() {
     const matchStatus = !status || rowStatus === status;
     const matchMedia  = !media  || rowMedia  === media;
     row.style.display = (matchSearch && matchStatus && matchMedia) ? '' : 'none';
+    if (row.style.display === 'none') {
+      const cb = row.querySelector('.row-check');
+      if (cb) { cb.checked = false; }
+      row.classList.remove('selected');
+    }
   });
+  updateBulkBar();
+}
+
+/* ── 전체 선택 ── */
+function toggleAll(allCb) {
+  const rows = document.querySelectorAll('#tableBody tr');
+  rows.forEach(row => {
+    if (row.style.display === 'none') return;
+    const cb = row.querySelector('.row-check');
+    if (cb) {
+      cb.checked = allCb.checked;
+      row.classList.toggle('selected', allCb.checked);
+    }
+  });
+  updateBulkBar();
+}
+
+/* ── 개별 체크 ── */
+function onRowCheck(cb) {
+  cb.closest('tr').classList.toggle('selected', cb.checked);
+  const visibleChecks = [...document.querySelectorAll('#tableBody tr:not([style*="none"]) .row-check')];
+  const allChecked = visibleChecks.length > 0 && visibleChecks.every(c => c.checked);
+  document.getElementById('checkAll').checked = allChecked;
+  updateBulkBar();
+}
+
+/* ── 일괄 작업 바 업데이트 ── */
+function updateBulkBar() {
+  const selected = getSelectedRows();
+  const bar = document.getElementById('bulkBar');
+  const count = document.getElementById('bulkCount');
+  const btnDelete = document.getElementById('btnBulkDelete');
+
+  if (selected.length === 0) {
+    bar.classList.remove('show');
+    return;
+  }
+  bar.classList.add('show');
+  count.textContent = selected.length + '개 선택됨';
+
+  // 삭제 가능 조건: 선택된 모든 항목이 비활성 또는 임시저장이고 등록된 스케줄 없음
+  const canDelete = selected.every(row =>
+    (row.dataset.status === 'inactive' || row.dataset.status === 'draft') &&
+    row.dataset.hasSchedule === 'false'
+  );
+  btnDelete.disabled = !canDelete;
+  btnDelete.title = canDelete ? '' : '비활성화 또는 임시저장 상태이며 등록된 스케줄이 없는 프로덕트만 삭제 가능합니다.';
+}
+
+function getSelectedRows() {
+  return [...document.querySelectorAll('#tableBody tr')].filter(row =>
+    row.querySelector('.row-check')?.checked
+  );
+}
+
+/* ── 활성화 ── */
+function bulkActivate() {
+  getSelectedRows().forEach(row => {
+    row.dataset.status = 'active';
+    const badgeCell = row.querySelector('td:last-child');
+    badgeCell.innerHTML = '<span class="badge badge-active"><span class="badge-dot"></span>활성</span>';
+  });
+  resetSelection();
+  alert('선택한 프로덕트를 활성화했습니다.');
+}
+
+/* ── 비활성화 ── */
+function bulkDeactivate() {
+  getSelectedRows().forEach(row => {
+    row.dataset.status = 'inactive';
+    const badgeCell = row.querySelector('td:last-child');
+    badgeCell.innerHTML = '<span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span>';
+  });
+  resetSelection();
+  alert('선택한 프로덕트를 비활성화했습니다.');
+}
+
+/* ── 삭제 ── */
+function bulkDelete() {
+  const rows = getSelectedRows();
+  if (!confirm(rows.length + '개 프로덕트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+  rows.forEach(row => row.remove());
+  resetSelection();
+}
+
+function resetSelection() {
+  document.getElementById('checkAll').checked = false;
+  document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
+  document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('selected'));
+  updateBulkBar();
 }
 </script>
 </body>
