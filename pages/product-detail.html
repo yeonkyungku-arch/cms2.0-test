@@ -1076,10 +1076,11 @@
 
     <!-- Filter tabs -->
     <div class="schedule-tabs">
-      <button class="sched-tab active" onclick="filterSched(this,'running')">운영 중</button>
+      <button class="sched-tab active" onclick="filterSched(this,'all')">전체</button>
+      <button class="sched-tab" onclick="filterSched(this,'running')">운영</button>
       <button class="sched-tab" onclick="filterSched(this,'confirmed')">확정</button>
+      <button class="sched-tab" onclick="filterSched(this,'unconfirmed')">미확정</button>
       <button class="sched-tab" onclick="filterSched(this,'reserved')">예약</button>
-      <button class="sched-tab" onclick="filterSched(this,'all')">전체</button>
     </div>
 
     <!-- Schedule table -->
@@ -1096,7 +1097,7 @@
       </thead>
       <tbody id="schedBody">
         <tr data-sched="running">
-          <td>삼성 갤럭시 S25 런칭</td>
+          <td><a href="schedule-detail.html" style="color:#2D84ED;text-decoration:none;font-weight:500;">삼성 갤럭시 S25 런칭</a></td>
           <td>삼성전자</td>
           <td>2026.05.01 ~ 2026.06.30</td>
           <td>30초</td>
@@ -1104,7 +1105,7 @@
           <td><div class="status-dot-label"><span class="sdot sdot-running"></span>운영 중</div></td>
         </tr>
         <tr data-sched="running">
-          <td>나이키 FW25 캠페인</td>
+          <td><a href="schedule-detail.html" style="color:#2D84ED;text-decoration:none;font-weight:500;">나이키 FW25 캠페인</a></td>
           <td>나이키 코리아</td>
           <td>2026.06.01 ~ 2026.07.31</td>
           <td>30초</td>
@@ -1112,15 +1113,23 @@
           <td><div class="status-dot-label"><span class="sdot sdot-running"></span>운영 중</div></td>
         </tr>
         <tr data-sched="confirmed">
-          <td>현대차 아이오닉9</td>
+          <td><a href="schedule-detail.html" style="color:#2D84ED;text-decoration:none;font-weight:500;">현대차 아이오닉9</a></td>
           <td>현대자동차</td>
           <td>2026.07.01 ~ 2026.07.31</td>
           <td>30초</td>
           <td><span class="type-badge normal">일반</span></td>
           <td><div class="status-dot-label"><span class="sdot" style="background:#3C3489;"></span>확정</div></td>
         </tr>
+        <tr data-sched="unconfirmed">
+          <td><a href="schedule-detail.html" style="color:#2D84ED;text-decoration:none;font-weight:500;">카카오 브랜드 위크</a></td>
+          <td>카카오</td>
+          <td>2026.08.15 ~ 2026.08.31</td>
+          <td>20초</td>
+          <td><span class="type-badge normal">일반</span></td>
+          <td><div class="status-dot-label"><span class="sdot" style="background:#E8841A;"></span>미확정</div></td>
+        </tr>
         <tr data-sched="reserved">
-          <td>롯데백화점 하반기</td>
+          <td><a href="schedule-detail.html" style="color:#2D84ED;text-decoration:none;font-weight:500;">롯데백화점 하반기</a></td>
           <td>롯데쇼핑</td>
           <td>2026.08.01 ~ 2026.09.30</td>
           <td>20초</td>
@@ -1128,7 +1137,7 @@
           <td><div class="status-dot-label"><span class="sdot" style="background:#9EA5AD;"></span>예약</div></td>
         </tr>
         <tr data-sched="reserved">
-          <td>CJ 제일제당 추석 기획전</td>
+          <td><a href="schedule-detail.html" style="color:#2D84ED;text-decoration:none;font-weight:500;">CJ 제일제당 추석 기획전</a></td>
           <td>CJ제일제당</td>
           <td>2026.09.10 ~ 2026.09.25</td>
           <td>30초</td>
