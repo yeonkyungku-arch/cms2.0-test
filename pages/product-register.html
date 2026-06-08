@@ -324,6 +324,43 @@
       display: flex; gap: 8px; align-items: flex-start;
     }
     .info-box svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── 미디어 운영 설정 카드 ── */
+    .media-ops-card {
+      border: 1px solid #E5E7EA; border-radius: 8px;
+      overflow: hidden;
+    }
+    .media-ops-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #F6F7F9;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .media-ops-name { font-size: 13px; font-weight: 600; color: #24292E; }
+    .media-ops-body {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .media-ops-item {
+      padding: 10px 14px; border-right: 1px solid #F6F7F9;
+    }
+    .media-ops-item:last-child { border-right: none; }
+    .media-ops-label { font-size: 11px; color: #9EA5AD; margin-bottom: 3px; }
+    .media-ops-value { font-size: 13px; font-weight: 600; color: #24292E; }
+    .media-ops-sub   { font-size: 11px; color: #596066; margin-top: 1px; }
+
+    /* ── 플레이플랜 보장 현황 테이블 (가격 없음) ── */
+    .pp-guarantee-table {
+      width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px;
+    }
+    .pp-guarantee-table th {
+      background: #F6F7F9; padding: 7px 12px; text-align: left;
+      font-size: 11px; font-weight: 600; color: #596066;
+      border: 1px solid #E5E7EA;
+    }
+    .pp-guarantee-table td {
+      padding: 8px 12px; border: 1px solid #E5E7EA; color: #596066; font-size: 12px;
+    }
+    .pp-guarantee-table td:first-child { color: #24292E; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -403,22 +440,13 @@
         <div class="section-title">기본 정보</div>
       </div>
       <div class="section-body">
-        <div class="form-row">
+        <div class="form-row" style="border-bottom:none;">
           <div class="form-label">프로덕트명 <span class="req">*</span></div>
           <div class="form-field">
             <input type="text" class="input" id="inputName" placeholder="프로덕트명을 입력하세요"
               style="max-width:460px;" oninput="validateForm()">
             <div class="input-error" id="errName">프로덕트명을 입력해 주세요.</div>
-          </div>
-        </div>
-        <div class="form-row" style="border-bottom:none;">
-          <div class="form-label">상태</div>
-          <div class="form-field" style="padding-top:4px;">
-            <select class="select" id="selectStatus" style="max-width:200px;">
-              <option value="ACTIVE">활성</option>
-              <option value="INACTIVE">비활성</option>
-              <option value="DRAFT" selected>임시저장</option>
-            </select>
+            <div class="input-hint">등록 후 기본 비활성 상태로 저장됩니다. 상세 페이지에서 활성화할 수 있습니다.</div>
           </div>
         </div>
       </div>
@@ -452,6 +480,15 @@
         </div>
         <div id="selectedChips" class="selected-chips"></div>
         <div id="mediaSelMsg" class="input-error" style="margin-top:8px;">미디어를 1개 이상 선택해 주세요.</div>
+
+        <!-- 선택된 미디어 운영 설정 정보 -->
+        <div id="mediaInfoPanel" style="display:none;margin-top:16px;">
+          <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#596066" stroke-width="1.2"/><path d="M6.5 4.5v2.5M6.5 8.5v.5" stroke="#596066" stroke-width="1.2" stroke-linecap="round"/></svg>
+            선택된 미디어 운영 설정
+          </div>
+          <div id="mediaInfoCards" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
       </div>
     </div>
 
@@ -593,17 +630,26 @@
                 </select>
               </div>
 
-              <!-- 미디어별 보장 횟수 & 가격 -->
-              <div class="pp-field">
-                <label>미디어별 보장 횟수 & 가격</label>
-                <div id="ppMediaTableWrap">
-                  <div class="pp-no-media">미디어를 먼저 선택해 주세요</div>
-                </div>
-                <div class="info-box" id="ppInfoBox" style="display:none;">
+              <!-- 미디어별 보장 횟수 (읽기 전용) -->
+              <div class="pp-field" id="ppGuaranteeWrap" style="display:none;">
+                <label>미디어별 보장 횟수 (자동 계산)</label>
+                <div id="ppGuaranteeTable"></div>
+                <div class="info-box" style="margin-top:8px;">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#0369A1" stroke-width="1.2"/><path d="M7 5v2.5M7 9.5v.5" stroke="#0369A1" stroke-width="1.2" stroke-linecap="round"/></svg>
-                  보장 횟수는 미디어 고정값(운영 시간 ÷ 사이클 최대 시간)이며 재생 시간·플레이플랜 종류와 무관하게 동일합니다.
+                  보장 횟수는 미디어 고정값(운영 시간 ÷ 사이클 최대 시간)으로 재생 시간·플레이플랜 종류와 무관하게 동일합니다.
                   최대 판매 슬롯 수는 재생 시간에 따라 달라집니다.
                 </div>
+              </div>
+
+              <!-- 합계 가격 -->
+              <div class="pp-field">
+                <label>합계 가격 <span class="req">*</span></label>
+                <div class="pp-field-row">
+                  <input type="number" class="input" id="ppTotalPrice" min="0" placeholder="0"
+                    style="max-width:200px;text-align:right;">
+                  <span class="pp-field-unit">원</span>
+                </div>
+                <div class="input-hint">전체 미디어 포함 합산 가격을 입력하세요</div>
               </div>
 
               <!-- 폼 버튼 -->
@@ -667,29 +713,44 @@
    ═══════════════════════════════════════════════ */
 const MEDIA_DATA = [
   {
-    id: 'A', name: '강남역 1번출구 A', sub: '서울 강남구 강남대로 396 · 실외 · 1920×1080',
-    status: 'online', opsTime: 54000, cycleMax: 600, refSlots: 20,
-    guaranteed: 90   /* 54000÷600 */
+    id: 'A', name: '강남역 1번출구 A', sub: '서울 강남구 강남대로 396',
+    status: 'online',
+    installType: '실외 · 세로형', resolution: '1920×1080',
+    opsHours: '07:00~22:00', opsTime: 54000,
+    refSlotSec: 30, cycleMax: 600, refSlots: 20,
+    cycles: 450, guaranteed: 90
   },
   {
-    id: 'B', name: '강남역 1번출구 B', sub: '서울 강남구 강남대로 396 · 실외 · 1920×1080',
-    status: 'online', opsTime: 54000, cycleMax: 480, refSlots: 16,
-    guaranteed: 112  /* 54000÷480 */
+    id: 'B', name: '강남역 1번출구 B', sub: '서울 강남구 강남대로 396',
+    status: 'online',
+    installType: '실외 · 가로형', resolution: '1920×1080',
+    opsHours: '07:00~22:00', opsTime: 54000,
+    refSlotSec: 30, cycleMax: 480, refSlots: 16,
+    cycles: 450, guaranteed: 112
   },
   {
-    id: 'C', name: '강남역 2번출구', sub: '서울 강남구 강남대로 · 실외 · 1920×1080',
-    status: 'online', opsTime: 46800, cycleMax: 540, refSlots: 18,
-    guaranteed: 86   /* 46800÷540 */
+    id: 'C', name: '강남역 2번출구', sub: '서울 강남구 강남대로',
+    status: 'online',
+    installType: '실외 · 세로형', resolution: '1080×1920',
+    opsHours: '08:00~21:00', opsTime: 46800,
+    refSlotSec: 30, cycleMax: 540, refSlots: 18,
+    cycles: 390, guaranteed: 86
   },
   {
-    id: 'D', name: '신논현역 메인 월', sub: '서울 강남구 언주로 · 실내 · 3840×2160',
-    status: 'online', opsTime: 43200, cycleMax: 600, refSlots: 20,
-    guaranteed: 72
+    id: 'D', name: '신논현역 메인 월', sub: '서울 강남구 언주로',
+    status: 'online',
+    installType: '실내 · 벽면형', resolution: '3840×2160',
+    opsHours: '06:00~24:00', opsTime: 43200,
+    refSlotSec: 30, cycleMax: 600, refSlots: 20,
+    cycles: 360, guaranteed: 72
   },
   {
-    id: 'E', name: '삼성역 코엑스 광장', sub: '서울 강남구 봉은사로 · 실외 · 1920×1080',
-    status: 'offline', opsTime: 50400, cycleMax: 600, refSlots: 20,
-    guaranteed: 84
+    id: 'E', name: '삼성역 코엑스 광장', sub: '서울 강남구 봉은사로',
+    status: 'offline',
+    installType: '실외 · 세로형', resolution: '1920×1080',
+    opsHours: '07:00~21:00', opsTime: 50400,
+    refSlotSec: 30, cycleMax: 600, refSlots: 20,
+    cycles: 420, guaranteed: 84
   }
 ];
 
@@ -760,6 +821,50 @@ function updateMediaCount() {
   const n = selectedMedia.size;
   document.getElementById('mediaCount').textContent = n > 0 ? `${n}개 선택됨` : '';
   document.getElementById('mediaSelMsg').style.display = 'none';
+  renderMediaInfoPanel();
+}
+
+function renderMediaInfoPanel() {
+  const panel = document.getElementById('mediaInfoPanel');
+  const cards = document.getElementById('mediaInfoCards');
+  if (selectedMedia.size === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  cards.innerHTML = '';
+  [...selectedMedia].forEach(id => {
+    const m = MEDIA_DATA.find(x => x.id === id);
+    if (!m) return;
+    const cyclesPerDay = Math.round(m.opsTime / (m.refSlotSec * m.refSlots));
+    const card = document.createElement('div');
+    card.className = 'media-ops-card';
+    card.innerHTML = `
+      <div class="media-ops-header">
+        <span class="media-ops-name">${m.name}</span>
+        <span style="font-size:11px;color:#9EA5AD;">${m.sub}</span>
+      </div>
+      <div class="media-ops-body">
+        <div class="media-ops-item">
+          <div class="media-ops-label">설치 유형</div>
+          <div class="media-ops-value">${m.installType}</div>
+          <div class="media-ops-sub">${m.resolution}</div>
+        </div>
+        <div class="media-ops-item">
+          <div class="media-ops-label">운영 시간</div>
+          <div class="media-ops-value">${m.opsHours}</div>
+          <div class="media-ops-sub">${(m.opsTime/3600).toFixed(0)}시간</div>
+        </div>
+        <div class="media-ops-item">
+          <div class="media-ops-label">기준 슬롯</div>
+          <div class="media-ops-value">${m.refSlotSec}초 × ${m.refSlots}슬롯</div>
+          <div class="media-ops-sub">사이클 최대 ${m.cycleMax}초</div>
+        </div>
+        <div class="media-ops-item">
+          <div class="media-ops-label">최소 보장 횟수</div>
+          <div class="media-ops-value" style="color:#2E9E34;">${m.guaranteed}회/일</div>
+          <div class="media-ops-sub">일 ${cyclesPerDay}사이클 기준</div>
+        </div>
+      </div>`;
+    cards.appendChild(card);
+  });
 }
 
 /* ═══════════════════════════════════════════════ 플레이플랜 */
@@ -773,12 +878,13 @@ function addPlanMode() {
 
   /* 폼 초기화 */
   document.getElementById('ppDuration').value = '';
+  document.getElementById('ppTotalPrice').value = '';
   setAdType('general');
   document.getElementById('ppPeriodUnit').value = 'month';
   document.getElementById('condType').value = '';
   document.getElementById('envCond').style.display = 'none';
   document.getElementById('targetCond').style.display = 'none';
-  refreshPPMediaTable();
+  document.getElementById('ppGuaranteeWrap').style.display = 'none';
 
   /* 목록 하이라이트 해제 */
   document.querySelectorAll('.pp-item').forEach(el => el.classList.remove('active'));
@@ -805,75 +911,28 @@ function onCondTypeChange() {
   document.getElementById('targetCond').style.display = val === 'target' ? 'block' : 'none';
 }
 
-function onDurationChange() { refreshPPMediaTable(); }
+function onDurationChange() { refreshPPGuaranteeTable(); }
 
-function refreshPPMediaTable() {
-  const wrap = document.getElementById('ppMediaTableWrap');
-  const infoBox = document.getElementById('ppInfoBox');
+function refreshPPGuaranteeTable() {
+  const wrap    = document.getElementById('ppGuaranteeWrap');
+  const tableEl = document.getElementById('ppGuaranteeTable');
   const duration = parseInt(document.getElementById('ppDuration')?.value) || 0;
 
-  if (selectedMedia.size === 0) {
-    wrap.innerHTML = '<div class="pp-no-media">미디어를 먼저 선택해 주세요</div>';
-    infoBox.style.display = 'none';
-    return;
-  }
+  if (selectedMedia.size === 0 || !duration) { wrap.style.display = 'none'; return; }
 
   const medias = [...selectedMedia].map(id => MEDIA_DATA.find(m => m.id === id)).filter(Boolean);
   const isCond = currentAdType === 'cond';
 
-  let html = `<table class="pp-media-table">
-    <thead><tr>
-      <th>미디어</th>
-      <th>보장 횟수 (일)</th>
-      <th>최대 판매 슬롯 수</th>
-      <th>가격 (원)</th>
-    </tr></thead><tbody>`;
-
-  let totalPrice = 0;
+  let html = `<table class="pp-guarantee-table">
+    <thead><tr><th>미디어</th><th>보장 횟수 (일)</th><th>최대 판매 슬롯 수</th></tr></thead><tbody>`;
   medias.forEach(m => {
-    const maxSlots = duration > 0 ? Math.floor(m.cycleMax / duration) : '—';
-    const label    = isCond
-      ? `최대 ${m.guaranteed}회 가능`
-      : `${m.guaranteed}회 보장`;
-    const slotTxt  = duration > 0 ? `${maxSlots}개` : '<span style="color:#9EA5AD;">재생 시간 입력 필요</span>';
-    html += `<tr>
-      <td><strong>${m.name}</strong></td>
-      <td class="auto">${label}</td>
-      <td class="auto">${slotTxt}</td>
-      <td><input type="number" placeholder="0" id="price_${m.id}" style="width:130px;"
-        oninput="updateTotalPrice()"></td>
-    </tr>`;
+    const maxSlots = Math.floor(m.cycleMax / duration);
+    const label = isCond ? `최대 ${m.guaranteed}회 가능` : `${m.guaranteed}회 보장`;
+    html += `<tr><td>${m.name}</td><td>${label}</td><td>${maxSlots}개</td></tr>`;
   });
-
-  html += `</tbody><tfoot><tr class="total-row">
-    <td colspan="3" style="text-align:right;color:#596066;">합산 가격</td>
-    <td id="totalPriceCell">—</td>
-  </tr></tfoot></table>`;
-
-  wrap.innerHTML = html;
-  infoBox.style.display = 'flex';
-
-  /* 기존 가격 복원 (편집 모드) */
-  if (editingIdx !== null && editingIdx >= 0) {
-    const plan = plans[editingIdx];
-    if (plan && plan.prices) {
-      medias.forEach(m => {
-        const el = document.getElementById(`price_${m.id}`);
-        if (el && plan.prices[m.id]) el.value = plan.prices[m.id];
-      });
-      updateTotalPrice();
-    }
-  }
-}
-
-function updateTotalPrice() {
-  let total = 0;
-  [...selectedMedia].forEach(id => {
-    const el = document.getElementById(`price_${id}`);
-    if (el) total += parseInt(el.value) || 0;
-  });
-  const cell = document.getElementById('totalPriceCell');
-  if (cell) cell.textContent = total > 0 ? total.toLocaleString() + '원' : '—';
+  html += `</tbody></table>`;
+  tableEl.innerHTML = html;
+  wrap.style.display = 'block';
 }
 
 function savePlan() {
@@ -882,22 +941,13 @@ function savePlan() {
     document.getElementById('ppDuration').focus();
     return;
   }
-
-  const prices = {};
-  let totalPrice = 0;
-  [...selectedMedia].forEach(id => {
-    const el = document.getElementById(`price_${id}`);
-    const v = el ? parseInt(el.value) || 0 : 0;
-    prices[id] = v;
-    totalPrice += v;
-  });
+  const totalPrice = parseInt(document.getElementById('ppTotalPrice').value) || 0;
 
   const plan = {
     duration,
     adType: currentAdType,
     periodUnit: document.getElementById('ppPeriodUnit').value,
     condType: currentAdType === 'cond' ? document.getElementById('condType').value : null,
-    prices,
     totalPrice
   };
 
@@ -971,12 +1021,10 @@ function showPlanView(idx) {
   medias.forEach(m => {
     const maxSlots = Math.floor(m.cycleMax / plan.duration);
     const label = isCond ? `최대 ${m.guaranteed}회 가능` : `${m.guaranteed}회 보장`;
-    const price = (plan.prices[m.id] || 0).toLocaleString();
     tableRows += `<tr>
       <td>${m.name}</td>
-      <td class="auto">${label}</td>
-      <td class="auto">${maxSlots}개</td>
-      <td style="font-weight:600;">${price}원</td>
+      <td>${label}</td>
+      <td>${maxSlots}개</td>
     </tr>`;
   });
 
@@ -984,8 +1032,7 @@ function showPlanView(idx) {
   let prevRows = '';
   medias.forEach(m => {
     const label = isCond ? `최대 ${m.guaranteed}회` : `${m.guaranteed}회 보장`;
-    const price = (plan.prices[m.id] || 0).toLocaleString();
-    prevRows += `<tr><td>${m.name}</td><td>${label}</td><td style="font-weight:600;">${price}원</td></tr>`;
+    prevRows += `<tr><td>${m.name}</td><td>${label}</td></tr>`;
   });
 
   document.getElementById('ppViewContent').innerHTML = `
@@ -1000,27 +1047,24 @@ function showPlanView(idx) {
     <div class="pp-view-row"><span class="pp-view-key">광고 유형</span><span class="pp-view-val"><span class="${isCond ? 'badge-cond' : 'badge-general'}">${isCond ? '조건 광고' : '일반 광고'}</span></span></div>
     ${isCond && plan.condType ? `<div class="pp-view-row"><span class="pp-view-key">조건 유형</span><span class="pp-view-val">${plan.condType === 'env' ? '환경 조건' : '타겟 조건'}</span></div>` : ''}
     <div class="pp-view-row"><span class="pp-view-key">운영 기간 단위</span><span class="pp-view-val">${unitLabel}</span></div>
+    <div class="pp-view-row"><span class="pp-view-key">합계 가격</span><span class="pp-view-val" style="color:#2E9E34;font-size:15px;">${plan.totalPrice > 0 ? plan.totalPrice.toLocaleString() + '원' : '—'}</span></div>
 
     <div style="margin-top:16px;">
-      <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:8px;">미디어별 보장 횟수 & 가격</div>
-      <table class="pp-media-table">
-        <thead><tr><th>미디어</th><th>보장 횟수 (일)</th><th>최대 슬롯 수</th><th>가격 (원)</th></tr></thead>
+      <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:8px;">미디어별 보장 횟수</div>
+      <table class="pp-guarantee-table">
+        <thead><tr><th>미디어</th><th>보장 횟수 (일)</th><th>최대 슬롯 수</th></tr></thead>
         <tbody>${tableRows}</tbody>
-        <tfoot><tr class="total-row">
-          <td colspan="3" style="text-align:right;color:#596066;">합산</td>
-          <td style="font-weight:700;">${plan.totalPrice.toLocaleString()}원</td>
-        </tr></tfoot>
       </table>
     </div>
 
     <div class="adv-preview" style="margin-top:16px;">
       <div class="adv-preview-title">광고주 뷰 미리보기</div>
       <table class="adv-preview-table">
-        <thead><tr><th>미디어</th><th>송출 횟수 (일)</th><th>가격</th></tr></thead>
+        <thead><tr><th>미디어</th><th>송출 횟수 (일)</th></tr></thead>
         <tbody>${prevRows}</tbody>
         <tfoot><tr>
-          <td colspan="2" style="font-weight:600;color:#596066;padding-top:8px;">합산 가격</td>
-          <td style="font-weight:700;padding-top:8px;">${plan.totalPrice.toLocaleString()}원</td>
+          <td style="font-weight:600;color:#596066;padding-top:8px;">합계 가격</td>
+          <td style="font-weight:700;padding-top:8px;">${plan.totalPrice > 0 ? plan.totalPrice.toLocaleString() + '원' : '—'}</td>
         </tr></tfoot>
       </table>
     </div>`;
@@ -1035,13 +1079,14 @@ function editPlan(idx) {
   document.getElementById('btnSavePlan').textContent = '저장';
 
   document.getElementById('ppDuration').value = plan.duration;
+  document.getElementById('ppTotalPrice').value = plan.totalPrice || '';
   setAdType(plan.adType);
   document.getElementById('ppPeriodUnit').value = plan.periodUnit;
   if (plan.condType) {
     document.getElementById('condType').value = plan.condType;
     onCondTypeChange();
   }
-  refreshPPMediaTable();
+  refreshPPGuaranteeTable();
 }
 
 function deletePlan(idx) {
@@ -1078,7 +1123,6 @@ function validateForm() {
 }
 
 function saveDraft() {
-  document.getElementById('selectStatus').value = 'DRAFT';
   showToast('임시저장되었습니다.');
 }
 
@@ -1116,6 +1160,7 @@ function showToast(msg) {
 renderMediaList();
 renderChips();
 updateMediaCount();
+renderMediaInfoPanel();
 </script>
 </body>
 </html>
