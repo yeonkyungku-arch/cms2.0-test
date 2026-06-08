@@ -1098,48 +1098,48 @@
       </div>
     </div>
 
-    <!-- KPI 카드 행 -->
+    <!-- KPI 카드 행: 사이클 기반 평균값 -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">일간 예상 노출 (전체)</div>
-        <div class="kpi-value">121,500</div>
-        <div class="kpi-sub">3개 미디어 합산 · 450회/일</div>
-        <div class="kpi-delta up" style="margin-top:4px;">▲ 8.3% 전주 대비</div>
+        <div class="kpi-label">사이클당 평균 노출</div>
+        <div class="kpi-value" style="font-size:28px;">94<span style="font-size:14px;font-weight:600;color:#596066;">명/회</span></div>
+        <div class="kpi-sub">3개 미디어 가중 평균 · (45,000+49,500+27,000) ÷ 1,290회</div>
+        <div class="kpi-delta up" style="margin-top:4px;">▲ 2.1명 전주 대비</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">월간 예상 노출</div>
-        <div class="kpi-value">3,645,000</div>
-        <div class="kpi-sub">30일 기준 추산</div>
-        <div class="kpi-delta up" style="margin-top:4px;">▲ 5.1% 전월 대비</div>
+        <div class="kpi-label">미디어당 일평균 노출</div>
+        <div class="kpi-value" style="font-size:28px;">40,500<span style="font-size:12px;font-weight:600;color:#596066;">회</span></div>
+        <div class="kpi-sub">121,500 ÷ 3개 미디어</div>
+        <div class="kpi-delta up" style="margin-top:4px;">▲ 5.1% 전주 대비</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">평균 광고 재생 완료율</div>
+        <div class="kpi-label">평균 재생 완료율</div>
         <div class="kpi-value">98.6<span style="font-size:14px;font-weight:600;">%</span></div>
-        <div class="kpi-sub">사이클 내 정상 재생 기준</div>
+        <div class="kpi-sub">사이클 내 정상 재생 기준 · 미디어 평균</div>
         <div class="kpi-delta down" style="margin-top:4px;">▼ 0.4%p 전주 대비</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">미디어 평균 운영률</div>
+        <div class="kpi-label">평균 운영률</div>
         <div class="kpi-value">97.2<span style="font-size:14px;font-weight:600;">%</span></div>
-        <div class="kpi-sub">가동 시간 / 설정 운영 시간</div>
+        <div class="kpi-sub">가동 시간 ÷ 설정 운영 시간 · 미디어 평균</div>
         <div class="kpi-delta up" style="margin-top:4px;">▲ 1.1%p 전주 대비</div>
       </div>
     </div>
 
     <!-- 차트 행 -->
     <div class="effect-charts-row">
-      <!-- 시간대별 예상 노출 분포 -->
+      <!-- 시간대별 사이클당 평균 노출 -->
       <div class="effect-chart-block">
-        <div class="effect-chart-title">시간대별 예상 노출 분포</div>
-        <div class="effect-chart-sub">시보 기준 3개 구간 · 미디어별 누적</div>
+        <div class="effect-chart-title">시간대별 사이클당 평균 노출</div>
+        <div class="effect-chart-sub">시보 구간별 · 1사이클 재생당 평균 노출 인원 (명/회)</div>
         <div class="effect-canvas-wrap">
           <canvas id="timeSlotChart"></canvas>
         </div>
       </div>
-      <!-- 일간 노출 추이 -->
+      <!-- 일간 사이클당 평균 노출 추이 — Section B 스타일 -->
       <div class="effect-chart-block">
-        <div class="effect-chart-title">일간 노출 추이</div>
-        <div class="effect-chart-sub">최근 7일 · 미디어별 구분</div>
+        <div class="effect-chart-title">사이클당 평균 노출 추이</div>
+        <div class="effect-chart-sub">최근 7일 · 미디어별 1사이클당 평균 노출 (명/회)</div>
         <div class="effect-canvas-wrap">
           <canvas id="dailyTrendChart"></canvas>
         </div>
@@ -1153,8 +1153,8 @@
         <thead>
           <tr>
             <th>미디어</th>
-            <th>일간 사이클 수</th>
-            <th>일간 예상 노출</th>
+            <th>일간 사이클</th>
+            <th>사이클당 평균 노출</th>
             <th>재생 완료율</th>
             <th>운영률</th>
             <th>슬롯 사용률</th>
@@ -1169,15 +1169,11 @@
             </td>
             <td>450회/일</td>
             <td>
-              <strong>45,000</strong>
-              <div style="font-size:11px;color:#9EA5AD;">100명/회 추산</div>
+              <strong>100명/회</strong>
+              <div style="font-size:11px;color:#9EA5AD;">일간 45,000 ÷ 450</div>
             </td>
-            <td>
-              <span style="color:#2E9E34;font-weight:700;">98.9%</span>
-            </td>
-            <td>
-              <span style="color:#2E9E34;font-weight:700;">97.8%</span>
-            </td>
+            <td><span style="color:#2E9E34;font-weight:700;">98.9%</span></td>
+            <td><span style="color:#2E9E34;font-weight:700;">97.8%</span></td>
             <td>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div style="flex:1;height:6px;background:#F0F1F3;border-radius:3px;overflow:hidden;">
@@ -1195,15 +1191,11 @@
             </td>
             <td>450회/일</td>
             <td>
-              <strong>49,500</strong>
-              <div style="font-size:11px;color:#9EA5AD;">110명/회 추산</div>
+              <strong>110명/회</strong>
+              <div style="font-size:11px;color:#9EA5AD;">일간 49,500 ÷ 450</div>
             </td>
-            <td>
-              <span style="color:#2E9E34;font-weight:700;">98.4%</span>
-            </td>
-            <td>
-              <span style="color:#2E9E34;font-weight:700;">96.9%</span>
-            </td>
+            <td><span style="color:#2E9E34;font-weight:700;">98.4%</span></td>
+            <td><span style="color:#2E9E34;font-weight:700;">96.9%</span></td>
             <td>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div style="flex:1;height:6px;background:#F0F1F3;border-radius:3px;overflow:hidden;">
@@ -1221,12 +1213,10 @@
             </td>
             <td>390회/일</td>
             <td>
-              <strong>27,000</strong>
-              <div style="font-size:11px;color:#9EA5AD;">69명/회 추산</div>
+              <strong>69명/회</strong>
+              <div style="font-size:11px;color:#9EA5AD;">일간 27,000 ÷ 390</div>
             </td>
-            <td>
-              <span style="color:#E8841A;font-weight:700;">98.2%</span>
-            </td>
+            <td><span style="color:#E8841A;font-weight:700;">98.2%</span></td>
             <td>
               <span style="color:#E97474;font-weight:700;">—</span>
               <div style="font-size:11px;color:#E97474;">점검 중</div>
@@ -1243,9 +1233,9 @@
         </tbody>
         <tfoot>
           <tr style="background:#F6F7F9;">
-            <td style="font-weight:700;color:#24292E;">합계 / 평균</td>
-            <td style="font-weight:700;">1,290회/일</td>
-            <td style="font-weight:700;">121,500</td>
+            <td style="font-weight:700;color:#24292E;">3개 미디어 평균</td>
+            <td style="font-weight:700;">430회/일</td>
+            <td style="font-weight:700;">94명/회</td>
             <td style="font-weight:700;color:#2E9E34;">98.5%</td>
             <td style="font-weight:700;color:#2E9E34;">97.2%</td>
             <td style="color:#596066;">—</td>
@@ -1482,37 +1472,51 @@ function updateEffectPeriod() {
 }
 
 /* ── Effect analysis charts ── */
+/*
+ * 사이클당 평균 노출 (명/회):
+ *   강남역 1번출구 A : 100명/회  (일 45,000 ÷ 450사이클)
+ *   강남역 1번출구 B : 110명/회  (일 49,500 ÷ 450사이클)
+ *   강남역 2번출구   :  69명/회  (일 27,000 ÷ 390사이클)
+ * 시간대별 평균:
+ *   07~12 (150회) : A=100, B=110, C=60  — 2번출구는 08시 개시라 07~08 미포함 → 60으로 반영
+ *   12~18 (180회) : A=100, B=110, C=69
+ *   18~22 (120회) : A=100, B=110, C=69
+ */
+const effectMediaCfg = {
+  A: { name: '강남역 1번출구 A', avgPerCycle: 100, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
+  B: { name: '강남역 1번출구 B', avgPerCycle: 110, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
+  C: { name: '강남역 2번출구',   avgPerCycle:  69, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
+};
+
+/* 사이클당 평균 노출 추이 — 최근 7일, 미디어별 */
+const avgTrendData = {
+  A: [98, 100, 97, 101, 100, 102, 100],
+  B: [108, 110, 107, 112, 109, 113, 110],
+  C: [67,  69,  66,  70,  68,   0,  69]  /* 6/7(토) 점검 중 → null 처리 */
+};
+
 let timeSlotChartInst = null;
 let dailyTrendChartInst = null;
 
 function buildEffectCharts() {
-  /* 시간대별 예상 노출 분포 — stacked bar */
+  const DAYS = ['6/2(월)', '6/3(화)', '6/4(수)', '6/5(목)', '6/6(금)', '6/7(토)', '6/8(일)'];
+
+  /* ── 시간대별 사이클당 평균 노출 — grouped bar ── */
   const tsCtx = document.getElementById('timeSlotChart').getContext('2d');
   if (timeSlotChartInst) timeSlotChartInst.destroy();
+  /* 07~12 2번출구 60 (08시 개시, 07~08 1시간 미포함) */
   timeSlotChartInst = new Chart(tsCtx, {
     type: 'bar',
     data: {
-      labels: ['07~12시 (150회)', '12~18시 (180회)', '18~22시 (120회)'],
-      datasets: [
-        {
-          label: '강남역 1번출구 A',
-          data: [15000, 18000, 12000],
-          backgroundColor: 'rgba(88,198,93,0.75)',
-          borderRadius: 3,
-        },
-        {
-          label: '강남역 1번출구 B',
-          data: [16500, 19800, 13200],
-          backgroundColor: 'rgba(232,132,26,0.75)',
-          borderRadius: 3,
-        },
-        {
-          label: '강남역 2번출구',
-          data: [9000, 10800, 7200],
-          backgroundColor: 'rgba(45,132,237,0.75)',
-          borderRadius: 3,
-        }
-      ]
+      labels: ['07~12시\n(150사이클)', '12~18시\n(180사이클)', '18~22시\n(120사이클)'],
+      datasets: Object.entries(effectMediaCfg).map(([k, cfg]) => ({
+        label: cfg.name,
+        data: k === 'C' ? [60, 69, 69] : [cfg.avgPerCycle, cfg.avgPerCycle, cfg.avgPerCycle],
+        backgroundColor: cfg.color + 'BF',  /* 75% opacity */
+        borderColor: cfg.color,
+        borderWidth: 1,
+        borderRadius: 3
+      }))
     },
     options: {
       responsive: true,
@@ -1520,68 +1524,47 @@ function buildEffectCharts() {
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
         tooltip: {
+          mode: 'index',
+          intersect: false,
           callbacks: {
-            afterBody(items) {
-              const total = items.reduce((s, i) => s + i.raw, 0);
-              return `합계: ${total.toLocaleString()}`;
-            }
+            title: ctx => ctx[0].label.replace('\n', ' '),
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}명/회`
           }
         }
       },
       scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
         y: {
-          stacked: true,
+          beginAtZero: true,
           grid: { color: '#F0F1F3' },
-          ticks: {
-            font: { size: 11 },
-            callback: v => v >= 1000 ? (v/1000).toFixed(0) + 'K' : v
-          }
+          ticks: { font: { size: 11 }, callback: v => v + '명' },
+          suggestedMax: 130
         }
       }
     }
   });
 
-  /* 일간 노출 추이 — line chart, 최근 7일 */
+  /* ── 사이클당 평균 노출 추이 — Section B 잔여 현황과 동일 스타일 ── */
   const dtCtx = document.getElementById('dailyTrendChart').getContext('2d');
   if (dailyTrendChartInst) dailyTrendChartInst.destroy();
-  const labels = ['6/2(월)', '6/3(화)', '6/4(수)', '6/5(목)', '6/6(금)', '6/7(토)', '6/8(일)'];
   dailyTrendChartInst = new Chart(dtCtx, {
     type: 'line',
     data: {
-      labels,
-      datasets: [
-        {
-          label: '강남역 1번출구 A',
-          data: [44200, 45100, 43800, 45500, 44900, 46000, 45000],
-          borderColor: '#58C65D',
-          backgroundColor: 'rgba(88,198,93,0.07)',
-          borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.3,
-          fill: true
-        },
-        {
-          label: '강남역 1번출구 B',
-          data: [48300, 49700, 47900, 50200, 49100, 50800, 49500],
-          borderColor: '#E8841A',
-          backgroundColor: 'rgba(232,132,26,0.07)',
-          borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.3,
-          fill: true
-        },
-        {
-          label: '강남역 2번출구',
-          data: [26500, 27200, 25900, 27600, 26800, 0, 27000],
-          borderColor: '#2D84ED',
-          backgroundColor: 'rgba(45,132,237,0.07)',
-          borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.3,
-          fill: true
-        }
-      ]
+      labels: DAYS,
+      datasets: Object.entries(effectMediaCfg).map(([k, cfg]) => ({
+        label: cfg.name,
+        data: avgTrendData[k].map(v => v === 0 ? null : v),
+        borderColor: cfg.color,
+        backgroundColor: cfg.bg,
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: avgTrendData[k].map(v =>
+          (v > 0 && v < cfg.avgPerCycle * 0.85) ? '#E97474' : cfg.color
+        ),
+        tension: 0.3,
+        fill: true,
+        spanGaps: false  /* null(점검) 구간 끊기 */
+      }))
     },
     options: {
       responsive: true,
@@ -1594,7 +1577,9 @@ function buildEffectCharts() {
           callbacks: {
             label(ctx) {
               const v = ctx.raw;
-              return ` ${ctx.dataset.label}: ${v === 0 ? '점검 중' : v.toLocaleString()}`;
+              const cfg = Object.values(effectMediaCfg)[ctx.datasetIndex];
+              if (v === null) return ` ${ctx.dataset.label}: 점검 중`;
+              return ` ${ctx.dataset.label}  ${v}명/회  (기준 ${cfg.avgPerCycle}명)`;
             }
           }
         }
@@ -1603,10 +1588,9 @@ function buildEffectCharts() {
         x: { grid: { display: false }, ticks: { font: { size: 10 } } },
         y: {
           grid: { color: '#F0F1F3' },
-          ticks: {
-            font: { size: 11 },
-            callback: v => v >= 1000 ? (v/1000).toFixed(0) + 'K' : v
-          }
+          ticks: { font: { size: 11 }, callback: v => v + '명' },
+          suggestedMin: 50,
+          suggestedMax: 130
         }
       }
     }
