@@ -1922,9 +1922,9 @@ function buildTimeslotCharts() {
   if (effectCharts.hourly) effectCharts.hourly.destroy();
   if (effectCharts.timeSlot) { effectCharts.timeSlot.destroy(); effectCharts.timeSlot = null; }
   const hColors = [
-    { base: '#2D84EDBF', peak: '#1A5FB8' },
-    { base: '#58C65DBF', peak: '#2E9E34' },
-    { base: '#C9317ABF', peak: '#8C1A50' }
+    { base: '#2D84ED40', peak: '#2D84ED' },
+    { base: '#58C65D40', peak: '#58C65D' },
+    { base: '#C9317A40', peak: '#C9317A' }
   ];
   const hKeys = ['A', 'B', 'C'];
   const hLabels = ['강남역 A', '강남역 B', '강남역 C'];
@@ -1966,9 +1966,9 @@ function buildWeekdayChart() {
   const wPeakIdx = weekdayData.values.indexOf(Math.max(...weekdayData.values));
   if (effectCharts.weekday) effectCharts.weekday.destroy();
   const wColors = [
-    { base: '#2D84EDBF', peak: '#1A5FB8' },
-    { base: '#58C65DBF', peak: '#2E9E34' },
-    { base: '#C9317ABF', peak: '#8C1A50' }
+    { base: '#2D84ED40', peak: '#2D84ED' },
+    { base: '#58C65D40', peak: '#58C65D' },
+    { base: '#C9317A40', peak: '#C9317A' }
   ];
   const wKeys = ['A', 'B', 'C'];
   const wLabels = ['강남역 A', '강남역 B', '강남역 C'];
@@ -2011,9 +2011,9 @@ function buildMonthlyCharts() {
   if (effectCharts.monthlyMedia) { effectCharts.monthlyMedia.destroy(); effectCharts.monthlyMedia = null; }
   const mPeakIdx = monthlyData.total.indexOf(Math.max(...monthlyData.total));
   const mediaColors = [
-    { base: '#2D84ED', peak: '#1A5FB8' },
-    { base: '#58C65DBF', peak: '#2E9E34' },
-    { base: '#C9317ABF', peak: '#8C1A50' }
+    { base: '#2D84ED40', peak: '#2D84ED' },
+    { base: '#58C65D40', peak: '#58C65D' },
+    { base: '#C9317A40', peak: '#C9317A' }
   ];
   const mediaKeys = ['A', 'B', 'C'];
   const mediaLabels = ['강남역 A', '강남역 B', '강남역 C'];
@@ -2064,17 +2064,17 @@ function buildDemoCharts() {
         {
           label: '남성',
           data: ageData.male,
-          backgroundColor: ageData.male.map((_, i) => i === agePeakIdx ? '#2D84ED' : '#2D84EDBF'),
-          borderColor:     ageData.male.map((_, i) => i === agePeakIdx ? '#1A5FB8' : '#2D84ED'),
-          borderWidth:     ageData.male.map((_, i) => i === agePeakIdx ? 3 : 1),
+          backgroundColor: ageData.male.map((_, i) => i === agePeakIdx ? '#2D84ED' : '#2D84ED40'),
+          borderColor:     ageData.male.map((_, i) => i === agePeakIdx ? '#2D84ED' : '#2D84ED40'),
+          borderWidth: 0,
           borderRadius: 3
         },
         {
           label: '여성',
           data: ageData.female,
-          backgroundColor: ageData.female.map((_, i) => i === agePeakIdx ? '#C9317A' : '#C9317ABF'),
-          borderColor:     ageData.female.map((_, i) => i === agePeakIdx ? '#8C1A50' : '#C9317A'),
-          borderWidth:     ageData.female.map((_, i) => i === agePeakIdx ? 3 : 1),
+          backgroundColor: ageData.female.map((_, i) => i === agePeakIdx ? '#C9317A' : '#C9317A40'),
+          borderColor:     ageData.female.map((_, i) => i === agePeakIdx ? '#C9317A' : '#C9317A40'),
+          borderWidth: 0,
           borderRadius: 3
         }
       ]
