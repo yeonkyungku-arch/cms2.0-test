@@ -576,6 +576,16 @@
     .effect-chart-block + .effect-chart-block {
       border-left: 1px solid #E5E7EA;
     }
+    .effect-insight {
+      background: #F0F9F1;
+      border-left: 3px solid #58C65D;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #3A4349;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
     .effect-chart-title {
       font-size: 13px;
       font-weight: 700;
@@ -1163,19 +1173,9 @@
         <div class="kpi-sub">3개 미디어 합산 · 일평균</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">미디어당 일 평균 노출</div>
-        <div class="kpi-value">41,850<span style="font-size:12px;font-weight:500;color:#596066;">명</span></div>
-        <div class="kpi-sub">125,550 ÷ 3개 미디어</div>
-      </div>
-      <div class="kpi-card">
         <div class="kpi-label">평균 재생 완료율</div>
         <div class="kpi-value">98.6<span style="font-size:14px;font-weight:600;">%</span></div>
         <div class="kpi-sub">사이클 내 정상 재생 · 미디어 평균</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">평균 운영률</div>
-        <div class="kpi-value">97.2<span style="font-size:14px;font-weight:600;">%</span></div>
-        <div class="kpi-sub">가동 시간 ÷ 설정 운영 시간</div>
       </div>
     </div>
 
@@ -1195,6 +1195,7 @@
 
       <!-- 시간대별 -->
       <div id="tabTimeslot" class="effect-tab-panel">
+        <div class="effect-insight">📊 <strong>18시</strong> 퇴근 피크 시간대에 노출이 가장 높으며, 저녁(18~22시) 구간이 전체 노출의 약 <strong>38%</strong>를 차지합니다. 오전 대비 저녁 시간대 집중 운영이 효과적입니다.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
             <div class="effect-chart-title">시간대별 사이클당 평균 노출</div>
@@ -1215,6 +1216,7 @@
 
       <!-- 요일별 -->
       <div id="tabWeekday" class="effect-tab-panel" style="display:none;">
+        <div class="effect-insight">📅 <strong>토요일</strong>이 주간 최고 노출 요일로, 평일 평균 대비 <strong>+26.9%</strong> 높습니다. 주말 유동 인구 집중으로 토·일 편성 비중을 높이면 노출 효율이 개선됩니다.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
             <div class="effect-chart-title">요일별 평균 노출</div>
@@ -1251,6 +1253,7 @@
 
       <!-- 월별 -->
       <div id="tabMonthly" class="effect-tab-panel" style="display:none;">
+        <div class="effect-insight">📈 <strong>6월</strong>이 최근 6개월 중 최고 노출월(125,550명/일)로, 전월 대비 <strong>+5%</strong> 증가했습니다. 강남역 B 미디어의 성장세가 전체 상승을 견인하고 있습니다.</div>
         <div class="effect-chart-title">월별 누적 노출</div>
         <div class="effect-chart-sub">미디어별 일 누적 노출 합산 (명/일) — 누적 막대그래프</div>
         <div class="effect-canvas-wrap" style="height:240px;">
@@ -1260,6 +1263,7 @@
 
       <!-- 성별·연령대 -->
       <div id="tabDemo" class="effect-tab-panel" style="display:none;">
+        <div class="effect-insight">👥 <strong>30대 남성</strong>이 핵심 노출 타깃으로, 전체의 약 <strong>15%</strong>를 차지합니다. 20·30대 합산 비중이 52%로 젊은 직장인 대상 캠페인에 최적화된 매체입니다.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
             <div class="effect-chart-title">연령대별 노출 비율</div>
@@ -1317,6 +1321,7 @@
 
       <!-- 거주지·근무지 Top 5 -->
       <div id="tabRegion" class="effect-tab-panel" style="display:none;">
+        <div class="effect-insight">📍 노출 인원의 거주지·근무지 모두 <strong>서울 강남구</strong>가 1위로, 지역 밀착형 생활권 광고로서의 높은 효과를 보여줍니다. 강남·서초·송파 3개 구가 거주지 기준 전체의 <strong>47%</strong>를 점유합니다.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
 
           <!-- 거주지 Top 5 -->
