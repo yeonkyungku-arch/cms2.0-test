@@ -1135,14 +1135,14 @@
     <!-- KPI 요약 -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">사이클당 평균 노출</div>
-        <div class="kpi-value">94<span style="font-size:14px;font-weight:600;color:#596066;">명/회</span></div>
-        <div class="kpi-sub">3개 미디어 가중 평균</div>
+        <div class="kpi-label">일 총 누적 노출</div>
+        <div class="kpi-value">125,550<span style="font-size:14px;font-weight:600;color:#596066;">명</span></div>
+        <div class="kpi-sub">3개 미디어 합산 · 일평균</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">미디어당 일평균 노출</div>
-        <div class="kpi-value">40,500<span style="font-size:12px;font-weight:500;color:#596066;">명</span></div>
-        <div class="kpi-sub">121,500 ÷ 3개 미디어</div>
+        <div class="kpi-label">미디어당 일 평균 노출</div>
+        <div class="kpi-value">41,850<span style="font-size:12px;font-weight:500;color:#596066;">명</span></div>
+        <div class="kpi-sub">125,550 ÷ 3개 미디어</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">평균 재생 완료율</div>
@@ -1175,14 +1175,14 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
             <div class="effect-chart-title">시간대별 사이클당 평균 노출</div>
-            <div class="effect-chart-sub">시간별 · 미디어 합산 평균 (명/회)</div>
+            <div class="effect-chart-sub">시간별 · 미디어 합산 누적 노출 (명)</div>
             <div class="effect-canvas-wrap" style="height:220px;">
               <canvas id="chartHourly"></canvas>
             </div>
           </div>
           <div>
             <div class="effect-chart-title">시보 구간별 미디어 비교</div>
-            <div class="effect-chart-sub">07~12 / 12~18 / 18~22 · 미디어별 (명/회)</div>
+            <div class="effect-chart-sub">07~12 / 12~18 / 18~22 · 미디어별 누적 노출 (명)</div>
             <div class="effect-canvas-wrap" style="height:220px;">
               <canvas id="chartTimeSlot"></canvas>
             </div>
@@ -1195,7 +1195,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
           <div>
             <div class="effect-chart-title">요일별 평균 노출</div>
-            <div class="effect-chart-sub">월~일 · 미디어 합산 평균 (명/회)</div>
+            <div class="effect-chart-sub">월~일 · 미디어 합산 누적 노출 일평균 (명)</div>
             <div class="effect-canvas-wrap" style="height:220px;">
               <canvas id="chartWeekday"></canvas>
             </div>
@@ -1206,18 +1206,20 @@
             <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
               <div style="background:#F6F7F9;border-radius:8px;padding:16px 18px;">
                 <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">평일 평균 (월~금)</div>
-                <div style="font-size:22px;font-weight:800;color:#24292E;">91<span style="font-size:13px;font-weight:500;color:#596066;">명/회</span></div>
+                <div style="font-size:22px;font-weight:800;color:#24292E;">41,850<span style="font-size:13px;font-weight:500;color:#596066;">명</span></div>
+                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">미디어당 일 평균 기준</div>
                 <div style="margin-top:8px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
                   <div style="width:72%;height:100%;background:#58C65D;border-radius:3px;"></div>
                 </div>
               </div>
               <div style="background:#F6F7F9;border-radius:8px;padding:16px 18px;">
                 <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">주말 평균 (토~일)</div>
-                <div style="font-size:22px;font-weight:800;color:#24292E;">118<span style="font-size:13px;font-weight:500;color:#596066;">명/회</span></div>
+                <div style="font-size:22px;font-weight:800;color:#24292E;">53,100<span style="font-size:13px;font-weight:500;color:#596066;">명</span></div>
+                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">미디어당 일 평균 기준</div>
                 <div style="margin-top:8px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
                   <div style="width:93%;height:100%;background:#2D84ED;border-radius:3px;"></div>
                 </div>
-                <div style="font-size:11px;color:#2D84ED;margin-top:4px;font-weight:600;">▲ 29.7% 평일 대비</div>
+                <div style="font-size:11px;color:#2D84ED;margin-top:4px;font-weight:600;">▲ 26.9% 평일 대비</div>
               </div>
             </div>
           </div>
@@ -1236,7 +1238,7 @@
           </div>
           <div>
             <div class="effect-chart-title">월별 미디어별 비교</div>
-            <div class="effect-chart-sub">미디어별 사이클당 평균 노출 추이 (명/회)</div>
+            <div class="effect-chart-sub">미디어별 일 누적 노출 추이 (명/일)</div>
             <div class="effect-canvas-wrap" style="height:220px;">
               <canvas id="chartMonthlyMedia"></canvas>
             </div>
@@ -1643,34 +1645,34 @@ function filterSched(tab, filter) {
 
 /* ── Effect analysis: 4-tab chart system ── */
 
-/* 미디어 설정 */
+/* 미디어 설정 — avgPerCycle × 450사이클 = 일 누적 */
 const effectMediaCfg = [
-  { name: '강남역 1번출구 A', avgPerCycle: 100, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
-  { name: '강남역 1번출구 B', avgPerCycle: 110, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
-  { name: '강남역 2번출구',   avgPerCycle:  69, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
+  { name: '강남역 1번출구 A', dailyTotal: 45000, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
+  { name: '강남역 1번출구 B', dailyTotal: 49500, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
+  { name: '강남역 2번출구',   dailyTotal: 31050, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
 ];
 
-/* 일별 데이터 (6/1~6/8, 미디어별 사이클당 평균 노출 명/회) */
+/* 일별 데이터 (6/1~6/8, 미디어별 일 누적 노출 명/일) */
 const dailyData = {
   labels: ['6/1', '6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8'],
-  A: [102, 98, 100, 97, 101, 100, 102, 100],
-  B: [112, 108, 110, 107, 112, 109, 113, 110],
-  C: [70,  67,  69,  66,  70,  68, null,  69]  /* 6/7 점검 */
+  A: [45900, 44100, 45000, 43650, 45450, 45000, 45900, 45000],
+  B: [50400, 48600, 49500, 48150, 50400, 49050, 50850, 49500],
+  C: [31500, 30150, 31050, 29700, 31500, 30600, null, 31050]  /* 6/7 점검 */
 };
 
-/* 요일별 데이터 (월~일 평균, 미디어 합산) */
+/* 요일별 데이터 (월~일 일 누적 평균, 미디어 합산 명/일) */
 const weekdayData = {
   labels: ['월', '화', '수', '목', '금', '토', '일'],
-  values: [89, 92, 91, 93, 98, 120, 116]
+  values: [40050, 41400, 40950, 41850, 44100, 54000, 52200]
 };
 
 /* 월별 데이터 (1~6월 미디어 합산 일평균, 명/일) */
 const monthlyData = {
   labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
-  total: [108000, 112000, 118000, 120000, 119500, 121500],
-  A: [93, 95, 97, 99, 100, 100],
-  B: [103, 105, 107, 108, 110, 110],
-  C: [65,  66,  67,  68,  69,  69]
+  total: [108000, 112000, 118000, 120000, 119500, 125550],
+  A: [42000, 43000, 44000, 45000, 45000, 45000],
+  B: [45000, 46000, 48000, 49500, 49500, 49500],
+  C: [21000, 23000, 26000, 25500, 25000, 31050]
 };
 
 /* 성별·연령대 데이터 (%) */
@@ -1680,10 +1682,10 @@ const ageData = {
   female: [4,  12, 12,  9, 9]
 };
 
-/* 시간대별 데이터 (07~21시 미디어 합산 평균, 명/회) */
+/* 시간대별 데이터 (07~21시 미디어 합산 누적 노출 명, 시간당 30사이클) */
 const hourlyData = {
   labels: ['07시','08시','09시','10시','11시','12시','13시','14시','15시','16시','17시','18시','19시','20시','21시'],
-  values: [78, 105, 98, 88, 91, 94, 96, 87, 85, 88, 95, 112, 108, 95, 82]
+  values: [2340, 3150, 2940, 2640, 2730, 2820, 2880, 2610, 2550, 2640, 2850, 3360, 3240, 2850, 2460]
 };
 
 const effectCharts = {};
@@ -1705,19 +1707,19 @@ function makeLineDatasets(keys) {
   }));
 }
 
-function lineOpts(unit) {
+function lineOpts(unit, suggestedMin, suggestedMax) {
   return {
     responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
       tooltip: {
         mode: 'index', intersect: false,
-        callbacks: { label: ctx => ctx.raw === null ? ` ${ctx.dataset.label}: 점검 중` : ` ${ctx.dataset.label}: ${ctx.raw}${unit}` }
+        callbacks: { label: ctx => ctx.raw === null ? ` ${ctx.dataset.label}: 점검 중` : ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}${unit}` }
       }
     },
     scales: {
       x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-      y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + unit }, suggestedMin: 50, suggestedMax: 130 }
+      y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v >= 1000 ? (v/1000).toFixed(0)+'K' : v) + unit.replace('명','') }, suggestedMin: suggestedMin || 0, suggestedMax: suggestedMax || undefined }
     }
   };
 }
@@ -1731,7 +1733,7 @@ function buildTimeslotCharts() {
     data: {
       labels: hourlyData.labels,
       datasets: [{
-        label: '평균 노출 (명/회)',
+        label: '누적 노출 (명)',
         data: hourlyData.values,
         backgroundColor: hourlyData.values.map((_, i) => i === hourlyPeakIdx ? '#2D84ED' : '#58C65DBF'),
         borderColor:     hourlyData.values.map((_, i) => i === hourlyPeakIdx ? '#1A5FB8' : '#58C65D'),
@@ -1743,11 +1745,11 @@ function buildTimeslotCharts() {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.raw}명/회` } }
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toLocaleString()}명` } }
       },
       scales: {
         x: { grid: { display: false }, ticks: { font: ctx => ({ size: 11, weight: ctx.index === hourlyPeakIdx ? '700' : '400' }) } },
-        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '명' }, suggestedMax: 130 }
+        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v.toLocaleString() }, suggestedMax: 3800 }
       }
     }
   });
@@ -1758,9 +1760,10 @@ function buildTimeslotCharts() {
     type: 'bar',
     data: {
       labels: ['07~12시', '12~18시', '18~22시'],
-      datasets: effectMediaCfg.map((cfg, i) => ({
+      /* 구간별 사이클 수: 07~12=150, 12~18=180, 18~22=120 */
+      datasets: effectMediaCfg.map(cfg => ({
         label: cfg.name,
-        data: i === 2 ? [60, 69, 69] : [cfg.avgPerCycle, cfg.avgPerCycle, cfg.avgPerCycle],
+        data: [cfg.dailyTotal * 150 / 450, cfg.dailyTotal * 180 / 450, cfg.dailyTotal * 120 / 450].map(Math.round),
         backgroundColor: cfg.color + 'BF', borderColor: cfg.color, borderWidth: 1, borderRadius: 3
       }))
     },
@@ -1768,11 +1771,11 @@ function buildTimeslotCharts() {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
-        tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}명/회` } }
+        tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}명` } }
       },
       scales: {
         x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '명' }, suggestedMax: 130 }
+        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0)+'K' }, suggestedMax: 24000 }
       }
     }
   });
@@ -1786,7 +1789,7 @@ function buildWeekdayChart() {
     data: {
       labels: weekdayData.labels,
       datasets: [{
-        label: '평균 노출 (명/회)',
+        label: '누적 노출 (명/일)',
         data: weekdayData.values,
         backgroundColor: weekdayData.values.map((_, i) => i === wPeakIdx ? '#2D84ED' : i >= 5 ? '#2D84EDBF' : '#58C65DBF'),
         borderColor:     weekdayData.values.map((_, i) => i === wPeakIdx ? '#1A5FB8' : i >= 5 ? '#2D84ED' : '#58C65D'),
@@ -1798,11 +1801,11 @@ function buildWeekdayChart() {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.raw}명/회` } }
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toLocaleString()}명` } }
       },
       scales: {
         x: { grid: { display: false }, ticks: { font: ctx => ({ size: 12, weight: ctx.index === wPeakIdx ? '700' : '400' }) } },
-        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '명' }, suggestedMax: 140 }
+        y: { beginAtZero: false, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0)+'K' }, suggestedMin: 35000, suggestedMax: 60000 }
       }
     }
   });
@@ -1833,17 +1836,17 @@ function buildMonthlyCharts() {
       },
       scales: {
         x: { grid: { display: false }, ticks: { font: ctx => ({ size: 11, weight: ctx.index === mPeakIdx ? '700' : '400' }) } },
-        y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K' }, beginAtZero: false, suggestedMin: 100000 }
+        y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K' }, beginAtZero: false, suggestedMin: 100000, suggestedMax: 130000 }
       }
     }
   });
 
-  /* 미디어별 사이클당 평균 월별 추이 라인 */
+  /* 미디어별 일 누적 노출 추이 라인 */
   if (effectCharts.monthlyMedia) effectCharts.monthlyMedia.destroy();
   effectCharts.monthlyMedia = new Chart(document.getElementById('chartMonthlyMedia').getContext('2d'), {
     type: 'line',
     data: { labels: monthlyData.labels, datasets: makeLineDatasets([monthlyData.A, monthlyData.B, monthlyData.C]) },
-    options: lineOpts('명/회')
+    options: lineOpts('명', 15000, 55000)
   });
 }
 
