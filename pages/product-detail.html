@@ -879,16 +879,31 @@ function togglePreview(btn) {
 
 /* ── Chart ── */
 const labels = ['6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8'];
-const timeData = {
+
+/* 미디어별 운영 설정 (미디어마다 사이클 최대 시간과 슬롯 수가 다를 수 있음) */
+const mediaConfig = {
+  A: { name: '강남역 1번출구 A', cycleMax: 600, slotMax: 20, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
+  B: { name: '강남역 1번출구 B', cycleMax: 480, slotMax: 16, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
+  C: { name: '강남역 2번출구',   cycleMax: 540, slotMax: 18, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
+};
+
+/* 실제 잔여 시간(초) / 잔여 슬롯 수 — 날짜별 원시값 */
+const timeDataRaw = {
   A: [480, 510, 525, 490, 470, 455, 475],
   B: [200, 180, 150, 130, 120, 110, 100],
   C: [540, 550, 555, 560, 565, 570, 575]
 };
-const slotData = {
+const slotDataRaw = {
   A: [16, 17, 18, 15, 14, 13, 15],
   B: [7,  6,  5,  4,  4,  3,  3],
   C: [18, 18, 19, 19, 20, 20, 20]
 };
+
+/* % 변환 */
+function toPct(raw, key, mode) {
+  const max = mode === 'time' ? mediaConfig[key].cycleMax : mediaConfig[key].slotMax;
+  return raw[key].map(v => Math.round(v / max * 100));
+}
 
 let chartMode = 'time';
 let remainChart;
@@ -896,51 +911,29 @@ let remainChart;
 function buildChart() {
   const ctx = document.getElementById('remainChart').getContext('2d');
   const isTime = chartMode === 'time';
-  const dA = isTime ? timeData.A : slotData.A;
-  const dB = isTime ? timeData.B : slotData.B;
-  const dC = isTime ? timeData.C : slotData.C;
-  const dangerVal = isTime ? 120 : 4;
-  const maxVal    = isTime ? 600 : 20;
-  const unit      = isTime ? '초' : '개';
+
+  /* Y축은 항상 0~100% */
+  const datasets = Object.keys(mediaConfig).map(key => {
+    const cfg = mediaConfig[key];
+    const pctData = toPct(isTime ? timeDataRaw : slotDataRaw, key, chartMode);
+    return {
+      label: cfg.name,
+      data: pctData,
+      /* 원시값을 별도 저장해 툴팁에서 꺼내 씀 */
+      rawData: (isTime ? timeDataRaw : slotDataRaw)[key],
+      borderColor: cfg.color,
+      backgroundColor: cfg.bg,
+      tension: 0.3,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: pctData.map(v => v <= 20 ? '#E97474' : cfg.color)
+    };
+  });
 
   if (remainChart) remainChart.destroy();
   remainChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: '강남역 1번출구 A',
-          data: dA,
-          borderColor: '#58C65D',
-          backgroundColor: 'rgba(88,198,93,0.08)',
-          tension: 0.3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#58C65D'
-        },
-        {
-          label: '강남역 1번출구 B',
-          data: dB,
-          borderColor: '#E8841A',
-          backgroundColor: 'rgba(232,132,26,0.08)',
-          tension: 0.3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#E8841A'
-        },
-        {
-          label: '강남역 2번출구',
-          data: dC,
-          borderColor: '#2D84ED',
-          backgroundColor: 'rgba(45,132,237,0.08)',
-          tension: 0.3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#2D84ED'
-        }
-      ]
-    },
+    data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -951,27 +944,28 @@ function buildChart() {
           labels: { font: { size: 12 }, color: '#596066', boxWidth: 12 }
         },
         tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#fff',
+          borderColor: '#E5E7EA',
+          borderWidth: 1,
+          titleColor: '#24292E',
+          bodyColor: '#596066',
+          padding: 12,
           callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}${unit}`
-          }
-        },
-        annotation: {
-          annotations: {
-            dangerLine: {
-              type: 'line',
-              yMin: dangerVal,
-              yMax: dangerVal,
-              borderColor: '#E97474',
-              borderWidth: 1.5,
-              borderDash: [4, 4],
-              label: {
-                display: true,
-                content: `위험 임계값 (${dangerVal}${unit})`,
-                position: 'end',
-                font: { size: 11 },
-                color: '#E97474',
-                backgroundColor: 'transparent'
-              }
+            title: items => labels[items[0].dataIndex] + ' 잔여 현황',
+            label: item => {
+              const key = ['A','B','C'][item.datasetIndex];
+              const cfg = mediaConfig[key];
+              const idx = item.dataIndex;
+              const rawVal = (isTime ? timeDataRaw : slotDataRaw)[key][idx];
+              const maxVal = isTime ? cfg.cycleMax : cfg.slotMax;
+              const pct = item.parsed.y;
+              const unit = isTime ? '초' : '개';
+              const detail = isTime
+                ? `잔여 ${rawVal}초 / 사이클 최대 ${maxVal}초`
+                : `잔여 ${rawVal}개 / 총 슬롯 ${maxVal}개`;
+              return ` ${cfg.name}  ${pct}%  (${detail})`;
             }
           }
         }
@@ -983,20 +977,39 @@ function buildChart() {
         },
         y: {
           min: 0,
-          max: maxVal,
+          max: 100,
           grid: { color: '#F0F1F3' },
           ticks: {
             color: '#9EA5AD',
             font: { size: 11 },
-            callback: v => v + unit
+            stepSize: 20,
+            callback: v => v + '%'
           }
         }
       }
-    }
+    },
+    plugins: [{
+      /* 20% 위험선을 직접 그리는 플러그인 */
+      id: 'dangerLine',
+      afterDraw(chart) {
+        const { ctx: c, chartArea: { left, right, top, bottom }, scales: { y } } = chart;
+        const yPos = y.getPixelForValue(20);
+        c.save();
+        c.beginPath();
+        c.setLineDash([5, 4]);
+        c.strokeStyle = '#E97474';
+        c.lineWidth = 1.5;
+        c.moveTo(left, yPos);
+        c.lineTo(right, yPos);
+        c.stroke();
+        c.setLineDash([]);
+        c.font = '10px sans-serif';
+        c.fillStyle = '#E97474';
+        c.fillText('위험 (20%)', right - 60, yPos - 4);
+        c.restore();
+      }
+    }]
   });
-
-  // Draw danger line manually as fallback (annotation plugin may not be available)
-  // We rely on chartjs-plugin-annotation if loaded; otherwise use afterDraw
 }
 
 function switchChart(mode) {

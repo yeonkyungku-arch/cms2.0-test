@@ -664,6 +664,7 @@
                   <tr style="background:#F6F7F9;">
                     <th style="padding:8px 16px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">스케줄</th>
                     <th style="padding:8px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">프로덕트</th>
+                    <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">사이클당<br><span style="font-size:10px;font-weight:400;color:#9EA5AD;">편성 횟수</span></th>
                     <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">07~12시<br><span style="font-size:10px;font-weight:400;">(150회)</span></th>
                     <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">12~18시<br><span style="font-size:10px;font-weight:400;">(180회)</span></th>
                     <th style="padding:8px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">18~22시<br><span style="font-size:10px;font-weight:400;">(120회)</span></th>
@@ -679,6 +680,7 @@
                       <span style="font-weight:600;color:#24292E;">삼성 갤럭시 S25</span>
                     </td>
                     <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구</span></td>
+                    <td style="padding:9px 12px;text-align:center;"><span style="display:inline-block;padding:2px 8px;background:#EEEDFE;border-radius:10px;font-size:11px;font-weight:700;color:#3C3489;">1회/사이클</span></td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">150회</td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">120회</td>
@@ -692,6 +694,7 @@
                       <span style="font-weight:600;color:#24292E;">현대자동차 아이오닉</span>
                     </td>
                     <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">강남 A지구</span></td>
+                    <td style="padding:9px 12px;text-align:center;"><span style="display:inline-block;padding:2px 8px;background:#EEEDFE;border-radius:10px;font-size:11px;font-weight:700;color:#3C3489;">1회/사이클</span></td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">150회</td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">120회</td>
@@ -706,6 +709,7 @@
                       <span style="font-size:10px;color:#9EA5AD;margin-left:4px;">자체 운영</span>
                     </td>
                     <td style="padding:9px 12px;"><span style="display:inline-block;padding:2px 6px;background:#F0F1F3;border-radius:3px;font-size:11px;color:#596066;">자체 운영</span></td>
+                    <td style="padding:9px 12px;text-align:center;"><span style="display:inline-block;padding:2px 8px;background:#E1F5EE;border-radius:10px;font-size:11px;font-weight:700;color:#085041;">1회/사이클</span></td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">150회</td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">180회</td>
                     <td style="padding:9px 12px;text-align:center;color:#596066;">120회</td>
@@ -717,7 +721,7 @@
               </table>
             </div>
             <div style="padding:10px 16px;background:#E8F9E8;border-top:1px solid #E5E7EA;font-size:12px;color:#2A7A2E;font-weight:600;">
-              ✅ 전체 일반 광고 스케줄 최소 보장 횟수 90회 이상 충족
+              ✅ 일반 광고 사이클당 1회 편성 → 하루 450사이클 × 1 = 항목별 450회 균등 송출 · 최소 보장 90회 이상 충족
             </div>
           </div>
 
@@ -1292,46 +1296,93 @@
         m.opHours + ' · ' + m.loops + '회/일 · ' + m.spec + '</div></th>';
     });
 
-    /* ── 테이블 바디 ── */
+    /* ── 테이블 바디 (시보 구간별 그룹 + 반복 접힘) ── */
     var tbRows = '';
-    /* 사이클 간격: 각 미디어의 실제 사이클 시간(초) 중 최솟값으로 행 간격 계산 */
-    var CYCLE_SEC = 120; /* 실제 사이클 시간 (초) */
-    for (var i = 0; i < maxLoops; i++) {
-      var totalSec = minStartH * 3600 + i * CYCLE_SEC;
+    var CYCLE_SEC = 120;
+    var SHOW_PER_SEG = 3; /* 구간당 미리보기 행 수 */
+
+    /* 전체 구간: 각 미디어의 opHours 파싱으로 공통 구간 생성 */
+    var segTimes = [minStartH].concat(
+      jingleTimes.filter(function(h){ return h > minStartH && h < maxLoops / 30 + minStartH; })
+    );
+    var maxEndH = minStartH + Math.ceil(maxLoops / 30);
+    segTimes.push(maxEndH);
+
+    var globalCycleIdx = 0;
+
+    function makeDataRow(cycleIdx, bg) {
+      var totalSec = minStartH * 3600 + cycleIdx * CYCLE_SEC;
       var hh = Math.floor(totalSec / 3600);
       var mm = Math.floor((totalSec % 3600) / 60);
       var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-      var cycleNum = 'C' + String(i+1).padStart(3,'0');
-      var bg = i % 2 ? '#FAFBFC' : '#fff';
-
-      tbRows += '<tr>';
-      tbRows += '<td style="padding:3px 8px;text-align:center;font-size:10px;font-weight:600;color:#B0B7BE;' +
+      var cycleNum = 'C' + String(cycleIdx + 1).padStart(3,'0');
+      var row = '<tr>';
+      row += '<td style="padding:3px 8px;text-align:center;font-size:10px;font-weight:600;color:#B0B7BE;' +
         'border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;white-space:nowrap;' +
         'position:sticky;left:0;background:' + bg + ';z-index:5;">' + cycleNum + '</td>';
-      tbRows += '<td style="padding:3px 8px;text-align:center;font-size:11px;color:#596066;' +
+      row += '<td style="padding:3px 8px;text-align:center;font-size:11px;color:#596066;' +
         'border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;white-space:nowrap;' +
         'position:sticky;left:52px;background:' + bg + ';z-index:5;">' + timeStr + '</td>';
-
       medias.forEach(function(m) {
-        var startH = parseInt(m.opHours);
-        var offset = (startH - minStartH) * 3600 / CYCLE_SEC;
-        var active = (i >= offset && i < offset + m.loops);
-        tbRows += '<td style="padding:2px 8px;border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;background:' + bg + ';">';
+        var mStartH = parseInt(m.opHours);
+        var offset = (mStartH - minStartH) * 3600 / CYCLE_SEC;
+        var active = (cycleIdx >= offset && cycleIdx < offset + m.loops);
+        row += '<td style="padding:2px 8px;border-right:1px solid #F0F1F3;border-bottom:1px solid #F0F1F3;background:' + bg + ';">';
         if (active) {
           var seqTotal = m.seq.reduce(function(s,x){ return s+x.dur; }, 0);
-          tbRows += '<div style="display:flex;gap:1px;height:22px;">';
+          row += '<div style="display:flex;gap:1px;height:22px;">';
           m.seq.forEach(function(item) {
             var pct = (item.dur / seqTotal * 100).toFixed(2);
-            tbRows += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초">' +
+            row += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초">' +
               '<span>' + item.name + '</span></div>';
           });
-          tbRows += '</div>';
+          row += '</div>';
         } else {
-          tbRows += '<div style="height:22px;background:#F6F7F9;border-radius:3px;"></div>';
+          row += '<div style="height:22px;background:#F6F7F9;border-radius:3px;opacity:0.5;"></div>';
         }
-        tbRows += '</td>';
+        row += '</td>';
       });
-      tbRows += '</tr>';
+      row += '</tr>';
+      return row;
+    }
+
+    var colCount = 2 + medias.length;
+    for (var si = 0; si < segTimes.length - 1; si++) {
+      var segStart = segTimes[si];
+      var segEnd   = segTimes[si + 1];
+      var segStartIdx = (segStart - minStartH) * 3600 / CYCLE_SEC;
+      var segEndIdx   = (segEnd   - minStartH) * 3600 / CYCLE_SEC;
+      var segCycles   = segEndIdx - segStartIdx;
+      if (segCycles <= 0) continue;
+
+      /* 구간 헤더 행 */
+      var confirmedItems = medias[0].seq.filter(function(x){ return x.cls === 'lc-confirmed'; }).length;
+      tbRows += '<tr style="background:#F0F1F3;">' +
+        '<td colspan="' + colCount + '" style="padding:5px 12px;border-bottom:1px solid #E5E7EA;">' +
+        '<span style="font-size:11px;font-weight:700;color:#454C52;">' +
+        String(segStart).padStart(2,'0') + ':00 ~ ' + String(segEnd).padStart(2,'0') + ':00</span>' +
+        '<span style="font-size:10px;color:#596066;margin-left:10px;">' + segCycles + '사이클</span>' +
+        '<span style="font-size:10px;color:#58C65D;margin-left:8px;font-weight:600;">' +
+        '일반 광고 항목별 ' + segCycles + '회 균등 송출</span>' +
+        '</td></tr>';
+
+      /* 샘플 행 */
+      var showCount = Math.min(SHOW_PER_SEG, segCycles);
+      for (var r = 0; r < showCount; r++) {
+        var idx = segStartIdx + r;
+        tbRows += makeDataRow(idx, idx % 2 ? '#FAFBFC' : '#fff');
+      }
+
+      /* 반복 안내 행 */
+      if (segCycles > showCount) {
+        var remaining = segCycles - showCount;
+        tbRows += '<tr style="background:#FAFBFC;">' +
+          '<td colspan="' + colCount + '" style="padding:6px 12px;text-align:center;' +
+          'font-size:11px;color:#9EA5AD;border-bottom:1px solid #E5E7EA;">' +
+          '↻ 동일 편성 패턴으로 <strong style="color:#596066;">' + remaining + '사이클</strong> 더 반복' +
+          ' — 모든 일반 광고 이 구간에서 균등 횟수 보장' +
+          '</td></tr>';
+      }
     }
 
     document.getElementById('productDayBody').innerHTML =
@@ -1478,30 +1529,64 @@
   var CYCLE_MAX = 600;   /* 사이클 최대 시간 (초) */
   var CYCLE_ACTUAL = 120; /* 실제 사이클 시간 (초) */
 
-  function renderLoopList() {
-    var LOOPS = 450; /* 54,000초 ÷ 120초 */
-    var START_H = 7; /* 07:00 */
-    var html = '';
-    for (var i = 0; i < LOOPS; i++) {
-      var totalSec = START_H * 3600 + i * CYCLE_ACTUAL;
-      var hh = Math.floor(totalSec / 3600);
-      var mm = Math.floor((totalSec % 3600) / 60);
-      var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-      var cycleNum = 'C' + String(i + 1).padStart(3, '0');
-      var rowBg = (i % 2 === 0) ? '' : 'background:#FAFBFC;';
+  /* 시보 기준 구간 정의 (일반 광고 횟수 균등성 확인용) */
+  var LOOP_SEGMENTS = [
+    { startH: 7,  endH: 12, cycles: 150 },
+    { startH: 12, endH: 18, cycles: 180 },
+    { startH: 18, endH: 22, cycles: 120 }
+  ];
+  /* 일반 광고(confirmed) = 사이클당 1회 편성 → 하루 총 450회 균등 */
+  var CONFIRMED_PER_CYCLE = 1;
 
-      html += '<div class="loop-row" style="' + rowBg + '">';
-      html += '<span class="loop-row-num">' + cycleNum + '</span>';
-      html += '<span class="loop-row-time">' + timeStr + '</span>';
-      html += '<div class="loop-row-items">';
-      loopSeq.forEach(function(item) {
-        var pct = (item.dur / CYCLE_ACTUAL * 100).toFixed(2);
-        html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
-        html += '<span>' + item.name + '</span>';
-        html += '</div>';
-      });
-      html += '</div></div>';
-    }
+  function renderCycleRow(globalIdx, rowBg) {
+    var totalSec = 7 * 3600 + globalIdx * CYCLE_ACTUAL;
+    var hh = Math.floor(totalSec / 3600);
+    var mm = Math.floor((totalSec % 3600) / 60);
+    var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+    var cycleNum = 'C' + String(globalIdx + 1).padStart(3, '0');
+    var html = '<div class="loop-row" style="' + (rowBg ? 'background:#FAFBFC;' : '') + '">';
+    html += '<span class="loop-row-num">' + cycleNum + '</span>';
+    html += '<span class="loop-row-time">' + timeStr + '</span>';
+    html += '<div class="loop-row-items">';
+    loopSeq.forEach(function(item) {
+      var pct = (item.dur / CYCLE_ACTUAL * 100).toFixed(2);
+      html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
+      html += '<span>' + item.name + '</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderLoopList() {
+    var SHOW = 3; /* 구간당 미리보기 행 수 */
+    var html = '';
+    var globalIdx = 0;
+    LOOP_SEGMENTS.forEach(function(seg) {
+      /* 구간 헤더 */
+      var confirmedCount = seg.cycles * CONFIRMED_PER_CYCLE;
+      html += '<div style="background:#F0F1F3;border-bottom:1px solid #E5E7EA;padding:5px 12px;' +
+        'display:flex;align-items:center;justify-content:space-between;">';
+      html += '<span style="font-size:11px;font-weight:700;color:#454C52;">' +
+        String(seg.startH).padStart(2,'0') + ':00 ~ ' + String(seg.endH).padStart(2,'0') + ':00</span>';
+      html += '<span style="font-size:10px;color:#596066;">' + seg.cycles + '사이클 &nbsp;·&nbsp; ';
+      html += '일반 광고 <strong style="color:#24292E;">' + confirmedCount + '회</strong>/항목</span>';
+      html += '</div>';
+      /* 샘플 행 */
+      var showCount = Math.min(SHOW, seg.cycles);
+      for (var r = 0; r < showCount; r++) {
+        html += renderCycleRow(globalIdx + r, r % 2 !== 0);
+      }
+      /* 반복 안내 행 */
+      if (seg.cycles > showCount) {
+        var remaining = seg.cycles - showCount;
+        html += '<div style="text-align:center;padding:7px 12px;font-size:11px;color:#9EA5AD;' +
+          'background:#FAFBFC;border-bottom:1px solid #E5E7EA;letter-spacing:0.01em;">' +
+          '↻ 동일 편성으로 <strong style="color:#596066;">' + remaining + '사이클</strong> 더 반복 ' +
+          '— 일반 광고 전 항목 구간 내 균등 송출</div>';
+      }
+      globalIdx += seg.cycles;
+    });
     document.getElementById('loopListBody').innerHTML = html;
   }
 
