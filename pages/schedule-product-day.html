@@ -403,6 +403,17 @@
       </div>
     </div>
 
+    <!-- 2b. 사이클 편성 순서 -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="#24292E" stroke-width="1.4"/><path d="M4 5h8M4 8h8M4 11h5" stroke="#24292E" stroke-width="1.2" stroke-linecap="round"/></svg>
+          사이클 편성 순서
+        </div>
+        <div id="cycleDetail" style="border:1px solid #E5E7EA;border-radius:6px;overflow:hidden;"></div>
+      </div>
+    </div>
+
     <!-- 3. 일반 광고 송출 현황 -->
     <div class="card">
       <div class="card-body">
@@ -614,132 +625,133 @@ function pct(num, total) {
   return (num / total * 100).toFixed(3) + '%';
 }
 
-function chipClass(type) {
-  return type === 'confirmed' ? 'chip-confirmed'
-       : type === 'selfop'    ? 'chip-selfop'
-       : type === 'draft'     ? 'chip-draft'
-       : 'chip-confirmed';
-}
+function chipBg(type)     { return type==='confirmed'?'#EEEDFE':type==='selfop'?'#E1F5EE':'#F1F2F4'; }
+function chipColor(type)  { return type==='confirmed'?'#3C3489':type==='selfop'?'#085041':'#596066'; }
+function chipBorder(type) { return type==='confirmed'?'#AFA9EC':type==='selfop'?'#5DCAA5':'#B0B7BE'; }
+
+function shortName(name) { return name.replace(/ \d+초$/,''); }
 
 function renderTimeline() {
-  const START_H = 7, END_H = 22, TOTAL_H = END_H - START_H; // 15h
-
-  let html = '';
+  const START_H = 7, END_H = 22, TOTAL_H = END_H - START_H;
+  const CYCLE_MAX_S = 600, CYCLE_ACTUAL = 90;
+  const allTimes = [7, 12, 18, 22];
+  const ZONE_COLORS = ['#EFF6FF','#FFF7ED','#F0FDF4'];
+  const JINGLE_ADS  = { 12:'롯데 30초', 18:'현대 30초' };
 
   /* ── Row 1: Time axis ── */
-  html += `<tr class="tl-axis-row">
-    <td class="tl-label-cell" style="font-size:11px;color:#9EA5AD;font-weight:600">시간</td>
+  let html = `<tr class="tl-axis-row">
+    <td class="tl-label-cell" style="font-size:11px;color:#9EA5AD;font-weight:600;">시간</td>
     <td class="tl-axis-cell"><div class="tl-axis-inner">`;
-
   for (let h = START_H; h <= END_H; h += 2) {
-    html += `<div class="tl-tick" style="left:${pct(h - START_H, TOTAL_H)}">
-      <span class="tl-tick-label">${String(h).padStart(2,'0')}:00</span>
-      <div class="tl-tick-line"></div>
-    </div>`;
+    const tx = h===START_H?'translateX(0)':h===END_H?'translateX(-100%)':'translateX(-50%)';
+    html += `<div class="tl-tick" style="left:${pct(h-START_H,TOTAL_H)}">
+      <span class="tl-tick-label" style="transform:${tx}">${String(h).padStart(2,'0')}:00</span>
+      <div class="tl-tick-line"></div></div>`;
   }
   html += `</div></td></tr>`;
 
-  /* ── Row 2: Jingle/시보 row ── */
-  html += `<tr class="tl-jingle-row">
-    <td class="tl-label-cell"><span class="tl-jingle-label">🔔 시보 구간</span></td>
-    <td class="tl-jingle-cell"><div class="jingle-bar">`;
+  /* ── Row 2: Unified zone bar (사이클 구간 overview) ── */
+  html += `<tr>
+    <td class="tl-label-cell" style="font-size:11px;font-weight:700;color:#596066;vertical-align:top;padding-top:10px;">사이클 구간</td>
+    <td style="padding:0;"><div style="display:flex;height:100%;border-top:1px solid #E5E7EA;">`;
 
-  // Zone backgrounds
-  [
-    { from: 7,  to: 12, cls: 'jingle-zone-morning' },
-    { from: 12, to: 18, cls: 'jingle-zone-midday'  },
-    { from: 18, to: 22, cls: 'jingle-zone-evening' },
-  ].forEach(z => {
-    html += `<div class="jingle-zone ${z.cls}" style="left:${pct(z.from - START_H, TOTAL_H)};width:${pct(z.to - z.from, TOTAL_H)}"></div>`;
-  });
+  allTimes.slice(0,-1).forEach((sH, zi) => {
+    const eH = allTimes[zi+1];
+    const wPct = ((eH-sH)/TOTAL_H*100).toFixed(2);
+    const cycles = Math.floor((eH-sH)*3600/CYCLE_ACTUAL);
+    const isJingle = zi > 0;
+    const jAd = JINGLE_ADS[sH] || '';
 
-  // Markers
-  [
-    { h: 12, label: '12:00 시보', ad: '롯데 30초' },
-    { h: 18, label: '18:00 시보', ad: '현대 30초' },
-  ].forEach(m => {
-    html += `<div class="jingle-marker" style="left:${pct(m.h - START_H, TOTAL_H)}">
-      <div class="jingle-vline"></div>
-      <div class="jingle-badge">
-        🔔 ${m.label}
-        <button class="jingle-edit-btn" onclick="openModal('${m.h}:00')">✎</button>
-        <span class="jingle-ad-name">${m.ad}</span>
-      </div>
-    </div>`;
+    const seqChips = isJingle
+      ? [{ name:'시보', dur:15, bg:'#F3E8FF', color:'#6B21A8', border:'1px solid #C084FC' }, ...CYCLE_ADS.map(a=>({ name:shortName(a.name), dur:a.dur, bg:chipBg(a.type), color:chipColor(a.type), border:(a.type==='draft'?'1px dashed ':'1px solid ')+chipBorder(a.type) }))]
+      : CYCLE_ADS.map(a=>({ name:shortName(a.name), dur:a.dur, bg:chipBg(a.type), color:chipColor(a.type), border:(a.type==='draft'?'1px dashed ':'1px solid ')+chipBorder(a.type) }));
+    const usedDur = seqChips.reduce((s,a)=>s+a.dur, 0);
+    const remDur  = CYCLE_MAX_S - usedDur;
+
+    html += `<div style="flex:0 0 ${wPct}%;background:${ZONE_COLORS[zi]};border-left:${isJingle?'2px solid #7F77DD':'none'};padding:8px 10px;box-sizing:border-box;min-height:90px;">`;
+
+    /* Zone header row */
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">`;
+    if (isJingle) {
+      html += `<span style="display:inline-flex;align-items:center;gap:4px;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;color:#3C3489;white-space:nowrap;">🔔 ${String(sH).padStart(2,'0')}:00 시보 <span style="font-weight:400;color:#7F77DD;">${jAd}</span></span>`;
+      html += `<button onclick="openModal('${sH}:00')" style="font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 순서 변경</button>`;
+    }
+    html += `<span style="margin-left:auto;font-size:10px;color:#9EA5AD;white-space:nowrap;">${String(sH).padStart(2,'0')}~${String(eH).padStart(2,'0')}시 · ${cycles}사이클</span>`;
+    html += `</div>`;
+
+    /* Cycle chip composition */
+    html += `<div style="display:flex;gap:2px;overflow:hidden;align-items:stretch;height:28px;">`;
+    seqChips.forEach(item => {
+      const fp = (item.dur/CYCLE_MAX_S*100).toFixed(1);
+      html += `<div style="flex:0 0 ${fp}%;min-width:22px;background:${item.bg};color:${item.color};border:${item.border};font-size:9px;font-weight:600;border-radius:3px;padding:2px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;" title="${item.name} · ${item.dur}초">${item.name}</div>`;
+    });
+    if (remDur > 0) {
+      const rp = (remDur/CYCLE_MAX_S*100).toFixed(1);
+      html += `<div style="flex:1;min-width:24px;background:#F6F7F9;border:1px dashed #CED2D6;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#B0B7BE;" title="잔여 ${remDur}초">+${remDur}s</div>`;
+    }
+    html += `</div></div>`;
   });
 
   html += `</div></td></tr>`;
+  document.getElementById('timelineTable').innerHTML = html;
 
-  /* ── Segments ── */
-  SEGMENTS.forEach((seg, si) => {
-    // Segment header
-    html += `<tr class="seg-header-row">
-      <td class="tl-label-cell" style="font-size:11px;font-weight:700;color:#24292E;background:#F6F7F9">
-        ${String(seg.start).padStart(2,'0')}:00<br>~ ${String(seg.end).padStart(2,'0')}:00
-      </td>
-      <td style="background:#F6F7F9;border-bottom:1px solid #E5E7EA;border-top:2px solid #E5E7EA;padding:7px 14px">
-        <span class="seg-header-label">${seg.label}</span>
-        <span class="seg-header-count">| ${seg.count}사이클</span>
-      </td>
-    </tr>`;
+  /* ── Cycle detail (별도 섹션) ── */
+  let dHtml = '';
+  let gCycle = 0;
 
-    // 3 sample cycle rows
-    for (let ci = 0; ci < 3; ci++) {
-      const cNum = si * 3 + ci + 1;
-      const minStep = Math.floor(ci * 5);
-      const timeStr = `${String(seg.start).padStart(2,'0')}:${String(minStep).padStart(2,'0')}`;
+  allTimes.slice(0,-1).forEach((sH, zi) => {
+    const eH = allTimes[zi+1];
+    const cycles = Math.floor((eH-sH)*3600/CYCLE_ACTUAL);
+    const isJingle = zi > 0;
+    const SHOW = Math.min(3, cycles);
 
-      // Calculate used duration including jingle
-      const jingleDur = (seg.hasJingle && ci === 0) ? 15 : 0;
-      const totalUsed = jingleDur + CYCLE_USED;
-      const remain = CYCLE_MAX - totalUsed;
+    dHtml += `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:${isJingle?'#FAF8FF':'#F6F7F9'};border-bottom:1px solid #E5E7EA;${isJingle?'border-top:2px solid #7F77DD;':''}">`;
+    dHtml += `<span style="font-size:11px;font-weight:700;color:#454C52;">${String(sH).padStart(2,'0')}:00 ~ ${String(eH).padStart(2,'0')}:00 구간</span>`;
+    if (isJingle) dHtml += `<span style="font-size:10px;color:#7F77DD;font-weight:600;">🔔 시보 후 광고 편성 시작</span>`;
+    dHtml += `<span style="font-size:10px;color:#9EA5AD;">${cycles}사이클</span></div>`;
 
-      const segLeft = pct(seg.start - START_H, TOTAL_H);
-      const segWidth = pct(seg.end - seg.start, TOTAL_H);
+    for (let r = 0; r < SHOW; r++) {
+      gCycle++;
+      const isJingleCycle = r===0 && isJingle;
+      const seq = isJingleCycle
+        ? [{ name:'시보', dur:15, type:'jingle' }, ...CYCLE_ADS]
+        : [...CYCLE_ADS];
+      const usedDur = seq.reduce((s,a)=>s+a.dur, 0);
+      const remDur  = CYCLE_MAX_S - usedDur;
 
-      html += `<tr class="tl-cycle-row">
-        <td class="tl-label-cell">
-          <div class="tl-cycle-label">
-            <span style="color:#7F77DD;font-weight:700">C${String(cNum).padStart(3,'0')}</span>
-            <span style="color:#9EA5AD">${timeStr}</span>
-          </div>
-        </td>
-        <td class="tl-cycle-cell">
-          <div class="cycle-bar">
-            <div class="cycle-inner" style="left:${segLeft};width:${segWidth}">`;
+      const totalSec = sH*3600 + r*CYCLE_ACTUAL;
+      const hh = Math.floor(totalSec/3600), mm = Math.floor((totalSec%3600)/60);
+      const timeStr = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+      const cNum = `C${String(gCycle).padStart(3,'0')}`;
+      const rowBg = isJingleCycle ? '#FAF8FF' : (r%2 ? '#FAFBFC' : '#fff');
 
-      // Jingle chip for first cycle of segments 2 & 3
-      if (seg.hasJingle && ci === 0) {
-        const jW = pct(15, CYCLE_MAX);
-        html += `<div class="cycle-chip chip-jingle" style="width:${jW};min-width:36px" title="시보 15초">🔔 15s</div>
-          <div class="chip-gap"></div>`;
-      }
+      dHtml += `<div style="display:grid;grid-template-columns:52px 52px 1fr;align-items:stretch;min-height:32px;background:${rowBg};border-bottom:1px solid #F5F6F7;">`;
+      dHtml += `<div style="font-size:10px;color:${isJingleCycle?'#7F77DD':'#B0B7BE'};font-weight:700;text-align:center;padding:4px;border-right:1px solid #F0F1F3;display:flex;align-items:center;justify-content:center;">${cNum}</div>`;
+      dHtml += `<div style="font-size:11px;color:#596066;text-align:center;padding:4px;border-right:1px solid #F0F1F3;display:flex;align-items:center;justify-content:center;">${timeStr}</div>`;
+      dHtml += `<div style="display:flex;align-items:stretch;gap:2px;padding:4px 8px;min-width:320px;">`;
 
-      // Ad chips
-      CYCLE_ADS.forEach(ad => {
-        const w = pct(ad.dur, CYCLE_MAX);
-        const cls = chipClass(ad.type);
-        const label = ad.dur >= 20 ? ad.name : `${ad.dur}초`;
-        html += `<div class="cycle-chip ${cls}" style="width:${w};min-width:28px" title="${ad.name}">${label}</div>
-          <div class="chip-gap"></div>`;
+      seq.forEach(item => {
+        const fp = (item.dur/CYCLE_MAX_S*100).toFixed(1);
+        const isSibo = item.type==='jingle';
+        const bg = isSibo?'#F3E8FF':chipBg(item.type);
+        const col = isSibo?'#6B21A8':chipColor(item.type);
+        const bdr = isSibo?'1px solid #C084FC':(item.type==='draft'?'1px dashed ':'1px solid ')+chipBorder(item.type);
+        const lbl = isSibo?'시보':shortName(item.name);
+        dHtml += `<div style="flex:0 0 ${fp}%;min-width:28px;background:${bg};color:${col};border:${bdr};font-size:9px;font-weight:600;border-radius:3px;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;" title="${item.name} · ${item.dur}초">${lbl}</div>`;
       });
-
-      // Remaining empty
-      const rW = pct(remain, CYCLE_MAX);
-      html += `<div class="cycle-chip chip-empty" style="width:${rW};min-width:50px" title="잔여 ${remain}초">잔여 ${remain}초</div>`;
-
-      html += `</div></div></td></tr>`;
+      if (remDur > 0) {
+        dHtml += `<div style="flex:1;min-width:20px;background:#F6F7F9;border:1px dashed #CED2D6;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#B0B7BE;" title="잔여 ${remDur}초">+${remDur}초</div>`;
+      }
+      dHtml += `</div></div>`;
     }
 
-    // More indicator
-    const more = seg.count - 3;
-    html += `<tr>
-      <td class="tl-label-cell" style="background:#fff;border-bottom:1px solid #F1F2F4"></td>
-      <td class="cycle-more">… 동일 패턴으로 <strong>${more}사이클</strong> 더 반복</td>
-    </tr>`;
+    if (cycles > SHOW) {
+      gCycle += (cycles - SHOW);
+      dHtml += `<div style="text-align:center;padding:6px;font-size:11px;color:#9EA5AD;background:#FAFBFC;border-bottom:1px solid #E5E7EA;">↻ 동일 편성으로 <strong style="color:#596066;">${cycles-SHOW}사이클</strong> 더 반복</div>`;
+    }
   });
 
-  document.getElementById('timelineTable').innerHTML = html;
+  document.getElementById('cycleDetail').innerHTML = dHtml;
 }
 
 /* ── Modal ── */

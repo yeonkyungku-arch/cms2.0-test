@@ -581,39 +581,17 @@
         <div class="tl-axis-ticks" id="timeAxisTicks"></div>
       </div>
 
-      <!-- 2b. 시보 행 -->
-      <div class="tl-jingle-row">
-        <div class="tl-label-col" style="font-size:12px;color:#596066;">
-          🔔 시보 구간
-        </div>
-        <div class="tl-jingle-track">
-          <!-- 07~12 구간 (5시간/15시간 = 33.3%) -->
-          <div class="jingle-zone z1" style="flex:5;">
-            <span style="font-size:10px;">07~12시</span>
-          </div>
-          <!-- 12~18 구간 (6시간 = 40%) -->
-          <div class="jingle-zone z2" style="flex:6;position:relative;">
-            <div class="jingle-marker"></div>
-            <div class="jingle-chip" style="left:6px;">
-              🔔 12:00 시보
-              <button class="jingle-edit-btn" onclick="openJingleModal()" title="시보 편집">✎</button>
-            </div>
-            <span style="font-size:10px;margin-left:auto;">12~18시</span>
-          </div>
-          <!-- 18~22 구간 (4시간 = 26.7%) -->
-          <div class="jingle-zone z3" style="flex:4;position:relative;">
-            <div class="jingle-marker"></div>
-            <div class="jingle-chip" style="left:6px;">
-              🔔 18:00 시보
-              <button class="jingle-edit-btn" onclick="openJingleModal()" title="시보 편집">✎</button>
-            </div>
-            <span style="font-size:10px;margin-left:auto;">18~22시</span>
-          </div>
-        </div>
-      </div>
+      <!-- 2b. 통합 사이클 구간 bar (JS 렌더) -->
+      <div id="unifiedZoneRow"></div>
+    </div>
 
-      <!-- 2c. 사이클 섹션 (JS 렌더) -->
-      <div id="cycleSection"></div>
+    <!-- 사이클 편성 순서 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">사이클 편성 순서</span>
+        <span style="font-size:12px;color:#9EA5AD;">사이클당 재생 순서 (잔여 슬롯은 일반 광고로 채움)</span>
+      </div>
+      <div id="cycleDetail" style="border:1px solid #E5E7EA;border-radius:6px;overflow:hidden;margin:0 16px 16px;"></div>
     </div>
 
     <!-- 3. 일반 광고 송출 현황 -->
@@ -830,70 +808,128 @@ var JINGLE_CHIP = { label: '시보', cls: 'chip-jingle', sec: 15, isJingle: true
 function renderTimeAxis() {
   var ticksEl = document.getElementById('timeAxisTicks');
   var html = '';
-  TIME_TICKS.forEach(function(h) {
-    html += '<div class="tl-tick">' + String(h).padStart(2,'0') + ':00</div>';
+  TIME_TICKS.forEach(function(h, idx) {
+    var tx = idx === 0 ? 'translateX(0)' : h === HOURS_END ? 'translateX(-100%)' : 'translateX(-50%)';
+    var leftPct = ((h - HOURS_START) / HOURS_TOTAL * 100).toFixed(2);
+    html += '<div class="tl-tick" style="left:' + leftPct + '%;transform:none;position:absolute;">' +
+      '<span style="display:block;font-size:10px;color:#9EA5AD;transform:' + tx + ';white-space:nowrap;">' +
+      String(h).padStart(2,'0') + ':00</span></div>';
   });
+  ticksEl.style.position = 'relative';
   ticksEl.innerHTML = html;
 }
 
-// ── 사이클 섹션 렌더 ──
-function renderCycleSection() {
-  var el = document.getElementById('cycleSection');
-  var html = '';
-  var globalCycleNum = 1;
+// ── 통합 타임라인 + 사이클 순서 렌더 ──
+function renderUnifiedTimeline() {
+  var CYCLE_MAX_S = 600;
+  var CYCLE_ACTUAL = 90; // 30+20+30+10
+  var JINGLE_ADS = { 12: '12:00 시보 · 롯데 30초', 18: '18:00 시보 · 현대 30초' };
 
-  SEGMENTS.forEach(function(seg) {
-    var hours = seg.end - seg.start;
-    // 구간 헤더
-    html += '<div class="seg-header-row" style="background:' + SEG_BG[seg.id] + ';">';
-    html += '<div class="tl-label-col" style="font-size:11px;font-weight:700;color:#596066;border-right:1px solid #E5E7EA;">' + seg.label + '</div>';
-    html += '<div class="seg-header-label" style="flex:1;padding:7px 14px;">';
-    html += '<span style="font-size:11px;color:#9EA5AD;">' + hours + '시간 · 약 ' + (hours * seg.cycles_per_hour) + ' 사이클</span>';
-    html += '</div></div>';
+  /* 칩 색상 helpers */
+  var chipStyles = {
+    'chip-ga':    { bg:'#EEEDFE', color:'#3C3489', border:'1px solid #AFA9EC' },
+    'chip-na':    { bg:'#DCFCE7', color:'#166534', border:'1px solid #86EFAC' },
+    'chip-self':  { bg:'#E1F5EE', color:'#085041', border:'1px solid #5DCAA5' },
+    'chip-jingle':{ bg:'#F3E8FF', color:'#6B21A8', border:'1px solid #C084FC' },
+    'chip-draft': { bg:'#F6F7F9', color:'#B0B7BE', border:'1px dashed #CED2D6' }
+  };
 
-    // 3개 샘플 사이클
-    var sampleCount = 3;
-    for (var i = 0; i < sampleCount; i++) {
-      var cycleId = 'C' + String(globalCycleNum).padStart(3, '0');
-      var cycleMin = seg.start * 60 + i * (600 / 60); // approximate
-      var cycleHour = Math.floor(cycleMin / 60);
-      var cycleM = Math.floor(cycleMin % 60);
-      var timeStr = String(seg.start).padStart(2,'0') + ':' + String(i * 10).padStart(2,'0');
+  /* ── 통합 zone bar ── */
+  var zoneHtml = '<div style="display:flex;align-items:stretch;border-top:1px solid #E5E7EA;">';
+  zoneHtml += '<div style="flex-shrink:0;width:var(--tl-label-w,120px);font-size:11px;font-weight:700;color:#596066;padding:10px 10px;border-right:1px solid #E5E7EA;display:flex;align-items:center;">사이클 구간</div>';
+  zoneHtml += '<div style="flex:1;display:flex;">';
 
-      html += '<div class="cycle-row">';
-      html += '<div class="cycle-row-meta">';
-      html += '<span class="cycle-id">' + cycleId + '</span>';
-      html += '<span class="cycle-time">' + timeStr + '</span>';
-      html += '</div>';
-      html += '<div class="cycle-chips">';
+  SEGMENTS.forEach(function(seg, zi) {
+    var wPct = ((seg.end - seg.start) / HOURS_TOTAL * 100).toFixed(2);
+    var cycles = (seg.end - seg.start) * seg.cycles_per_hour;
+    var isJingle = seg.jingle;
 
-      // 시보 구간 첫 사이클에 시보 칩 추가
-      if (seg.jingle && i === 0) {
-        html += '<span class="chip chip-jingle">🔔 시보<span class="chip-sec">15초</span></span>';
-      }
+    var seqChips = [];
+    if (isJingle) seqChips.push({ label:'시보', sec:15, cls:'chip-jingle' });
+    BASE_CHIPS.forEach(function(c) { if (!c.isDraft) seqChips.push(c); });
+    var usedSec = seqChips.reduce(function(s,c){ return s+c.sec; }, 0);
+    var remSec  = CYCLE_MAX_S - usedSec;
 
-      BASE_CHIPS.forEach(function(chip) {
-        if (chip.isDraft) {
-          var remaining = seg.jingle && i === 0 ? (600 - 90 - 15) : (600 - 90);
-          html += '<span class="chip chip-draft">' + '+ 잔여 ' + remaining + '초' + '</span>';
-        } else {
-          html += '<span class="chip ' + chip.cls + '">' + chip.label + '<span class="chip-sec">' + chip.sec + '초</span></span>';
-        }
-      });
+    zoneHtml += '<div style="flex:0 0 ' + wPct + '%;background:' + SEG_BG[seg.id] + ';border-left:' + (isJingle ? '2px solid #7F77DD' : 'none') + ';padding:8px 10px;box-sizing:border-box;min-height:90px;">';
 
-      html += '</div></div>';
-      globalCycleNum++;
+    /* Zone header */
+    zoneHtml += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;">';
+    if (isJingle) {
+      zoneHtml += '<span style="display:inline-flex;align-items:center;gap:4px;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;color:#3C3489;white-space:nowrap;">🔔 ' + JINGLE_ADS[seg.start] + '</span>';
+      zoneHtml += '<button onclick="openJingleModal()" style="font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 순서 변경</button>';
     }
+    zoneHtml += '<span style="margin-left:auto;font-size:10px;color:#9EA5AD;white-space:nowrap;">' + String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시 · ' + cycles + '사이클</span>';
+    zoneHtml += '</div>';
 
-    // "더 반복" 행
-    var remaining = hours * seg.cycles_per_hour - sampleCount;
-    html += '<div class="cycle-more-row" style="background:' + SEG_BG[seg.id] + '20;">';
-    html += '<div class="cycle-more-label"></div>';
-    html += '<div class="cycle-more-text">... ' + remaining + '사이클 더 반복 (동일 구성)</div>';
-    html += '</div>';
+    /* Chip composition */
+    zoneHtml += '<div style="display:flex;gap:2px;overflow:hidden;align-items:stretch;height:28px;">';
+    seqChips.forEach(function(chip) {
+      var s = chipStyles[chip.cls] || chipStyles['chip-draft'];
+      var fp = (chip.sec / CYCLE_MAX_S * 100).toFixed(1);
+      zoneHtml += '<div style="flex:0 0 ' + fp + '%;min-width:22px;background:' + s.bg + ';color:' + s.color + ';border:' + s.border + ';font-size:9px;font-weight:600;border-radius:3px;padding:2px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;" title="' + chip.label + ' · ' + chip.sec + '초">' + chip.label + '</div>';
+    });
+    if (remSec > 0) {
+      var rp = (remSec / CYCLE_MAX_S * 100).toFixed(1);
+      zoneHtml += '<div style="flex:1;min-width:24px;background:#F6F7F9;border:1px dashed #CED2D6;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#B0B7BE;" title="잔여 ' + remSec + '초">+' + remSec + 's</div>';
+    }
+    zoneHtml += '</div></div>';
   });
 
-  el.innerHTML = html;
+  zoneHtml += '</div></div>';
+  document.getElementById('unifiedZoneRow').innerHTML = zoneHtml;
+
+  /* ── 사이클 편성 순서 (cycleDetail) ── */
+  var dHtml = '';
+  var gCycle = 0;
+
+  SEGMENTS.forEach(function(seg, zi) {
+    var cycles = (seg.end - seg.start) * seg.cycles_per_hour;
+    var isJingle = seg.jingle;
+    var SHOW = Math.min(3, cycles);
+
+    dHtml += '<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:' + (isJingle ? '#FAF8FF' : '#F6F7F9') + ';border-bottom:1px solid #E5E7EA;' + (isJingle ? 'border-top:2px solid #7F77DD;' : '') + '">';
+    dHtml += '<span style="font-size:11px;font-weight:700;color:#454C52;">' + String(seg.start).padStart(2,'0') + ':00 ~ ' + String(seg.end).padStart(2,'0') + ':00 구간</span>';
+    if (isJingle) dHtml += '<span style="font-size:10px;color:#7F77DD;font-weight:600;">🔔 시보 후 광고 편성 시작</span>';
+    dHtml += '<span style="font-size:10px;color:#9EA5AD;">' + cycles + '사이클</span></div>';
+
+    for (var r = 0; r < SHOW; r++) {
+      gCycle++;
+      var isJingleCycle = r === 0 && isJingle;
+      var seq = [];
+      if (isJingleCycle) seq.push({ label:'시보', sec:15, cls:'chip-jingle' });
+      BASE_CHIPS.forEach(function(c) { if (!c.isDraft) seq.push(c); });
+      var usedSec = seq.reduce(function(s,c){ return s+c.sec; }, 0);
+      var remSec  = CYCLE_MAX_S - usedSec;
+
+      var totalSec = seg.start * 3600 + r * CYCLE_ACTUAL;
+      var hh = Math.floor(totalSec / 3600), mm = Math.floor((totalSec % 3600) / 60);
+      var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+      var cNum = 'C' + String(gCycle).padStart(3,'0');
+      var rowBg = isJingleCycle ? '#FAF8FF' : (r % 2 ? '#FAFBFC' : '#fff');
+
+      dHtml += '<div style="display:grid;grid-template-columns:52px 52px 1fr;align-items:stretch;min-height:32px;background:' + rowBg + ';border-bottom:1px solid #F5F6F7;">';
+      dHtml += '<div style="font-size:10px;color:' + (isJingleCycle ? '#7F77DD' : '#B0B7BE') + ';font-weight:700;text-align:center;padding:4px;border-right:1px solid #F0F1F3;display:flex;align-items:center;justify-content:center;">' + cNum + '</div>';
+      dHtml += '<div style="font-size:11px;color:#596066;text-align:center;padding:4px;border-right:1px solid #F0F1F3;display:flex;align-items:center;justify-content:center;">' + timeStr + '</div>';
+      dHtml += '<div style="display:flex;align-items:stretch;gap:2px;padding:4px 8px;min-width:320px;">';
+
+      seq.forEach(function(chip) {
+        var s = chipStyles[chip.cls] || chipStyles['chip-draft'];
+        var fp = (chip.sec / CYCLE_MAX_S * 100).toFixed(1);
+        dHtml += '<div style="flex:0 0 ' + fp + '%;min-width:28px;background:' + s.bg + ';color:' + s.color + ';border:' + s.border + ';font-size:9px;font-weight:600;border-radius:3px;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;" title="' + chip.label + ' · ' + chip.sec + '초">' + chip.label + '</div>';
+      });
+      if (remSec > 0) {
+        dHtml += '<div style="flex:1;min-width:20px;background:#F6F7F9;border:1px dashed #CED2D6;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#B0B7BE;" title="잔여 ' + remSec + '초">+' + remSec + '초</div>';
+      }
+      dHtml += '</div></div>';
+    }
+
+    if (cycles > SHOW) {
+      gCycle += (cycles - SHOW);
+      dHtml += '<div style="text-align:center;padding:6px;font-size:11px;color:#9EA5AD;background:#FAFBFC;border-bottom:1px solid #E5E7EA;">↻ 동일 편성으로 <strong style="color:#596066;">' + (cycles - SHOW) + '사이클</strong> 더 반복</div>';
+    }
+  });
+
+  document.getElementById('cycleDetail').innerHTML = dHtml;
 }
 
 // ── 모달 ──
@@ -906,7 +942,7 @@ function closeJingleModal() {
 
 // ── 초기화 ──
 renderTimeAxis();
-renderCycleSection();
+renderUnifiedTimeline();
 </script>
 </body>
 </html>
