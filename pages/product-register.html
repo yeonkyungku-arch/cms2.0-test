@@ -74,8 +74,69 @@
     .input-error { font-size: 12px; color: #E97474; margin-top: 5px; display: none; }
 
     /* ── 미디어 선택 ── */
+    .media-section-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 16px;
+      align-items: start;
+    }
     .media-search-area {
       border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
+    }
+    .media-map-wrap {
+      border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
+      position: sticky; top: 80px;
+    }
+    .media-map-header {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px; background: #F6F7F9;
+      border-bottom: 1px solid #E5E7EA;
+      font-size: 12px; font-weight: 700; color: #596066;
+    }
+    .media-map-svg-wrap {
+      position: relative; background: #E8EDF2;
+      height: 260px; overflow: hidden;
+    }
+    .media-map-pin {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      cursor: pointer;
+    }
+    .media-map-pin-dot {
+      width: 24px; height: 24px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .media-map-pin:hover .media-map-pin-dot {
+      transform: rotate(-45deg) scale(1.2);
+      box-shadow: 0 4px 10px rgba(0,0,0,.3);
+    }
+    .media-map-pin-dot.selected { background: #58C65D; }
+    .media-map-pin-dot.unselected { background: #CED2D6; }
+    .media-map-pin-dot.offline { background: #9EA5AD; }
+    .media-map-pin-inner {
+      transform: rotate(45deg);
+      font-size: 9px; font-weight: 800; color: #fff;
+    }
+    .media-map-tooltip {
+      position: absolute;
+      bottom: calc(100% + 6px); left: 50%;
+      transform: translateX(-50%);
+      background: #24292E; color: #fff;
+      font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0; transition: opacity 0.1s;
+    }
+    .media-map-pin:hover .media-map-tooltip { opacity: 1; }
+    .media-map-legend {
+      display: flex; gap: 12px; padding: 7px 12px;
+      background: #fff; border-top: 1px solid #E5E7EA;
+      font-size: 11px; color: #596066;
     }
     .media-search-bar {
       display: flex; align-items: center; gap: 8px;
@@ -487,22 +548,43 @@
         </div>
       </div>
       <div class="section-body">
-        <div class="media-search-area">
-          <div class="media-search-bar">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l3 3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
-            <input type="text" placeholder="미디어명 · 위치 검색" oninput="filterMedia(this.value)">
-            <select onchange="filterMediaStatus(this.value)">
-              <option value="">상태 전체</option>
-              <option value="online">온라인</option>
-              <option value="offline">오프라인</option>
-            </select>
+        <div class="media-section-layout">
+          <!-- 좌: 검색 + 리스트 -->
+          <div>
+            <div class="media-search-area">
+              <div class="media-search-bar">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l3 3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="미디어명 · 위치 검색" oninput="filterMedia(this.value)">
+                <select onchange="filterMediaStatus(this.value)">
+                  <option value="">상태 전체</option>
+                  <option value="online">온라인</option>
+                  <option value="offline">오프라인</option>
+                </select>
+              </div>
+              <div class="media-list" id="mediaList">
+                <!-- 렌더링됨 -->
+              </div>
+            </div>
+            <div id="selectedChips" class="selected-chips"></div>
+            <div id="mediaSelMsg" class="input-error" style="margin-top:8px;">미디어를 1개 이상 선택해 주세요.</div>
           </div>
-          <div class="media-list" id="mediaList">
-            <!-- 렌더링됨 -->
+
+          <!-- 우: 지도 -->
+          <div class="media-map-wrap">
+            <div class="media-map-header">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" fill="#58C65D"/><circle cx="7" cy="5" r="1.5" fill="#fff"/></svg>
+              미디어 위치
+            </div>
+            <div class="media-map-svg-wrap" id="mediaMapWrap">
+              <!-- JS 렌더 -->
+            </div>
+            <div class="media-map-legend">
+              <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block;"></span>선택됨</span>
+              <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#CED2D6;display:inline-block;"></span>미선택</span>
+              <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#9EA5AD;display:inline-block;"></span>오프라인</span>
+            </div>
           </div>
         </div>
-        <div id="selectedChips" class="selected-chips"></div>
-        <div id="mediaSelMsg" class="input-error" style="margin-top:8px;">미디어를 1개 이상 선택해 주세요.</div>
 
         <!-- 제공 가능한 광고 옵션 -->
         <div id="adOptionsPanel" style="display:none;margin-top:16px;">
@@ -512,8 +594,9 @@
           </div>
           <div id="adOptionsContent"></div>
         </div>
-      </div>
-    </div>
+      </div><!-- /media-section-layout -->
+    </div><!-- /section-body -->
+  </div><!-- /form-card -->
 
     <!-- ─────────────────── 3. 플레이플랜 ─────────────────── -->
     <div class="form-card">
@@ -743,7 +826,8 @@ const MEDIA_DATA = [
     opsHours: '07:00~22:00', opsTime: 54000,
     refSlotSec: 30, cycleMax: 600, refSlots: 20,
     cycles: 450, guaranteed: 90,
-    sensors: ['weather', 'time', 'target']
+    sensors: ['weather', 'time', 'target'],
+    mapX: 42, mapY: 48
   },
   {
     id: 'B', name: '강남역 1번출구 B', sub: '서울 강남구 강남대로 396',
@@ -752,7 +836,8 @@ const MEDIA_DATA = [
     opsHours: '07:00~22:00', opsTime: 54000,
     refSlotSec: 30, cycleMax: 480, refSlots: 16,
     cycles: 450, guaranteed: 112,
-    sensors: ['weather', 'time']
+    sensors: ['weather', 'time'],
+    mapX: 42, mapY: 60
   },
   {
     id: 'C', name: '강남역 2번출구', sub: '서울 강남구 강남대로',
@@ -761,7 +846,8 @@ const MEDIA_DATA = [
     opsHours: '08:00~21:00', opsTime: 46800,
     refSlotSec: 30, cycleMax: 540, refSlots: 18,
     cycles: 390, guaranteed: 86,
-    sensors: ['weather', 'target']
+    sensors: ['weather', 'target'],
+    mapX: 60, mapY: 48
   },
   {
     id: 'D', name: '신논현역 메인 월', sub: '서울 강남구 언주로',
@@ -770,7 +856,8 @@ const MEDIA_DATA = [
     opsHours: '06:00~24:00', opsTime: 43200,
     refSlotSec: 30, cycleMax: 600, refSlots: 20,
     cycles: 360, guaranteed: 72,
-    sensors: ['time']
+    sensors: ['time'],
+    mapX: 36, mapY: 72
   },
   {
     id: 'E', name: '삼성역 코엑스 광장', sub: '서울 강남구 봉은사로',
@@ -779,7 +866,8 @@ const MEDIA_DATA = [
     opsHours: '07:00~21:00', opsTime: 50400,
     refSlotSec: 30, cycleMax: 600, refSlots: 20,
     cycles: 420, guaranteed: 84,
-    sensors: ['weather', 'time', 'target']
+    sensors: ['weather', 'time', 'target'],
+    mapX: 72, mapY: 36
   }
 ];
 
@@ -885,6 +973,79 @@ function updateMediaCount() {
   document.getElementById('mediaSelMsg').style.display = 'none';
   renderAdOptions();
   updateDurationCap();
+  renderMediaMap();
+}
+
+function renderMediaMap() {
+  const wrap = document.getElementById('mediaMapWrap');
+  if (!wrap) return;
+
+  // 배경 SVG
+  let html = `
+    <svg width="100%" height="100%" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;">
+      <rect width="300" height="260" fill="#E8EDF2"/>
+      <!-- 블록 -->
+      <rect x="8"   y="8"   width="60" height="50" rx="3" fill="#D4DAE2"/>
+      <rect x="78"  y="8"   width="60" height="50" rx="3" fill="#D4DAE2"/>
+      <rect x="148" y="8"   width="60" height="50" rx="3" fill="#D4DAE2"/>
+      <rect x="218" y="8"   width="74" height="50" rx="3" fill="#D4DAE2"/>
+      <rect x="8"   y="68"  width="60" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="78"  y="68"  width="60" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="148" y="68"  width="60" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="218" y="68"  width="74" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="8"   y="124" width="60" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="78"  y="124" width="144" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="218" y="124" width="74" height="46" rx="3" fill="#D4DAE2"/>
+      <rect x="8"   y="180" width="284" height="72" rx="3" fill="#D4DAE2"/>
+      <!-- 도로 세로 -->
+      <rect x="70"  y="0" width="6" height="260" fill="#fff" opacity=".75"/>
+      <rect x="140" y="0" width="6" height="260" fill="#fff" opacity=".75"/>
+      <rect x="210" y="0" width="6" height="260" fill="#fff" opacity=".75"/>
+      <!-- 도로 가로 -->
+      <rect x="0" y="60"  width="300" height="6" fill="#fff" opacity=".75"/>
+      <rect x="0" y="116" width="300" height="6" fill="#fff" opacity=".75"/>
+      <rect x="0" y="172" width="300" height="6" fill="#fff" opacity=".75"/>
+      <!-- 중앙선 -->
+      <line x1="73"  y1="0"   x2="73"  y2="260" stroke="#E8841A" stroke-width="1" stroke-dasharray="5 4" opacity=".4"/>
+      <line x1="143" y1="0"   x2="143" y2="260" stroke="#E8841A" stroke-width="1" stroke-dasharray="5 4" opacity=".4"/>
+      <line x1="213" y1="0"   x2="213" y2="260" stroke="#E8841A" stroke-width="1" stroke-dasharray="5 4" opacity=".4"/>
+      <line x1="0"   y1="63"  x2="300" y2="63"  stroke="#E8841A" stroke-width="1" stroke-dasharray="5 4" opacity=".4"/>
+      <line x1="0"   y1="119" x2="300" y2="119" stroke="#E8841A" stroke-width="1" stroke-dasharray="5 4" opacity=".4"/>
+      <!-- 역 표시 -->
+      <rect x="74" y="53" width="64" height="16" rx="3" fill="#3C54A0" opacity=".85"/>
+      <text x="106" y="64" text-anchor="middle" font-size="8" font-weight="700" fill="#fff" font-family="sans-serif">강남역</text>
+      <rect x="144" y="109" width="64" height="16" rx="3" fill="#3C54A0" opacity=".85"/>
+      <text x="176" y="120" text-anchor="middle" font-size="8" font-weight="700" fill="#fff" font-family="sans-serif">신논현역</text>
+      <rect x="214" y="27" width="64" height="16" rx="3" fill="#3C54A0" opacity=".85"/>
+      <text x="246" y="38" text-anchor="middle" font-size="8" font-weight="700" fill="#fff" font-family="sans-serif">삼성역</text>
+    </svg>`;
+
+  // 핀 (각 미디어)
+  MEDIA_DATA.forEach(m => {
+    const isSel = selectedMedia.has(m.id);
+    const dotCls = m.status === 'offline' ? 'offline' : (isSel ? 'selected' : 'unselected');
+    const pct_x = (m.mapX / 100 * 300).toFixed(1);
+    const pct_y = (m.mapY / 100 * 260).toFixed(1);
+    html += `
+      <div class="media-map-pin" style="left:${pct_x}px;top:${pct_y}px;" onclick="toggleMediaFromMap('${m.id}')" title="${m.name}">
+        <div class="media-map-tooltip">${m.name}</div>
+        <div class="media-map-pin-dot ${dotCls}">
+          <span class="media-map-pin-inner">${m.id}</span>
+        </div>
+      </div>`;
+  });
+
+  wrap.innerHTML = html;
+}
+
+function toggleMediaFromMap(id) {
+  const checked = !selectedMedia.has(id);
+  const m = MEDIA_DATA.find(x => x.id === id);
+  if (!m || m.status === 'offline') return;
+  toggleMedia(id, checked);
+  // 리스트의 체크박스 동기화
+  const cb = document.querySelector(`input[data-id="${id}"]`);
+  if (cb) cb.checked = checked;
 }
 
 function renderAdOptions() {
@@ -1220,6 +1381,7 @@ function showToast(msg) {
 renderMediaList();
 renderChips();
 updateMediaCount();
+renderMediaMap();
 </script>
 <script src="../assets/js/cms.js"></script>
 </body>
