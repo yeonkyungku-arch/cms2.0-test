@@ -683,8 +683,8 @@ function renderTimeline() {
     html += `<div style="display:flex;height:32px;gap:3px;overflow:hidden;">`;
 
     if (isJingle) {
-      html += `<div style="flex:0 0 52px;background:#F3E8FF;border:1px solid #C084FC;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:3px;" title="시보 ${JINGLE_SEC}초">`;
-      html += `<span style="font-size:9px;">🔔</span><span style="font-size:9px;font-weight:700;color:#6B21A8;white-space:nowrap;">시보</span>`;
+      html += `<div style="flex:0 0 auto;min-width:52px;padding:0 8px;background:#F3E8FF;border:1px solid #C084FC;border-radius:4px;display:flex;align-items:center;gap:4px;white-space:nowrap;" title="시보 ${JINGLE_SEC}초">`;
+      html += `<span style="font-size:9px;">🔔</span><span style="font-size:10px;font-weight:700;color:#6B21A8;">${jAd}</span>`;
       html += `</div>`;
     }
 
@@ -728,11 +728,11 @@ function renderCycleOrder() {
   h += `<button onclick="saveCycleOrder()" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>`;
   h += `</div>`;
 
-  const COL = '36px 24px 1fr 80px 2fr 64px 60px';
+  const COL = '36px 24px 1fr 52px 80px 2fr 64px 60px';
 
   /* 헤더 */
   h += `<div style="display:grid;grid-template-columns:${COL};align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">`;
-  h += `<span>순서</span><span></span><span>스케줄명</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>`;
+  h += `<span>순서</span><span></span><span>스케줄명</span><span>상태</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>`;
 
   /* 아이템 목록 */
   cycleOrder.forEach((ad, idx) => {
@@ -744,11 +744,11 @@ function renderCycleOrder() {
     h += `<span style="font-size:12px;font-weight:700;color:#9EA5AD;">${idx + 1}</span>`;
     h += `<span style="font-size:14px;color:#CED2D6;cursor:grab;user-select:none;" title="드래그로 순서 변경">⠿</span>`;
 
-    /* 스케줄명 + 상태 */
-    h += `<div style="display:flex;flex-direction:column;gap:3px;min-width:0;">`;
-    h += `<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ad.name}</span>`;
-    h += `<span style="font-size:10px;font-weight:600;color:${statusColor[ad.status] || '#9EA5AD'};">${statusLabel[ad.status] || ad.status}</span>`;
-    h += `</div>`;
+    /* 스케줄명 */
+    h += `<div style="min-width:0;"><span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">${ad.name}</span></div>`;
+
+    /* 상태 */
+    h += `<span style="font-size:10px;font-weight:600;color:${statusColor[ad.status] || '#9EA5AD'};white-space:nowrap;">${statusLabel[ad.status] || ad.status}</span>`;
 
     /* 스케줄 유형 배지 */
     h += `<span style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:${tBg};color:${tCol};white-space:nowrap;">${schedTypeLabel[typeKey] || typeKey}</span>`;
@@ -789,7 +789,7 @@ function renderCycleOrder() {
     h += `<span style="font-size:12px;font-weight:700;color:#CED2D6;">${cycleOrder.length+1}</span>`;
     h += `<span></span>`;
     h += `<div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:2px;border:1px dashed #CED2D6;flex-shrink:0;"></div><span style="font-size:13px;color:#9EA5AD;">잔여 슬롯</span></div>`;
-    h += `<span></span><span></span>`;
+    h += `<span></span><span></span><span></span>`;
     h += `<span style="font-size:12px;color:#9EA5AD;text-align:center;">${remDur}초</span>`;
     h += `<span></span></div>`;
   }
