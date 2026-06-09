@@ -676,19 +676,19 @@ function renderTimeline() {
     html += `<span style="margin-left:auto;font-size:10px;color:#9EA5AD;white-space:nowrap;">${String(sH).padStart(2,'0')}~${String(eH).padStart(2,'0')}시 · ${cycles}사이클</span>`;
     html += `</div>`;
 
-    /* 사이클 블록 반복 트랙 */
-    const cyclePct  = (CYCLE_ACTUAL / zoneSec * 100).toFixed(3);
-    const jinglePct = (JINGLE_SEC   / zoneSec * 100).toFixed(3);
-
-    html += `<div style="display:flex;height:32px;gap:1px;overflow:hidden;border-radius:4px;">`;
+    /* 시보 + 사이클을 하나의 블록으로 좌→우 표현 */
+    html += `<div style="display:flex;height:32px;gap:3px;overflow:hidden;">`;
 
     if (isJingle) {
-      html += `<div style="flex:0 0 ${jinglePct}%;min-width:8px;background:#F3E8FF;border:1px solid #C084FC;border-radius:3px;display:flex;align-items:center;justify-content:center;" title="시보 ${JINGLE_SEC}초"><span style="font-size:8px;">🔔</span></div>`;
+      html += `<div style="flex:0 0 52px;background:#F3E8FF;border:1px solid #C084FC;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:3px;" title="시보 ${JINGLE_SEC}초">`;
+      html += `<span style="font-size:9px;">🔔</span><span style="font-size:9px;font-weight:700;color:#6B21A8;white-space:nowrap;">시보</span>`;
+      html += `</div>`;
     }
 
-    for (let i = 0; i < cycles; i++) {
-      html += `<div style="flex:0 0 ${cyclePct}%;min-width:4px;background:#E8EDFF;border:1px solid #AFA9EC;border-radius:2px;" title="사이클 ${i+1}/${cycles} · ${CYCLE_ACTUAL}초"></div>`;
-    }
+    html += `<div style="flex:1;background:#E8EDFF;border:1px solid #AFA9EC;border-radius:4px;display:flex;align-items:center;padding:0 10px;" title="사이클 · ${CYCLE_ACTUAL}초 · ${cycles}회/구간">`;
+    html += `<span style="font-size:11px;font-weight:600;color:#3C3489;">사이클</span>`;
+    html += `<span style="font-size:10px;color:#9EA5AD;margin-left:6px;">${cycles}회</span>`;
+    html += `</div>`;
 
     html += `</div></div>`;
   });
