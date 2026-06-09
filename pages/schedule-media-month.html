@@ -6,239 +6,112 @@
   <title>미디어 편성표 – 월간 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    /* ── 2-column layout ── */
-    .sched-media-layout {
-      display: grid;
-      grid-template-columns: 60fr 40fr;
-      gap: 20px;
-      align-items: flex-start;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif; background: #F6F7F9; color: #24292E; font-size: 14px; }
+    a { text-decoration: none; color: inherit; }
 
-    /* ── Toolbar ── */
-    .sched-toolbar {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 14px; flex-wrap: wrap;
-    }
+    /* Breadcrumb */
+    .bcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #9EA5AD; margin-bottom: 20px; }
+    .bcrumb a { color: #596066; }
+    .bcrumb a:hover { color: #58C65D; }
+    .bcrumb-sep { color: #C9CDD2; }
+    .bcrumb-current { color: #24292E; font-weight: 600; }
+
+    /* 2-column layout */
+    .page-grid { display: grid; grid-template-columns: 60% 1fr; gap: 20px; align-items: start; }
+
+    /* Panel shell */
+    .panel { background: #fff; border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
+
+    /* Calendar Toolbar */
+    .cal-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #F0F1F3; gap: 12px; }
+    .cal-toolbar-left { display: flex; align-items: center; gap: 10px; }
     .select-dropdown {
-      height: 34px; padding: 0 12px;
-      border: 1px solid #CED2D6; border-radius: 6px;
+      height: 28px; padding: 0 10px;
+      border: 1px solid #E5E7EA; border-radius: 6px;
       background: #fff; font-size: 13px; color: #24292E;
       font-family: inherit; cursor: pointer; outline: none;
     }
     .select-dropdown:focus { border-color: #58C65D; }
+    .cal-month-nav { display: flex; align-items: center; gap: 6px; }
+    .cal-month-nav button { width: 26px; height: 26px; border: 1px solid #E5E7EA; border-radius: 5px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #9EA5AD; transition: color .12s; }
+    .cal-month-nav button:hover { color: #24292E; }
+    .cal-month-label { font-size: 13px; font-weight: 600; color: #24292E; min-width: 80px; text-align: center; }
+    .btn-day-view { font-size: 11px; color: #9EA5AD; background: none; border: 1px solid #E5E7EA; border-radius: 5px; padding: 5px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; text-decoration: none; }
+    .btn-day-view:hover { color: #24292E; border-color: #CED2D6; }
 
-    .date-nav {
-      display: flex; align-items: center; gap: 8px; margin-left: auto;
-    }
-    .date-nav-btn {
-      width: 30px; height: 30px;
-      border: 1px solid #CED2D6; border-radius: 6px;
-      background: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; color: #596066; transition: border-color 0.15s;
-    }
-    .date-nav-btn:hover { border-color: #58C65D; color: #58C65D; }
-    .date-label {
-      font-size: 14px; font-weight: 700; color: #24292E;
-      min-width: 100px; text-align: center;
-    }
-    .view-btn {
-      height: 34px; padding: 0 14px;
-      border: 1px solid #CED2D6; border-radius: 6px;
-      background: #fff; font-size: 13px; font-weight: 500; color: #596066;
-      cursor: pointer; text-decoration: none;
-      display: inline-flex; align-items: center;
-      transition: border-color 0.15s, color 0.15s;
-    }
-    .view-btn:hover { border-color: #58C65D; color: #58C65D; }
+    /* Calendar header */
+    .cal-header-row { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #F0F1F3; }
+    .cal-header-cell { padding: 6px 0; text-align: center; font-size: 10px; font-weight: 500; color: #B0B7BE; letter-spacing: .03em; }
+    .cal-header-cell.sun { color: #FBBFBF; }
+    .cal-header-cell.sat { color: #BAD8F7; }
+    .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
 
-    /* ── Calendar ── */
-    .cal-panel {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .cal-header {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      border-bottom: 1px solid #E5E7EA;
-      background: #F6F7F9;
-    }
-    .cal-dow {
-      padding: 8px 0; text-align: center;
-      font-size: 12px; font-weight: 600; color: #596066;
-    }
-    .cal-dow:first-child { color: #E24B4B; }
-    .cal-dow:last-child  { color: #2D84ED; }
-
-    .cal-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      border-left: 1px solid #E5E7EA;
-    }
-
-    /* 셀 전체 */
-    .cal-cell {
-      min-height: 100px;
-      border-right: 1px solid #E5E7EA;
-      border-bottom: 1px solid #E5E7EA;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    .cal-cell.other-month { opacity: .4; pointer-events: none; }
+    /* Calendar cell */
+    .cal-cell { min-height: 84px; border-right: 1px solid #F0F1F3; border-bottom: 1px solid #F0F1F3; display: flex; flex-direction: column; position: relative; }
+    .cal-cell:nth-child(7n) { border-right: none; }
+    .cal-cell.other-month { opacity: .35; pointer-events: none; }
+    .cal-cell.weekend { background: #FAFBFC; }
     .cal-cell.selected { background: #F0FDF4; }
+    .cal-cell.today .cal-date-link { background: #58C65D; color: #fff !important; }
 
-    /* 날짜 헤더 영역 */
-    .cal-cell-head {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 5px 6px 3px;
-    }
+    /* 날짜 숫자 링크 */
+    .cal-cell-head { display: flex; align-items: center; gap: 4px; padding: 4px 5px 2px; }
+    .cal-date-link { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 500; color: #454C52; text-decoration: none; flex-shrink: 0; transition: background .1s; }
+    .cal-date-link:hover { background: #F0FDF4; }
+    .cal-date-link.sunday  { color: #EF9090; }
+    .cal-date-link.saturday { color: #90BAD8; }
 
-    /* 날짜 숫자 — 클릭 시 일간 뷰 */
-    .cal-date-link {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      font-size: 12px; font-weight: 600; color: #24292E;
-      text-decoration: none;
-      flex-shrink: 0;
-      transition: background 0.1s;
-    }
-    .cal-date-link:hover { background: #D1FAE5; }
-    .cal-cell.today .cal-date-link {
-      background: #58C65D; color: #fff;
-    }
-    .cal-date-link.sunday  { color: #E24B4B; }
-    .cal-date-link.saturday { color: #2D84ED; }
-    .cal-cell.today .cal-date-link { color: #fff !important; }
+    /* 잔여 용량 도트 */
+    .cap-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .cap-green  { background: #10B981; }
+    .cap-amber  { background: #F59E0B; }
+    .cap-orange { background: #F97316; }
+    .cap-red    { background: #EF4444; }
 
-    /* 셀 바디 — 클릭 시 패널 업데이트 */
-    .cal-cell-body {
-      flex: 1;
-      padding: 2px 6px 6px;
-      cursor: pointer;
-    }
+    /* 셀 바디 */
+    .cal-cell-body { flex: 1; padding: 1px 5px 4px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
     .cal-cell-body:hover { background: rgba(0,0,0,.02); }
 
-    /* Status dot row */
-    .cal-status-row {
-      display: flex; align-items: center; gap: 5px; margin-bottom: 5px;
-    }
-    .cal-status-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    }
-    .cal-status-label { font-size: 10px; color: #596066; }
-
-    /* Dual progress bars */
+    /* 잔여 용량 바 */
     .cal-bars { display: flex; flex-direction: column; gap: 3px; }
     .cal-bar-row { display: flex; align-items: center; gap: 4px; }
-    .cal-bar-label { font-size: 9px; color: #9EA5AD; width: 38px; flex-shrink: 0; }
-    .cal-bar-track {
-      flex: 1; height: 5px; background: #F0F1F3;
-      border-radius: 3px; overflow: hidden;
-    }
-    .cal-bar-fill { height: 100%; border-radius: 3px; }
-    .cal-bar-val { font-size: 9px; color: #9EA5AD; width: 24px; text-align: right; flex-shrink: 0; }
+    .cal-bar-label { font-size: 9px; color: #B0B7BE; width: 34px; flex-shrink: 0; }
+    .cal-bar-track { flex: 1; height: 4px; background: #F0F1F3; border-radius: 2px; overflow: hidden; }
+    .cal-bar-fill { height: 100%; border-radius: 2px; }
+    .cal-bar-val { font-size: 9px; color: #B0B7BE; width: 22px; text-align: right; flex-shrink: 0; }
 
     /* Legend */
-    .legend {
-      display: flex; gap: 14px; flex-wrap: wrap;
-      padding: 10px 14px; border-top: 1px solid #E5E7EA;
-      background: #FAFBFC;
-    }
-    .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #596066; }
-    .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cal-legend { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-top: 1px solid #F0F1F3; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #9EA5AD; }
+    .legend-dot { width: 6px; height: 6px; border-radius: 50%; }
 
-    /* ── Right panel ── */
-    .schedule-panel {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      overflow: hidden;
-      position: sticky;
-      top: 76px;
-    }
-    .schedule-panel-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid #E5E7EA;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 8px;
-    }
-    .schedule-panel-title {
-      font-size: 14px; font-weight: 700; color: #24292E;
-    }
-    .schedule-panel-count {
-      font-size: 12px; color: #9EA5AD; font-weight: 500;
-      white-space: nowrap;
-    }
-    .panel-day-link {
-      font-size: 11px; color: #2D84ED; text-decoration: none; white-space: nowrap;
-    }
-    .panel-day-link:hover { text-decoration: underline; }
-    .schedule-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+    /* Right panel */
+    .schedule-panel-header { padding: 12px 16px 10px; border-bottom: 1px solid #F0F1F3; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .schedule-panel-title { font-size: 13px; font-weight: 700; color: #24292E; }
+    .schedule-panel-hint { font-size: 11px; color: #9EA5AD; }
+    .schedule-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
 
-    .sched-card {
-      border: 1px solid #E5E7EA; border-radius: 8px;
-      padding: 12px 14px; cursor: pointer;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .sched-card:hover {
-      border-color: #58C65D;
-      box-shadow: 0 2px 8px rgba(88,198,93,.12);
-    }
-    .sched-card-top {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;
-    }
-    .product-badge {
-      font-size: 10px; font-weight: 700;
-      padding: 2px 7px; border-radius: 4px;
-      flex-shrink: 0; white-space: nowrap;
-    }
+    .schedule-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 5px; background: #fff; }
+    .schedule-card:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .schedule-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .schedule-card-name { font-size: 13px; font-weight: 600; color: #24292E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; white-space: nowrap; }
     .prod-a { background: #EEF2FF; color: #3730A3; }
     .prod-b { background: #FFF7ED; color: #9A3412; }
-    .sched-card-name {
-      font-size: 13px; font-weight: 600; color: #24292E;
-      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .status-badge {
-      font-size: 10px; font-weight: 600;
-      padding: 2px 8px; border-radius: 10px;
-      flex-shrink: 0; display: flex; align-items: center; gap: 4px;
-      white-space: nowrap;
-    }
-    .status-badge.running  { background: #ECFDF5; color: #065F46; }
-    .status-badge.upcoming { background: #EFF6FF; color: #1D4ED8; }
-    .status-badge .s-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .status-badge.running  .s-dot { background: #10B981; }
-    .status-badge.upcoming .s-dot { background: #3B82F6; }
+    .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-green { background: #D1FAE5; color: #065F46; }
+    .badge-blue  { background: #DBEAFE; color: #1E40AF; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-dot-green { background: #10B981; }
+    .badge-dot-blue  { background: #3B82F6; }
+    .schedule-card-meta { font-size: 11px; color: #9EA5AD; display: flex; align-items: center; gap: 4px; }
+    .schedule-card-meta .sep { color: #D1D5DB; }
+    .schedule-card-advertiser { font-size: 12px; color: #596066; font-weight: 500; }
 
-    .sched-card-meta {
-      font-size: 11px; color: #9EA5AD;
-      display: flex; align-items: center; gap: 4px;
-      margin-bottom: 4px;
-    }
-    .sched-card-meta .sep { color: #CED2D6; }
-    .sched-card-advertiser { font-size: 11px; color: #596066; font-weight: 500; }
-
-    .panel-empty {
-      padding: 32px 16px;
-      text-align: center;
-      font-size: 12px;
-      color: #B0B7BE;
-    }
-
-    /* ── Breadcrumb ── */
-    .bcrumb {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 12px; color: #9EA5AD; margin-bottom: 16px;
-    }
-    .bcrumb a { color: #596066; text-decoration: none; }
-    .bcrumb a:hover { color: #58C65D; }
-    .bcrumb-sep { color: #CED2D6; }
-    .bcrumb-current { color: #24292E; font-weight: 600; }
+    .panel-day-link { font-size: 11px; color: #2D84ED; text-decoration: none; white-space: nowrap; }
+    .panel-day-link:hover { text-decoration: underline; }
+    .panel-empty { padding: 32px 16px; text-align: center; font-size: 12px; color: #B0B7BE; }
   </style>
 </head>
 <body>
@@ -326,52 +199,51 @@
     </div>
 
     <!-- 2-column layout -->
-    <div class="sched-media-layout">
+    <div class="page-grid">
 
       <!-- LEFT: Calendar -->
-      <div>
-        <div class="sched-toolbar">
-          <select class="select-dropdown" id="mediaSelect">
-            <option value="a" selected>강남역 1번출구 A</option>
-            <option value="b">강남역 1번출구 B</option>
-            <option value="c">강남역 2번출구</option>
-          </select>
-          <div class="date-nav">
-            <button class="date-nav-btn" onclick="changeMonth(-1)">&#8592;</button>
-            <span class="date-label" id="monthLabel">2026년 6월</span>
-            <button class="date-nav-btn" onclick="changeMonth(1)">&#8594;</button>
+      <div class="panel">
+        <div class="cal-toolbar">
+          <div class="cal-toolbar-left">
+            <select class="select-dropdown" id="mediaSelect">
+              <option value="a" selected>강남역 1번출구 A</option>
+              <option value="b">강남역 1번출구 B</option>
+              <option value="c">강남역 2번출구</option>
+            </select>
+            <div class="cal-month-nav">
+              <button onclick="changeMonth(-1)">&#8592;</button>
+              <span class="cal-month-label" id="monthLabel">2026년 6월</span>
+              <button onclick="changeMonth(1)">&#8594;</button>
+            </div>
           </div>
-          <a href="schedule-media-day.html" class="view-btn">일간 뷰</a>
+          <a href="schedule-media-day.html" class="btn-day-view">일간 뷰</a>
         </div>
-
-        <div class="cal-panel">
-          <div class="cal-header">
-            <div class="cal-dow">일</div>
-            <div class="cal-dow">월</div>
-            <div class="cal-dow">화</div>
-            <div class="cal-dow">수</div>
-            <div class="cal-dow">목</div>
-            <div class="cal-dow">금</div>
-            <div class="cal-dow">토</div>
-          </div>
-          <div class="cal-grid" id="calGrid"></div>
-          <div class="legend">
-            <div class="leg"><span class="leg-dot" style="background:#10B981"></span>여유 (&gt;50%)</div>
-            <div class="leg"><span class="leg-dot" style="background:#F59E0B"></span>위험 (20–50%)</div>
-            <div class="leg"><span class="leg-dot" style="background:#F97316"></span>매우위험 (&lt;20%)</div>
-            <div class="leg"><span class="leg-dot" style="background:#EF4444"></span>등록불가 (0%)</div>
-          </div>
+        <div class="cal-header-row">
+          <div class="cal-header-cell sun">일</div>
+          <div class="cal-header-cell">월</div>
+          <div class="cal-header-cell">화</div>
+          <div class="cal-header-cell">수</div>
+          <div class="cal-header-cell">목</div>
+          <div class="cal-header-cell">금</div>
+          <div class="cal-header-cell sat">토</div>
+        </div>
+        <div class="cal-body" id="calGrid"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#10B981;"></span>여유</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#F59E0B;"></span>위험</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#F97316;"></span>매우위험</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#EF4444;"></span>등록불가</div>
         </div>
       </div>
 
       <!-- RIGHT: Schedule panel -->
-      <div class="schedule-panel">
+      <div class="panel" style="position:sticky;top:76px;">
         <div class="schedule-panel-header">
           <span class="schedule-panel-title" id="panelTitle">운영 중 / 운영 예정</span>
-          <span class="schedule-panel-count" id="panelCount">5개 스케줄</span>
+          <span class="schedule-panel-hint" id="panelCount">5개 스케줄</span>
         </div>
-        <div id="panelDayLinkWrap" style="display:none; padding:8px 16px 0; border-bottom:1px solid #F0F1F3;">
-          <a href="schedule-media-day.html" class="panel-day-link" id="panelDayLink">일간 편성표 보기 →</a>
+        <div id="panelDayLinkWrap" style="display:none; padding:8px 16px 4px; border-bottom:1px solid #F0F1F3;">
+          <a href="schedule-media-day.html" class="panel-day-link">일간 편성표 보기 →</a>
         </div>
         <div class="schedule-list" id="scheduleList"></div>
       </div>
@@ -481,20 +353,23 @@
     }
 
     list.forEach(function(s) {
+      var badgeCls  = s.status === 'running' ? 'badge-green' : 'badge-blue';
+      var dotCls    = s.status === 'running' ? 'badge-dot-green' : 'badge-dot-blue';
       var card = document.createElement('div');
-      card.className = 'sched-card';
+      card.className = 'schedule-card';
       card.innerHTML =
-        '<div class="sched-card-top">' +
-          '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
-          '<span class="sched-card-name">' + s.name + '</span>' +
-          '<span class="status-badge ' + s.status + '"><span class="s-dot"></span>' + s.statusLabel + '</span>' +
+        '<div class="schedule-card-top">' +
+          '<span class="schedule-card-name">' + s.name + '</span>' +
+          '<span class="badge ' + badgeCls + '"><span class="badge-dot ' + dotCls + '"></span>' + s.statusLabel + '</span>' +
         '</div>' +
-        '<div class="sched-card-meta">' +
+        '<div class="schedule-card-meta">' +
+          '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
+          '<span class="sep">·</span>' +
           '<span>' + s.code + '</span><span class="sep">·</span>' +
           '<span>' + s.duration + '</span><span class="sep">·</span>' +
           '<span>' + s.type + '</span>' +
         '</div>' +
-        '<div class="sched-card-advertiser">' + s.advertiser + '</div>';
+        '<div class="schedule-card-advertiser">' + s.advertiser + '</div>';
       listEl.appendChild(card);
     });
   }
@@ -560,24 +435,25 @@
 
         if (data) {
           const color   = getStatusColor(data.sec, data.slot);
-          const label   = getStatusLabel(data.sec, data.slot);
+          const capCls  = { '#10B981':'cap-green', '#F59E0B':'cap-amber', '#F97316':'cap-orange', '#EF4444':'cap-red' }[color] || 'cap-green';
           const secPct  = Math.round((data.sec  / MAX_SEC)  * 100);
           const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
 
+          /* cap-dot는 head에 추가 */
+          const dot = document.createElement('span');
+          dot.className = 'cap-dot ' + capCls;
+          head.appendChild(dot);
+
           body.innerHTML =
-            '<div class="cal-status-row">' +
-              '<span class="cal-status-dot" style="background:' + color + '"></span>' +
-              '<span class="cal-status-label">' + label + '</span>' +
-            '</div>' +
             '<div class="cal-bars">' +
               '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">사이클</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + ';opacity:0.8"></div></div>' +
                 '<span class="cal-bar-val">' + data.sec + 's</span>' +
               '</div>' +
               '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">슬롯</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + ';opacity:0.8"></div></div>' +
                 '<span class="cal-bar-val">' + data.slot + '</span>' +
               '</div>' +
             '</div>';
