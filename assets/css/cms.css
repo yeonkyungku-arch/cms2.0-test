@@ -49,11 +49,8 @@ ul, ol { list-style: none; }
   align-items: center;
   padding: 20px 0 24px;
   z-index: 300;
-  overflow-y: auto;
-  scrollbar-width: none;
+  overflow: visible;
 }
-.gnb::-webkit-scrollbar { display: none; }
-
 .gnb-logo {
   width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
@@ -66,6 +63,7 @@ ul, ol { list-style: none; }
   flex-direction: column;
   gap: 2px;
   width: 100%;
+  overflow: visible;
 }
 
 .gnb-nav a {
