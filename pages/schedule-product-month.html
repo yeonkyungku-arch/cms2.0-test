@@ -71,29 +71,67 @@
     .cal-header-cell.sat { color: #60A5FA; }
     .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
 
-    .cal-cell { min-height: 90px; border-right: 1px solid #E5E7EA; border-bottom: 1px solid #E5E7EA; padding: 8px 7px 6px; cursor: pointer; transition: background 0.12s; display: flex; flex-direction: column; gap: 4px; }
+    .cal-cell { min-height: 100px; border-right: 1px solid #E5E7EA; border-bottom: 1px solid #E5E7EA; padding: 0; transition: background 0.12s; display: flex; flex-direction: column; position: relative; }
     .cal-cell:nth-child(7n) { border-right: none; }
-    .cal-cell:hover { background: #F6F7F9; }
-    .cal-cell.other-month { background: #FAFAFA; pointer-events: none; }
-    .cal-cell.other-month .cal-date-num { color: #D1D5DB; }
+    .cal-cell.other-month { background: #FAFAFA; opacity: .55; }
+    .cal-cell.other-month .cal-date-link { pointer-events: none; }
     .cal-cell.weekend { background: #FAFBFC; }
-    .cal-cell.weekend:hover { background: #F0F1F2; }
-    .cal-cell.today .cal-date-num { background: #58C65D; color: #fff !important; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .cal-cell.today .cal-date-link .cal-date-num { background: #58C65D; color: #fff !important; border-radius: 50%; }
 
+    /* 날짜 숫자 링크 영역 */
+    .cal-date-link { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex-shrink: 0; text-decoration: none; border-radius: 6px; transition: background .12s; }
+    .cal-date-link:hover .cal-date-num { text-decoration: underline; }
+    .cal-date-link:hover { background: rgba(88,198,93,.12); }
     .cal-date-num { font-size: 12px; font-weight: 600; color: #24292E; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; line-height: 1; }
     .cal-date-num.sunday { color: #EF4444; }
     .cal-date-num.saturday { color: #60A5FA; }
 
-    .cal-status-bar { height: 4px; border-radius: 3px; width: 100%; margin-top: 1px; }
-    .status-green { background: #10B981; }
-    .status-amber { background: #F59E0B; }
+    /* 셀 헤더 (날짜 + 상태바) */
+    .cal-cell-head { display: flex; align-items: center; justify-content: space-between; padding: 5px 6px 3px; gap: 4px; }
+    .cal-status-bar { height: 4px; border-radius: 3px; flex: 1; margin-top: 0; }
+    .status-green  { background: #10B981; }
+    .status-amber  { background: #F59E0B; }
     .status-orange { background: #F97316; }
-    .status-red { background: #EF4444; }
+    .status-red    { background: #EF4444; }
 
-    .cal-schedule-label { font-size: 10px; color: #065F46; background: #D1FAE5; border-left: 2px solid #10B981; padding: 2px 5px; border-radius: 0 3px 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
-    .cal-schedule-label.amber { background: #FEF3C7; color: #78350F; border-color: #F59E0B; }
-    .cal-schedule-label.orange { background: #FFF7ED; color: #9A3412; border-color: #F97316; }
-    .cal-schedule-label.red { background: #FEF2F2; color: #991B1B; border-color: #EF4444; }
+    /* 셀 바디 - 클릭하면 예약 모달 */
+    .cal-cell-body { flex: 1; padding: 2px 6px 5px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+    .cal-cell-body:hover { background: rgba(88,198,93,.04); }
+    .cal-cell.other-month .cal-cell-body { pointer-events: none; }
+
+    .cal-schedule-chip { font-size: 10px; padding: 2px 5px; border-radius: 0 3px 3px 0; border-left: 2px solid; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
+    .chip-green  { background: #D1FAE5; color: #065F46; border-color: #10B981; }
+    .chip-amber  { background: #FEF3C7; color: #78350F; border-color: #F59E0B; }
+    .chip-orange { background: #FFF7ED; color: #9A3412; border-color: #F97316; }
+    .chip-red    { background: #FEF2F2; color: #991B1B; border-color: #EF4444; }
+    .chip-blue   { background: #DBEAFE; color: #1E40AF; border-color: #60A5FA; }
+    .cal-more-chip { font-size: 9px; color: #9EA5AD; padding: 1px 4px; cursor: pointer; }
+
+    /* ── 예약 모달 ── */
+    .booking-overlay { position: fixed; inset: 0; background: rgba(36,41,46,.5); display: flex; align-items: center; justify-content: center; z-index: 400; backdrop-filter: blur(2px); }
+    .booking-overlay.hidden { display: none; }
+    .booking-modal { background: #fff; border-radius: 14px; width: 480px; max-width: calc(100vw - 32px); box-shadow: 0 24px 64px rgba(0,0,0,.2); overflow: hidden; }
+    .booking-modal-head { padding: 18px 22px 14px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: flex-start; justify-content: space-between; }
+    .booking-modal-head h3 { font-size: 15px; font-weight: 700; color: #24292E; margin-bottom: 2px; }
+    .booking-modal-head p  { font-size: 12px; color: #9EA5AD; }
+    .booking-modal-close { width: 28px; height: 28px; border: none; background: #F6F7F9; border-radius: 6px; cursor: pointer; font-size: 16px; color: #596066; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .booking-modal-close:hover { background: #E5E7EA; }
+    .booking-modal-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+    .booking-field label { display: block; font-size: 11px; font-weight: 600; color: #596066; margin-bottom: 5px; }
+    .booking-field select,
+    .booking-field input[type=text],
+    .booking-field input[type=number] { width: 100%; height: 36px; padding: 0 10px; border: 1px solid #E5E7EA; border-radius: 8px; font-size: 13px; color: #24292E; outline: none; background: #fff; }
+    .booking-field select:focus,
+    .booking-field input:focus { border-color: #58C65D; }
+    .booking-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .booking-day-schedules { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
+    .booking-day-schedules-head { padding: 7px 12px; background: #F6F7F9; font-size: 11px; font-weight: 600; color: #596066; border-bottom: 1px solid #E5E7EA; }
+    .booking-day-sched-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid #F0F1F3; font-size: 12px; }
+    .booking-day-sched-item:last-child { border-bottom: none; }
+    .booking-modal-foot { padding: 14px 22px; border-top: 1px solid #E5E7EA; display: flex; justify-content: flex-end; gap: 8px; }
+    .btn-bk-cancel { height: 36px; padding: 0 16px; border: 1px solid #E5E7EA; border-radius: 8px; background: #fff; font-size: 13px; color: #596066; cursor: pointer; }
+    .btn-bk-submit { height: 36px; padding: 0 20px; border: none; border-radius: 8px; background: #58C65D; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; }
+    .btn-bk-submit:hover { background: #4ab54f; }
 
     /* Legend */
     .cal-legend { display: flex; align-items: center; gap: 14px; padding: 10px 18px; border-top: 1px solid #E5E7EA; flex-wrap: wrap; }
@@ -299,52 +337,7 @@
           <div class="cal-header-cell sat">토</div>
         </div>
 
-        <div class="cal-body">
-          <!-- Week 1: May 31 (prev), Jun 1-6 -->
-          <a href="schedule-product-day.html" class="cal-cell other-month weekend"><span class="cal-date-num sunday">31</span></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">1</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">2</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">3</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">나이키 6월 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">4</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">롯데백화점 프로모</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">5</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">LG 가전 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">6</span></a>
-
-          <!-- Week 2: Jun 7-13 -->
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">7</span></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">8</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
-          <a href="schedule-product-day.html" class="cal-cell today"><span class="cal-date-num">9</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">10</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">현대 날씨 조건</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">11</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">LG 가전 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">12</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">롯데백화점 프로모</div></a>
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">13</span></a>
-
-          <!-- Week 3: Jun 14-20 -->
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">14</span></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">15</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">16</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">17</span><div class="cal-status-bar status-orange"></div><div class="cal-schedule-label orange">현대 날씨 조건</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">18</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">LG 가전 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">19</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">롯데백화점 프로모</div></a>
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">20</span></a>
-
-          <!-- Week 4: Jun 21-27 -->
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">21</span></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">22</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">23</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">24</span><div class="cal-status-bar status-red"></div><div class="cal-schedule-label red">등록불가</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">25</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">LG 가전 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">26</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">롯데백화점 프로모</div></a>
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">27</span></a>
-
-          <!-- Week 5: Jun 28-30, Jul 1-4 -->
-          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">28</span></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">29</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
-          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">30</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
-          <a href="schedule-product-day.html" class="cal-cell other-month"><span class="cal-date-num">1</span></a>
-          <a href="schedule-product-day.html" class="cal-cell other-month"><span class="cal-date-num">2</span></a>
-          <a href="schedule-product-day.html" class="cal-cell other-month"><span class="cal-date-num">3</span></a>
-          <a href="schedule-product-day.html" class="cal-cell other-month weekend"><span class="cal-date-num saturday">4</span></a>
-        </div>
+        <div class="cal-body" id="calBody"></div>
 
         <div class="cal-legend">
           <div class="legend-item"><div class="legend-dot" style="background:#10B981;"></div> 여유 (&gt;50%)</div>
@@ -357,73 +350,77 @@
       <!-- RIGHT: Schedule List -->
       <div class="panel">
         <div class="schedule-panel-header">
-          <span class="schedule-panel-title">운영 중 / 운영 예정</span>
-          <span class="schedule-panel-hint">날짜 선택 시 필터링됨</span>
+          <span class="schedule-panel-title" id="schedPanelTitle">운영 중 / 운영 예정</span>
+          <span class="schedule-panel-hint" id="schedPanelHint">날짜 선택 시 필터링됨</span>
         </div>
-        <div class="schedule-list">
-
-          <a href="schedule-product-day.html" class="schedule-card">
-            <div class="schedule-card-top">
-              <span class="schedule-card-name">나이키 6월 캠페인</span>
-              <span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>운영 중</span>
-            </div>
-            <div class="schedule-card-meta">
-              <span>가-2</span><span class="sep">·</span><span>30초</span><span class="sep">·</span><span>일반</span>
-            </div>
-            <div class="schedule-card-advertiser">나이키코리아</div>
-          </a>
-
-          <a href="schedule-product-day.html" class="schedule-card">
-            <div class="schedule-card-top">
-              <span class="schedule-card-name">삼성 여름 광고</span>
-              <span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>운영 중</span>
-            </div>
-            <div class="schedule-card-meta">
-              <span>가-1</span><span class="sep">·</span><span>20초</span><span class="sep">·</span><span>일반</span>
-            </div>
-            <div class="schedule-card-advertiser">삼성전자</div>
-          </a>
-
-          <a href="schedule-product-day.html" class="schedule-card">
-            <div class="schedule-card-top">
-              <span class="schedule-card-name">현대 날씨 조건</span>
-              <span class="badge badge-blue"><span class="badge-dot badge-dot-blue"></span>운영 예정</span>
-            </div>
-            <div class="schedule-card-meta">
-              <span>나-4</span><span class="sep">·</span><span>40초</span><span class="sep">·</span>
-              <span class="tag-condition"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>조건</span>
-            </div>
-            <div class="schedule-card-advertiser">현대자동차</div>
-          </a>
-
-          <a href="schedule-product-day.html" class="schedule-card">
-            <div class="schedule-card-top">
-              <span class="schedule-card-name">LG 가전 캠페인</span>
-              <span class="badge badge-blue"><span class="badge-dot badge-dot-blue"></span>운영 예정</span>
-            </div>
-            <div class="schedule-card-meta">
-              <span>가-3</span><span class="sep">·</span><span>15초</span><span class="sep">·</span><span>일반</span>
-            </div>
-            <div class="schedule-card-advertiser">LG전자</div>
-          </a>
-
-          <a href="schedule-product-day.html" class="schedule-card">
-            <div class="schedule-card-top">
-              <span class="schedule-card-name">롯데백화점 프로모</span>
-              <span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>운영 중</span>
-            </div>
-            <div class="schedule-card-meta">
-              <span>가-2</span><span class="sep">·</span><span>30초</span><span class="sep">·</span><span>일반</span>
-            </div>
-            <div class="schedule-card-advertiser">롯데쇼핑</div>
-          </a>
-
-        </div>
+        <div class="schedule-list" id="scheduleList"></div>
       </div>
 
     </div>
   </div>
 </main>
+
+<!-- ── 스케줄 예약 모달 ── -->
+<div class="booking-overlay hidden" id="bookingOverlay">
+  <div class="booking-modal">
+    <div class="booking-modal-head">
+      <div>
+        <h3 id="bookingModalTitle">스케줄 예약</h3>
+        <p id="bookingModalDate"></p>
+      </div>
+      <button class="booking-modal-close" onclick="closeBookingModal()">✕</button>
+    </div>
+    <div class="booking-modal-body">
+      <!-- 당일 운영 스케줄 현황 -->
+      <div class="booking-field">
+        <label>당일 운영 스케줄</label>
+        <div class="booking-day-schedules" id="bookingDaySchedules"></div>
+      </div>
+      <!-- 예약 폼 -->
+      <div class="booking-field">
+        <label>스케줄 선택</label>
+        <select id="bookingSchedSelect">
+          <option value="">스케줄을 선택하세요</option>
+          <option value="nike">나이키 6월 캠페인</option>
+          <option value="samsung">삼성 여름 광고</option>
+          <option value="hyundai">현대 날씨 조건</option>
+          <option value="lg">LG 가전 캠페인</option>
+          <option value="lotte">롯데백화점 프로모</option>
+        </select>
+      </div>
+      <div class="booking-field-row">
+        <div class="booking-field">
+          <label>시작 시간</label>
+          <select id="bookingTimeStart">
+            <option>07:00</option><option>08:00</option><option>09:00</option>
+            <option>10:00</option><option>11:00</option><option>12:00</option>
+            <option>13:00</option><option>14:00</option><option>15:00</option>
+            <option>16:00</option><option>17:00</option><option>18:00</option>
+            <option>19:00</option><option>20:00</option><option>21:00</option>
+          </select>
+        </div>
+        <div class="booking-field">
+          <label>종료 시간</label>
+          <select id="bookingTimeEnd">
+            <option>08:00</option><option>09:00</option><option>10:00</option>
+            <option>11:00</option><option>12:00</option><option>13:00</option>
+            <option>14:00</option><option>15:00</option><option>16:00</option>
+            <option>17:00</option><option>18:00</option><option>19:00</option>
+            <option>20:00</option><option>21:00</option><option>22:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="booking-field">
+        <label>메모 (선택)</label>
+        <input type="text" id="bookingMemo" placeholder="예약 메모를 입력하세요">
+      </div>
+    </div>
+    <div class="booking-modal-foot">
+      <button class="btn-bk-cancel" onclick="closeBookingModal()">취소</button>
+      <button class="btn-bk-submit" onclick="submitBooking()">예약 등록</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ── 프로덕트 목록 ── */
@@ -499,6 +496,305 @@ function openProductSelect() {
 
 /* 페이지 진입 시 자동 표시 */
 renderProductList(PRODUCTS);
+
+/* ═══════════════════════════════════════
+   캘린더 데이터 & 렌더링
+═══════════════════════════════════════ */
+var CAL_YEAR = 2026, CAL_MONTH = 6; // 1-based
+
+/* 날짜별 스케줄 데이터 (key: "YYYY-MM-DD") */
+var DAY_SCHEDULES = {
+  '2026-06-01': [
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
+  ],
+  '2026-06-02': [
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+    { name:'LG 가전 캠페인',    cls:'chip-blue',   status:'green'  },
+  ],
+  '2026-06-03': [
+    { name:'나이키 6월 캠페인', cls:'chip-amber',  status:'amber'  },
+    { name:'현대 날씨 조건',    cls:'chip-blue',   status:'amber'  },
+  ],
+  '2026-06-04': [
+    { name:'롯데백화점 프로모', cls:'chip-amber',  status:'amber'  },
+  ],
+  '2026-06-05': [
+    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
+  ],
+  '2026-06-08': [
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-09': [
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
+    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
+  ],
+  '2026-06-10': [
+    { name:'현대 날씨 조건',    cls:'chip-amber',  status:'amber'  },
+    { name:'나이키 6월 캠페인', cls:'chip-amber',  status:'amber'  },
+  ],
+  '2026-06-11': [
+    { name:'LG 가전 캠페인',    cls:'chip-amber',  status:'amber'  },
+  ],
+  '2026-06-12': [
+    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-15': [
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-16': [
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'LG 가전 캠페인',    cls:'chip-blue',   status:'green'  },
+  ],
+  '2026-06-17': [
+    { name:'현대 날씨 조건',    cls:'chip-orange', status:'orange' },
+    { name:'나이키 6월 캠페인', cls:'chip-orange', status:'orange' },
+  ],
+  '2026-06-18': [
+    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-19': [
+    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-22': [
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-23': [
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'현대 날씨 조건',    cls:'chip-blue',   status:'green'  },
+    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-24': [
+    { name:'등록불가',          cls:'chip-red',    status:'red'    },
+  ],
+  '2026-06-25': [
+    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
+    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-26': [
+    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
+    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
+  ],
+  '2026-06-29': [
+    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
+  ],
+  '2026-06-30': [
+    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
+    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
+  ],
+};
+
+var ALL_SCHEDULES = [
+  { name:'나이키 6월 캠페인',  badge:'badge-green', badgeTxt:'운영 중',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'나이키코리아', dates:[1,2,3,5,9,10,15,16,17,22,23,25,29,30] },
+  { name:'삼성 여름 광고',     badge:'badge-green', badgeTxt:'운영 중',   slot:'가-1', sec:'20초', type:'일반',    advertiser:'삼성전자',     dates:[1,2,5,8,9,12,15,16,18,22,25,26,29] },
+  { name:'현대 날씨 조건',     badge:'badge-blue',  badgeTxt:'운영 예정', slot:'나-4', sec:'40초', type:'조건',    advertiser:'현대자동차',   dates:[3,10,17,23] },
+  { name:'LG 가전 캠페인',     badge:'badge-blue',  badgeTxt:'운영 예정', slot:'가-3', sec:'15초', type:'일반',    advertiser:'LG전자',       dates:[2,5,9,11,16,18,23,25,26,30] },
+  { name:'롯데백화점 프로모',  badge:'badge-green', badgeTxt:'운영 중',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'롯데쇼핑',     dates:[4,8,12,15,19,22,25,26,29,30] },
+];
+
+var selectedDate = null; // "YYYY-MM-DD"
+
+function dateKey(y, m, d) {
+  return y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+}
+
+/* 해당 날짜의 최대 상태(가장 심각한 status) → status bar 색 */
+function dominantStatus(scheds) {
+  if (!scheds || !scheds.length) return null;
+  var rank = { red:4, orange:3, amber:2, green:1, blue:0 };
+  return scheds.reduce(function(a, b) { return (rank[b.status] || 0) > (rank[a.status] || 0) ? b : a; }).status;
+}
+
+function renderCalendar() {
+  var body = document.getElementById('calBody');
+  if (!body) return;
+
+  var firstDay = new Date(CAL_YEAR, CAL_MONTH - 1, 1).getDay(); // 0=sun
+  var daysInMonth = new Date(CAL_YEAR, CAL_MONTH, 0).getDate();
+  var prevDays = new Date(CAL_YEAR, CAL_MONTH - 1, 0).getDate();
+  var today = new Date();
+  var todayKey = dateKey(today.getFullYear(), today.getMonth()+1, today.getDate());
+
+  var cells = '';
+  var MAX_CHIPS = 3;
+
+  /* prev month padding */
+  for (var i = firstDay - 1; i >= 0; i--) {
+    cells += '<div class="cal-cell other-month weekend">' +
+      '<div class="cal-cell-head"><span class="cal-date-num">' + (prevDays - i) + '</span></div>' +
+    '</div>';
+  }
+
+  for (var d = 1; d <= daysInMonth; d++) {
+    var key = dateKey(CAL_YEAR, CAL_MONTH, d);
+    var dow = new Date(CAL_YEAR, CAL_MONTH - 1, d).getDay();
+    var isSun = dow === 0, isSat = dow === 6;
+    var isToday = key === todayKey;
+    var isSelected = key === selectedDate;
+    var scheds = DAY_SCHEDULES[key] || [];
+    var status = dominantStatus(scheds);
+
+    var cls = 'cal-cell';
+    if (isSun || isSat) cls += ' weekend';
+    if (isToday) cls += ' today';
+    if (isSelected) cls += ' selected';
+
+    var dateNumCls = 'cal-date-num' + (isSun ? ' sunday' : isSat ? ' saturday' : '');
+
+    /* 상태 바 */
+    var statusBar = status
+      ? '<div class="cal-status-bar status-' + status + '" style="flex:1;height:4px;border-radius:3px;"></div>'
+      : '<div style="flex:1;"></div>';
+
+    /* 칩 목록 */
+    var chips = '';
+    var show = Math.min(scheds.length, MAX_CHIPS);
+    for (var s = 0; s < show; s++) {
+      chips += '<div class="cal-schedule-chip ' + scheds[s].cls + '">' + scheds[s].name + '</div>';
+    }
+    if (scheds.length > MAX_CHIPS) {
+      chips += '<div class="cal-more-chip">+' + (scheds.length - MAX_CHIPS) + '개 더</div>';
+    }
+
+    cells +=
+      '<div class="' + cls + '">' +
+        '<div class="cal-cell-head">' +
+          '<a href="schedule-product-day.html" class="cal-date-link" onclick="event.stopPropagation()">' +
+            '<span class="' + dateNumCls + '">' + d + '</span>' +
+          '</a>' +
+          statusBar +
+        '</div>' +
+        '<div class="cal-cell-body" onclick="openBookingModal(\'' + key + '\')">' +
+          chips +
+        '</div>' +
+      '</div>';
+  }
+
+  /* next month padding */
+  var total = firstDay + daysInMonth;
+  var remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (var n = 1; n <= remaining; n++) {
+    cells += '<div class="cal-cell other-month">' +
+      '<div class="cal-cell-head"><span class="cal-date-num">' + n + '</span></div>' +
+    '</div>';
+  }
+
+  body.innerHTML = cells;
+}
+
+/* ── 오른쪽 스케줄 목록 ── */
+function renderScheduleList(filterDay) {
+  var list = filterDay
+    ? ALL_SCHEDULES.filter(function(s) {
+        var d = parseInt(filterDay.split('-')[2]);
+        return s.dates.indexOf(d) !== -1;
+      })
+    : ALL_SCHEDULES;
+
+  var titleEl = document.getElementById('schedPanelTitle');
+  var hintEl  = document.getElementById('schedPanelHint');
+  if (filterDay) {
+    var parts = filterDay.split('-');
+    titleEl.textContent = parts[1] + '/' + parts[2] + ' 운영 스케줄';
+    hintEl.innerHTML = '<a href="schedule-product-day.html" style="color:#2D84ED;font-size:11px;">일간 편성표 보기 →</a>';
+  } else {
+    titleEl.textContent = '운영 중 / 운영 예정';
+    hintEl.textContent = '날짜 클릭 시 필터링됨';
+  }
+
+  if (!list.length) {
+    document.getElementById('scheduleList').innerHTML =
+      '<div style="padding:24px;text-align:center;color:#9EA5AD;font-size:13px;">해당 날짜에 스케줄이 없습니다<br><span style="font-size:11px;">셀을 클릭해 예약을 추가하세요</span></div>';
+    return;
+  }
+
+  document.getElementById('scheduleList').innerHTML = list.map(function(s) {
+    var typeHtml = s.type === '조건'
+      ? '<span class="tag-condition"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>조건</span>'
+      : s.type;
+    return '<a href="schedule-product-day.html" class="schedule-card">' +
+      '<div class="schedule-card-top">' +
+        '<span class="schedule-card-name">' + s.name + '</span>' +
+        '<span class="badge ' + s.badge + '"><span class="badge-dot"></span>' + s.badgeTxt + '</span>' +
+      '</div>' +
+      '<div class="schedule-card-meta">' +
+        '<span>' + s.slot + '</span><span class="sep">·</span>' +
+        '<span>' + s.sec + '</span><span class="sep">·</span>' +
+        '<span>' + typeHtml + '</span>' +
+      '</div>' +
+      '<div class="schedule-card-advertiser">' + s.advertiser + '</div>' +
+    '</a>';
+  }).join('');
+}
+
+/* ── 예약 모달 ── */
+function openBookingModal(key) {
+  selectedDate = key;
+  renderCalendar(); // 선택 셀 하이라이트
+
+  var parts = key.split('-');
+  var dateLabel = parts[0] + '년 ' + parseInt(parts[1]) + '월 ' + parseInt(parts[2]) + '일';
+  document.getElementById('bookingModalTitle').textContent = '스케줄 예약';
+  document.getElementById('bookingModalDate').textContent = dateLabel;
+
+  /* 당일 스케줄 목록 */
+  var scheds = DAY_SCHEDULES[key] || [];
+  var el = document.getElementById('bookingDaySchedules');
+  if (!scheds.length) {
+    el.innerHTML = '<div style="padding:10px 12px;font-size:12px;color:#9EA5AD;">운영 예정 스케줄 없음</div>';
+  } else {
+    el.innerHTML = '<div class="booking-day-schedules-head">운영 예정 ' + scheds.length + '개</div>' +
+      scheds.map(function(s) {
+        return '<div class="booking-day-sched-item">' +
+          '<div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:' + ({green:'#10B981',amber:'#F59E0B',orange:'#F97316',red:'#EF4444',blue:'#60A5FA'}[s.status]||'#CED2D6') + '"></div>' +
+          '<span>' + s.name + '</span>' +
+        '</div>';
+      }).join('');
+  }
+
+  renderScheduleList(key);
+  document.getElementById('bookingOverlay').classList.remove('hidden');
+}
+
+function closeBookingModal() {
+  document.getElementById('bookingOverlay').classList.add('hidden');
+}
+
+function submitBooking() {
+  var sched = document.getElementById('bookingSchedSelect').value;
+  if (!sched) { alert('스케줄을 선택해 주세요.'); return; }
+  var btn = document.querySelector('.btn-bk-submit');
+  btn.textContent = '등록됨 ✓';
+  btn.style.background = '#5DCAA5';
+  setTimeout(function() {
+    closeBookingModal();
+    btn.textContent = '예약 등록';
+    btn.style.background = '#58C65D';
+  }, 1200);
+}
+
+/* 오버레이 바깥 클릭 닫기 */
+document.getElementById('bookingOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeBookingModal();
+});
+
+/* ── 오늘 날짜로 초기 렌더 ── */
+renderCalendar();
+renderScheduleList(null);
+
+/* selected 셀 CSS 추가 */
+var styleEl = document.createElement('style');
+styleEl.textContent = '.cal-cell.selected .cal-cell-body { background: rgba(88,198,93,.06); } .cal-cell.selected { outline: 2px solid #58C65D; outline-offset: -2px; }';
+document.head.appendChild(styleEl);
 </script>
 </body>
 </html>
