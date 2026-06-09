@@ -401,6 +401,7 @@
       <div class="timeline-scroll-wrap">
         <table class="timeline-table" id="timelineTable"></table>
       </div>
+      <div id="condScheduleRow"></div>
     </div>
 
     <!-- 2b. 사이클 편성 순서 -->
@@ -712,7 +713,42 @@ function renderTimeline() {
   html += `</div></td></tr>`;
   document.getElementById('timelineTable').innerHTML = html;
 
+  renderCondScheduleRow();
   renderCycleOrder();
+}
+
+function renderCondScheduleRow() {
+  const condAds = cycleOrder.filter(a => a.scheduleType === 'cond');
+  const el = document.getElementById('condScheduleRow');
+  if (!condAds.length) { el.innerHTML = ''; return; }
+
+  const condTypeLabel  = { time:'타임', env:'환경', target:'타겟' };
+  const condTypeBg     = { time:'#FFF7ED', env:'#F0FDF4', target:'#FFF0FB' };
+  const condTypeCol    = { time:'#9A5F00', env:'#166534', target:'#7C3A8A' };
+  const condTypeBorder = { time:'#FDE68A', env:'#86EFAC', target:'#E9A8F0' };
+  const statusColor    = { confirmed:'#2E9E34', unconfirmed:'#B45309', reserved:'#9EA5AD' };
+  const statusLabel    = { confirmed:'확정', unconfirmed:'미확정', reserved:'예약' };
+
+  let h = `<div style="display:flex;align-items:stretch;border-top:1px solid #E5E7EA;">`;
+  h += `<div style="flex-shrink:0;width:120px;font-size:11px;font-weight:700;color:#596066;padding:10px;border-right:1px solid #E5E7EA;display:flex;align-items:center;">조건 광고</div>`;
+  h += `<div style="flex:1;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">`;
+
+  condAds.forEach(a => {
+    const ct = a.condType || 'time';
+    h += `<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:${condTypeBg[ct]};border:1px solid ${condTypeBorder[ct]};border-radius:6px;">`;
+    h += `<span style="font-size:10px;font-weight:700;color:${condTypeCol[ct]};padding:1px 5px;background:#fff;border:1px solid ${condTypeBorder[ct]};border-radius:3px;">${condTypeLabel[ct]}</span>`;
+    h += `<span style="font-size:12px;font-weight:500;color:#24292E;">${a.name}</span>`;
+    if (a.content) {
+      h += `<span style="font-size:11px;color:#9EA5AD;">${a.content.name}</span>`;
+    } else {
+      h += `<span style="font-size:11px;color:#CED2D6;">콘텐츠 미지정</span>`;
+    }
+    h += `<span style="font-size:10px;font-weight:600;color:${statusColor[a.status] || '#9EA5AD'};">${statusLabel[a.status] || a.status}</span>`;
+    h += `</div>`;
+  });
+
+  h += `</div></div>`;
+  el.innerHTML = h;
 }
 
 /* ── 사이클 편성 순서: 단일 사이클 편집 UI ── */
