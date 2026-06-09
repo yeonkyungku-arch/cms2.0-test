@@ -402,6 +402,7 @@
     .lc-selfop    { background: #E1F5EE; color: #085041; }
     .lc-condition { background: #FFF3DC; color: #6B3C00; }
     .lc-draft     { background: #F1F2F4; color: #3E4650; border: 1px dashed #B0B7BE; }
+    .lc-jingle    { background: #F3E8FF; color: #6B21A8; border: 1px solid #C084FC; }
     .remain-section-title {
       font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 10px;
     }
@@ -585,24 +586,26 @@
           <!-- ─ 수평 타임라인 영역 ─ -->
           <div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;margin-bottom:16px;">
 
-            <!-- 시간 헤더 -->
-            <div style="display:grid;grid-template-columns:48px 1fr;border-bottom:1px solid #E5E7EA;background:#F6F7F9;">
-              <div style="padding:6px 0;border-right:1px solid #E5E7EA;"></div>
-              <div id="htlTimeAxis" style="position:relative;height:28px;">
+            <!-- 시간 축 헤더 -->
+            <div style="display:grid;grid-template-columns:104px 1fr;border-bottom:1px solid #E5E7EA;background:#F6F7F9;">
+              <div style="padding:6px 8px;border-right:1px solid #E5E7EA;font-size:10px;color:#9EA5AD;font-weight:600;display:flex;align-items:center;">구간 / 사이클</div>
+              <div id="htlTimeAxis" style="position:relative;height:28px;overflow:hidden;">
                 <!-- JS로 시간 눈금 렌더링 -->
               </div>
             </div>
 
-            <!-- 시보 라인 -->
-            <div style="display:grid;grid-template-columns:48px 1fr;border-bottom:2px solid #E5E7EA;background:#FAFBFC;">
-              <div style="padding:6px 0;border-right:1px solid #E5E7EA;font-size:10px;color:#596066;font-weight:600;text-align:center;display:flex;align-items:center;justify-content:center;">시보</div>
-              <div id="htlJingleRow" style="position:relative;height:48px;">
+            <!-- 시보 구간 표시 -->
+            <div style="display:grid;grid-template-columns:104px 1fr;border-bottom:2px solid #E5E7EA;">
+              <div style="padding:6px 8px;border-right:1px solid #E5E7EA;font-size:10px;color:#7F77DD;font-weight:700;display:flex;align-items:center;gap:4px;background:#FAFAFE;">
+                <span>🔔</span><span>시보 구간</span>
+              </div>
+              <div id="htlJingleRow" style="position:relative;height:44px;overflow:hidden;">
                 <!-- JS로 시보 마커 렌더링 -->
               </div>
             </div>
 
             <!-- 사이클 구간 rows -->
-            <div id="htlCycleSection" style="overflow-x:auto;">
+            <div id="htlCycleSection">
               <!-- JS로 구간별 사이클 rows 렌더링 -->
             </div>
           </div>
@@ -618,16 +621,16 @@
               </div>
               <div style="text-align:center;">
                 <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">사용 시간</div>
-                <div style="font-size:20px;font-weight:700;color:#24292E;">120<span style="font-size:12px;margin-left:2px;">초</span></div>
+                <div style="font-size:20px;font-weight:700;color:#24292E;">90<span style="font-size:12px;margin-left:2px;">초</span></div>
               </div>
               <div style="text-align:center;">
                 <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">잔여 시간</div>
-                <div style="font-size:20px;font-weight:700;color:#58C65D;">480<span style="font-size:12px;margin-left:2px;">초</span></div>
+                <div style="font-size:20px;font-weight:700;color:#58C65D;">510<span style="font-size:12px;margin-left:2px;">초</span></div>
               </div>
             </div>
-            <!-- 진행 바 -->
+            <!-- 진행 바 (90/600 = 15%) -->
             <div style="height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;margin-bottom:14px;">
-              <div style="width:20%;height:100%;background:#58C65D;border-radius:4px;"></div>
+              <div style="width:15%;height:100%;background:#58C65D;border-radius:4px;"></div>
             </div>
 
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:14px;">
@@ -646,7 +649,7 @@
             </div>
 
             <div style="background:#F6F7F9;border-radius:6px;padding:10px 14px;font-size:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-              <span style="color:#596066;">예상 실제 사이클 시간: <strong style="color:#24292E;">120초</strong></span>
+              <span style="color:#596066;">예상 실제 사이클 시간: <strong style="color:#24292E;">90초</strong></span>
               <span style="color:#596066;">예상 일 송출 횟수: <strong style="color:#24292E;">450회</strong></span>
               <span style="color:#58C65D;font-weight:600;">✅ 최소 보장 90회 이상</span>
             </div>
@@ -1528,39 +1531,47 @@
   }
 
   /* ── 사이클 목록 렌더링 ── */
-  /* 사이클 최대 600초(30초×20슬롯). 실제 등록 스케줄 합산 = 120초. 잔여 = 480초 */
+  /*
+   * loopSeq: 사이클 내 고정 편성 순서 (일반 광고 + 자체운영)
+   * - 조건 광고(condition)는 재생 시점이 조건에 따라 결정되므로 사이클 순서에 포함하지 않음
+   * - 시보 광고는 별도의 시보 슬롯으로 관리 (jingleSlot 참고)
+   */
   var loopSeq = [
     { name:'갤럭시 S25', dur:30, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
     { name:'아이오닉',   dur:15, cls:'lc-confirmed', prod:'강남 A지구 패키지' },
-    { name:'우산 광고',  dur:30, cls:'lc-condition', prod:'강남 A지구 패키지' },
     { name:'롯데백화점', dur:30, cls:'lc-draft',     prod:'홍대 입구역 프리미엄' },
     { name:'기본 홍보',  dur:15, cls:'lc-selfop',    prod:'자체운영' }
-    /* 합계: 30+15+30+30+15 = 120초 (실제 사이클) / 최대 600초 */
+    /* 합계: 30+15+30+15 = 90초 */
   ];
-  var CYCLE_MAX = 600;   /* 사이클 최대 시간 (초) */
-  var CYCLE_ACTUAL = 120; /* 실제 사이클 시간 (초) */
+  /* 시보 슬롯: 시보 시각의 첫 사이클 앞에 고정 삽입 */
+  var jingleSlot = { name:'시보', dur:15, cls:'lc-jingle', prod:'시보' };
 
-  /* 시보 기준 구간 정의 (일반 광고 횟수 균등성 확인용) */
+  var CYCLE_MAX    = 600; /* 사이클 최대 시간 (초) */
+  var CYCLE_ACTUAL = 90;  /* 실제 사이클 시간: 30+15+30+15 = 90초 */
+
+  /* 시보 기준 구간 정의 */
   var LOOP_SEGMENTS = [
-    { startH: 7,  endH: 12, cycles: 150 },
-    { startH: 12, endH: 18, cycles: 180 },
-    { startH: 18, endH: 22, cycles: 120 }
+    { startH: 7,  endH: 12, cycles: 200 },
+    { startH: 12, endH: 18, cycles: 240 },
+    { startH: 18, endH: 22, cycles: 160 }
   ];
-  /* 일반 광고(confirmed) = 사이클당 1회 편성 → 하루 총 450회 균등 */
   var CONFIRMED_PER_CYCLE = 1;
 
-  function renderCycleRow(globalIdx, rowBg) {
+  function renderCycleRow(globalIdx, rowBg, isJingleCycle) {
     var totalSec = 7 * 3600 + globalIdx * CYCLE_ACTUAL;
     var hh = Math.floor(totalSec / 3600);
     var mm = Math.floor((totalSec % 3600) / 60);
     var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
     var cycleNum = 'C' + String(globalIdx + 1).padStart(3, '0');
+    var seq = isJingleCycle ? [jingleSlot].concat(loopSeq) : loopSeq;
+    var actualDur = isJingleCycle ? CYCLE_ACTUAL + jingleSlot.dur : CYCLE_ACTUAL;
+
     var html = '<div class="loop-row" style="' + (rowBg ? 'background:#FAFBFC;' : '') + '">';
     html += '<span class="loop-row-num">' + cycleNum + '</span>';
     html += '<span class="loop-row-time">' + timeStr + '</span>';
     html += '<div class="loop-row-items">';
-    loopSeq.forEach(function(item) {
-      var pct = (item.dur / CYCLE_ACTUAL * 100).toFixed(2);
+    seq.forEach(function(item) {
+      var pct = (item.dur / actualDur * 100).toFixed(2);
       html += '<div class="loop-chip ' + item.cls + '" style="flex:0 0 ' + pct + '%;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
       html += '<span>' + item.name + '</span>';
       html += '</div>';
@@ -1570,11 +1581,10 @@
   }
 
   function renderLoopList() {
-    var SHOW = 3; /* 구간당 미리보기 행 수 */
+    var SHOW = 3;
     var html = '';
     var globalIdx = 0;
     LOOP_SEGMENTS.forEach(function(seg) {
-      /* 구간 헤더 */
       var confirmedCount = seg.cycles * CONFIRMED_PER_CYCLE;
       html += '<div style="background:#F0F1F3;border-bottom:1px solid #E5E7EA;padding:5px 12px;' +
         'display:flex;align-items:center;justify-content:space-between;">';
@@ -1583,12 +1593,11 @@
       html += '<span style="font-size:10px;color:#596066;">' + seg.cycles + '사이클 &nbsp;·&nbsp; ';
       html += '일반 광고 <strong style="color:#24292E;">' + confirmedCount + '회</strong>/항목</span>';
       html += '</div>';
-      /* 샘플 행 */
       var showCount = Math.min(SHOW, seg.cycles);
       for (var r = 0; r < showCount; r++) {
-        html += renderCycleRow(globalIdx + r, r % 2 !== 0);
+        var isJingle = r === 0 && jingleTimes.indexOf(seg.startH) !== -1;
+        html += renderCycleRow(globalIdx + r, r % 2 !== 0, isJingle);
       }
-      /* 반복 안내 행 */
       if (seg.cycles > showCount) {
         var remaining = seg.cycles - showCount;
         html += '<div style="text-align:center;padding:7px 12px;font-size:11px;color:#9EA5AD;' +
@@ -1602,110 +1611,138 @@
   }
 
   /* ── 수평 타임라인 렌더링 ── */
-  var OP_START = 7;  /* 07:00 */
-  var OP_END   = 22; /* 22:00 */
+  var OP_START = 7;
+  var OP_END   = 22;
   var OP_HOURS = OP_END - OP_START; /* 15h */
-  var OP_SEC   = OP_HOURS * 3600;   /* 54,000초 */
 
   /* 시보 시각 (시 단위) */
   var jingleTimes = [12, 18];
 
-  /* 스케줄 색상 클래스 매핑 */
+  /* 색상 매핑 */
   var seqColors = {
-    'lc-confirmed': { bg:'#EEEDFE', color:'#3C3489' },
-    'lc-selfop':    { bg:'#E1F5EE', color:'#085041' },
-    'lc-condition': { bg:'#FFF3DC', color:'#6B3C00' },
-    'lc-draft':     { bg:'#F1F2F4', color:'#596066' }
+    'lc-confirmed': { bg:'#EEEDFE', color:'#3C3489', border:'#AFA9EC' },
+    'lc-selfop':    { bg:'#E1F5EE', color:'#085041', border:'#5DCAA5' },
+    'lc-draft':     { bg:'#F1F2F4', color:'#596066', border:'#B0B7BE' },
+    'lc-jingle':    { bg:'#F3E8FF', color:'#6B21A8', border:'#C084FC' }
   };
+
+  /* 구간별 배경색 */
+  var zoneColors = ['#EFF6FF', '#FFF7ED', '#F0FDF4'];
 
   function renderHorizontalTimeline() {
     var axis = document.getElementById('htlTimeAxis');
     if (!axis) return;
 
-    /* 시간 눈금 (2시간 간격) */
+    /* ─ 시간 눈금 ─ */
     var axisHtml = '';
     for (var h = OP_START; h <= OP_END; h += 2) {
       var pct = (h - OP_START) / OP_HOURS * 100;
-      axisHtml += '<div style="position:absolute;left:' + pct + '%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#9EA5AD;white-space:nowrap;">' + String(h).padStart(2,'0') + ':00</div>';
-      axisHtml += '<div style="position:absolute;left:' + pct + '%;top:0;bottom:0;width:1px;background:#E5E7EA;"></div>';
+      /* 첫·마지막 레이블 overflow 방지 */
+      var tx = h === OP_START ? 'translateX(0)' : h === OP_END ? 'translateX(-100%)' : 'translateX(-50%)';
+      axisHtml += '<div style="position:absolute;left:' + pct + '%;top:0;bottom:0;width:1px;background:#E5E7EA;pointer-events:none;"></div>';
+      axisHtml += '<span style="position:absolute;left:' + pct + '%;bottom:4px;font-size:10px;color:#9EA5AD;white-space:nowrap;transform:' + tx + ';">' + String(h).padStart(2,'0') + ':00</span>';
     }
     axis.innerHTML = axisHtml;
 
-    /* 시보 라인 */
+    /* ─ 시보 구간 행 ─ */
     var jingleRow = document.getElementById('htlJingleRow');
     if (!jingleRow) return;
-    var jHtml = '<div style="position:absolute;top:0;bottom:0;left:0;right:0;background:#F6F7F9;"></div>';
-    /* 운영 시간 바 */
-    jHtml += '<div style="position:absolute;top:50%;left:0;right:0;height:2px;background:#CED2D6;transform:translateY(-50%);"></div>';
+
+    /* 시보 기준 구간 배경 */
+    var allTimes = [OP_START].concat(jingleTimes).concat([OP_END]);
+    var jHtml = '';
+    for (var z = 0; z < allTimes.length - 1; z++) {
+      var sP = (allTimes[z]   - OP_START) / OP_HOURS * 100;
+      var eP = (allTimes[z+1] - OP_START) / OP_HOURS * 100;
+      jHtml += '<div style="position:absolute;left:' + sP + '%;width:' + (eP - sP) + '%;top:0;bottom:0;background:' + zoneColors[z] + ';"></div>';
+      /* 구간 레이블 */
+      var midP = sP + (eP - sP) / 2;
+      jHtml += '<span style="position:absolute;left:' + midP + '%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#9EA5AD;white-space:nowrap;pointer-events:none;">' +
+        String(allTimes[z]).padStart(2,'0') + '~' + String(allTimes[z+1]).padStart(2,'0') + '시</span>';
+    }
+    /* 시보 마커 */
     jingleTimes.forEach(function(h) {
       var pct = (h - OP_START) / OP_HOURS * 100;
-      jHtml += '<div style="position:absolute;left:' + pct + '%;top:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;">';
-      jHtml += '<div style="width:2px;height:100%;background:#7F77DD;margin-top:0;"></div>';
-      jHtml += '</div>';
-      jHtml += '<div style="position:absolute;left:calc(' + pct + '% + 4px);top:4px;">';
-      jHtml += '<div style="background:#EEEDFE;border:1px solid #AFA9EC;border-radius:4px;padding:3px 7px;font-size:10px;font-weight:600;color:#3C3489;white-space:nowrap;display:flex;align-items:center;gap:5px;">';
-      jHtml += '<span>🕛 ' + String(h).padStart(2,'0') + ':00 시보</span>';
-      jHtml += '<span style="cursor:pointer;color:#7F77DD;font-size:9px;padding:1px 3px;border:1px solid #AFA9EC;border-radius:2px;" onclick="openJingleOrder(' + h + ')" title="순서 변경">✎</span>';
-      jHtml += '</div></div>';
+      jHtml += '<div style="position:absolute;left:' + pct + '%;top:0;bottom:0;width:2px;background:#7F77DD;z-index:1;"></div>';
+      jHtml += '<div style="position:absolute;left:calc(' + pct + '% + 4px);top:50%;transform:translateY(-50%);z-index:2;">' +
+        '<span style="display:inline-flex;align-items:center;gap:4px;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:4px;padding:3px 8px;font-size:10px;font-weight:700;color:#3C3489;white-space:nowrap;">' +
+        '🔔 ' + String(h).padStart(2,'0') + ':00 시보' +
+        '</span></div>';
     });
     jingleRow.innerHTML = jHtml;
 
-    /* 사이클 구간 표시 */
-    /* 구간: [OP_START~jingle[0]], [jingle[0]~jingle[1]], [jingle[1]~OP_END] */
+    /* ─ 사이클 구간 rows ─ */
     var segments = [];
-    var times = [OP_START].concat(jingleTimes).concat([OP_END]);
-    for (var i = 0; i < times.length - 1; i++) {
-      var startH = times[i], endH = times[i+1];
-      var cycles = Math.floor((endH - startH) * 3600 / CYCLE_ACTUAL);
-      segments.push({ startH: startH, endH: endH, cycles: cycles });
+    for (var i = 0; i < allTimes.length - 1; i++) {
+      var sH = allTimes[i], eH = allTimes[i + 1];
+      segments.push({ startH: sH, endH: eH, cycles: Math.floor((eH - sH) * 3600 / CYCLE_ACTUAL), zoneIdx: i });
     }
 
     var cycleSection = document.getElementById('htlCycleSection');
     if (!cycleSection) return;
     var cHtml = '';
     var globalCycleNum = 0;
+    var usedTotal = loopSeq.reduce(function(a, b) { return a + b.dur; }, 0);
 
     segments.forEach(function(seg) {
-      var SHOW = Math.min(seg.cycles, 3); /* 처음 3행만 표시 */
+      var SHOW = Math.min(seg.cycles, 3);
+      var isJingleStart = jingleTimes.indexOf(seg.startH) !== -1;
+      var zoneBg = zoneColors[seg.zoneIdx];
+
       /* 구간 헤더 */
-      cHtml += '<div style="background:#F6F7F9;border-bottom:1px solid #E5E7EA;padding:4px 12px;font-size:10px;color:#596066;font-weight:600;">';
-      cHtml += String(seg.startH).padStart(2,'0') + ':00 ~ ' + String(seg.endH).padStart(2,'0') + ':00 구간';
-      cHtml += ' <span style="font-weight:400;color:#9EA5AD;">(' + seg.cycles + '사이클)</span></div>';
+      cHtml += '<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:' + zoneBg + ';border-bottom:1px solid #E5E7EA;border-top:2px solid ' + (isJingleStart ? '#7F77DD' : '#E5E7EA') + ';">';
+      cHtml += '<span style="font-size:11px;font-weight:700;color:#454C52;">' +
+        String(seg.startH).padStart(2,'0') + ':00 ~ ' + String(seg.endH).padStart(2,'0') + ':00 구간</span>';
+      if (isJingleStart) {
+        cHtml += '<span style="font-size:10px;color:#7F77DD;font-weight:600;">🔔 시보 후 광고 편성 시작</span>';
+      }
+      cHtml += '<span style="font-size:10px;color:#9EA5AD;">' + seg.cycles + '사이클</span>';
+      cHtml += '</div>';
 
       for (var r = 0; r < SHOW; r++) {
         globalCycleNum++;
+        var isJingleCycle = r === 0 && isJingleStart;
+        var seq = isJingleCycle ? [jingleSlot].concat(loopSeq) : loopSeq;
+        var cycleDur = isJingleCycle ? (usedTotal + jingleSlot.dur) : usedTotal;
+        var remDur = CYCLE_MAX - cycleDur;
+
         var totalSec = OP_START * 3600 + (globalCycleNum - 1) * CYCLE_ACTUAL;
+        if (isJingleCycle) totalSec = seg.startH * 3600;
         var hh = Math.floor(totalSec / 3600);
         var mm = Math.floor((totalSec % 3600) / 60);
         var timeStr = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-        var cNum = 'C' + String(globalCycleNum).padStart(3,'0');
-        var rowBg = r % 2 ? '#FAFBFC' : '#fff';
+        var cNum = 'C' + String(globalCycleNum).padStart(3, '0');
+        var rowBg = isJingleCycle ? '#FAF8FF' : (r % 2 ? '#FAFBFC' : '#fff');
+        var rowBorder = isJingleCycle ? '1px solid #DDD6FE' : '1px solid #F5F6F7';
 
-        cHtml += '<div style="display:grid;grid-template-columns:48px 52px 1fr;align-items:center;min-height:28px;background:' + rowBg + ';border-bottom:1px solid #F5F6F7;">';
-        cHtml += '<div style="font-size:10px;color:#B0B7BE;font-weight:600;text-align:center;padding:0 4px;border-right:1px solid #F0F1F3;">' + cNum + '</div>';
-        cHtml += '<div style="font-size:11px;color:#596066;text-align:center;padding:0 4px;border-right:1px solid #F0F1F3;">' + timeStr + '</div>';
-        cHtml += '<div style="display:flex;gap:1px;padding:3px 8px;overflow:hidden;">';
-        loopSeq.forEach(function(item) {
-          var c = seqColors[item.cls] || { bg:'#F1F2F4', color:'#596066' };
-          var w = Math.round(item.dur / CYCLE_ACTUAL * 100);
-          cHtml += '<div style="flex:0 0 ' + w + '%;min-width:40px;background:' + c.bg + ';color:' + c.color + ';font-size:9px;font-weight:600;border-radius:3px;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
+        cHtml += '<div style="display:grid;grid-template-columns:52px 52px 1fr;align-items:stretch;min-height:32px;background:' + rowBg + ';border-bottom:' + rowBorder + ';">';
+        /* 사이클 번호 */
+        cHtml += '<div style="font-size:10px;color:' + (isJingleCycle ? '#7F77DD' : '#B0B7BE') + ';font-weight:700;text-align:center;padding:4px 2px;border-right:1px solid #F0F1F3;display:flex;align-items:center;justify-content:center;">' + cNum + '</div>';
+        /* 시작 시각 */
+        cHtml += '<div style="font-size:11px;color:#596066;text-align:center;padding:4px 2px;border-right:1px solid #F0F1F3;display:flex;align-items:center;justify-content:center;">' + timeStr + '</div>';
+        /* 칩 영역: 칩 너비는 CYCLE_MAX 대비 비율로 표시 */
+        cHtml += '<div style="display:flex;align-items:stretch;gap:2px;padding:4px 8px;min-width:320px;">';
+        seq.forEach(function(item) {
+          var c = seqColors[item.cls] || { bg:'#F1F2F4', color:'#596066', border:'#E5E7EA' };
+          var flexPct = (item.dur / CYCLE_MAX * 100).toFixed(1);
+          cHtml += '<div style="flex:0 0 ' + flexPct + '%;min-width:28px;background:' + c.bg + ';color:' + c.color + ';border:1px solid ' + c.border + ';font-size:9px;font-weight:600;border-radius:3px;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;" title="' + item.name + ' · ' + item.dur + '초 · ' + item.prod + '">';
           cHtml += item.name;
           cHtml += '</div>';
         });
+        /* 잔여 슬롯 표시 */
+        if (remDur > 0) {
+          var remPct = (remDur / CYCLE_MAX * 100).toFixed(1);
+          cHtml += '<div style="flex:1 1 ' + remPct + '%;min-width:20px;background:#F6F7F9;border:1px dashed #CED2D6;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#B0B7BE;" title="잔여 ' + remDur + '초">+' + remDur + '초</div>';
+        }
         cHtml += '</div></div>';
       }
 
       if (seg.cycles > SHOW) {
         globalCycleNum += (seg.cycles - SHOW);
-        cHtml += '<div style="text-align:center;padding:6px;font-size:11px;color:#9EA5AD;background:#FAFBFC;border-bottom:1px solid #E5E7EA;">... 동일 패턴으로 ' + (seg.cycles - SHOW) + '사이클 더 반복</div>';
+        cHtml += '<div style="text-align:center;padding:6px 12px;font-size:11px;color:#9EA5AD;background:#FAFBFC;border-bottom:1px solid #E5E7EA;">↻ 동일 편성으로 <strong style="color:#596066;">' + (seg.cycles - SHOW) + '사이클</strong> 더 반복</div>';
       }
     });
     cycleSection.innerHTML = cHtml;
-  }
-
-  /* 시보 순서 변경 모달 (목업) */
-  function openJingleOrder(hour) {
-    alert(String(hour).padStart(2,'0') + ':00 시보 순서 변경 기능 (준비 중)');
   }
 
   /* 초기화 */
