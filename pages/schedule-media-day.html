@@ -421,6 +421,45 @@
     @media (max-width: 900px) {
       .cond-cards { grid-template-columns: 1fr; }
     }
+
+    /* ── 드릴다운 링크 ── */
+    .drill-link {
+      color: #2D84ED;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .drill-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ── 사이클 툴팁 ── */
+    .tl-cycle-wrap { position: relative; flex: 1; }
+    .tl-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #24292E;
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.6;
+      padding: 7px 11px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 100;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+    .tl-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #24292E;
+    }
+    .tl-cycle-wrap:hover .tl-tooltip { display: block; }
   </style>
 </head>
 <body>
@@ -519,6 +558,8 @@
 <!-- Content -->
 <main class="content">
   <div class="content-inner">
+  <div style="display:flex;gap:20px;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
 
     <!-- 1. 헤더 카드 -->
     <div class="day-header-card">
@@ -539,7 +580,7 @@
         </div>
       </div>
       <div class="day-header-meta">
-        <span class="meta-media-name">강남역 1번출구 A</span>
+        <a href="product-detail.html" class="meta-media-name drill-link">강남역 1번출구 A</a>
         <span class="meta-dot">·</span>
         <span class="meta-info">사이클 최대 600초</span>
         <span class="meta-dot">·</span>
@@ -547,8 +588,8 @@
       </div>
       <div class="active-products">
         <span class="active-products-label">운영 프로덕트:</span>
-        <span class="product-badge ga">프로덕트 가</span>
-        <span class="product-badge na">프로덕트 나</span>
+        <a href="product-detail.html" class="product-badge ga drill-link">프로덕트 가</a>
+        <a href="product-detail.html" class="product-badge na drill-link">프로덕트 나</a>
       </div>
     </div>
 
@@ -618,34 +659,34 @@
           </thead>
           <tbody>
             <tr>
-              <td><span class="product-badge ga">프로덕트 가</span></td>
-              <td>나이키 6월 캠페인</td>
+              <td><a href="product-detail.html" class="product-badge ga drill-link">프로덕트 가</a></td>
+              <td><a href="#" class="drill-link">나이키 6월 캠페인</a></td>
               <td>
-                <div style="display:flex;align-items:center;gap:6px;">
+                <a href="contents.html" class="drill-link" style="display:flex;align-items:center;gap:6px;">
                   <div style="width:28px;height:20px;border-radius:3px;background:#3C3489;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">👟</div>
-                  <span style="font-size:12px;color:#596066;">나이키_에어맥스2026_30s.mp4</span>
-                </div>
+                  <span style="font-size:12px;">나이키_에어맥스2026_30s.mp4</span>
+                </a>
               </td>
               <td style="font-weight:700;">520회</td>
               <td>138회</td>
               <td style="font-size:16px;">✅</td>
             </tr>
             <tr>
-              <td><span class="product-badge ga">프로덕트 가</span></td>
-              <td>삼성 여름 광고</td>
+              <td><a href="product-detail.html" class="product-badge ga drill-link">프로덕트 가</a></td>
+              <td><a href="#" class="drill-link">삼성 여름 광고</a></td>
               <td>
-                <div style="display:flex;align-items:center;gap:6px;">
+                <a href="contents.html" class="drill-link" style="display:flex;align-items:center;gap:6px;">
                   <div style="width:28px;height:20px;border-radius:3px;background:#2D84ED;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">📱</div>
-                  <span style="font-size:12px;color:#596066;">삼성_갤럭시S25_20s.mp4</span>
-                </div>
+                  <span style="font-size:12px;">삼성_갤럭시S25_20s.mp4</span>
+                </a>
               </td>
               <td style="font-weight:700;">520회</td>
               <td>138회</td>
               <td style="font-size:16px;">✅</td>
             </tr>
             <tr>
-              <td><span class="product-badge na">프로덕트 나</span></td>
-              <td>롯데 여름 프로모</td>
+              <td><a href="product-detail.html" class="product-badge na drill-link">프로덕트 나</a></td>
+              <td><a href="#" class="drill-link">롯데 여름 프로모</a></td>
               <td>
                 <div style="display:flex;align-items:center;gap:6px;">
                   <div style="width:28px;height:20px;border-radius:3px;border:1px dashed #CED2D6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -728,7 +769,62 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- /left col -->
+
+  <!-- right panel -->
+  <div style="width:280px;flex-shrink:0;position:sticky;top:72px;">
+    <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;overflow:hidden;margin-bottom:16px;">
+      <div style="padding:12px 16px;border-bottom:1px solid #E5E7EA;font-size:13px;font-weight:700;color:#24292E;display:flex;align-items:center;gap:7px;">
+        <svg width="14" height="14" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED" fill="none"/></svg>
+        미디어 정보
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;">
+        <a href="product-detail.html" class="drill-link" style="font-size:14px;font-weight:700;">강남역 1번출구 A</a>
+        <div style="font-size:11px;color:#9EA5AD;">서울 강남구 강남대로 396</div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">설치 유형</div><div style="font-size:12px;font-weight:600;color:#24292E;">실외 · 세로형</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">해상도</div><div style="font-size:12px;font-weight:600;color:#24292E;">1920×1080</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">운영 시간</div><div style="font-size:12px;font-weight:600;color:#24292E;">07:00–22:00</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">사이클 최대</div><div style="font-size:12px;font-weight:600;color:#24292E;">600초</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">기준 슬롯</div><div style="font-size:12px;font-weight:600;color:#24292E;">30초 × 20개</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">최소 보장</div><div style="font-size:12px;font-weight:600;color:#24292E;">90회/일</div></div>
+        </div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:4px;">센서</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:#F0EEFF;color:#5B3EC0;">⏰ 타임</span>
+          <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:#E8F5FF;color:#1A7CC0;">🌤 환경</span>
+          <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:#FFF0E8;color:#C05A1A;">🎯 타겟</span>
+        </div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:4px;">운영 프로덕트</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <a href="product-detail.html" style="font-size:12px;color:#3C3489;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:5px;padding:5px 9px;text-decoration:none;display:block;">프로덕트 가</a>
+          <a href="product-detail.html" style="font-size:12px;color:#166534;background:#DCFCE7;border:1px solid #86EFAC;border-radius:5px;padding:5px 9px;text-decoration:none;display:block;">프로덕트 나</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사이클 요약 -->
+    <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;overflow:hidden;">
+      <div style="padding:12px 16px;border-bottom:1px solid #E5E7EA;font-size:13px;font-weight:700;color:#24292E;">사이클 요약</div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">사이클 최대</span><span style="font-weight:600;color:#24292E;">600초</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">편성 사용</span><span style="font-weight:600;color:#24292E;">90초</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">잔여</span><span style="font-weight:600;color:#58C65D;">510초</span></div>
+        <div style="height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;"><div style="height:100%;width:15%;background:#3C3489;border-radius:3px;"></div></div>
+        <div style="font-size:11px;color:#9EA5AD;">슬롯: 3/20개 사용 (잔여 17개)</div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">일 총 사이클</span><span style="font-weight:600;color:#24292E;">450회</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">최소 보장</span><span style="font-weight:600;color:#24292E;">90회</span></div>
+      </div>
+    </div>
+  </div><!-- /right panel -->
+
+  </div><!-- /flex wrapper -->
+
+  </div><!-- /content-inner -->
 </main>
 
 <!-- 시보 순서 변경 모달 -->
@@ -869,9 +965,19 @@ function renderUnifiedTimeline() {
     }
 
     /* 사이클: 하나의 단색 블록 */
-    zoneHtml += '<div style="flex:1;background:#E8EDFF;border:1px solid #AFA9EC;border-radius:4px;display:flex;align-items:center;padding:0 10px;" title="사이클 · ' + CYCLE_MAX_S + '초 · ' + cycles + '회/구간">';
+    var slotCount = Math.floor(CYCLE_MAX_S / 30);
+    var segLabel = String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시';
+    zoneHtml += '<div class="tl-cycle-wrap">';
+    zoneHtml += '<div class="tl-tooltip">';
+    zoneHtml += '사이클 최대: ' + CYCLE_MAX_S + '초<br>';
+    zoneHtml += '슬롯 수 (기준 30초 ÷ 사이클 최대): ' + slotCount + '개<br>';
+    zoneHtml += '구간 횟수: ' + cycles + '회<br>';
+    zoneHtml += '운영 시간 구간: ' + segLabel;
+    zoneHtml += '</div>';
+    zoneHtml += '<div style="flex:1;height:32px;background:#E8EDFF;border:1px solid #AFA9EC;border-radius:4px;display:flex;align-items:center;padding:0 10px;">';
     zoneHtml += '<span style="font-size:11px;font-weight:600;color:#3C3489;">사이클</span>';
     zoneHtml += '<span style="font-size:10px;color:#9EA5AD;margin-left:6px;">' + cycles + '회</span>';
+    zoneHtml += '</div>';
     zoneHtml += '</div>';
 
     zoneHtml += '</div></div>';
@@ -995,8 +1101,9 @@ function renderCycleOrder() {
     h += '<span style="font-size:14px;color:#CED2D6;cursor:grab;user-select:none;" title="드래그로 순서 변경">⠿</span>';
 
     /* 스케줄명 */
-    h += '<div style="min-width:0;">';
-    h += '<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">' + ad.name + '</span>';
+    h += '<div style="min-width:0;display:flex;align-items:center;gap:6px;">';
+    h += '<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">' + ad.name + '</span>';
+    h += '<a href="#" style="font-size:10px;color:#2D84ED;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">상세</a>';
     h += '</div>';
 
     /* 상태 */
