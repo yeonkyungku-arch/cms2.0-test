@@ -871,10 +871,11 @@ function removeChip(id) {
 }
 
 /* sensor → 조건 광고 유형 매핑 */
+/* time(시보/타임 조건 광고)은 센서 불필요 → 항상 제공 가능 */
 const SENSOR_AD_MAP = {
-  weather: { label: '환경 조건 광고', desc: '날씨, 온도, 미세먼지 등 환경 데이터 기반' },
-  target:  { label: '타겟 조건 광고', desc: '유동 인구, 성별, 연령대 등 타겟 데이터 기반' },
-  time:    { label: '시간대 조건 광고', desc: '요일, 시간대, 이벤트 등 시간 데이터 기반' }
+  time:    { label: '타임 조건 광고 (시보)', desc: '요일, 시간대 기반 · 모든 미디어 제공 가능', alwaysOn: true },
+  weather: { label: '환경 조건 광고', desc: '날씨, 온도, 미세먼지 등 환경 센서 필요' },
+  target:  { label: '타겟 조건 광고', desc: '유동 인구, 성별, 연령대 등 타겟 센서 필요' }
 };
 const SENSOR_LABEL = { weather: '날씨 센서', target: '타겟 센서', time: '시간 센서' };
 
@@ -892,27 +893,27 @@ function renderAdOptions() {
   if (selectedMedia.size === 0) { panel.style.display = 'none'; return; }
   panel.style.display = 'block';
 
-  /* 선택된 미디어들의 sensor 배열 교집합 */
   const selected = [...selectedMedia].map(id => MEDIA_DATA.find(x => x.id === id)).filter(Boolean);
-  const allSensors = Object.keys(SENSOR_AD_MAP);
-  const common = allSensors.filter(s => selected.every(m => (m.sensors || []).includes(s)));
 
-  if (common.length === 0) {
-    content.innerHTML = `<div style="font-size:12px;color:#9EA5AD;padding:10px 0;">선택된 미디어들의 공통 센서가 없어 조건 광고를 제공할 수 없습니다. 일반 광고만 가능합니다.</div>`;
-    return;
-  }
+  /* alwaysOn(time/시보)은 센서 무관 항상 가능, 나머지는 전체 교집합 */
+  const available = Object.entries(SENSOR_AD_MAP)
+    .filter(([s, info]) => info.alwaysOn || selected.every(m => (m.sensors || []).includes(s)))
+    .map(([s]) => s);
 
   content.innerHTML = `
     <div style="font-size:12px;color:#596066;margin-bottom:8px;">일반 광고 + 아래 조건 광고 유형을 제공할 수 있습니다.</div>
     <div style="display:flex;flex-direction:column;gap:6px;">
-      ${common.map(s => `
+      ${available.map(s => {
+        const info = SENSOR_AD_MAP[s];
+        return `
         <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#F6F7F9;border-radius:6px;border:1px solid #E5E7EA;">
-          <div style="width:6px;height:6px;border-radius:50%;background:#58C65D;flex-shrink:0;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:${info.alwaysOn ? '#7F77DD' : '#58C65D'};flex-shrink:0;"></div>
           <div>
-            <div style="font-size:12px;font-weight:600;color:#383F45;">${SENSOR_AD_MAP[s].label}</div>
-            <div style="font-size:11px;color:#9EA5AD;margin-top:1px;">${SENSOR_AD_MAP[s].desc}</div>
+            <div style="font-size:12px;font-weight:600;color:#383F45;">${info.label}</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:1px;">${info.desc}</div>
           </div>
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>`;
 }
 
