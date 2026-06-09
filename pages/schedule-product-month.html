@@ -3,222 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>편성표 · 프로덕트 월간 — D'ooh CMS</title>
+  <title>프로덕트 편성표 – 월간 뷰 | D'ooh CMS 2.0</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    /* ── 탭 ── */
-    .view-tabs {
-      display: flex;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      overflow: hidden;
-    }
-    .view-tabs button {
-      padding: 7px 18px;
-      font-size: 13px;
-      font-weight: 500;
-      background: #fff;
-      border: none;
-      cursor: pointer;
-      color: #596066;
-      transition: all 0.15s;
-    }
-    .view-tabs button.active { background: #24292E; color: #fff; }
-    .view-tabs button + button { border-left: 1px solid #CED2D6; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif; background: #F6F7F9; color: #24292E; font-size: 14px; }
+    a { text-decoration: none; color: inherit; }
 
-    /* ── 달력 헤더 툴바 ── */
-    .cal-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    .cal-nav {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .cal-nav button {
-      width: 30px; height: 30px;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      background: #fff;
-      cursor: pointer;
-      font-size: 14px;
-      color: #596066;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
-    .cal-nav button:hover { border-color: #58C65D; color: #58C65D; }
-    .cal-nav-label {
-      font-size: 15px;
-      font-weight: 600;
-      color: #24292E;
-      min-width: 110px;
-      text-align: center;
-    }
-    .product-select {
-      height: 34px;
-      padding: 0 12px;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      background: #fff;
-      font-size: 14px;
-      color: #24292E;
-      font-family: inherit;
-      cursor: pointer;
-      outline: none;
-      min-width: 200px;
-    }
-    .product-select:focus { border-color: #58C65D; }
-    .cal-toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    /* GNB */
+    .gnb { position: fixed; left: 0; top: 0; bottom: 0; width: 68px; background: #24292E; display: flex; flex-direction: column; align-items: center; padding: 16px 0; z-index: 100; }
+    .gnb-logo { margin-bottom: 24px; }
+    .gnb-nav { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; }
+    .gnb-nav li { width: 100%; }
+    .gnb-nav li a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 6px; color: #9EA5AD; font-size: 10px; font-weight: 500; border-radius: 8px; margin: 0 6px; width: calc(100% - 12px); transition: background 0.15s, color 0.15s; }
+    .gnb-nav li a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+    .gnb-nav li a.active { background: rgba(88,198,93,0.18); color: #58C65D; }
+    .gnb-divider { width: 40px; height: 1px; background: rgba(255,255,255,0.08); margin: 8px 0; }
 
-    /* ── 달력 그리드 ── */
-    .cal-grid-wrap {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .cal-week-header {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      background: #F6F7F9;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .cal-week-header span {
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #596066;
-      padding: 8px 0;
-    }
-    .cal-week-header span.sun { color: #C83434; }
-    .cal-week-header span.sat { color: #2D84ED; }
-    .cal-body {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-    }
-    .cal-cell {
-      min-height: 110px;
-      border-right: 1px solid #E5E7EA;
-      border-bottom: 1px solid #E5E7EA;
-      padding: 8px;
-      cursor: pointer;
-      transition: background 0.1s;
-      position: relative;
-      user-select: none;
-    }
+    /* Topbar */
+    .topbar { position: fixed; top: 0; left: 68px; right: 0; height: 56px; background: #fff; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 99; }
+    .topbar-search { display: flex; align-items: center; gap: 8px; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 8px; padding: 7px 12px; width: 280px; }
+    .topbar-search input { border: none; background: transparent; outline: none; font-size: 13px; color: #24292E; width: 100%; }
+    .topbar-search input::placeholder { color: #9EA5AD; }
+    .topbar-user { display: flex; align-items: center; gap: 16px; }
+    .topbar-icon-btn { position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+    .topbar-icon-btn:hover { background: #F6F7F9; }
+    .dot-badge { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: #EF4444; border: 1.5px solid #fff; }
+    .topbar-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+    .topbar-profile:hover { background: #F6F7F9; }
+    .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; background: #58C65D; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .topbar-profile-info { display: flex; flex-direction: column; gap: 1px; }
+    .topbar-profile-name { font-size: 13px; font-weight: 600; color: #24292E; }
+    .topbar-profile-org { font-size: 11px; color: #9EA5AD; }
+
+    /* Content */
+    .content { margin-left: 68px; padding-top: 56px; min-height: 100vh; }
+    .content-inner { padding: 24px 28px; }
+
+    /* Breadcrumb */
+    .bcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #9EA5AD; margin-bottom: 20px; }
+    .bcrumb a { color: #596066; }
+    .bcrumb a:hover { color: #58C65D; }
+    .bcrumb-sep { color: #C9CDD2; }
+    .bcrumb-current { color: #24292E; font-weight: 600; }
+
+    /* Page grid */
+    .page-grid { display: grid; grid-template-columns: 60% 1fr; gap: 20px; align-items: start; }
+
+    /* Panel */
+    .panel { background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; overflow: hidden; }
+
+    /* Calendar Toolbar */
+    .cal-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid #E5E7EA; gap: 12px; }
+    .cal-toolbar-left { display: flex; align-items: center; gap: 16px; }
+    .cal-product-name { font-size: 15px; font-weight: 700; color: #24292E; }
+    .cal-month-nav { display: flex; align-items: center; gap: 8px; }
+    .cal-month-nav button { width: 28px; height: 28px; border: 1px solid #E5E7EA; border-radius: 6px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #596066; transition: background 0.12s; }
+    .cal-month-nav button:hover { background: #F6F7F9; }
+    .cal-month-label { font-size: 14px; font-weight: 600; color: #24292E; min-width: 96px; text-align: center; }
+    .btn-day-view { font-size: 12px; font-weight: 600; color: #596066; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: background 0.12s, color 0.12s; white-space: nowrap; }
+    .btn-day-view:hover { background: #eaebec; color: #24292E; }
+
+    /* Calendar Grid */
+    .cal-header-row { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #E5E7EA; }
+    .cal-header-cell { padding: 8px 0; text-align: center; font-size: 11px; font-weight: 600; color: #9EA5AD; letter-spacing: 0.02em; }
+    .cal-header-cell.sun { color: #EF4444; }
+    .cal-header-cell.sat { color: #60A5FA; }
+    .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+
+    .cal-cell { min-height: 90px; border-right: 1px solid #E5E7EA; border-bottom: 1px solid #E5E7EA; padding: 8px 7px 6px; cursor: pointer; transition: background 0.12s; display: flex; flex-direction: column; gap: 4px; }
     .cal-cell:nth-child(7n) { border-right: none; }
-    .cal-cell:hover { background: #F0FFF1; }
-    .cal-cell:hover .cell-plus { display: flex; }
-    .cal-cell.other-month { background: #FAFAFA; }
-    .cal-cell.other-month .cal-date { color: #CED2D6; }
-    .cal-cell.today { background: #F0FFF1; }
-    .cal-cell.today .cal-date {
-      background: #58C65D;
-      color: #fff;
-      border-radius: 50%;
-    }
-    .cal-cell.drag-highlight { background: #E8F1FD; }
-    .cal-date {
-      font-size: 13px;
-      font-weight: 600;
-      color: #24292E;
-      width: 24px; height: 24px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 6px;
-    }
-    .cal-cell.sun .cal-date { color: #C83434; }
-    .cal-cell.sat .cal-date { color: #2D84ED; }
-    .cal-cell.today .cal-date { color: #fff !important; }
+    .cal-cell:hover { background: #F6F7F9; }
+    .cal-cell.other-month { background: #FAFAFA; pointer-events: none; }
+    .cal-cell.other-month .cal-date-num { color: #D1D5DB; }
+    .cal-cell.weekend { background: #FAFBFC; }
+    .cal-cell.weekend:hover { background: #F0F1F2; }
+    .cal-cell.today .cal-date-num { background: #58C65D; color: #fff !important; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 
-    .sched-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 4px; }
-    .chip {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-    .chip.confirmed { background: #E8F8E9; color: #2E9E34; }
-    .chip.draft { background: #F6F7F9; color: #596066; border: 1px dashed #CED2D6; }
-    .chip.booking { background: #E8F0FD; color: #2D84ED; }
+    .cal-date-num { font-size: 12px; font-weight: 600; color: #24292E; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .cal-date-num.sunday { color: #EF4444; }
+    .cal-date-num.saturday { color: #60A5FA; }
 
-    .cell-plus {
-      position: absolute;
-      top: 8px; right: 8px;
-      width: 22px; height: 22px;
-      background: #58C65D;
-      color: #fff;
-      border-radius: 50%;
-      font-size: 16px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
+    .cal-status-bar { height: 4px; border-radius: 3px; width: 100%; margin-top: 1px; }
+    .status-green { background: #10B981; }
+    .status-amber { background: #F59E0B; }
+    .status-orange { background: #F97316; }
+    .status-red { background: #EF4444; }
+
+    .cal-schedule-label { font-size: 10px; color: #065F46; background: #D1FAE5; border-left: 2px solid #10B981; padding: 2px 5px; border-radius: 0 3px 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+    .cal-schedule-label.amber { background: #FEF3C7; color: #78350F; border-color: #F59E0B; }
+    .cal-schedule-label.orange { background: #FFF7ED; color: #9A3412; border-color: #F97316; }
+    .cal-schedule-label.red { background: #FEF2F2; color: #991B1B; border-color: #EF4444; }
+
+    /* Legend */
+    .cal-legend { display: flex; align-items: center; gap: 14px; padding: 10px 18px; border-top: 1px solid #E5E7EA; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #596066; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Right panel */
+    .schedule-panel-header { padding: 14px 18px 12px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: baseline; gap: 8px; }
+    .schedule-panel-title { font-size: 14px; font-weight: 700; color: #24292E; }
+    .schedule-panel-hint { font-size: 11px; color: #9EA5AD; }
+    .schedule-list { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+    .schedule-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 5px; background: #fff; }
+    .schedule-card:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .schedule-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .schedule-card-name { font-size: 13px; font-weight: 600; color: #24292E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-green { background: #D1FAE5; color: #065F46; }
+    .badge-blue { background: #DBEAFE; color: #1E40AF; }
+    .badge-amber { background: #FEF3C7; color: #92400E; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-dot-green { background: #10B981; }
+    .badge-dot-blue { background: #3B82F6; }
+    .badge-dot-amber { background: #F59E0B; }
+    .schedule-card-meta { font-size: 11px; color: #9EA5AD; display: flex; align-items: center; gap: 4px; }
+    .schedule-card-meta .sep { color: #D1D5DB; }
+    .tag-condition { display: inline-flex; align-items: center; gap: 3px; background: #EEF2FF; color: #4338CA; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; }
+    .schedule-card-advertiser { font-size: 12px; color: #596066; font-weight: 500; }
   </style>
 </head>
 <body>
 
-<!-- ① GNB Sidebar -->
 <nav class="gnb">
-  <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="#58C65D"/>
-      <text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
-    </svg>
-  </div>
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
-    <li>
-      <a href="dashboard.html">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
-        대시보드
-      </a>
-    </li>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>
-        미디어
-      </a>
-    </li>
-    <li>
-      <a href="product-list.html">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>
-        프로덕트
-      </a>
-    </li>
-    <li>
-      <a href="contents.html">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>
-        콘텐츠
-      </a>
-    </li>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        스케줄
-      </a>
-    </li>
-    <li>
-      <a href="schedule-product-month.html" class="active">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        편성표
-      </a>
-    </li>
+    <li><a href="dashboard.html"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor"/></svg>대시보드</a></li>
+    <li><a href="#"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor"/></svg>미디어</a></li>
+    <li><a href="product-list.html"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+    <li><a href="contents.html"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li><a href="#"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5"/></svg>스케줄</a></li>
+    <li><a href="schedule-product-month.html" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a></li>
     <div class="gnb-divider"></div>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-        모니터링
-      </a>
-    </li>
+    <li><a href="#"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>모니터링</a></li>
   </ul>
 </nav>
 
-<!-- ② Topbar -->
 <header class="topbar">
   <div class="topbar-search">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -226,292 +147,182 @@
   </div>
   <div class="topbar-user">
     <div class="topbar-icon-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
       <span class="dot-badge"></span>
     </div>
-    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
+    <div class="topbar-profile">
       <div class="topbar-avatar">구</div>
       <div class="topbar-profile-info">
         <div class="topbar-profile-name">구연경</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
-      <span class="topbar-caret">▾</span>
-      <div class="profile-dropdown">
-        <a href="#">내 정보</a>
-        <a href="#" class="logout">로그아웃</a>
-      </div>
     </div>
   </div>
 </header>
 
-<!-- ③ Breadcrumb Bar -->
-<div class="bcrumb">
-  <span>편성표</span>
-  <span class="bcrumb-sep">›</span>
-  <span>프로덕트 기준</span>
-  <span class="bcrumb-sep">›</span>
-  <span class="bcrumb-current">월간</span>
-</div>
-
-<!-- ④ Content -->
 <main class="content">
   <div class="content-inner">
 
-    <!-- 상단 툴바 -->
-    <div class="cal-toolbar">
-      <div class="view-tabs">
-        <button onclick="location.href='schedule-main.html'">미디어 기준</button>
-        <button class="active">프로덕트 기준</button>
-      </div>
-
-      <select class="product-select">
-        <option selected>강남 프리미엄 패키지</option>
-        <option>홍대 입구역 프리미엄</option>
-        <option>신촌 역세권 디스플레이</option>
-        <option>여의도 IFC 몰 패키지</option>
-      </select>
-
-      <div class="view-tabs">
-        <button class="active">월간</button>
-        <button onclick="location.href='schedule-product-day.html'">일 보기</button>
-      </div>
-
-      <div class="cal-nav">
-        <button title="이전 달">‹</button>
-        <span class="cal-nav-label">2025년 10월</span>
-        <button title="다음 달">›</button>
-      </div>
-
-      <div class="cal-toolbar-right">
-        <button class="btn btn-primary" onclick="location.href='schedule-booking-form.html'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-          Booking 등록
-        </button>
-      </div>
+    <div class="bcrumb">
+      <span>편성표</span><span class="bcrumb-sep">›</span>
+      <a href="schedule-product-month.html">프로덕트 편성표</a><span class="bcrumb-sep">›</span>
+      <span class="bcrumb-current">월간</span>
     </div>
 
-    <!-- 달력 -->
-    <div class="cal-grid-wrap">
-      <div class="cal-week-header">
-        <span class="sun">일</span>
-        <span>월</span>
-        <span>화</span>
-        <span>수</span>
-        <span>목</span>
-        <span>금</span>
-        <span class="sat">토</span>
+    <div class="page-grid">
+
+      <!-- LEFT: Calendar -->
+      <div class="panel">
+        <div class="cal-toolbar">
+          <div class="cal-toolbar-left">
+            <span class="cal-product-name">강남 A지구 패키지</span>
+            <div class="cal-month-nav">
+              <button title="이전 달"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <span class="cal-month-label">2026년 6월</span>
+              <button title="다음 달"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+          <a href="schedule-product-day.html" class="btn-day-view">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 5h11" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 2V1M8.5 2V1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            일간 뷰
+          </a>
+        </div>
+
+        <div class="cal-header-row">
+          <div class="cal-header-cell sun">일</div>
+          <div class="cal-header-cell">월</div>
+          <div class="cal-header-cell">화</div>
+          <div class="cal-header-cell">수</div>
+          <div class="cal-header-cell">목</div>
+          <div class="cal-header-cell">금</div>
+          <div class="cal-header-cell sat">토</div>
+        </div>
+
+        <div class="cal-body">
+          <!-- Week 1: May 31 (prev), Jun 1-6 -->
+          <a href="schedule-product-day.html" class="cal-cell other-month weekend"><span class="cal-date-num sunday">31</span></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">1</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">2</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">3</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">나이키 6월 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">4</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">롯데백화점 프로모</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">5</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">LG 가전 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">6</span></a>
+
+          <!-- Week 2: Jun 7-13 -->
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">7</span></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">8</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
+          <a href="schedule-product-day.html" class="cal-cell today"><span class="cal-date-num">9</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">10</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">현대 날씨 조건</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">11</span><div class="cal-status-bar status-amber"></div><div class="cal-schedule-label amber">LG 가전 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">12</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">롯데백화점 프로모</div></a>
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">13</span></a>
+
+          <!-- Week 3: Jun 14-20 -->
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">14</span></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">15</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">16</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">17</span><div class="cal-status-bar status-orange"></div><div class="cal-schedule-label orange">현대 날씨 조건</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">18</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">LG 가전 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">19</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">롯데백화점 프로모</div></a>
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">20</span></a>
+
+          <!-- Week 4: Jun 21-27 -->
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">21</span></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">22</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">23</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">24</span><div class="cal-status-bar status-red"></div><div class="cal-schedule-label red">등록불가</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">25</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">LG 가전 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">26</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">롯데백화점 프로모</div></a>
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num saturday">27</span></a>
+
+          <!-- Week 5: Jun 28-30, Jul 1-4 -->
+          <a href="schedule-product-day.html" class="cal-cell weekend"><span class="cal-date-num sunday">28</span></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">29</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">삼성 여름 광고</div></a>
+          <a href="schedule-product-day.html" class="cal-cell"><span class="cal-date-num">30</span><div class="cal-status-bar status-green"></div><div class="cal-schedule-label">나이키 6월 캠페인</div></a>
+          <a href="schedule-product-day.html" class="cal-cell other-month"><span class="cal-date-num">1</span></a>
+          <a href="schedule-product-day.html" class="cal-cell other-month"><span class="cal-date-num">2</span></a>
+          <a href="schedule-product-day.html" class="cal-cell other-month"><span class="cal-date-num">3</span></a>
+          <a href="schedule-product-day.html" class="cal-cell other-month weekend"><span class="cal-date-num saturday">4</span></a>
+        </div>
+
+        <div class="cal-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#10B981;"></div> 여유 (&gt;50%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#F59E0B;"></div> 위험 (20–50%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> 매우위험 (&lt;20%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#EF4444;"></div> 등록불가 (0%)</div>
+        </div>
       </div>
 
-      <div class="cal-body" id="calBody">
-        <!-- 이전 달 -->
-        <div class="cal-cell other-month sun"><div class="cal-date">28</div></div>
-        <div class="cal-cell other-month"><div class="cal-date">29</div></div>
-        <div class="cal-cell other-month"><div class="cal-date">30</div></div>
+      <!-- RIGHT: Schedule List -->
+      <div class="panel">
+        <div class="schedule-panel-header">
+          <span class="schedule-panel-title">운영 중 / 운영 예정</span>
+          <span class="schedule-panel-hint">날짜 선택 시 필터링됨</span>
+        </div>
+        <div class="schedule-list">
 
-        <!-- 10/1 Wed -->
-        <div class="cal-cell" data-date="2025-10-01">
-          <div class="cal-date">1</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span></div>
-          <span class="chip booking">Booking 1</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-02">
-          <div class="cal-date">2</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span><span class="chip draft">초안 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-03">
-          <div class="cal-date">3</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 3</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell sat" data-date="2025-10-04">
-          <div class="cal-date">4</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
+          <a href="schedule-product-day.html" class="schedule-card">
+            <div class="schedule-card-top">
+              <span class="schedule-card-name">나이키 6월 캠페인</span>
+              <span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>운영 중</span>
+            </div>
+            <div class="schedule-card-meta">
+              <span>가-2</span><span class="sep">·</span><span>30초</span><span class="sep">·</span><span>일반</span>
+            </div>
+            <div class="schedule-card-advertiser">나이키코리아</div>
+          </a>
 
-        <!-- 10/5 ~ 10/11 -->
-        <div class="cal-cell sun" data-date="2025-10-05"><div class="cal-date">5</div><span class="cell-plus">+</span></div>
-        <div class="cal-cell" data-date="2025-10-06">
-          <div class="cal-date">6</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 4</span></div>
-          <span class="chip booking">Booking 2</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-07">
-          <div class="cal-date">7</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span><span class="chip draft">초안 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-08">
-          <div class="cal-date">8</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 3</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-09">
-          <div class="cal-date">9</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-10">
-          <div class="cal-date">10</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span><span class="chip draft">초안 1</span></div>
-          <span class="chip booking">Booking 1</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell sat" data-date="2025-10-11">
-          <div class="cal-date">11</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
+          <a href="schedule-product-day.html" class="schedule-card">
+            <div class="schedule-card-top">
+              <span class="schedule-card-name">삼성 여름 광고</span>
+              <span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>운영 중</span>
+            </div>
+            <div class="schedule-card-meta">
+              <span>가-1</span><span class="sep">·</span><span>20초</span><span class="sep">·</span><span>일반</span>
+            </div>
+            <div class="schedule-card-advertiser">삼성전자</div>
+          </a>
 
-        <!-- 10/12 ~ 10/18 -->
-        <div class="cal-cell sun" data-date="2025-10-12"><div class="cal-date">12</div><span class="cell-plus">+</span></div>
-        <div class="cal-cell" data-date="2025-10-13">
-          <div class="cal-date">13</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 3</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-14">
-          <div class="cal-date">14</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span><span class="chip draft">초안 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell today" data-date="2025-10-15">
-          <div class="cal-date">15</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 4</span></div>
-          <span class="chip booking">Booking 3</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-16">
-          <div class="cal-date">16</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-17">
-          <div class="cal-date">17</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span><span class="chip draft">초안 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell sat" data-date="2025-10-18"><div class="cal-date">18</div><span class="cell-plus">+</span></div>
+          <a href="schedule-product-day.html" class="schedule-card">
+            <div class="schedule-card-top">
+              <span class="schedule-card-name">현대 날씨 조건</span>
+              <span class="badge badge-blue"><span class="badge-dot badge-dot-blue"></span>운영 예정</span>
+            </div>
+            <div class="schedule-card-meta">
+              <span>나-4</span><span class="sep">·</span><span>40초</span><span class="sep">·</span>
+              <span class="tag-condition"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>조건</span>
+            </div>
+            <div class="schedule-card-advertiser">현대자동차</div>
+          </a>
 
-        <!-- 10/19 ~ 10/25 -->
-        <div class="cal-cell sun" data-date="2025-10-19">
-          <div class="cal-date">19</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-20">
-          <div class="cal-date">20</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 3</span></div>
-          <span class="chip booking">Booking 1</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-21">
-          <div class="cal-date">21</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span><span class="chip draft">초안 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-22">
-          <div class="cal-date">22</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 4</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-23">
-          <div class="cal-date">23</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-24">
-          <div class="cal-date">24</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span><span class="chip draft">초안 1</span></div>
-          <span class="chip booking">Booking 2</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell sat" data-date="2025-10-25">
-          <div class="cal-date">25</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
+          <a href="schedule-product-day.html" class="schedule-card">
+            <div class="schedule-card-top">
+              <span class="schedule-card-name">LG 가전 캠페인</span>
+              <span class="badge badge-blue"><span class="badge-dot badge-dot-blue"></span>운영 예정</span>
+            </div>
+            <div class="schedule-card-meta">
+              <span>가-3</span><span class="sep">·</span><span>15초</span><span class="sep">·</span><span>일반</span>
+            </div>
+            <div class="schedule-card-advertiser">LG전자</div>
+          </a>
 
-        <!-- 10/26 ~ 10/31 -->
-        <div class="cal-cell sun" data-date="2025-10-26"><div class="cal-date">26</div><span class="cell-plus">+</span></div>
-        <div class="cal-cell" data-date="2025-10-27">
-          <div class="cal-date">27</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 3</span></div>
-          <span class="cell-plus">+</span>
+          <a href="schedule-product-day.html" class="schedule-card">
+            <div class="schedule-card-top">
+              <span class="schedule-card-name">롯데백화점 프로모</span>
+              <span class="badge badge-green"><span class="badge-dot badge-dot-green"></span>운영 중</span>
+            </div>
+            <div class="schedule-card-meta">
+              <span>가-2</span><span class="sep">·</span><span>30초</span><span class="sep">·</span><span>일반</span>
+            </div>
+            <div class="schedule-card-advertiser">롯데쇼핑</div>
+          </a>
+
         </div>
-        <div class="cal-cell" data-date="2025-10-28">
-          <div class="cal-date">28</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-29">
-          <div class="cal-date">29</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 1</span><span class="chip draft">초안 1</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-30">
-          <div class="cal-date">30</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 2</span></div>
-          <span class="cell-plus">+</span>
-        </div>
-        <div class="cal-cell" data-date="2025-10-31">
-          <div class="cal-date">31</div>
-          <div class="sched-chips"><span class="chip confirmed">확정 3</span></div>
-          <span class="chip booking">Booking 1</span>
-          <span class="cell-plus">+</span>
-        </div>
-        <!-- 다음 달 -->
-        <div class="cal-cell other-month sat"><div class="cal-date">1</div></div>
       </div>
+
     </div>
-
   </div>
 </main>
 
-<script>
-  /* 드래그 범위 선택 */
-  let dragStart = null, dragEnd = null, isDragging = false;
-
-  document.querySelectorAll('.cal-cell[data-date]').forEach(cell => {
-    cell.addEventListener('mousedown', () => {
-      dragStart = cell.dataset.date;
-      dragEnd = null;
-      isDragging = true;
-      clearHighlight();
-    });
-    cell.addEventListener('mouseenter', () => {
-      if (!isDragging) return;
-      dragEnd = cell.dataset.date;
-      applyHighlight(dragStart, dragEnd);
-    });
-    cell.addEventListener('click', () => {
-      if (!isDragging || dragStart === dragEnd || !dragEnd) {
-        location.href = `schedule-booking-form.html?date=${cell.dataset.date}`;
-      }
-    });
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (isDragging && dragStart && dragEnd && dragStart !== dragEnd) {
-      const [a, b] = [dragStart, dragEnd].sort();
-      location.href = `schedule-booking-form.html?from=${a}&to=${b}`;
-    }
-    isDragging = false;
-  });
-
-  function applyHighlight(from, to) {
-    clearHighlight();
-    const [a, b] = [from, to].sort();
-    document.querySelectorAll('.cal-cell[data-date]').forEach(c => {
-      if (c.dataset.date >= a && c.dataset.date <= b) c.classList.add('drag-highlight');
-    });
-  }
-  function clearHighlight() {
-    document.querySelectorAll('.drag-highlight').forEach(c => c.classList.remove('drag-highlight'));
-  }
-</script>
 </body>
 </html>
