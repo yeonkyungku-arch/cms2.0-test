@@ -102,6 +102,48 @@ ul, ol { list-style: none; }
   margin: 6px auto;
 }
 
+/* GNB 서브메뉴 */
+.gnb-has-sub { position: relative; }
+.gnb-sub {
+  display: none;
+  position: absolute;
+  left: 93px; top: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  padding: 6px;
+  min-width: 152px;
+  z-index: 500;
+  white-space: nowrap;
+}
+.gnb-has-sub:hover .gnb-sub { display: block; }
+.gnb-sub-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #9EA5AD;
+  padding: 4px 10px 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.gnb-sub a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #24292E;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.gnb-sub a:hover { background: #F6F7F9; color: #24292E; }
+.gnb-sub a.sub-active { color: #2D84ED; background: #EFF6FF; }
+.gnb-sub-icon {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
 /* ================================================================
    ZONE 2 — Topbar
 ================================================================ */
