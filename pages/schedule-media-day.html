@@ -882,9 +882,16 @@ function renderUnifiedTimeline() {
 }
 
 // ── 사이클 편성 순서: 단일 사이클 편집 UI ──
+var CONTENT_MAP = {
+  '가:나이키': { thumb: '#3C3489', emoji: '👟', name: '나이키 에어맥스 2026_30s.mp4'  },
+  '가:삼성':   { thumb: '#2D84ED', emoji: '📱', name: '삼성 갤럭시S25_20s.mp4'        },
+  '나:현대':   { thumb: '#F59E0B', emoji: '🚗', name: '현대 아이오닉9_30s.mp4'        },
+  '자체운영':  { thumb: '#5DCAA5', emoji: '🏪', name: '강남역_자체홍보_10s.mp4'       },
+};
+
 var cycleOrder = BASE_CHIPS.filter(function(c) { return !c.isDraft; }).map(function(c, i) {
   var typeMap = { 'chip-ga': 'confirmed', 'chip-na': 'confirmed', 'chip-self': 'selfop' };
-  return { id: i, name: c.label, dur: c.sec, type: typeMap[c.cls] || 'confirmed' };
+  return { id: i, name: c.label, dur: c.sec, type: typeMap[c.cls] || 'confirmed', content: CONTENT_MAP[c.label] || null };
 });
 
 function renderCycleOrder() {
@@ -908,22 +915,38 @@ function renderCycleOrder() {
   h += '<button onclick="saveCycleOrder(event)" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>';
   h += '</div>';
 
+  var COL = '36px 24px 1fr 160px 80px 70px 60px'; // +콘텐츠 열
+
   /* 헤더 */
-  h += '<div style="display:grid;grid-template-columns:36px 24px 1fr 80px 70px 60px;align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">';
-  h += '<span>순서</span><span></span><span>스케줄명</span><span>유형</span><span style="text-align:center;">재생 시간</span><span></span></div>';
+  h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">';
+  h += '<span>순서</span><span></span><span>스케줄명</span><span>콘텐츠</span><span>유형</span><span style="text-align:center;">재생 시간</span><span></span></div>';
 
   /* 아이템 목록 */
   cycleOrder.forEach(function(ad, idx) {
     var parts = (typeBadge[ad.type] || '#F1F2F4:#596066').split(':');
     var bgC = parts[0], colC = parts[1];
     var rowBg = idx % 2 === 0 ? '#fff' : '#FAFBFC';
-    h += '<div style="display:grid;grid-template-columns:36px 24px 1fr 80px 70px 60px;align-items:center;padding:8px 12px;background:' + rowBg + ';border-bottom:1px solid #F0F1F3;gap:8px;">';
+    h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:8px 12px;background:' + rowBg + ';border-bottom:1px solid #F0F1F3;gap:8px;">';
     h += '<span style="font-size:12px;font-weight:700;color:#9EA5AD;">' + (idx + 1) + '</span>';
     h += '<span style="font-size:14px;color:#CED2D6;cursor:grab;user-select:none;" title="드래그로 순서 변경">⠿</span>';
-    h += '<div style="display:flex;align-items:center;gap:6px;">';
+    /* 스케줄명 */
+    h += '<div style="display:flex;align-items:center;gap:6px;min-width:0;">';
     h += '<div style="width:10px;height:10px;border-radius:2px;background:' + bgC + ';border:1px solid ' + colC + ';flex-shrink:0;"></div>';
-    h += '<span style="font-size:13px;font-weight:500;color:#24292E;">' + ad.name + '</span>';
+    h += '<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + ad.name + '</span>';
     h += '</div>';
+    /* 콘텐츠 썸네일 + 이름 */
+    if (ad.content) {
+      h += '<div style="display:flex;align-items:center;gap:6px;min-width:0;">';
+      h += '<div style="width:32px;height:22px;border-radius:4px;background:' + ad.content.thumb + ';display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">' + ad.content.emoji + '</div>';
+      h += '<span style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + ad.content.name + '">' + ad.content.name + '</span>';
+      h += '</div>';
+    } else {
+      h += '<div style="display:flex;align-items:center;gap:6px;">';
+      h += '<div style="width:32px;height:22px;border-radius:4px;border:1px dashed #CED2D6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
+      h += '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg></div>';
+      h += '<span style="font-size:11px;color:#CED2D6;">콘텐츠 미지정</span>';
+      h += '</div>';
+    }
     h += '<span style="font-size:12px;color:#596066;">' + (typeLabel[ad.type] || ad.type) + '</span>';
     h += '<div style="display:flex;align-items:center;gap:4px;justify-content:center;">';
     h += '<div style="height:5px;background:#E5E7EA;border-radius:3px;overflow:hidden;width:40px;"><div style="height:100%;background:' + bgC + ';width:' + Math.min(100, Math.round(ad.dur / 600 * 500)) + '%;"></div></div>';
@@ -941,10 +964,11 @@ function renderCycleOrder() {
 
   /* 잔여 슬롯 행 */
   if (remDur > 0) {
-    h += '<div style="display:grid;grid-template-columns:36px 24px 1fr 80px 70px 60px;align-items:center;padding:8px 12px;background:#FAFAFA;border-bottom:1px solid #F0F1F3;gap:8px;opacity:.7;">';
+    h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:8px 12px;background:#FAFAFA;border-bottom:1px solid #F0F1F3;gap:8px;opacity:.7;">';
     h += '<span style="font-size:12px;font-weight:700;color:#CED2D6;">' + (cycleOrder.length + 1) + '</span>';
     h += '<span></span>';
     h += '<div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:2px;border:1px dashed #CED2D6;flex-shrink:0;"></div><span style="font-size:13px;color:#9EA5AD;">잔여 슬롯</span></div>';
+    h += '<span></span>';
     h += '<span style="font-size:12px;color:#9EA5AD;">—</span>';
     h += '<span style="font-size:12px;color:#9EA5AD;text-align:center;">' + remDur + '초</span>';
     h += '<span></span></div>';
