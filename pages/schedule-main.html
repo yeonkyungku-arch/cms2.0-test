@@ -1026,15 +1026,18 @@
     ] /* 잔여: 300-(90+90)=120s */
   };
 
-  /* 날짜별 잔여 사이클 용량 (600초 사이클 최대 기준) */
+  /* 날짜별 잔여 데이터 (사이클 최대 600초 / 기준 슬롯 20개 기준) */
   var remainData = {
-    '2025-9-1': 525,  '2025-9-2': 540,  '2025-9-3': 495,
-    '2025-9-4': 585,  '2025-9-5': 525,  '2025-9-8': 555,
-    '2025-9-9': 510,  '2025-9-10': 525, '2025-9-11': 555,
-    '2025-9-12': 525, '2025-9-15': 495, '2025-9-16': 585,
-    '2025-9-17': 555, '2025-9-18': 555, '2025-9-22': 495,
-    '2025-9-23': 555, '2025-9-24': 555, '2025-9-25': 585,
-    '2025-9-29': 510, '2025-9-30': 540
+    '2025-9-1':  { sec: 525, slot: 17 }, '2025-9-2':  { sec: 540, slot: 18 },
+    '2025-9-3':  { sec: 495, slot: 16 }, '2025-9-4':  { sec: 585, slot: 19 },
+    '2025-9-5':  { sec: 525, slot: 17 }, '2025-9-8':  { sec: 555, slot: 18 },
+    '2025-9-9':  { sec: 510, slot: 17 }, '2025-9-10': { sec: 525, slot: 17 },
+    '2025-9-11': { sec: 555, slot: 18 }, '2025-9-12': { sec: 525, slot: 17 },
+    '2025-9-15': { sec: 495, slot: 16 }, '2025-9-16': { sec: 585, slot: 19 },
+    '2025-9-17': { sec: 555, slot: 18 }, '2025-9-18': { sec: 555, slot: 18 },
+    '2025-9-22': { sec: 495, slot: 16 }, '2025-9-23': { sec: 555, slot: 18 },
+    '2025-9-24': { sec: 555, slot: 18 }, '2025-9-25': { sec: 585, slot: 19 },
+    '2025-9-29': { sec: 510, slot: 17 }, '2025-9-30': { sec: 540, slot: 18 }
   };
 
   var typeColor = {
@@ -1137,43 +1140,51 @@
       var tipLeft = (idx % 7 >= 5) ? ' tip-left' : '';
 
       html += '<div class="cal-cell-wrap' + tipLeft + '">';
-      var remainSec = (!c.other && remainData[key] !== undefined) ? remainData[key] : null;
-      var LOOP_TOTAL = 600;
+      var rd = (!c.other && remainData[key]) ? remainData[key] : null;
+      var CYCLE_TOTAL = 600, SLOT_TOTAL = 20;
 
       html += '<div class="cal-cell' + (c.other ? ' other-month' : '') + (isToday ? ' today' : '') + '">';
       html += '<span class="cal-date">' + c.day + '</span>';
 
-      scheds.slice(0, 3).forEach(function(s) {
+      scheds.slice(0, 2).forEach(function(s) {
         html += '<div class="cal-sched-block ' + s.type + '">' + s.name + '</div>';
       });
-      if (scheds.length > 3) {
-        html += '<div class="cal-more">+' + (scheds.length - 3) + '개 더보기</div>';
+      if (scheds.length > 2) {
+        html += '<div class="cal-more">+' + (scheds.length - 2) + '개 더보기</div>';
       }
 
-      /* 잔여 루프 용량 바 */
-      if (remainSec !== null && !c.other) {
-        var usedPct = Math.round((LOOP_TOTAL - remainSec) / LOOP_TOTAL * 100);
-        var remainPct = 100 - usedPct;
-        var barColor = remainPct > 50 ? '#58C65D' : remainPct > 20 ? '#F59E0B' : '#E24B4B';
-        var textColor = remainPct > 50 ? '#2A7A2E' : remainPct > 20 ? '#92400E' : '#B91C1C';
-        html += '<div style="margin-top:4px;padding-top:4px;border-top:1px dashed #E5E7EA;">';
-        html += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">';
-        html += '<span style="font-size:9px;color:#9EA5AD;">잔여</span>';
-        html += '<span style="font-size:9px;font-weight:700;color:' + textColor + ';">' + remainSec + '초 (' + remainPct + '%)</span>';
+      /* 잔여 사이클 시간 + 잔여 슬롯 수 */
+      if (!c.other) {
+        var remSec  = rd ? rd.sec  : CYCLE_TOTAL;
+        var remSlot = rd ? rd.slot : SLOT_TOTAL;
+        var secPct  = Math.round(remSec  / CYCLE_TOTAL * 100);
+        var slotPct = Math.round(remSlot / SLOT_TOTAL  * 100);
+        /* 더 제한적인 기준으로 상태 결정 */
+        var minPct  = Math.min(secPct, slotPct);
+        var barColor  = minPct > 50 ? '#10B981' : minPct > 20 ? '#F59E0B' : minPct > 0 ? '#F97316' : '#EF4444';
+        var textColor = minPct > 50 ? '#065F46' : minPct > 20 ? '#92400E' : minPct > 0 ? '#9A3412' : '#991B1B';
+
+        html += '<div style="margin-top:5px;padding-top:5px;border-top:1px dashed #E5E7EA;">';
+
+        /* 잔여 사이클 시간 */
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">';
+        html += '<span style="font-size:9px;color:#9EA5AD;">사이클</span>';
+        html += '<span style="font-size:9px;font-weight:700;color:' + textColor + ';">' + remSec + '초</span>';
+        html += '</div>';
+        html += '<div style="height:3px;background:#F0F1F3;border-radius:2px;overflow:hidden;margin-bottom:4px;">';
+        html += '<div style="width:' + secPct + '%;height:100%;background:' + barColor + ';border-radius:2px;"></div>';
+        html += '</div>';
+
+        /* 잔여 슬롯 수 */
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">';
+        html += '<span style="font-size:9px;color:#9EA5AD;">슬롯</span>';
+        html += '<span style="font-size:9px;font-weight:700;color:' + textColor + ';">' + remSlot + '/' + SLOT_TOTAL + '</span>';
         html += '</div>';
         html += '<div style="height:3px;background:#F0F1F3;border-radius:2px;overflow:hidden;">';
-        html += '<div style="width:' + remainPct + '%;height:100%;background:' + barColor + ';border-radius:2px;"></div>';
-        html += '</div></div>';
-      } else if (!c.other && scheds.length === 0) {
-        /* 스케줄 없는 날: 전체 잔여 */
-        html += '<div style="margin-top:4px;padding-top:4px;border-top:1px dashed #E5E7EA;">';
-        html += '<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;">';
-        html += '<span style="font-size:9px;color:#9EA5AD;">잔여</span>';
-        html += '<span style="font-size:9px;font-weight:700;color:#2A7A2E;">600초 (100%)</span>';
+        html += '<div style="width:' + slotPct + '%;height:100%;background:' + barColor + ';border-radius:2px;"></div>';
         html += '</div>';
-        html += '<div style="height:3px;background:#F0F1F3;border-radius:2px;overflow:hidden;">';
-        html += '<div style="width:100%;height:100%;background:#58C65D;border-radius:2px;"></div>';
-        html += '</div></div>';
+
+        html += '</div>';
       }
 
       html += '</div>';
