@@ -202,6 +202,69 @@
     }
     tbody tr.selected { background: #F0F7FF; }
     tbody tr.selected:hover { background: #E6F0FD; }
+
+    /* ── 현황판 ── */
+    .dashboard-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .board-section {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .board-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9EA5AD;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .board-cards {
+      display: flex;
+      gap: 8px;
+    }
+    .board-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: #F6F7F9;
+    }
+    .board-card:hover { background: #EDEEF0; }
+    .board-card.active-filter { border-color: #58C65D; background: #F0FDF4; }
+    .board-card-label {
+      font-size: 11px;
+      color: #596066;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .board-card-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .board-card-count {
+      font-size: 22px;
+      font-weight: 700;
+      color: #24292E;
+      line-height: 1;
+    }
+    .board-card-sub {
+      font-size: 10px;
+      color: #B0B7BE;
+    }
   </style>
 </head>
 <body>
@@ -251,6 +314,52 @@
 <main class="content">
   <div class="content-inner">
   <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">프로덕트</div>
+
+  <!-- 현황판 -->
+  <div class="dashboard-board">
+    <!-- 편성 상태 -->
+    <div class="board-section">
+      <div class="board-section-title">편성 상태</div>
+      <div class="board-cards">
+        <div class="board-card" id="bc-sched-all" onclick="filterByBoard('sched','')">
+          <div class="board-card-label">전체</div>
+          <div class="board-card-count" id="cnt-sched-all">0</div>
+        </div>
+        <div class="board-card" id="bc-sched-on" onclick="filterByBoard('sched','true')">
+          <div class="board-card-label"><span class="board-card-dot" style="background:#10B981;"></span>편성 중</div>
+          <div class="board-card-count" id="cnt-sched-on">0</div>
+          <div class="board-card-sub">스케줄 있음</div>
+        </div>
+        <div class="board-card" id="bc-sched-off" onclick="filterByBoard('sched','false')">
+          <div class="board-card-label"><span class="board-card-dot" style="background:#D1D5DB;"></span>미편성</div>
+          <div class="board-card-count" id="cnt-sched-off">0</div>
+          <div class="board-card-sub">스케줄 없음</div>
+        </div>
+      </div>
+    </div>
+    <!-- 프로덕트 상태 -->
+    <div class="board-section">
+      <div class="board-section-title">프로덕트 상태</div>
+      <div class="board-cards">
+        <div class="board-card" id="bc-status-all" onclick="filterByBoard('status','')">
+          <div class="board-card-label">전체</div>
+          <div class="board-card-count" id="cnt-status-all">0</div>
+        </div>
+        <div class="board-card" id="bc-status-active" onclick="filterByBoard('status','active')">
+          <div class="board-card-label"><span class="board-card-dot" style="background:#58C65D;"></span>활성</div>
+          <div class="board-card-count" id="cnt-status-active">0</div>
+        </div>
+        <div class="board-card" id="bc-status-inactive" onclick="filterByBoard('status','inactive')">
+          <div class="board-card-label"><span class="board-card-dot" style="background:#9CA3AF;"></span>비활성</div>
+          <div class="board-card-count" id="cnt-status-inactive">0</div>
+        </div>
+        <div class="board-card" id="bc-status-draft" onclick="filterByBoard('status','draft')">
+          <div class="board-card-label"><span class="board-card-dot" style="background:#F59E0B;"></span>임시저장</div>
+          <div class="board-card-count" id="cnt-status-draft">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Toolbar -->
   <div class="toolbar">
@@ -392,20 +501,67 @@
 </main>
 
 <script>
+/* ── 현황판 카운트 & 필터 연동 ── */
+var boardSchedFilter  = '';
+var boardStatusFilter = '';
+
+function initBoard() {
+  const rows = document.querySelectorAll('#tableBody tr');
+  let total = rows.length, schedOn = 0, schedOff = 0;
+  let statusActive = 0, statusInactive = 0, statusDraft = 0;
+  rows.forEach(row => {
+    const s  = row.dataset.status;
+    const hs = row.dataset.hasSchedule;
+    if (hs === 'true') schedOn++; else schedOff++;
+    if (s === 'active')   statusActive++;
+    if (s === 'inactive') statusInactive++;
+    if (s === 'draft')    statusDraft++;
+  });
+  document.getElementById('cnt-sched-all').textContent  = total;
+  document.getElementById('cnt-sched-on').textContent   = schedOn;
+  document.getElementById('cnt-sched-off').textContent  = schedOff;
+  document.getElementById('cnt-status-all').textContent    = total;
+  document.getElementById('cnt-status-active').textContent = statusActive;
+  document.getElementById('cnt-status-inactive').textContent = statusInactive;
+  document.getElementById('cnt-status-draft').textContent  = statusDraft;
+}
+
+function filterByBoard(type, value) {
+  if (type === 'sched') {
+    boardSchedFilter = (boardSchedFilter === value) ? '' : value;
+    ['all','on','off'].forEach(k => {
+      const map = {all:'',on:'true',off:'false'};
+      document.getElementById('bc-sched-'+k).classList.toggle('active-filter', boardSchedFilter === map[k] && boardSchedFilter !== '');
+    });
+    if (boardSchedFilter === '') document.getElementById('bc-sched-all').classList.add('active-filter');
+  } else {
+    boardStatusFilter = (boardStatusFilter === value) ? '' : value;
+    ['all','active','inactive','draft'].forEach(k => {
+      const map = {all:'',active:'active',inactive:'inactive',draft:'draft'};
+      document.getElementById('bc-status-'+k).classList.toggle('active-filter', boardStatusFilter === map[k] && boardStatusFilter !== '');
+    });
+    if (boardStatusFilter === '') document.getElementById('bc-status-all').classList.add('active-filter');
+    document.getElementById('statusFilter').value = boardStatusFilter;
+  }
+  filterTable();
+}
+
 /* ── 필터 ── */
 function filterTable() {
   const search = document.getElementById('searchInput').value.toLowerCase();
-  const status = document.getElementById('statusFilter').value;
+  const status = boardStatusFilter || document.getElementById('statusFilter').value;
   const media  = document.getElementById('mediaFilter').value;
   const rows   = document.querySelectorAll('#tableBody tr');
   rows.forEach(row => {
     const name      = row.querySelector('.product-name-link').textContent.toLowerCase();
     const rowStatus = row.dataset.status;
     const rowMedia  = row.dataset.media;
+    const rowSched  = row.dataset.hasSchedule;
     const matchSearch = !search || name.includes(search);
     const matchStatus = !status || rowStatus === status;
     const matchMedia  = !media  || rowMedia  === media;
-    row.style.display = (matchSearch && matchStatus && matchMedia) ? '' : 'none';
+    const matchSched  = !boardSchedFilter || rowSched === boardSchedFilter;
+    row.style.display = (matchSearch && matchStatus && matchMedia && matchSched) ? '' : 'none';
     if (row.style.display === 'none') {
       const cb = row.querySelector('.row-check');
       if (cb) { cb.checked = false; }
@@ -414,6 +570,13 @@ function filterTable() {
   });
   updateBulkBar();
 }
+
+/* 기존 상태 셀렉트 변경 시 보드 초기화 */
+document.getElementById('statusFilter').addEventListener('change', function() {
+  boardStatusFilter = '';
+  ['all','active','inactive','draft'].forEach(k =>
+    document.getElementById('bc-status-'+k).classList.remove('active-filter'));
+});
 
 /* ── 전체 선택 ── */
 function toggleAll(allCb) {
@@ -503,6 +666,8 @@ function resetSelection() {
   document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('selected'));
   updateBulkBar();
 }
+
+initBoard();
 </script>
 <script src="../assets/js/cms.js"></script>
 </body>
