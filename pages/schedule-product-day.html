@@ -583,11 +583,14 @@ const SEGMENTS = [
   { label: '18:00 ~ 22:00 구간', count: 160, start: 18, end: 22, hasJingle: true, jTime: '18:00', jAd: '현대 30초' },
 ];
 
+// scheduleType: 'general' | 'cond'  /  condType: null | 'time' | 'env' | 'target'
+// status: 'confirmed' | 'unconfirmed' | 'reserved'
+// content.selfOp: true → 자체운영 콘텐츠
 const CYCLE_ADS = [
-  { name: '나이키 30초',     dur: 30, type: 'confirmed', content: { thumb: '#3C3489', emoji: '👟', name: '나이키 에어맥스 2026_30s.mp4' } },
-  { name: '삼성 20초',       dur: 20, type: 'confirmed', content: { thumb: '#2D84ED', emoji: '📱', name: '삼성 갤럭시S25_20s.mp4'       } },
-  { name: '롯데백화점 30초', dur: 30, type: 'draft',     content: null },
-  { name: '자체운영 10초',   dur: 10, type: 'selfop',    content: { thumb: '#5DCAA5', emoji: '🏪', name: '강남역_자체홍보_10s.mp4'      } },
+  { name: '나이키 6월 캠페인',     dur: 30, scheduleType: 'general', condType: null,     status: 'confirmed',   content: { thumb: '#3C3489', emoji: '👟', name: '나이키_에어맥스2026_30s.mp4', selfOp: false } },
+  { name: '삼성 여름 광고',        dur: 20, scheduleType: 'cond',    condType: 'target', status: 'confirmed',   content: { thumb: '#2D84ED', emoji: '📱', name: '삼성_갤럭시S25_20s.mp4',      selfOp: false } },
+  { name: '롯데백화점 프로모',     dur: 30, scheduleType: 'cond',    condType: 'env',    status: 'unconfirmed', content: null },
+  { name: '강남역 자체 홍보',      dur: 10, scheduleType: 'general', condType: null,     status: 'confirmed',   content: { thumb: '#5DCAA5', emoji: '🏪', name: '강남역_자체홍보_10s.mp4',     selfOp: true  } },
 ];
 const CYCLE_MAX = 600;
 const CYCLE_USED = CYCLE_ADS.reduce((s, a) => s + a.dur, 0); // 90
@@ -708,8 +711,10 @@ function renderCycleOrder() {
   const remDur  = CYCLE_MAX_S - usedDur;
   const usedPct = Math.round(usedDur / CYCLE_MAX_S * 100);
 
-  const typeLabel = { confirmed:'일반', selfop:'자체운영', unconfirmed:'미확정', jingle:'시보' };
-  const typeBadge = { confirmed:'#EEEDFE:#3C3489', selfop:'#E1F5EE:#085041', unconfirmed:'#FFF7ED:#9A5F00' };
+  const schedTypeLabel = { general:'일반', cond_time:'조건·타임', cond_env:'조건·환경', cond_target:'조건·타겟' };
+  const schedTypeBadge = { general:'#E8EDFF:#3C3489', cond_time:'#FFF7ED:#9A5F00', cond_env:'#F0FDF4:#166534', cond_target:'#FFF0FB:#7C3A8A' };
+  const statusLabel = { confirmed:'확정', unconfirmed:'미확정', reserved:'예약' };
+  const statusColor = { confirmed:'#2E9E34', unconfirmed:'#B45309', reserved:'#9EA5AD' };
 
   let h = '';
 
@@ -723,32 +728,42 @@ function renderCycleOrder() {
   h += `<button onclick="saveCycleOrder()" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>`;
   h += `</div>`;
 
-  const COL = '36px 24px 1fr 2fr 70px 60px';
+  const COL = '36px 24px 1fr 80px 2fr 64px 60px';
 
   /* 헤더 */
   h += `<div style="display:grid;grid-template-columns:${COL};align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">`;
-  h += `<span>순서</span><span></span><span>스케줄명</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>`;
+  h += `<span>순서</span><span></span><span>스케줄명</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>`;
 
   /* 아이템 목록 */
   cycleOrder.forEach((ad, idx) => {
-    const adType = ad.type === 'draft' ? 'unconfirmed' : ad.type;
-    const [bgC, colC] = (typeBadge[adType] || '#F1F2F4:#596066').split(':');
+    const typeKey = ad.scheduleType === 'cond' ? `cond_${ad.condType}` : 'general';
+    const [tBg, tCol] = (schedTypeBadge[typeKey] || '#F6F7F9:#596066').split(':');
     const rowBg = idx % 2 === 0 ? '#fff' : '#FAFBFC';
+
     h += `<div style="display:grid;grid-template-columns:${COL};align-items:center;padding:8px 12px;background:${rowBg};border-bottom:1px solid #F0F1F3;gap:8px;" id="corder-${idx}">`;
     h += `<span style="font-size:12px;font-weight:700;color:#9EA5AD;">${idx + 1}</span>`;
     h += `<span style="font-size:14px;color:#CED2D6;cursor:grab;user-select:none;" title="드래그로 순서 변경">⠿</span>`;
-    /* 유형 배지 + 스케줄명 */
-    h += `<div style="display:flex;align-items:center;gap:6px;min-width:0;">`;
-    h += `<span style="flex-shrink:0;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:${bgC};color:${colC};white-space:nowrap;">${typeLabel[adType] || adType}</span>`;
+
+    /* 스케줄명 + 상태 */
+    h += `<div style="display:flex;flex-direction:column;gap:3px;min-width:0;">`;
     h += `<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ad.name}</span>`;
+    h += `<span style="font-size:10px;font-weight:600;color:${statusColor[ad.status] || '#9EA5AD'};">${statusLabel[ad.status] || ad.status}</span>`;
     h += `</div>`;
-    /* 콘텐츠 썸네일 + 이름 + 재생시간 */
+
+    /* 스케줄 유형 배지 */
+    h += `<span style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:${tBg};color:${tCol};white-space:nowrap;">${schedTypeLabel[typeKey] || typeKey}</span>`;
+
+    /* 콘텐츠 썸네일 + 이름 + 자체운영 표기 + 재생시간 */
     if (ad.content) {
       h += `<div style="display:flex;align-items:center;gap:6px;min-width:0;">`;
       h += `<div style="width:32px;height:22px;border-radius:4px;background:${ad.content.thumb};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">${ad.content.emoji}</div>`;
-      h += `<div style="min-width:0;"><div style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${ad.content.name}">${ad.content.name}</div>`;
-      h += `<div style="font-size:10px;color:#9EA5AD;margin-top:1px;">${ad.dur}초</div></div>`;
+      h += `<div style="min-width:0;">`;
+      h += `<div style="display:flex;align-items:center;gap:4px;">`;
+      h += `<span style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${ad.content.name}">${ad.content.name}</span>`;
+      if (ad.content.selfOp) h += `<span style="flex-shrink:0;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;background:#E1F5EE;color:#085041;border:1px solid #5DCAA5;">자체운영</span>`;
       h += `</div>`;
+      h += `<div style="font-size:10px;color:#9EA5AD;margin-top:1px;">${ad.dur}초</div>`;
+      h += `</div></div>`;
     } else {
       h += `<div style="display:flex;align-items:center;gap:6px;">`;
       h += `<div style="width:32px;height:22px;border-radius:4px;border:1px dashed #CED2D6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">`;
@@ -756,9 +771,10 @@ function renderCycleOrder() {
       h += `<span style="font-size:11px;color:#CED2D6;">콘텐츠 미지정</span>`;
       h += `</div>`;
     }
+
     /* 재생 시간 */
     h += `<div style="display:flex;align-items:center;gap:4px;justify-content:center;">`;
-    h += `<div style="height:5px;background:#E5E7EA;border-radius:3px;overflow:hidden;width:36px;"><div style="height:100%;background:${bgC === '#F1F2F4' ? '#CED2D6' : bgC};width:${Math.round(ad.dur/600*100*5)}%;"></div></div>`;
+    h += `<div style="height:5px;background:#E5E7EA;border-radius:3px;overflow:hidden;width:36px;"><div style="height:100%;background:${tBg};width:${Math.round(ad.dur/600*100*5)}%;"></div></div>`;
     h += `<span style="font-size:12px;font-weight:600;color:#24292E;">${ad.dur}초</span></div>`;
     h += `<div style="display:flex;gap:2px;justify-content:flex-end;">`;
     h += `<button onclick="moveCycleAd(${idx},-1)" ${idx===0?'disabled':''} style="width:24px;height:24px;border:1px solid #E5E7EA;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;color:#596066;display:flex;align-items:center;justify-content:center;${idx===0?'opacity:.35;cursor:not-allowed;':''}">↑</button>`;
@@ -773,7 +789,7 @@ function renderCycleOrder() {
     h += `<span style="font-size:12px;font-weight:700;color:#CED2D6;">${cycleOrder.length+1}</span>`;
     h += `<span></span>`;
     h += `<div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:2px;border:1px dashed #CED2D6;flex-shrink:0;"></div><span style="font-size:13px;color:#9EA5AD;">잔여 슬롯</span></div>`;
-    h += `<span style="font-size:12px;color:#9EA5AD;">—</span>`;
+    h += `<span></span><span></span>`;
     h += `<span style="font-size:12px;color:#9EA5AD;text-align:center;">${remDur}초</span>`;
     h += `<span></span></div>`;
   }
