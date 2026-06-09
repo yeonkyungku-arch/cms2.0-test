@@ -557,14 +557,14 @@
     .media-card {
       border: 1px solid #E5E7EA;
       overflow: hidden;
+      background: #fff;
     }
     .media-card-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid #F0F1F3;
-      background: #FAFBFC;
+      padding: 14px 16px 10px;
+      gap: 8px;
     }
     .media-card-name {
       font-size: 13px;
@@ -579,14 +579,13 @@
       border-radius: 10px;
       font-size: 11px;
       font-weight: 600;
+      flex-shrink: 0;
     }
     .media-status-pill.online  { background: #E8F8E9; color: #2E9E34; }
     .media-status-pill.offline { background: #F1F2F4; color: #9EA5AD; }
     .media-status-pill.online::before  { content:''; display:inline-block; width:5px; height:5px; border-radius:50%; background:#58C65D; }
     .media-status-pill.offline::before { content:''; display:inline-block; width:5px; height:5px; border-radius:50%; background:#CED2D6; }
-    .media-card-body {
-      padding: 12px 14px;
-    }
+    .media-card-body { }
     .media-spec-row {
       display: flex;
       align-items: baseline;
@@ -599,11 +598,29 @@
     .media-spec-label { color: #9EA5AD; min-width: 80px; }
     .media-spec-value { color: #24292E; font-weight: 500; text-align: right; }
     .media-specs {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px 0; padding: 12px 14px 8px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 0; padding: 0 16px 12px;
     }
-    .media-spec-item .media-spec-label { font-size: 10px; color: #9EA5AD; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; min-width: unset; }
+    .media-spec-item {
+      padding: 6px 0;
+      border-right: 1px solid #F0F1F3;
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+    .media-spec-item:first-child { padding-left: 0; }
+    .media-spec-item:last-child  { border-right: none; }
+    .media-spec-item .media-spec-label { font-size: 10px; color: #9EA5AD; margin-bottom: 3px; min-width: unset; }
     .media-spec-item .media-spec-value { font-size: 12px; font-weight: 600; color: #24292E; text-align: left; }
+    .media-card-footer {
+      padding: 10px 16px 12px;
+      border-top: 1px solid #F0F1F3;
+      background: #FAFBFC;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .media-usage-label { font-size: 11px; color: #9EA5AD; white-space: nowrap; }
+    .media-usage-pct   { font-size: 12px; font-weight: 700; color: #24292E; white-space: nowrap; }
     .media-remain-bar-wrap {
       margin-top: 12px;
       padding-top: 10px;
@@ -954,9 +971,9 @@
       <div class="media-summary-grid">
 
         <!-- 미디어 1 -->
-        <div class="media-card">
+        <div class="media-card" style="border-left:3px solid #58C65D;">
           <div class="media-card-header">
-            <div>
+            <div style="flex:1;min-width:0;">
               <div class="media-card-name">강남역 1번출구 A</div>
               <div class="media-addr">서울 강남구 강남대로 396 (1번출구 앞)</div>
             </div>
@@ -970,33 +987,32 @@
               </div>
               <div class="media-spec-item">
                 <div class="media-spec-label">운영 시간</div>
-                <div class="media-spec-value">07:00 ~ 22:00</div>
+                <div class="media-spec-value">07:00–22:00</div>
               </div>
               <div class="media-spec-item">
-                <div class="media-spec-label">최소 보장 횟수</div>
+                <div class="media-spec-label">최소 보장</div>
                 <div class="media-spec-value">90회/일</div>
               </div>
               <div class="media-spec-item">
                 <div class="media-spec-label">기준 슬롯</div>
-                <div class="media-spec-value">30초 × 20슬롯</div>
+                <div class="media-spec-value">30초 × 20개</div>
               </div>
             </div>
-            <div style="padding:0 14px 12px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                <span style="font-size:11px;color:#9EA5AD;">평균 슬롯 사용률 <span style="font-size:10px;">(최근 30일)</span></span>
-                <span style="font-size:12px;font-weight:700;color:#24292E;">21%</span>
-              </div>
-              <div class="media-remain-bar-track">
-                <div class="media-remain-bar-fill" style="width:21%;background:#58C65D;"></div>
-              </div>
+          </div>
+          <div class="media-card-footer">
+            <span class="media-usage-label">슬롯 사용률</span>
+            <div style="flex:1;height:5px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+              <div style="width:21%;height:100%;background:#58C65D;border-radius:4px;"></div>
             </div>
+            <span class="media-usage-pct">21%</span>
+            <a href="schedule-media-month.html" style="font-size:11px;color:#2D84ED;margin-left:4px;">편성표 →</a>
           </div>
         </div>
 
         <!-- 미디어 2 -->
-        <div class="media-card">
+        <div class="media-card" style="border-left:3px solid #58C65D;">
           <div class="media-card-header">
-            <div>
+            <div style="flex:1;min-width:0;">
               <div class="media-card-name">강남역 1번출구 B</div>
               <div class="media-addr">서울 강남구 강남대로 396 (1번출구 측면)</div>
             </div>
@@ -1010,33 +1026,32 @@
               </div>
               <div class="media-spec-item">
                 <div class="media-spec-label">운영 시간</div>
-                <div class="media-spec-value">07:00 ~ 22:00</div>
+                <div class="media-spec-value">07:00–22:00</div>
               </div>
               <div class="media-spec-item">
-                <div class="media-spec-label">최소 보장 횟수</div>
+                <div class="media-spec-label">최소 보장</div>
                 <div class="media-spec-value">112회/일</div>
               </div>
               <div class="media-spec-item">
                 <div class="media-spec-label">기준 슬롯</div>
-                <div class="media-spec-value">30초 × 16슬롯</div>
+                <div class="media-spec-value">30초 × 16개</div>
               </div>
             </div>
-            <div style="padding:0 14px 12px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                <span style="font-size:11px;color:#9EA5AD;">평균 슬롯 사용률 <span style="font-size:10px;">(최근 30일)</span></span>
-                <span style="font-size:12px;font-weight:700;color:#24292E;">32%</span>
-              </div>
-              <div class="media-remain-bar-track">
-                <div class="media-remain-bar-fill" style="width:32%;background:#E8841A;"></div>
-              </div>
+          </div>
+          <div class="media-card-footer">
+            <span class="media-usage-label">슬롯 사용률</span>
+            <div style="flex:1;height:5px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+              <div style="width:32%;height:100%;background:#E8841A;border-radius:4px;"></div>
             </div>
+            <span class="media-usage-pct">32%</span>
+            <a href="schedule-media-month.html" style="font-size:11px;color:#2D84ED;margin-left:4px;">편성표 →</a>
           </div>
         </div>
 
         <!-- 미디어 3 -->
-        <div class="media-card">
+        <div class="media-card" style="border-left:3px solid #CED2D6;">
           <div class="media-card-header">
-            <div>
+            <div style="flex:1;min-width:0;">
               <div class="media-card-name">강남역 2번출구</div>
               <div class="media-addr">서울 강남구 강남대로 지하 (2번출구 계단)</div>
             </div>
@@ -1050,26 +1065,25 @@
               </div>
               <div class="media-spec-item">
                 <div class="media-spec-label">운영 시간</div>
-                <div class="media-spec-value">08:00 ~ 21:00</div>
+                <div class="media-spec-value">08:00–21:00</div>
               </div>
               <div class="media-spec-item">
-                <div class="media-spec-label">최소 보장 횟수</div>
+                <div class="media-spec-label">최소 보장</div>
                 <div class="media-spec-value">86회/일</div>
               </div>
               <div class="media-spec-item">
                 <div class="media-spec-label">기준 슬롯</div>
-                <div class="media-spec-value">30초 × 18슬롯</div>
+                <div class="media-spec-value">30초 × 18개</div>
               </div>
             </div>
-            <div style="padding:0 14px 12px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                <span style="font-size:11px;color:#9EA5AD;">평균 슬롯 사용률 <span style="font-size:10px;">(최근 30일)</span></span>
-                <span style="font-size:12px;font-weight:700;color:#24292E;">16%</span>
-              </div>
-              <div class="media-remain-bar-track">
-                <div class="media-remain-bar-fill" style="width:16%;background:#2D84ED;"></div>
-              </div>
+          </div>
+          <div class="media-card-footer">
+            <span class="media-usage-label">슬롯 사용률</span>
+            <div style="flex:1;height:5px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
+              <div style="width:16%;height:100%;background:#9EA5AD;border-radius:4px;"></div>
             </div>
+            <span class="media-usage-pct" style="color:#9EA5AD;">16%</span>
+            <a href="schedule-media-month.html" style="font-size:11px;color:#2D84ED;margin-left:4px;">편성표 →</a>
           </div>
         </div>
 
