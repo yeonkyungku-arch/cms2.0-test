@@ -422,11 +422,7 @@
             월간 뷰
           </a>
         </div>
-        <div class="media-tabs">
-          <button class="media-tab active" onclick="selectMedia(0)">미디어 A</button>
-          <button class="media-tab" onclick="selectMedia(1)">미디어 B</button>
-          <button class="media-tab" onclick="selectMedia(2)">미디어 C</button>
-        </div>
+        <div class="media-tabs" id="mediaTabs"></div>
         <div class="media-info" id="mediaInfo">
           <a href="product-detail.html" class="media-info-name drill-link" id="mediaName">강남역 1번출구 A</a>
           <span class="media-info-dot">·</span>
@@ -729,6 +725,13 @@ function changeDay(delta) {
 }
 
 /* ── Media tabs ── */
+function renderMediaTabs() {
+  const wrap = document.getElementById('mediaTabs');
+  wrap.innerHTML = MEDIA_LIST.map((m, i) =>
+    `<button class="media-tab${i===0?' active':''}" onclick="selectMedia(${i})">${m.name}</button>`
+  ).join('');
+}
+
 function selectMedia(idx) {
   currentMedia = idx;
   document.querySelectorAll('.media-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
@@ -789,12 +792,11 @@ function renderTimeline() {
     html += `<div style="flex:0 0 ${wPct}%;background:${ZONE_COLORS[zi]};border-left:${isJingle?'2px solid #C084FC':'1px solid #E5E7EA'};padding:8px 6px;box-sizing:border-box;overflow:hidden;">`;
 
     /* Zone header */
-    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">`;
+    html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">`;
+    html += `<span style="font-size:10px;color:#9EA5AD;white-space:nowrap;">${String(sH).padStart(2,'0')}~${String(eH).padStart(2,'0')}시 · ${cycles}사이클</span>`;
     if (isJingle) {
-      html += `<span style="display:inline-flex;align-items:center;gap:3px;background:#F3E8FF;border:1px solid #C084FC;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;color:#6B21A8;white-space:nowrap;">🔔 ${jAd}</span>`;
-      html += `<button onclick="openModal('${sH}:00')" style="font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 변경</button>`;
+      html += `<button onclick="openModal('${sH}:00')" style="margin-left:auto;font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 시보 변경</button>`;
     }
-    html += `<span style="margin-left:auto;font-size:10px;color:#9EA5AD;white-space:nowrap;">${String(sH).padStart(2,'0')}~${String(eH).padStart(2,'0')}시 · ${cycles}사이클</span>`;
     html += `</div>`;
 
     /* 시보 + 사이클을 하나의 블록으로 좌→우 표현 */
@@ -1026,6 +1028,7 @@ document.getElementById('jingleModal').addEventListener('click', function(e) {
 });
 
 /* ── Init ── */
+renderMediaTabs();
 renderTimeline();
 </script>
 <script src="../assets/js/cms.js"></script>

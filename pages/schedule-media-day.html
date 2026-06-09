@@ -945,12 +945,11 @@ function renderUnifiedTimeline() {
     zoneHtml += '<div style="flex:0 0 ' + wPct + '%;background:' + SEG_BG[seg.id] + ';border-left:' + (isJingle ? '2px solid #C084FC' : '1px solid #E5E7EA') + ';padding:8px 6px;box-sizing:border-box;overflow:hidden;">';
 
     /* 구간 헤더 */
-    zoneHtml += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">';
+    zoneHtml += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">';
+    zoneHtml += '<span style="font-size:10px;color:#9EA5AD;white-space:nowrap;">' + String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시 · ' + cycles + '사이클</span>';
     if (isJingle) {
-      zoneHtml += '<span style="display:inline-flex;align-items:center;gap:3px;background:#F3E8FF;border:1px solid #C084FC;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;color:#6B21A8;white-space:nowrap;">🔔 ' + JINGLE_ADS[seg.start] + '</span>';
-      zoneHtml += '<button onclick="openJingleModal()" style="font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 변경</button>';
+      zoneHtml += '<button onclick="openJingleModal()" style="margin-left:auto;font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 시보 변경</button>';
     }
-    zoneHtml += '<span style="margin-left:auto;font-size:10px;color:#9EA5AD;white-space:nowrap;">' + String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시 · ' + cycles + '사이클</span>';
     zoneHtml += '</div>';
 
     /* 시보 + 사이클을 하나의 블록으로 좌→우 표현 */

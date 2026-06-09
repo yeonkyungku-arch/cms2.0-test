@@ -1075,7 +1075,20 @@ document.getElementById('bookingOverlay').addEventListener('click', function(e) 
   }
 })();
 renderCalendar();
-renderScheduleList(null);
+// 오늘 날짜 자동 선택
+(function() {
+  var t = new Date();
+  var todayKey = dateKey(t.getFullYear(), t.getMonth()+1, t.getDate());
+  if (DAY_SCHEDULES[todayKey]) {
+    selectedDate = todayKey;
+    renderCalendar();
+    renderScheduleList(todayKey);
+    document.getElementById('btnAddSchedule') && (document.getElementById('btnAddSchedule').style.display = 'flex');
+    document.getElementById('schedPanelTitle') && (document.getElementById('schedPanelTitle').textContent = t.getMonth()+1 + '월 ' + t.getDate() + '일 스케줄');
+  } else {
+    renderScheduleList(null);
+  }
+})();
 
 /* selected 셀 CSS 추가 */
 var styleEl = document.createElement('style');
