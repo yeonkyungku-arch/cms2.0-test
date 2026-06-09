@@ -521,6 +521,7 @@ var PRODUCTS = [
   { id: 5, name: '신촌 대학가 패키지',   media: '신촌역 1번출구',   count: 3, icon: '🎓', color: '#EFF6FF' },
 ];
 
+var LAST_PRODUCT_KEY = 'dooh_last_product_id';
 var selectedProductId = null;
 var filteredProducts  = PRODUCTS.slice();
 
@@ -559,14 +560,19 @@ function selectProduct(id) {
 
 function confirmProductSelect() {
   if (!selectedProductId) return;
-  var p = PRODUCTS.find(function(p) { return p.id === selectedProductId; });
-  /* 선택된 프로덕트명을 캘린더 툴바에 반영 */
-  /* 캘린더 툴바 · 브레드크럼 업데이트 */
+  localStorage.setItem(LAST_PRODUCT_KEY, selectedProductId);
+  applySelectedProduct(selectedProductId);
+  closeProductSelect();
+}
+
+function applySelectedProduct(id) {
+  var p = PRODUCTS.find(function(p) { return p.id === id; });
+  if (!p) return;
+  selectedProductId = id;
   var nameEl = document.getElementById('calProductName');
   if (nameEl) nameEl.textContent = p.name;
   var bcEl = document.getElementById('bcrumbProduct');
   if (bcEl) bcEl.textContent = p.name;
-  closeProductSelect();
 }
 
 function closeProductSelect() {
@@ -576,8 +582,8 @@ function closeProductSelect() {
 }
 
 function openProductSelect() {
-  selectedProductId = null;
-  document.getElementById('btnConfirmProduct').disabled = true;
+  /* 이미 선택된 프로덕트가 있으면 유지, 없으면 확인 버튼 비활성 */
+  document.getElementById('btnConfirmProduct').disabled = !selectedProductId;
   renderProductList(PRODUCTS);
   document.getElementById('productSelectOverlay').classList.remove('hidden');
   setTimeout(function() { document.getElementById('productSearchInput').focus(); }, 50);
@@ -1058,7 +1064,16 @@ document.getElementById('bookingOverlay').addEventListener('click', function(e) 
   if (e.target === this) closeBookingModal();
 });
 
-/* ── 오늘 날짜로 초기 렌더 ── */
+/* ── 초기화: 마지막 선택 프로덕트 복원 또는 선택 요청 ── */
+(function() {
+  var lastId = parseInt(localStorage.getItem(LAST_PRODUCT_KEY), 10);
+  if (lastId && PRODUCTS.some(function(p) { return p.id === lastId; })) {
+    applySelectedProduct(lastId);
+  } else if (location.search.indexOf('select=1') === -1) {
+    /* 저장된 프로덕트 없고 select=1도 아니면 첫 진입으로 간주해 선택창 표시 */
+    openProductSelect();
+  }
+})();
 renderCalendar();
 renderScheduleList(null);
 
