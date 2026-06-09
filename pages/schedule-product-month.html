@@ -116,22 +116,55 @@
     .booking-modal-head p  { font-size: 12px; color: #9EA5AD; }
     .booking-modal-close { width: 28px; height: 28px; border: none; background: #F6F7F9; border-radius: 6px; cursor: pointer; font-size: 16px; color: #596066; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .booking-modal-close:hover { background: #E5E7EA; }
-    .booking-modal-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+    .booking-modal { background: #fff; border-radius: 14px; width: 520px; max-width: calc(100vw - 32px); max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,.2); }
+    .booking-modal-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 16px; }
     .booking-field label { display: block; font-size: 11px; font-weight: 600; color: #596066; margin-bottom: 5px; }
     .booking-field select,
     .booking-field input[type=text],
-    .booking-field input[type=number] { width: 100%; height: 36px; padding: 0 10px; border: 1px solid #E5E7EA; border-radius: 8px; font-size: 13px; color: #24292E; outline: none; background: #fff; }
+    .booking-field input[type=date],
+    .booking-field input[type=number] { width: 100%; height: 36px; padding: 0 10px; border: 1px solid #E5E7EA; border-radius: 8px; font-size: 13px; color: #24292E; outline: none; background: #fff; box-sizing: border-box; }
     .booking-field select:focus,
     .booking-field input:focus { border-color: #58C65D; }
     .booking-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .booking-day-schedules { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
-    .booking-day-schedules-head { padding: 7px 12px; background: #F6F7F9; font-size: 11px; font-weight: 600; color: #596066; border-bottom: 1px solid #E5E7EA; }
-    .booking-day-sched-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid #F0F1F3; font-size: 12px; }
-    .booking-day-sched-item:last-child { border-bottom: none; }
-    .booking-modal-foot { padding: 14px 22px; border-top: 1px solid #E5E7EA; display: flex; justify-content: flex-end; gap: 8px; }
+    /* 플랜 탭 */
+    .plan-tabs { display: flex; border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
+    .plan-tab { flex: 1; padding: 8px 0; font-size: 12px; font-weight: 600; color: #596066; background: #F6F7F9; border: none; cursor: pointer; transition: background .12s, color .12s; }
+    .plan-tab.active { background: #24292E; color: #fff; }
+    /* 플레이 플랜 선택 목록 */
+    .playplan-list { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; max-height: 180px; overflow-y: auto; }
+    .playplan-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid #F0F1F3; cursor: pointer; transition: background .1s; }
+    .playplan-item:last-child { border-bottom: none; }
+    .playplan-item:hover { background: #F6F7F9; }
+    .playplan-item.selected { background: rgba(88,198,93,.08); }
+    .playplan-item input[type=radio] { accent-color: #58C65D; width: 15px; height: 15px; flex-shrink: 0; }
+    .playplan-item-name { font-size: 13px; font-weight: 500; color: #24292E; flex: 1; }
+    .playplan-item-meta { font-size: 11px; color: #9EA5AD; }
+    /* 스케줄 유형 토글 */
+    .type-toggle { display: flex; gap: 8px; }
+    .type-btn { flex: 1; height: 36px; border: 1px solid #E5E7EA; border-radius: 8px; background: #F6F7F9; font-size: 13px; color: #596066; cursor: pointer; font-weight: 500; transition: all .12s; }
+    .type-btn.active { border-color: #58C65D; background: rgba(88,198,93,.08); color: #065F46; font-weight: 700; }
+    /* 잔여 슬롯 확인 결과 */
+    .slot-check-box { border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .slot-check-box.ok      { background: #F0FDF4; border: 1px solid #86EFAC; }
+    .slot-check-box.warn    { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .slot-check-box.error   { background: #FEF2F2; border: 1px solid #FECACA; }
+    .slot-check-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+    .slot-check-label { color: #596066; }
+    .slot-check-val { font-weight: 700; }
+    .slot-check-val.ok-val   { color: #065F46; }
+    .slot-check-val.warn-val { color: #78350F; }
+    .slot-check-val.err-val  { color: #991B1B; }
+    .slot-check-bar { height: 6px; background: #E5E7EA; border-radius: 3px; overflow: hidden; }
+    .slot-check-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+    /* 푸터 */
+    .booking-modal-foot { padding: 14px 22px; border-top: 1px solid #E5E7EA; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .booking-foot-hint { font-size: 11px; color: #9EA5AD; }
+    .booking-foot-btns { display: flex; gap: 8px; }
     .btn-bk-cancel { height: 36px; padding: 0 16px; border: 1px solid #E5E7EA; border-radius: 8px; background: #fff; font-size: 13px; color: #596066; cursor: pointer; }
+    .btn-bk-check  { height: 36px; padding: 0 16px; border: 1px solid #2D84ED; border-radius: 8px; background: #EFF6FF; font-size: 13px; font-weight: 600; color: #2D84ED; cursor: pointer; }
     .btn-bk-submit { height: 36px; padding: 0 20px; border: none; border-radius: 8px; background: #58C65D; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; }
-    .btn-bk-submit:hover { background: #4ab54f; }
+    .btn-bk-submit:disabled { background: #C1E9C3; cursor: not-allowed; }
+    .btn-bk-submit:not(:disabled):hover { background: #4ab54f; }
 
     /* Legend */
     .cal-legend { display: flex; align-items: center; gap: 14px; padding: 10px 18px; border-top: 1px solid #E5E7EA; flex-wrap: wrap; }
@@ -363,61 +396,143 @@
 <!-- ── 스케줄 예약 모달 ── -->
 <div class="booking-overlay hidden" id="bookingOverlay">
   <div class="booking-modal">
+    <!-- 헤더 -->
     <div class="booking-modal-head">
       <div>
         <h3 id="bookingModalTitle">스케줄 예약</h3>
-        <p id="bookingModalDate"></p>
+        <p id="bookingModalDate" style="font-size:12px;color:#9EA5AD;margin-top:2px;"></p>
       </div>
       <button class="booking-modal-close" onclick="closeBookingModal()">✕</button>
     </div>
+
     <div class="booking-modal-body">
-      <!-- 당일 운영 스케줄 현황 -->
-      <div class="booking-field">
-        <label>당일 운영 스케줄</label>
-        <div class="booking-day-schedules" id="bookingDaySchedules"></div>
-      </div>
-      <!-- 예약 폼 -->
-      <div class="booking-field">
-        <label>스케줄 선택</label>
-        <select id="bookingSchedSelect">
-          <option value="">스케줄을 선택하세요</option>
-          <option value="nike">나이키 6월 캠페인</option>
-          <option value="samsung">삼성 여름 광고</option>
-          <option value="hyundai">현대 날씨 조건</option>
-          <option value="lg">LG 가전 캠페인</option>
-          <option value="lotte">롯데백화점 프로모</option>
-        </select>
-      </div>
-      <div class="booking-field-row">
-        <div class="booking-field">
-          <label>시작 시간</label>
-          <select id="bookingTimeStart">
-            <option>07:00</option><option>08:00</option><option>09:00</option>
-            <option>10:00</option><option>11:00</option><option>12:00</option>
-            <option>13:00</option><option>14:00</option><option>15:00</option>
-            <option>16:00</option><option>17:00</option><option>18:00</option>
-            <option>19:00</option><option>20:00</option><option>21:00</option>
-          </select>
+
+      <!-- ① 광고 기간 -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">1</span>
+          광고 기간
         </div>
-        <div class="booking-field">
-          <label>종료 시간</label>
-          <select id="bookingTimeEnd">
-            <option>08:00</option><option>09:00</option><option>10:00</option>
-            <option>11:00</option><option>12:00</option><option>13:00</option>
-            <option>14:00</option><option>15:00</option><option>16:00</option>
-            <option>17:00</option><option>18:00</option><option>19:00</option>
-            <option>20:00</option><option>21:00</option><option>22:00</option>
-          </select>
+        <div class="booking-field-row">
+          <div class="booking-field">
+            <label>시작일</label>
+            <input type="date" id="bkDateStart" onchange="onDateChange()">
+          </div>
+          <div class="booking-field">
+            <label>종료일</label>
+            <input type="date" id="bkDateEnd" onchange="onDateChange()">
+          </div>
+        </div>
+        <div id="bkDateInfo" style="display:none;margin-top:7px;font-size:11px;color:#596066;padding:6px 10px;background:#F6F7F9;border-radius:6px;"></div>
+      </div>
+
+      <!-- ② 플레이 플랜 -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">2</span>
+          플레이 플랜
+        </div>
+        <div class="plan-tabs" style="margin-bottom:10px;">
+          <button class="plan-tab active" id="tabPlanSelect" onclick="switchPlanTab('select')">플레이 플랜 선택</button>
+          <button class="plan-tab" id="tabPlanDirect" onclick="switchPlanTab('direct')">직접 입력</button>
+        </div>
+
+        <!-- 플레이 플랜 선택 -->
+        <div id="panePlanSelect">
+          <div class="playplan-list">
+            <div class="playplan-item selected" onclick="selectPlayplan(this, 'pp1')">
+              <input type="radio" name="playplan" value="pp1" checked>
+              <div style="flex:1;">
+                <div class="playplan-item-name">기본 편성 플랜 A</div>
+                <div class="playplan-item-meta">30초 · 일반 · 사이클 순서 1번</div>
+              </div>
+              <span class="playplan-item-meta">사용 30초</span>
+            </div>
+            <div class="playplan-item" onclick="selectPlayplan(this, 'pp2')">
+              <input type="radio" name="playplan" value="pp2">
+              <div style="flex:1;">
+                <div class="playplan-item-name">프리미엄 편성 플랜 B</div>
+                <div class="playplan-item-meta">30초 · 일반 · 시보 후 우선 편성</div>
+              </div>
+              <span class="playplan-item-meta">사용 30초</span>
+            </div>
+            <div class="playplan-item" onclick="selectPlayplan(this, 'pp3')">
+              <input type="radio" name="playplan" value="pp3">
+              <div style="flex:1;">
+                <div class="playplan-item-name">조건 편성 플랜 C</div>
+                <div class="playplan-item-meta">20초 · 조건 · 기온 &gt; 28°C</div>
+              </div>
+              <span class="playplan-item-meta">사용 20초</span>
+            </div>
+            <div class="playplan-item" onclick="selectPlayplan(this, 'pp4')">
+              <input type="radio" name="playplan" value="pp4">
+              <div style="flex:1;">
+                <div class="playplan-item-name">자체운영 플랜 D</div>
+                <div class="playplan-item-meta">15초 · 자체운영 · 기본 슬롯</div>
+              </div>
+              <span class="playplan-item-meta">사용 15초</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 직접 입력 -->
+        <div id="panePlanDirect" style="display:none;">
+          <div class="booking-field" style="margin-bottom:10px;">
+            <label>스케줄 유형</label>
+            <div class="type-toggle">
+              <button class="type-btn active" id="typeBtnNormal" onclick="setSchedType('normal')">일반</button>
+              <button class="type-btn" id="typeBtnCond" onclick="setSchedType('condition')">조건</button>
+            </div>
+          </div>
+          <div id="conditionFields" style="display:none;margin-bottom:10px;">
+            <div class="booking-field">
+              <label>조건 설정</label>
+              <select id="bkCondType">
+                <option value="temp">기온 조건</option>
+                <option value="weather">날씨 조건</option>
+                <option value="time">시간 조건</option>
+                <option value="custom">직접 입력</option>
+              </select>
+            </div>
+          </div>
+          <div class="booking-field-row">
+            <div class="booking-field">
+              <label>재생 시간 (초)</label>
+              <input type="number" id="bkDuration" min="5" max="600" step="5" value="30" oninput="onDurationChange()" placeholder="30">
+            </div>
+            <div class="booking-field">
+              <label>사이클 내 순서</label>
+              <select id="bkSlotOrder">
+                <option value="auto">자동 배정</option>
+                <option value="1">1번</option>
+                <option value="2">2번</option>
+                <option value="3">3번</option>
+                <option value="4">4번</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="booking-field">
-        <label>메모 (선택)</label>
-        <input type="text" id="bookingMemo" placeholder="예약 메모를 입력하세요">
+
+      <!-- ③ 잔여 슬롯 확인 -->
+      <div id="slotCheckSection" style="display:none;">
+        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">3</span>
+          잔여 슬롯 확인
+        </div>
+        <div id="slotCheckResult"></div>
       </div>
+
     </div>
+
+    <!-- 푸터 -->
     <div class="booking-modal-foot">
-      <button class="btn-bk-cancel" onclick="closeBookingModal()">취소</button>
-      <button class="btn-bk-submit" onclick="submitBooking()">예약 등록</button>
+      <span class="booking-foot-hint" id="bkFootHint"></span>
+      <div class="booking-foot-btns">
+        <button class="btn-bk-cancel" onclick="closeBookingModal()">취소</button>
+        <button class="btn-bk-check" onclick="checkSlot()">잔여 슬롯 확인</button>
+        <button class="btn-bk-submit" id="btnBkSubmit" onclick="submitBooking()" disabled>예약 등록</button>
+      </div>
     </div>
   </div>
 </div>
@@ -736,30 +851,46 @@ function renderScheduleList(filterDay) {
   }).join('');
 }
 
-/* ── 예약 모달 ── */
+/* ── 예약 모달 상태 ── */
+var bkState = {
+  planTab: 'select',   // 'select' | 'direct'
+  schedType: 'normal', // 'normal' | 'condition'
+  selectedPlan: 'pp1',
+  slotChecked: false,
+};
+
+/* 미디어별 사이클 현황 (프로덕트에 포함된 미디어들) */
+var MEDIA_SLOTS = [
+  { name: '강남역 1번출구 A', cycleMax: 600, used: 90,  slots: 4, usedSlots: 2 },
+  { name: '강남역 1번출구 B', cycleMax: 600, used: 120, slots: 4, usedSlots: 3 },
+  { name: '강남역 2번출구',   cycleMax: 600, used: 60,  slots: 4, usedSlots: 1 },
+];
+
+var PLAN_SEC = { pp1: 30, pp2: 30, pp3: 20, pp4: 15 };
+
 function openBookingModal(key) {
   selectedDate = key;
-  renderCalendar(); // 선택 셀 하이라이트
+  renderCalendar();
 
   var parts = key.split('-');
   var dateLabel = parts[0] + '년 ' + parseInt(parts[1]) + '월 ' + parseInt(parts[2]) + '일';
-  document.getElementById('bookingModalTitle').textContent = '스케줄 예약';
   document.getElementById('bookingModalDate').textContent = dateLabel;
 
-  /* 당일 스케줄 목록 */
-  var scheds = DAY_SCHEDULES[key] || [];
-  var el = document.getElementById('bookingDaySchedules');
-  if (!scheds.length) {
-    el.innerHTML = '<div style="padding:10px 12px;font-size:12px;color:#9EA5AD;">운영 예정 스케줄 없음</div>';
-  } else {
-    el.innerHTML = '<div class="booking-day-schedules-head">운영 예정 ' + scheds.length + '개</div>' +
-      scheds.map(function(s) {
-        return '<div class="booking-day-sched-item">' +
-          '<div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:' + ({green:'#10B981',amber:'#F59E0B',orange:'#F97316',red:'#EF4444',blue:'#60A5FA'}[s.status]||'#CED2D6') + '"></div>' +
-          '<span>' + s.name + '</span>' +
-        '</div>';
-      }).join('');
-  }
+  /* 기간 기본값: 클릭한 날짜 */
+  document.getElementById('bkDateStart').value = key;
+  document.getElementById('bkDateEnd').value   = key;
+  onDateChange();
+
+  /* 상태 초기화 */
+  bkState.planTab    = 'select';
+  bkState.schedType  = 'normal';
+  bkState.slotChecked = false;
+  switchPlanTab('select');
+  setSchedType('normal');
+  document.getElementById('slotCheckSection').style.display = 'none';
+  document.getElementById('btnBkSubmit').disabled = true;
+  document.getElementById('bkFootHint').textContent = '';
+  document.getElementById('bkDuration').value = 30;
 
   renderScheduleList(key);
   document.getElementById('bookingOverlay').classList.remove('hidden');
@@ -769,16 +900,149 @@ function closeBookingModal() {
   document.getElementById('bookingOverlay').classList.add('hidden');
 }
 
+/* 기간 변경 */
+function onDateChange() {
+  var s = document.getElementById('bkDateStart').value;
+  var e = document.getElementById('bkDateEnd').value;
+  var infoEl = document.getElementById('bkDateInfo');
+  if (!s || !e) { infoEl.style.display = 'none'; return; }
+  var sd = new Date(s), ed = new Date(e);
+  if (ed < sd) {
+    document.getElementById('bkDateEnd').value = s;
+    ed = sd;
+  }
+  var days = Math.round((ed - sd) / 86400000) + 1;
+  infoEl.style.display = 'block';
+  infoEl.textContent = '총 ' + days + '일 기간 · ' + s.replace(/-/g,'.') + ' ~ ' + e.replace(/-/g,'.');
+  /* 날짜 바뀌면 슬롯 확인 초기화 */
+  resetSlotCheck();
+}
+
+/* 플랜 탭 전환 */
+function switchPlanTab(tab) {
+  bkState.planTab = tab;
+  document.getElementById('tabPlanSelect').className = 'plan-tab' + (tab === 'select' ? ' active' : '');
+  document.getElementById('tabPlanDirect').className = 'plan-tab' + (tab === 'direct' ? ' active' : '');
+  document.getElementById('panePlanSelect').style.display = tab === 'select' ? '' : 'none';
+  document.getElementById('panePlanDirect').style.display = tab === 'direct' ? '' : 'none';
+  resetSlotCheck();
+}
+
+/* 플레이 플랜 선택 */
+function selectPlayplan(el, planId) {
+  document.querySelectorAll('.playplan-item').forEach(function(i) { i.classList.remove('selected'); });
+  el.classList.add('selected');
+  el.querySelector('input[type=radio]').checked = true;
+  bkState.selectedPlan = planId;
+  resetSlotCheck();
+}
+
+/* 스케줄 유형 */
+function setSchedType(type) {
+  bkState.schedType = type;
+  document.getElementById('typeBtnNormal').className = 'type-btn' + (type === 'normal'    ? ' active' : '');
+  document.getElementById('typeBtnCond').className   = 'type-btn' + (type === 'condition' ? ' active' : '');
+  document.getElementById('conditionFields').style.display = type === 'condition' ? '' : 'none';
+  resetSlotCheck();
+}
+
+function onDurationChange() { resetSlotCheck(); }
+
+function resetSlotCheck() {
+  bkState.slotChecked = false;
+  document.getElementById('slotCheckSection').style.display = 'none';
+  document.getElementById('btnBkSubmit').disabled = true;
+  document.getElementById('bkFootHint').textContent = '';
+}
+
+/* ── 잔여 슬롯 확인 ── */
+function checkSlot() {
+  var s = document.getElementById('bkDateStart').value;
+  var e = document.getElementById('bkDateEnd').value;
+  if (!s || !e) {
+    document.getElementById('bkFootHint').textContent = '광고 기간을 먼저 입력하세요.';
+    return;
+  }
+
+  /* 요청 재생시간 */
+  var reqSec = bkState.planTab === 'select'
+    ? (PLAN_SEC[bkState.selectedPlan] || 30)
+    : parseInt(document.getElementById('bkDuration').value) || 30;
+
+  /* 시뮬레이션: 미디어별 잔여 확인 */
+  var product = PRODUCTS.find(function(p) { return p.id === selectedProductId; });
+  var mediaLabel = product ? product.media : '프로덕트 미디어';
+
+  var results = MEDIA_SLOTS.map(function(m) {
+    var remaining = m.cycleMax - m.used;
+    var slotFree  = m.slots - m.usedSlots;
+    var canTime   = remaining >= reqSec;
+    var canSlot   = slotFree > 0;
+    var ok        = canTime && canSlot;
+    return { name: m.name, remaining: remaining, cycleMax: m.cycleMax, used: m.used, slotFree: slotFree, slots: m.slots, reqSec: reqSec, canTime: canTime, canSlot: canSlot, ok: ok };
+  });
+
+  var allOk   = results.every(function(r) { return r.ok; });
+  var someOk  = results.some(function(r) { return r.ok; });
+  var boxCls  = allOk ? 'ok' : someOk ? 'warn' : 'error';
+
+  var html = '<div class="slot-check-box ' + boxCls + '">';
+  /* 요약 */
+  html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">';
+  html += '<span style="font-size:13px;">' + (allOk ? '✅' : someOk ? '⚠️' : '❌') + '</span>';
+  html += '<span style="font-size:12px;font-weight:700;color:' + (allOk ? '#065F46' : someOk ? '#78350F' : '#991B1B') + ';">';
+  html += allOk ? '모든 미디어에 슬롯 등록 가능합니다' : someOk ? '일부 미디어에만 등록 가능합니다' : '등록 가능한 미디어가 없습니다';
+  html += '</span></div>';
+
+  /* 미디어별 상세 */
+  results.forEach(function(r) {
+    var usedPct = Math.round(r.used / r.cycleMax * 100);
+    var afterPct = Math.min(100, Math.round((r.used + r.reqSec) / r.cycleMax * 100));
+    var fillColor = r.ok ? '#10B981' : (r.canTime && !r.canSlot) ? '#F59E0B' : '#EF4444';
+    html += '<div style="background:rgba(255,255,255,.6);border-radius:6px;padding:8px 10px;margin-top:6px;">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">';
+    html += '<span style="font-size:12px;font-weight:600;color:#24292E;">' + r.name + '</span>';
+    html += '<span style="font-size:11px;padding:1px 7px;border-radius:10px;background:' + (r.ok?'#D1FAE5':'#FEF2F2') + ';color:' + (r.ok?'#065F46':'#991B1B') + ';font-weight:600;">' + (r.ok?'등록 가능':'등록 불가') + '</span>';
+    html += '</div>';
+    /* 시간 현황 바 */
+    html += '<div class="slot-check-row"><span class="slot-check-label">사이클 잔여 시간</span>';
+    html += '<span class="slot-check-val ' + (r.canTime ? 'ok-val' : 'err-val') + '">' + r.remaining + '초 잔여 (요청 ' + r.reqSec + '초)</span></div>';
+    html += '<div class="slot-check-bar" style="margin:4px 0 6px;">';
+    html += '<div class="slot-check-fill" style="width:' + usedPct + '%;background:#E5E7EA;float:left;"></div>';
+    html += '<div class="slot-check-fill" style="width:' + (afterPct - usedPct) + '%;background:' + fillColor + ';float:left;"></div>';
+    html += '</div>';
+    /* 슬롯 현황 */
+    html += '<div class="slot-check-row"><span class="slot-check-label">사이클 슬롯</span>';
+    html += '<span class="slot-check-val ' + (r.canSlot ? 'ok-val' : 'err-val') + '">' + r.slotFree + '개 빈 슬롯 / 전체 ' + r.slots + '개</span></div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+
+  document.getElementById('slotCheckSection').style.display = '';
+  document.getElementById('slotCheckResult').innerHTML = html;
+
+  bkState.slotChecked = true;
+  if (someOk) {
+    document.getElementById('btnBkSubmit').disabled = false;
+    document.getElementById('bkFootHint').textContent = allOk ? '' : '일부 미디어에만 등록됩니다.';
+  } else {
+    document.getElementById('btnBkSubmit').disabled = true;
+    document.getElementById('bkFootHint').textContent = '등록 가능한 미디어가 없습니다.';
+  }
+}
+
+/* ── 예약 등록 ── */
 function submitBooking() {
-  var sched = document.getElementById('bookingSchedSelect').value;
-  if (!sched) { alert('스케줄을 선택해 주세요.'); return; }
-  var btn = document.querySelector('.btn-bk-submit');
+  if (!bkState.slotChecked) return;
+  var btn = document.getElementById('btnBkSubmit');
   btn.textContent = '등록됨 ✓';
   btn.style.background = '#5DCAA5';
   setTimeout(function() {
     closeBookingModal();
     btn.textContent = '예약 등록';
     btn.style.background = '#58C65D';
+    btn.disabled = true;
   }, 1200);
 }
 
