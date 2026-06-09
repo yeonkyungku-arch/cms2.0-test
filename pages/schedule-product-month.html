@@ -99,12 +99,14 @@
     .cal-cell-body:hover { background: rgba(88,198,93,.04); }
     .cal-cell.other-month .cal-cell-body { pointer-events: none; }
 
+    /* 스케줄 칩 — 상태별 */
     .cal-schedule-chip { font-size: 10px; padding: 2px 5px; border-radius: 0 3px 3px 0; border-left: 2px solid; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
-    .chip-green  { background: #D1FAE5; color: #065F46; border-color: #10B981; }
-    .chip-amber  { background: #FEF3C7; color: #78350F; border-color: #F59E0B; }
-    .chip-orange { background: #FFF7ED; color: #9A3412; border-color: #F97316; }
-    .chip-red    { background: #FEF2F2; color: #991B1B; border-color: #EF4444; }
-    .chip-blue   { background: #DBEAFE; color: #1E40AF; border-color: #60A5FA; }
+    /* 확정: 승인완료 — 초록 실선 */
+    .chip-confirmed   { background: #D1FAE5; color: #065F46; border-color: #10B981; border-style: solid; }
+    /* 미확정: 임시저장/심사중 — 노랑 실선 */
+    .chip-unconfirmed { background: #FEF9C3; color: #713F12; border-color: #EAB308; border-style: solid; }
+    /* 예약: 기간만 잡아둔 상태 — 점선 */
+    .chip-reserved    { background: #F0F9FF; color: #0369A1; border-color: #7DD3FC; border-style: dashed; }
     .cal-more-chip { font-size: 9px; color: #9EA5AD; padding: 1px 4px; cursor: pointer; }
 
     /* ── 예약 모달 ── */
@@ -372,11 +374,20 @@
 
         <div class="cal-body" id="calBody"></div>
 
-        <div class="cal-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#10B981;"></div> 여유 (&gt;50%)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#F59E0B;"></div> 위험 (20–50%)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> 매우위험 (&lt;20%)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#EF4444;"></div> 등록불가 (0%)</div>
+        <div class="cal-legend" style="flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:600;color:#9EA5AD;width:52px;">잔여 용량</span>
+            <div class="legend-item"><div class="legend-dot" style="background:#10B981;"></div> 여유 (&gt;50%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#F59E0B;"></div> 위험 (20–50%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#F97316;"></div> 매우위험 (&lt;20%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#EF4444;"></div> 등록불가 (0%)</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:600;color:#9EA5AD;width:52px;">스케줄</span>
+            <div class="legend-item"><div style="width:20px;height:10px;border-radius:0 2px 2px 0;background:#D1FAE5;border-left:2px solid #10B981;"></div> 확정</div>
+            <div class="legend-item"><div style="width:20px;height:10px;border-radius:0 2px 2px 0;background:#FEF9C3;border-left:2px solid #EAB308;"></div> 미확정</div>
+            <div class="legend-item"><div style="width:20px;height:10px;border-radius:0 2px 2px 0;background:#F0F9FF;border-left:2px dashed #7DD3FC;"></div> 예약</div>
+          </div>
         </div>
       </div>
 
@@ -605,103 +616,121 @@ renderProductList(PRODUCTS);
 ═══════════════════════════════════════ */
 var CAL_YEAR = 2026, CAL_MONTH = 6; // 1-based
 
-/* 날짜별 스케줄 데이터 (key: "YYYY-MM-DD") */
+/*
+ * 스케줄 상태
+ *  confirmed   — 확정 (승인 완료)    → 초록 실선 chip
+ *  unconfirmed — 미확정 (임시/심사중) → 노랑 실선 chip
+ *  reserved    — 예약 (기간 블록)     → 점선 chip
+ *
+ * 잔여 용량 (capacity)
+ *  green / amber / orange / red  → 상태 바 색상
+ */
+
+/* 날짜별 스케줄 데이터 */
 var DAY_SCHEDULES = {
-  '2026-06-01': [
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
-  ],
-  '2026-06-02': [
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-    { name:'LG 가전 캠페인',    cls:'chip-blue',   status:'green'  },
-  ],
-  '2026-06-03': [
-    { name:'나이키 6월 캠페인', cls:'chip-amber',  status:'amber'  },
-    { name:'현대 날씨 조건',    cls:'chip-blue',   status:'amber'  },
-  ],
-  '2026-06-04': [
-    { name:'롯데백화점 프로모', cls:'chip-amber',  status:'amber'  },
-  ],
-  '2026-06-05': [
-    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
-  ],
-  '2026-06-08': [
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-09': [
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
-    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
-  ],
-  '2026-06-10': [
-    { name:'현대 날씨 조건',    cls:'chip-amber',  status:'amber'  },
-    { name:'나이키 6월 캠페인', cls:'chip-amber',  status:'amber'  },
-  ],
-  '2026-06-11': [
-    { name:'LG 가전 캠페인',    cls:'chip-amber',  status:'amber'  },
-  ],
-  '2026-06-12': [
-    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-15': [
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-16': [
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'LG 가전 캠페인',    cls:'chip-blue',   status:'green'  },
-  ],
-  '2026-06-17': [
-    { name:'현대 날씨 조건',    cls:'chip-orange', status:'orange' },
-    { name:'나이키 6월 캠페인', cls:'chip-orange', status:'orange' },
-  ],
-  '2026-06-18': [
-    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-19': [
-    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-22': [
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-23': [
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'현대 날씨 조건',    cls:'chip-blue',   status:'green'  },
-    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-24': [
-    { name:'등록불가',          cls:'chip-red',    status:'red'    },
-  ],
-  '2026-06-25': [
-    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
-    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-26': [
-    { name:'롯데백화점 프로모', cls:'chip-green',  status:'green'  },
-    { name:'삼성 여름 광고',    cls:'chip-blue',   status:'green'  },
-  ],
-  '2026-06-29': [
-    { name:'삼성 여름 광고',    cls:'chip-green',  status:'green'  },
-  ],
-  '2026-06-30': [
-    { name:'나이키 6월 캠페인', cls:'chip-green',  status:'green'  },
-    { name:'LG 가전 캠페인',    cls:'chip-green',  status:'green'  },
-  ],
+  '2026-06-01': { capacity:'green',  scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'unconfirmed' },
+  ]},
+  '2026-06-02': { capacity:'green',  scheds:[
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+    { name:'LG 가전 캠페인',    state:'reserved'    },
+  ]},
+  '2026-06-03': { capacity:'amber',  scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'현대 날씨 조건',    state:'unconfirmed' },
+  ]},
+  '2026-06-04': { capacity:'amber',  scheds:[
+    { name:'롯데백화점 프로모', state:'reserved'    },
+  ]},
+  '2026-06-05': { capacity:'green',  scheds:[
+    { name:'LG 가전 캠페인',    state:'confirmed'   },
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'unconfirmed' },
+  ]},
+  '2026-06-08': { capacity:'green',  scheds:[
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+  ]},
+  '2026-06-09': { capacity:'green',  scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'LG 가전 캠페인',    state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'reserved'    },
+  ]},
+  '2026-06-10': { capacity:'amber',  scheds:[
+    { name:'현대 날씨 조건',    state:'unconfirmed' },
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+  ]},
+  '2026-06-11': { capacity:'amber',  scheds:[
+    { name:'LG 가전 캠페인',    state:'unconfirmed' },
+  ]},
+  '2026-06-12': { capacity:'green',  scheds:[
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+  ]},
+  '2026-06-15': { capacity:'green',  scheds:[
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+  ]},
+  '2026-06-16': { capacity:'green',  scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'LG 가전 캠페인',    state:'reserved'    },
+  ]},
+  '2026-06-17': { capacity:'orange', scheds:[
+    { name:'현대 날씨 조건',    state:'unconfirmed' },
+    { name:'나이키 6월 캠페인', state:'unconfirmed' },
+  ]},
+  '2026-06-18': { capacity:'green',  scheds:[
+    { name:'LG 가전 캠페인',    state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+  ]},
+  '2026-06-19': { capacity:'green',  scheds:[
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+  ]},
+  '2026-06-22': { capacity:'green',  scheds:[
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+  ]},
+  '2026-06-23': { capacity:'green',  scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'현대 날씨 조건',    state:'reserved'    },
+    { name:'LG 가전 캠페인',    state:'confirmed'   },
+  ]},
+  '2026-06-24': { capacity:'red',    scheds:[] },
+  '2026-06-25': { capacity:'green',  scheds:[
+    { name:'LG 가전 캠페인',    state:'confirmed'   },
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+  ]},
+  '2026-06-26': { capacity:'green',  scheds:[
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'reserved'    },
+  ]},
+  '2026-06-29': { capacity:'green',  scheds:[
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+  ]},
+  '2026-06-30': { capacity:'green',  scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'LG 가전 캠페인',    state:'unconfirmed' },
+  ]},
+};
+
+/* 상태 → 칩 CSS 클래스 */
+var STATE_CHIP = { confirmed:'chip-confirmed', unconfirmed:'chip-unconfirmed', reserved:'chip-reserved' };
+
+/* 상태 → 뱃지 텍스트/스타일 (오른쪽 패널) */
+var STATE_BADGE = {
+  confirmed:   { cls:'',  bg:'#D1FAE5', color:'#065F46', txt:'확정'  },
+  unconfirmed: { cls:'',  bg:'#FEF9C3', color:'#713F12', txt:'미확정' },
+  reserved:    { cls:'',  bg:'#F0F9FF', color:'#0369A1', txt:'예약'  },
 };
 
 var ALL_SCHEDULES = [
-  { name:'나이키 6월 캠페인',  badge:'badge-green', badgeTxt:'운영 중',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'나이키코리아', dates:[1,2,3,5,9,10,15,16,17,22,23,25,29,30] },
-  { name:'삼성 여름 광고',     badge:'badge-green', badgeTxt:'운영 중',   slot:'가-1', sec:'20초', type:'일반',    advertiser:'삼성전자',     dates:[1,2,5,8,9,12,15,16,18,22,25,26,29] },
-  { name:'현대 날씨 조건',     badge:'badge-blue',  badgeTxt:'운영 예정', slot:'나-4', sec:'40초', type:'조건',    advertiser:'현대자동차',   dates:[3,10,17,23] },
-  { name:'LG 가전 캠페인',     badge:'badge-blue',  badgeTxt:'운영 예정', slot:'가-3', sec:'15초', type:'일반',    advertiser:'LG전자',       dates:[2,5,9,11,16,18,23,25,26,30] },
-  { name:'롯데백화점 프로모',  badge:'badge-green', badgeTxt:'운영 중',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'롯데쇼핑',     dates:[4,8,12,15,19,22,25,26,29,30] },
+  { name:'나이키 6월 캠페인',  state:'confirmed',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'나이키코리아', dates:[1,2,3,5,9,10,15,16,17,22,23,25,29,30] },
+  { name:'삼성 여름 광고',     state:'confirmed',   slot:'가-1', sec:'20초', type:'일반',    advertiser:'삼성전자',     dates:[1,2,5,8,9,12,15,16,18,22,25,26,29] },
+  { name:'현대 날씨 조건',     state:'unconfirmed', slot:'나-4', sec:'40초', type:'조건',    advertiser:'현대자동차',   dates:[3,10,17,23] },
+  { name:'LG 가전 캠페인',     state:'reserved',    slot:'가-3', sec:'15초', type:'일반',    advertiser:'LG전자',       dates:[2,5,9,11,16,18,23,25,26,30] },
+  { name:'롯데백화점 프로모',  state:'confirmed',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'롯데쇼핑',     dates:[4,8,12,15,19,22,25,26,29,30] },
 ];
 
 var selectedDate = null; // "YYYY-MM-DD"
@@ -710,12 +739,7 @@ function dateKey(y, m, d) {
   return y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
 }
 
-/* 해당 날짜의 최대 상태(가장 심각한 status) → status bar 색 */
-function dominantStatus(scheds) {
-  if (!scheds || !scheds.length) return null;
-  var rank = { red:4, orange:3, amber:2, green:1, blue:0 };
-  return scheds.reduce(function(a, b) { return (rank[b.status] || 0) > (rank[a.status] || 0) ? b : a; }).status;
-}
+/* (더 이상 scheds에서 계산하지 않음 — capacity 필드 직접 사용) */
 
 function renderCalendar() {
   var body = document.getElementById('calBody');
@@ -743,8 +767,9 @@ function renderCalendar() {
     var isSun = dow === 0, isSat = dow === 6;
     var isToday = key === todayKey;
     var isSelected = key === selectedDate;
-    var scheds = DAY_SCHEDULES[key] || [];
-    var status = dominantStatus(scheds);
+    var dayData = DAY_SCHEDULES[key] || { capacity: null, scheds: [] };
+    var capacity = dayData.capacity;
+    var scheds   = dayData.scheds || [];
 
     var cls = 'cal-cell';
     if (isSun || isSat) cls += ' weekend';
@@ -753,16 +778,17 @@ function renderCalendar() {
 
     var dateNumCls = 'cal-date-num' + (isSun ? ' sunday' : isSat ? ' saturday' : '');
 
-    /* 상태 바 */
-    var statusBar = status
-      ? '<div class="cal-status-bar status-' + status + '" style="flex:1;height:4px;border-radius:3px;"></div>'
+    /* 잔여 용량 상태 바 */
+    var statusBar = capacity
+      ? '<div class="cal-status-bar status-' + capacity + '" style="flex:1;height:4px;border-radius:3px;"></div>'
       : '<div style="flex:1;"></div>';
 
-    /* 칩 목록 */
+    /* 스케줄 칩 (상태별 색상) */
     var chips = '';
     var show = Math.min(scheds.length, MAX_CHIPS);
     for (var s = 0; s < show; s++) {
-      chips += '<div class="cal-schedule-chip ' + scheds[s].cls + '">' + scheds[s].name + '</div>';
+      var chipCls = STATE_CHIP[scheds[s].state] || 'chip-confirmed';
+      chips += '<div class="cal-schedule-chip ' + chipCls + '">' + scheds[s].name + '</div>';
     }
     if (scheds.length > MAX_CHIPS) {
       chips += '<div class="cal-more-chip">+' + (scheds.length - MAX_CHIPS) + '개 더</div>';
@@ -821,13 +847,15 @@ function renderScheduleList(filterDay) {
   }
 
   document.getElementById('scheduleList').innerHTML = list.map(function(s) {
+    var bd = STATE_BADGE[s.state] || STATE_BADGE['confirmed'];
     var typeHtml = s.type === '조건'
       ? '<span class="tag-condition"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>조건</span>'
       : s.type;
+    var borderStyle = s.state === 'reserved' ? 'border:1px dashed ' + '#7DD3FC' + ';' : 'border:1px solid ' + (s.state==='unconfirmed'?'#EAB308':'#10B981') + ';';
     return '<a href="schedule-product-day.html" class="schedule-card">' +
       '<div class="schedule-card-top">' +
         '<span class="schedule-card-name">' + s.name + '</span>' +
-        '<span class="badge ' + s.badge + '"><span class="badge-dot"></span>' + s.badgeTxt + '</span>' +
+        '<span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;background:' + bd.bg + ';color:' + bd.color + ';' + borderStyle + '">' + bd.txt + '</span>' +
       '</div>' +
       '<div class="schedule-card-meta">' +
         '<span>' + s.slot + '</span><span class="sep">·</span>' +
