@@ -876,43 +876,67 @@
           <span style="font-size:11px;color:#9EA5AD;font-weight:400;">강남역 권역 · 3개 미디어</span>
         </div>
         <div class="media-map-body">
-          <!-- 배경: 간단한 도로망 SVG 지도 -->
+          <!-- 배경: 강남역 권역 지도 -->
           <svg width="100%" height="100%" viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;">
-            <rect width="700" height="380" fill="#E8EDF2"/>
-            <rect x="20"  y="20"  width="200" height="100" rx="4" fill="#D4DAE2"/>
-            <rect x="280" y="20"  width="180" height="100" rx="4" fill="#D4DAE2"/>
-            <rect x="520" y="20"  width="160" height="100" rx="4" fill="#D4DAE2"/>
-            <rect x="20"  y="170" width="200" height="100" rx="4" fill="#D4DAE2"/>
-            <rect x="280" y="170" width="180" height="100" rx="4" fill="#D4DAE2"/>
-            <rect x="520" y="170" width="160" height="100" rx="4" fill="#D4DAE2"/>
-            <rect x="20"  y="300" width="660" height="60" rx="4" fill="#D4DAE2"/>
-            <rect x="240" y="0"   width="30"  height="380" fill="#fff" opacity=".8"/>
-            <rect x="480" y="0"   width="30"  height="380" fill="#fff" opacity=".8"/>
-            <rect x="0"   y="130" width="700" height="30"  fill="#fff" opacity=".8"/>
-            <rect x="0"   y="270" width="700" height="30"  fill="#fff" opacity=".8"/>
-            <line x1="255" y1="0"  x2="255" y2="380" stroke="#E8841A" stroke-width="1.5" stroke-dasharray="8 5" opacity=".5"/>
-            <line x1="495" y1="0"  x2="495" y2="380" stroke="#E8841A" stroke-width="1.5" stroke-dasharray="8 5" opacity=".5"/>
-            <line x1="0"   y1="145" x2="700" y2="145" stroke="#E8841A" stroke-width="1.5" stroke-dasharray="8 5" opacity=".5"/>
-            <rect x="218" y="116" width="74" height="34" rx="4" fill="#3C54A0" opacity=".9"/>
-            <text x="255" y="138" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">강남역</text>
-            <text x="130" y="80" text-anchor="middle" font-size="10" fill="#9EA5AD">강남대로</text>
+            <!-- 배경 -->
+            <rect width="700" height="380" fill="#EEF2F6"/>
+
+            <!-- 도시 블록 -->
+            <rect x="10"  y="10"  width="180" height="110" rx="5" fill="#DFE5EC"/>
+            <rect x="280" y="10"  width="150" height="110" rx="5" fill="#DFE5EC"/>
+            <rect x="470" y="10"  width="130" height="110" rx="5" fill="#DFE5EC"/>
+            <rect x="620" y="10"  width="72"  height="110" rx="5" fill="#DFE5EC"/>
+            <rect x="10"  y="158" width="180" height="100" rx="5" fill="#DFE5EC"/>
+            <rect x="280" y="158" width="150" height="100" rx="5" fill="#DFE5EC"/>
+            <rect x="470" y="158" width="222" height="100" rx="5" fill="#DFE5EC"/>
+            <rect x="10"  y="296" width="680" height="76"  rx="5" fill="#DFE5EC"/>
+
+            <!-- 강남대로 (주간선 남북) -->
+            <rect x="200" y="0" width="72" height="380" fill="#FFFFFF"/>
+            <line x1="236" y1="0" x2="236" y2="380" stroke="#F5A623" stroke-width="1.5" stroke-dasharray="10 7" opacity=".5"/>
+
+            <!-- 테헤란로 (주간선 동서) -->
+            <rect x="0" y="124" width="700" height="26" fill="#FFFFFF"/>
+            <line x1="0" y1="137" x2="700" y2="137" stroke="#F5A623" stroke-width="1.5" stroke-dasharray="10 7" opacity=".5"/>
+
+            <!-- 소로 (동서) -->
+            <rect x="0" y="258" width="700" height="10" fill="#FFFFFF" opacity=".75"/>
+            <!-- 소로 (남북) -->
+            <rect x="448" y="0" width="10" height="380" fill="#FFFFFF" opacity=".7"/>
+
+            <!-- 지하철 2호선 (동서, 희미하게) -->
+            <line x1="0" y1="137" x2="700" y2="137" stroke="#007AC5" stroke-width="5" opacity=".12"/>
+            <!-- 신분당선 (남북, 희미하게) -->
+            <line x1="236" y1="0" x2="236" y2="380" stroke="#D31145" stroke-width="4" opacity=".1"/>
+
+            <!-- 도로 라벨 -->
+            <text transform="rotate(-90,236,290)" x="236" y="290" text-anchor="middle" font-size="12" fill="#9EA5AD" font-family="sans-serif">강남대로</text>
+            <text x="560" y="120" text-anchor="middle" font-size="11" fill="#9EA5AD" font-family="sans-serif">테헤란로</text>
+
+            <!-- 강남역 마커 -->
+            <rect x="198" y="116" width="76" height="28" rx="5" fill="#3C54A0"/>
+            <text x="236" y="134" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">강남역</text>
+
+            <!-- 나침반 -->
+            <circle cx="672" cy="28" r="18" fill="#fff" opacity=".7" stroke="#CED2D6" stroke-width="1.5"/>
+            <text x="672" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="#3C54A0" font-family="sans-serif">N</text>
           </svg>
-          <!-- 핀 1: 강남역 1번출구 A -->
-          <div class="map-pin" style="left:33.7%;top:29.5%;" title="강남역 1번출구 A">
+          <!-- 핀 1: 강남역 1번출구 A (강남대로 서쪽, 테헤란로 북쪽) -->
+          <div class="map-pin" style="left:28%;top:31%;" title="강남역 1번출구 A">
             <div class="map-pin-label">1번출구 A</div>
             <div class="map-pin-dot online" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">A</span>
             </div>
           </div>
-          <!-- 핀 2: 강남역 1번출구 B -->
-          <div class="map-pin" style="left:39.1%;top:29.5%;" title="강남역 1번출구 B">
+          <!-- 핀 2: 강남역 1번출구 B (강남대로 동쪽, 테헤란로 북쪽) -->
+          <div class="map-pin" style="left:36%;top:31%;" title="강남역 1번출구 B">
             <div class="map-pin-label">1번출구 B</div>
             <div class="map-pin-dot online" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">B</span>
             </div>
           </div>
-          <!-- 핀 3: 강남역 2번출구 (점검 중) -->
-          <div class="map-pin" style="left:71.4%;top:29.5%;" title="강남역 2번출구">
+          <!-- 핀 3: 강남역 2번출구 (강남대로 동쪽, 테헤란로 남쪽, 점검 중) -->
+          <div class="map-pin" style="left:37%;top:45%;" title="강남역 2번출구">
             <div class="map-pin-label">2번출구</div>
             <div class="map-pin-dot offline" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">2</span>
