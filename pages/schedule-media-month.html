@@ -3,123 +3,246 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 기준 월간 탬플릿 — D'ooh CMS</title>
+  <title>미디어 편성표 – 월간 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    .seg-tab {
-      display: flex; border: 1px solid #CED2D6; border-radius: 6px;
-      overflow: hidden; background: #fff;
+    /* ── 2-column layout ── */
+    .sched-media-layout {
+      display: grid;
+      grid-template-columns: 60fr 40fr;
+      gap: 20px;
+      align-items: flex-start;
     }
-    .seg-tab button {
-      height: 36px; padding: 0 20px; border: none; background: transparent;
-      font-size: 14px; font-weight: 500; color: #596066; cursor: pointer; transition: all 0.15s;
-    }
-    .seg-tab button + button { border-left: 1px solid #CED2D6; }
-    .seg-tab button.active { background: #58C65D; color: #fff; font-weight: 600; }
 
-    .view-btn-group {
-      display: flex; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
-    }
-    .view-btn-group button {
-      height: 36px; padding: 0 16px; border: none; background: #fff;
-      font-size: 13px; font-weight: 500; color: #596066; cursor: pointer; transition: all 0.15s;
-    }
-    .view-btn-group button + button { border-left: 1px solid #CED2D6; }
-    .view-btn-group button.active { background: #F6F7F9; color: #24292E; font-weight: 600; }
-
-    .schedule-controls {
-      display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    /* ── Toolbar ── */
+    .sched-toolbar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 14px; flex-wrap: wrap;
     }
     .select-dropdown {
-      height: 36px; padding: 0 12px; border: 1px solid #CED2D6; border-radius: 6px;
-      background: #fff; font-size: 14px; color: #24292E;
-      font-family: inherit; cursor: pointer; outline: none; min-width: 220px;
+      height: 34px; padding: 0 12px;
+      border: 1px solid #CED2D6; border-radius: 6px;
+      background: #fff; font-size: 13px; color: #24292E;
+      font-family: inherit; cursor: pointer; outline: none;
     }
     .select-dropdown:focus { border-color: #58C65D; }
 
-    .cal-nav { display: flex; align-items: center; gap: 12px; margin-left: auto; }
-    .cal-nav-btn {
-      width: 32px; height: 32px; border: 1px solid #CED2D6; border-radius: 6px;
+    .date-nav {
+      display: flex; align-items: center; gap: 8px; margin-left: auto;
+    }
+    .date-nav-btn {
+      width: 30px; height: 30px;
+      border: 1px solid #CED2D6; border-radius: 6px;
       background: #fff; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; color: #596066; transition: border-color 0.15s;
+      font-size: 16px; color: #596066; transition: border-color 0.15s;
     }
-    .cal-nav-btn:hover { border-color: #58C65D; color: #58C65D; }
-    .cal-month-label { font-size: 16px; font-weight: 700; color: #24292E; min-width: 120px; text-align: center; }
+    .date-nav-btn:hover { border-color: #58C65D; color: #58C65D; }
+    .date-label {
+      font-size: 14px; font-weight: 700; color: #24292E;
+      min-width: 100px; text-align: center;
+    }
+    .view-btn {
+      height: 34px; padding: 0 14px;
+      border: 1px solid #CED2D6; border-radius: 6px;
+      background: #fff; font-size: 13px; font-weight: 500; color: #596066;
+      cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .view-btn:hover { border-color: #58C65D; color: #58C65D; }
 
-    /* 달력 */
-    .calendar-wrap { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
-    .cal-dow-row {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      background: #F6F7F9; border-bottom: 1px solid #E5E7EA;
+    /* ── Calendar ── */
+    .cal-panel {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
     }
-    .cal-dow { padding: 10px 0; text-align: center; font-size: 13px; font-weight: 600; color: #596066; }
+
+    .cal-header {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9;
+    }
+    .cal-dow {
+      padding: 8px 0; text-align: center;
+      font-size: 12px; font-weight: 600; color: #596066;
+    }
     .cal-dow:first-child { color: #E24B4B; }
     .cal-dow:last-child  { color: #2D84ED; }
 
-    .cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      border-left: 1px solid #E5E7EA;
+    }
+    .cal-cell-wrap { position: relative; }
     .cal-cell {
-      min-height: 110px; border-right: 1px solid #E5E7EA; border-bottom: 1px solid #E5E7EA;
-      padding: 8px; background: #fff; position: relative; cursor: pointer;
+      min-height: 110px;
+      border-right: 1px solid #E5E7EA;
+      border-bottom: 1px solid #E5E7EA;
+      padding: 6px 8px 6px;
+      position: relative; vertical-align: top;
       transition: background 0.1s;
     }
-    .cal-cell:hover { background: #F8FFF8; }
-    .cal-cell:nth-child(7n) { border-right: none; }
-    .cal-cell.other-month { background: #FAFAFA; cursor: default; }
-    .cal-cell.other-month:hover { background: #FAFAFA; }
-
-    .cal-date {
-      font-size: 13px; font-weight: 600; color: #24292E;
-      width: 24px; height: 24px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; margin-bottom: 5px;
-    }
-    .cal-cell.today .cal-date { background: #58C65D; color: #fff; }
+    .cal-cell.clickable { cursor: pointer; }
+    .cal-cell.clickable:hover { background: #F6F7F9; }
+    .cal-cell.other-month { background: #FAFAFA; }
     .cal-cell.other-month .cal-date { color: #CED2D6; }
+    .cal-cell.today .cal-date {
+      background: #58C65D; color: #fff !important;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .cal-date {
+      font-size: 12px; font-weight: 600; color: #24292E;
+      display: inline-block; margin-bottom: 5px;
+      line-height: 22px;
+    }
+    .cal-cell-wrap:nth-child(7n+1) .cal-date { color: #E24B4B; }
+    .cal-cell-wrap:nth-child(7n)   .cal-date { color: #2D84ED; }
+    .cal-cell.today .cal-date { color: #fff !important; }
 
-    /* 스케줄 카운트 뱃지 */
-    .sched-count {
-      display: flex; gap: 4px; margin-bottom: 5px; flex-wrap: wrap;
+    /* Status dot row */
+    .cal-status-row {
+      display: flex; align-items: center; gap: 5px; margin-bottom: 6px;
     }
-    .sched-badge {
-      font-size: 10px; font-weight: 600; padding: 1px 6px;
-      border-radius: 8px; white-space: nowrap;
+    .cal-status-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
     }
-    .sched-badge.confirmed { background: #E8F8E9; color: #2E9E34; }
-    .sched-badge.draft     { background: #F6F7F9; color: #596066; border: 1px dashed #CED2D6; }
+    .cal-status-label { font-size: 10px; color: #596066; }
 
-    /* 잔여시간 바 */
-    .remain-bar-wrap {
-      margin-top: 4px;
-      background: #F6F7F9; border-radius: 3px; overflow: hidden; height: 5px;
+    /* Dual progress bars */
+    .cal-bars { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+    .cal-bar-row { display: flex; align-items: center; gap: 4px; }
+    .cal-bar-label { font-size: 9px; color: #9EA5AD; width: 38px; flex-shrink: 0; }
+    .cal-bar-track {
+      flex: 1; height: 5px; background: #F0F1F3;
+      border-radius: 3px; overflow: hidden;
     }
-    .remain-bar {
-      height: 100%; border-radius: 3px; transition: width 0.3s;
-    }
-    .remain-bar.green  { background: #58C65D; }
-    .remain-bar.yellow { background: #F5A623; }
-    .remain-bar.red    { background: #E24B4B; }
+    .cal-bar-fill { height: 100%; border-radius: 3px; }
+    .cal-bar-val { font-size: 9px; color: #9EA5AD; width: 24px; text-align: right; flex-shrink: 0; }
 
-    .remain-label { font-size: 10px; color: #9EA5AD; margin-top: 3px; }
-
-    /* 대체 콘텐츠 아이콘 */
-    .alt-icon {
-      position: absolute; bottom: 6px; right: 6px;
-      width: 16px; height: 16px; border-radius: 3px;
-      background: #F6F7F9; border: 1px solid #E5E7EA;
-      display: flex; align-items: center; justify-content: center;
+    /* Tooltip */
+    .cal-tooltip {
+      display: none;
+      position: absolute;
+      top: 0; left: calc(100% + 6px);
+      z-index: 200;
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.14);
+      padding: 12px 14px;
+      min-width: 180px;
+      max-width: 240px;
+      pointer-events: none;
     }
+    .cal-cell-wrap.tip-left .cal-tooltip {
+      left: auto; right: calc(100% + 6px);
+    }
+    .cal-cell-wrap:hover .cal-tooltip { display: block; }
+    .cal-tooltip-date {
+      font-size: 12px; font-weight: 700; color: #24292E;
+      margin-bottom: 8px; padding-bottom: 6px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .cal-tooltip-row {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: #596066; margin-bottom: 4px; gap: 12px;
+    }
+    .cal-tooltip-row span:first-child { color: #9EA5AD; white-space: nowrap; }
+    .cal-tooltip-row span:last-child { font-weight: 600; color: #24292E; white-space: nowrap; }
+
+    /* Legend */
+    .legend {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      padding: 10px 14px; border-top: 1px solid #E5E7EA;
+      background: #FAFBFC;
+    }
+    .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #596066; }
+    .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Right panel ── */
+    .schedule-panel {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .schedule-panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #E5E7EA;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .schedule-panel-title {
+      font-size: 14px; font-weight: 700; color: #24292E;
+    }
+    .schedule-panel-count {
+      font-size: 12px; color: #9EA5AD; font-weight: 500;
+    }
+    .schedule-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+
+    .sched-card {
+      border: 1px solid #E5E7EA; border-radius: 8px;
+      padding: 12px 14px; cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .sched-card:hover {
+      border-color: #58C65D;
+      box-shadow: 0 2px 8px rgba(88,198,93,.12);
+    }
+    .sched-card-top {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;
+    }
+    .product-badge {
+      font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px;
+      flex-shrink: 0; white-space: nowrap;
+    }
+    .prod-a { background: #EEF2FF; color: #3730A3; }
+    .prod-b { background: #FFF7ED; color: #9A3412; }
+    .sched-card-name {
+      font-size: 13px; font-weight: 600; color: #24292E;
+      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .status-badge {
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px;
+      flex-shrink: 0; display: flex; align-items: center; gap: 4px;
+      white-space: nowrap;
+    }
+    .status-badge.running  { background: #ECFDF5; color: #065F46; }
+    .status-badge.upcoming { background: #EFF6FF; color: #1D4ED8; }
+    .status-badge .s-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .status-badge.running  .s-dot { background: #10B981; }
+    .status-badge.upcoming .s-dot { background: #3B82F6; }
+
+    .sched-card-meta {
+      font-size: 11px; color: #9EA5AD;
+      display: flex; align-items: center; gap: 4px;
+      margin-bottom: 4px;
+    }
+    .sched-card-meta .sep { color: #CED2D6; }
+    .sched-card-advertiser { font-size: 11px; color: #596066; font-weight: 500; }
+
+    /* ── Breadcrumb ── */
+    .bcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: #9EA5AD; margin-bottom: 16px;
+    }
+    .bcrumb a { color: #596066; text-decoration: none; }
+    .bcrumb a:hover { color: #58C65D; }
+    .bcrumb-sep { color: #CED2D6; }
+    .bcrumb-current { color: #24292E; font-weight: 600; }
   </style>
 </head>
 <body>
 
-<!-- ① GNB Sidebar -->
+<!-- GNB -->
 <nav class="gnb">
   <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="#58C65D"/>
-      <text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
-    </svg>
+    <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
   </div>
   <ul class="gnb-nav">
     <li><a href="dashboard.html">
@@ -142,7 +265,7 @@
       <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
       스케줄
     </a></li>
-    <li><a href="schedule-main.html" class="active">
+    <li><a href="schedule-media-month.html" class="active">
       <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       편성표
     </a></li>
@@ -154,98 +277,69 @@
   </ul>
 </nav>
 
-<!-- ② Topbar -->
-<header class="topbar">
-  <div class="topbar-search">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-    <input type="text" placeholder="전체 검색">
-  </div>
-  <div class="topbar-user">
-    <div class="topbar-icon-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <span class="dot-badge"></span>
+<!-- Main -->
+<div class="main-wrap">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="전체 검색">
     </div>
-    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
-      <div class="topbar-avatar">구</div>
-      <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
-        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+    <div class="topbar-user">
+      <div class="topbar-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span class="dot-badge"></span>
       </div>
-      <span class="topbar-caret">▾</span>
-      <div class="profile-dropdown">
-        <a href="#">내 정보</a>
-        <a href="#" class="logout">로그아웃</a>
+      <div class="topbar-profile">
+        <div class="topbar-avatar">구</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name">구연경</div>
+          <div class="topbar-profile-org">엠앤엠네트웍스</div>
+        </div>
       </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- ③ Breadcrumb Bar -->
-<div class="bcrumb">
-  <a href="schedule-main.html">편성표</a>
-  <span class="bcrumb-sep">›</span>
-  <span>미디어 기준 · 월간 탬플릿</span>
-</div>
+  <!-- Content -->
+  <div class="content">
+    <!-- Breadcrumb -->
+    <div class="bcrumb">
+      <span>편성표</span>
+      <span class="bcrumb-sep">›</span>
+      <a href="schedule-media-month.html">미디어 편성표</a>
+      <span class="bcrumb-sep">›</span>
+      <span class="bcrumb-current">월간</span>
+    </div>
 
-<!-- ④ Content -->
-<main class="content">
-  <div class="content-inner">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">월간 탬플릿</span>
+    <!-- Page title -->
+    <div class="page-header" style="margin-bottom:18px;">
+      <div>
+        <h1 class="page-title">미디어 편성표</h1>
+        <p class="page-desc">미디어별 월간 편성 현황을 확인합니다.</p>
       </div>
-      <div class="card-body">
+    </div>
 
-        <!-- 컨트롤 바 -->
-        <div class="schedule-controls">
-          <div class="seg-tab">
-            <button class="active">미디어 기준</button>
-            <button onclick="location.href='schedule-main.html'">프로덕트 기준</button>
-          </div>
+    <!-- 2-column layout -->
+    <div class="sched-media-layout">
 
-          <select class="select-dropdown">
-            <option selected>미디어 A - 강남역 1번 출구</option>
-            <option>미디어 B - 강남역 2번 출구</option>
-            <option>미디어 C - 홍대입구역</option>
-            <option>미디어 D - 신촌역 1번 출구</option>
-            <option>미디어 E - 여의도역</option>
+      <!-- LEFT: Calendar -->
+      <div>
+        <div class="sched-toolbar">
+          <select class="select-dropdown" id="mediaSelect">
+            <option value="a" selected>강남역 1번출구 A</option>
+            <option value="b">강남역 1번출구 B</option>
+            <option value="c">강남역 2번출구</option>
           </select>
-
-          <div class="view-btn-group">
-            <button class="active">월간 탬플릿</button>
-            <button onclick="location.href='schedule-media-day.html'">일 편성표</button>
+          <div class="date-nav">
+            <button class="date-nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+            <span class="date-label" id="monthLabel">2026년 6월</span>
+            <button class="date-nav-btn" onclick="changeMonth(1)">&#8594;</button>
           </div>
-
-          <div class="cal-nav">
-            <button class="cal-nav-btn">&#8249;</button>
-            <span class="cal-month-label">2025년 10월</span>
-            <button class="cal-nav-btn">&#8250;</button>
-          </div>
+          <a href="schedule-media-day.html" class="view-btn">일간 뷰</a>
         </div>
 
-        <!-- 달력 범례 -->
-        <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px;font-size:12px;color:#596066;">
-          <span style="display:flex;align-items:center;gap:5px;">
-            <span style="width:10px;height:10px;border-radius:2px;background:#58C65D;display:inline-block;"></span>확정 스케줄
-          </span>
-          <span style="display:flex;align-items:center;gap:5px;">
-            <span style="width:10px;height:10px;border-radius:2px;background:#F6F7F9;border:1px dashed #CED2D6;display:inline-block;"></span>초안
-          </span>
-          <span style="display:flex;align-items:center;gap:5px;">
-            잔여시간:
-            <span style="width:10px;height:5px;border-radius:2px;background:#58C65D;display:inline-block;"></span>50%↑
-            <span style="width:10px;height:5px;border-radius:2px;background:#F5A623;display:inline-block;"></span>20~50%
-            <span style="width:10px;height:5px;border-radius:2px;background:#E24B4B;display:inline-block;"></span>20%↓
-          </span>
-          <span style="display:flex;align-items:center;gap:5px;margin-left:auto;">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" fill="#F6F7F9" stroke="#CED2D6" stroke-width="1"/><path d="M4 4l6 6M10 4l-6 6" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-            대체 콘텐츠 발생
-          </span>
-        </div>
-
-        <!-- 달력 본체 -->
-        <div class="calendar-wrap">
-          <div class="cal-dow-row">
+        <div class="cal-panel">
+          <div class="cal-header">
             <div class="cal-dow">일</div>
             <div class="cal-dow">월</div>
             <div class="cal-dow">화</div>
@@ -254,393 +348,220 @@
             <div class="cal-dow">금</div>
             <div class="cal-dow">토</div>
           </div>
-          <div class="cal-body">
-
-            <!-- 9/28(일)~9/30(화) 이전달 -->
-            <div class="cal-cell other-month"><div class="cal-date">28</div></div>
-            <div class="cal-cell other-month"><div class="cal-date">29</div></div>
-            <div class="cal-cell other-month"><div class="cal-date">30</div></div>
-
-            <!-- 10/1(수) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">1</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:72%"></div></div>
-              <div class="remain-label">잔여 72%</div>
-            </div></a>
-
-            <!-- 10/2(목) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">2</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 5</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:35%"></div></div>
-              <div class="remain-label">잔여 35%</div>
-              <div class="alt-icon">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-              </div>
-            </div></a>
-
-            <!-- 10/3(금) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">3</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-                <span class="sched-badge draft">초안 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:55%"></div></div>
-              <div class="remain-label">잔여 55%</div>
-            </div></a>
-
-            <!-- 10/4(토) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">4</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:80%"></div></div>
-              <div class="remain-label">잔여 80%</div>
-            </div></a>
-
-            <!-- 10/5(일) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">5</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 6</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:28%"></div></div>
-              <div class="remain-label">잔여 28%</div>
-            </div></a>
-
-            <!-- 10/6(월) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">6</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:60%"></div></div>
-              <div class="remain-label">잔여 60%</div>
-            </div></a>
-
-            <!-- 10/7(화) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">7</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 7</span>
-                <span class="sched-badge draft">초안 3</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar red" style="width:12%"></div></div>
-              <div class="remain-label">잔여 12%</div>
-              <div class="alt-icon">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-              </div>
-            </div></a>
-
-            <!-- 10/8(수) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">8</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:65%"></div></div>
-              <div class="remain-label">잔여 65%</div>
-            </div></a>
-
-            <!-- 10/9(목) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">9</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 5</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:40%"></div></div>
-              <div class="remain-label">잔여 40%</div>
-            </div></a>
-
-            <!-- 10/10(금) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">10</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:75%"></div></div>
-              <div class="remain-label">잔여 75%</div>
-            </div></a>
-
-            <!-- 10/11(토) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">11</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:52%"></div></div>
-              <div class="remain-label">잔여 52%</div>
-            </div></a>
-
-            <!-- 10/12(일) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">12</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-                <span class="sched-badge draft">초안 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:33%"></div></div>
-              <div class="remain-label">잔여 33%</div>
-            </div></a>
-
-            <!-- 10/13(월) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">13</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 6</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar red" style="width:15%"></div></div>
-              <div class="remain-label">잔여 15%</div>
-              <div class="alt-icon">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-              </div>
-            </div></a>
-
-            <!-- 10/14(화) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">14</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:58%"></div></div>
-              <div class="remain-label">잔여 58%</div>
-            </div></a>
-
-            <!-- 10/15(수) - 오늘 강조 -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell today">
-              <div class="cal-date">15</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:81%"></div></div>
-              <div class="remain-label">잔여 81%</div>
-            </div></a>
-
-            <!-- 10/16(목) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">16</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 5</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:44%"></div></div>
-              <div class="remain-label">잔여 44%</div>
-            </div></a>
-
-            <!-- 10/17(금) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">17</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-                <span class="sched-badge draft">초안 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:68%"></div></div>
-              <div class="remain-label">잔여 68%</div>
-            </div></a>
-
-            <!-- 10/18(토) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">18</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:88%"></div></div>
-              <div class="remain-label">잔여 88%</div>
-            </div></a>
-
-            <!-- 10/19(일) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">19</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 8</span>
-                <span class="sched-badge draft">초안 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar red" style="width:8%"></div></div>
-              <div class="remain-label">잔여 8%</div>
-              <div class="alt-icon">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-              </div>
-            </div></a>
-
-            <!-- 10/20(월) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">20</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:48%"></div></div>
-              <div class="remain-label">잔여 48%</div>
-            </div></a>
-
-            <!-- 10/21(화) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">21</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:70%"></div></div>
-              <div class="remain-label">잔여 70%</div>
-            </div></a>
-
-            <!-- 10/22(수) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">22</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 5</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:38%"></div></div>
-              <div class="remain-label">잔여 38%</div>
-            </div></a>
-
-            <!-- 10/23(목) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">23</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:77%"></div></div>
-              <div class="remain-label">잔여 77%</div>
-            </div></a>
-
-            <!-- 10/24(금) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">24</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 6</span>
-                <span class="sched-badge draft">초안 3</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar red" style="width:18%"></div></div>
-              <div class="remain-label">잔여 18%</div>
-            </div></a>
-
-            <!-- 10/25(토) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">25</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:62%"></div></div>
-              <div class="remain-label">잔여 62%</div>
-            </div></a>
-
-            <!-- 10/26(일) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">26</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:42%"></div></div>
-              <div class="remain-label">잔여 42%</div>
-            </div></a>
-
-            <!-- 10/27(월) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">27</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:85%"></div></div>
-              <div class="remain-label">잔여 85%</div>
-            </div></a>
-
-            <!-- 10/28(화) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">28</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 5</span>
-                <span class="sched-badge draft">초안 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar yellow" style="width:30%"></div></div>
-              <div class="remain-label">잔여 30%</div>
-            </div></a>
-
-            <!-- 10/29(수) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">29</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 3</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:55%"></div></div>
-              <div class="remain-label">잔여 55%</div>
-            </div></a>
-
-            <!-- 10/30(목) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">30</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 4</span>
-                <span class="sched-badge draft">초안 1</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:50%"></div></div>
-              <div class="remain-label">잔여 50%</div>
-              <div class="alt-icon">
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/></svg>
-              </div>
-            </div></a>
-
-            <!-- 10/31(금) -->
-            <a href="schedule-media-day.html" style="text-decoration:none;color:inherit;">
-            <div class="cal-cell">
-              <div class="cal-date">31</div>
-              <div class="sched-count">
-                <span class="sched-badge confirmed">확정 2</span>
-              </div>
-              <div class="remain-bar-wrap"><div class="remain-bar green" style="width:73%"></div></div>
-              <div class="remain-label">잔여 73%</div>
-            </div></a>
-
-            <!-- 다음달 채우기 (11/1 토) -->
-            <div class="cal-cell other-month"><div class="cal-date">1</div></div>
-
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="legend">
+            <div class="leg"><span class="leg-dot" style="background:#10B981"></span>여유 (&gt;50%)</div>
+            <div class="leg"><span class="leg-dot" style="background:#F59E0B"></span>위험 (20–50%)</div>
+            <div class="leg"><span class="leg-dot" style="background:#F97316"></span>매우위험 (&lt;20%)</div>
+            <div class="leg"><span class="leg-dot" style="background:#EF4444"></span>등록불가 (0%)</div>
           </div>
         </div>
+      </div>
 
+      <!-- RIGHT: Schedule list -->
+      <div class="schedule-panel">
+        <div class="schedule-panel-header">
+          <span class="schedule-panel-title">운영 중 / 운영 예정</span>
+          <span class="schedule-panel-count">5개 스케줄</span>
+        </div>
+        <div class="schedule-list" id="scheduleList"></div>
       </div>
     </div>
   </div>
-</main>
+</div>
+
+<script>
+  /* ── Calendar data – June 2026 (max sec=600, max slot=20) ── */
+  const calData = {
+    '2026-06-01': { sec: 540, slot: 18 },
+    '2026-06-02': { sec: 480, slot: 16 },
+    '2026-06-03': { sec: 390, slot: 13 },
+    '2026-06-04': { sec: 600, slot: 20 },
+    '2026-06-05': { sec: 300, slot: 10 },
+    '2026-06-06': { sec: 240, slot: 9  },
+    '2026-06-07': { sec: 120, slot: 4  },
+    '2026-06-08': { sec: 60,  slot: 2  },
+    '2026-06-09': { sec: 450, slot: 15 },
+    '2026-06-10': { sec: 500, slot: 17 },
+    '2026-06-11': { sec: 90,  slot: 3  },
+    '2026-06-12': { sec: 0,   slot: 0  },
+    '2026-06-13': { sec: 30,  slot: 1  },
+    '2026-06-14': { sec: 360, slot: 12 },
+    '2026-06-15': { sec: 420, slot: 14 },
+    '2026-06-16': { sec: 570, slot: 19 },
+    '2026-06-17': { sec: 150, slot: 5  },
+    '2026-06-18': { sec: 200, slot: 7  },
+    '2026-06-19': { sec: 0,   slot: 0  },
+    '2026-06-20': { sec: 50,  slot: 2  },
+    '2026-06-21': { sec: 310, slot: 11 },
+    '2026-06-22': { sec: 430, slot: 14 },
+    '2026-06-23': { sec: 510, slot: 18 },
+    '2026-06-24': { sec: 80,  slot: 3  },
+    '2026-06-25': { sec: 260, slot: 9  },
+    '2026-06-26': { sec: 0,   slot: 0  },
+    '2026-06-27': { sec: 40,  slot: 1  },
+    '2026-06-28': { sec: 580, slot: 20 },
+    '2026-06-29': { sec: 350, slot: 12 },
+    '2026-06-30': { sec: 190, slot: 6  },
+  };
+
+  const MAX_SEC  = 600;
+  const MAX_SLOT = 20;
+
+  function getStatusColor(sec, slot) {
+    const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
+    if (minPct === 0)  return '#EF4444';
+    if (minPct < 20)   return '#F97316';
+    if (minPct < 50)   return '#F59E0B';
+    return '#10B981';
+  }
+
+  function getStatusLabel(sec, slot) {
+    const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
+    if (minPct === 0)  return '등록불가';
+    if (minPct < 20)   return '매우위험';
+    if (minPct < 50)   return '위험';
+    return '여유';
+  }
+
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function fmtKey(y, m, d) { return y + '-' + pad2(m) + '-' + pad2(d); }
+
+  let currentYear  = 2026;
+  let currentMonth = 6;
+
+  function renderCalendar(year, month) {
+    document.getElementById('monthLabel').textContent = year + '년 ' + month + '월';
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    const firstDay    = new Date(year, month - 1, 1).getDay();   // 0=Sun
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInPrev  = new Date(year, month - 1, 0).getDate();
+
+    const today = new Date();
+    const todayStr = fmtKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+    const cells = [];
+    for (let i = firstDay - 1; i >= 0; i--) {
+      cells.push({ day: daysInPrev - i, thisMonth: false, m: month - 1 || 12, y: month === 1 ? year - 1 : year });
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      cells.push({ day: d, thisMonth: true, m: month, y: year });
+    }
+    const rem = cells.length % 7 === 0 ? 0 : 7 - (cells.length % 7);
+    for (let i = 1; i <= rem; i++) {
+      cells.push({ day: i, thisMonth: false, m: month === 12 ? 1 : month + 1, y: month === 12 ? year + 1 : year });
+    }
+
+    cells.forEach(function(c, idx) {
+      const colIdx  = idx % 7;
+      const dateStr = c.thisMonth ? fmtKey(c.y, c.m, c.day) : null;
+      const data    = dateStr ? (calData[dateStr] || null) : null;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'cal-cell-wrap';
+      if (colIdx >= 5) wrap.classList.add('tip-left');
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      if (!c.thisMonth) cell.classList.add('other-month');
+      if (dateStr === todayStr) cell.classList.add('today');
+      if (c.thisMonth) {
+        cell.classList.add('clickable');
+        cell.onclick = function() { window.location.href = 'schedule-media-day.html'; };
+      }
+
+      const dateEl = document.createElement('span');
+      dateEl.className = 'cal-date';
+      dateEl.textContent = c.day;
+      cell.appendChild(dateEl);
+
+      if (data && c.thisMonth) {
+        const color   = getStatusColor(data.sec, data.slot);
+        const label   = getStatusLabel(data.sec, data.slot);
+        const secPct  = Math.round((data.sec  / MAX_SEC)  * 100);
+        const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
+
+        // Status row
+        const sr = document.createElement('div');
+        sr.className = 'cal-status-row';
+        sr.innerHTML =
+          '<span class="cal-status-dot" style="background:' + color + '"></span>' +
+          '<span class="cal-status-label">' + label + '</span>';
+        cell.appendChild(sr);
+
+        // Dual bars
+        const bars = document.createElement('div');
+        bars.className = 'cal-bars';
+        bars.innerHTML =
+          '<div class="cal-bar-row">' +
+            '<span class="cal-bar-label">사이클</span>' +
+            '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
+            '<span class="cal-bar-val">' + data.sec + 's</span>' +
+          '</div>' +
+          '<div class="cal-bar-row">' +
+            '<span class="cal-bar-label">슬롯</span>' +
+            '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
+            '<span class="cal-bar-val">' + data.slot + '</span>' +
+          '</div>';
+        cell.appendChild(bars);
+
+        // Tooltip
+        const tip = document.createElement('div');
+        tip.className = 'cal-tooltip';
+        tip.innerHTML =
+          '<div class="cal-tooltip-date">' + year + '년 ' + month + '월 ' + c.day + '일</div>' +
+          '<div class="cal-tooltip-row"><span>잔여 사이클 시간</span><span>' + data.sec + '초 / ' + MAX_SEC + '초</span></div>' +
+          '<div class="cal-tooltip-row"><span>잔여 슬롯 수</span><span>' + data.slot + ' / ' + MAX_SLOT + '</span></div>' +
+          '<div class="cal-tooltip-row"><span>상태</span><span style="color:' + color + ';font-weight:700">' + label + '</span></div>';
+
+        wrap.appendChild(cell);
+        wrap.appendChild(tip);
+      } else {
+        wrap.appendChild(cell);
+      }
+
+      grid.appendChild(wrap);
+    });
+  }
+
+  function changeMonth(delta) {
+    currentMonth += delta;
+    if (currentMonth > 12) { currentMonth = 1;  currentYear++; }
+    if (currentMonth < 1)  { currentMonth = 12; currentYear--; }
+    renderCalendar(currentYear, currentMonth);
+  }
+
+  renderCalendar(currentYear, currentMonth);
+
+  /* ── Schedule list ── */
+  var schedules = [
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',  code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아', status: 'running',  statusLabel: '운영 중'  },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '삼성 여름 광고',      code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',   status: 'running',  statusLabel: '운영 중'  },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',      code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차', status: 'upcoming', statusLabel: '운영 예정' },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',      code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',    status: 'upcoming', statusLabel: '운영 예정' },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',    code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',   status: 'running',  statusLabel: '운영 중'  },
+  ];
+
+  var listEl = document.getElementById('scheduleList');
+  schedules.forEach(function(s) {
+    var card = document.createElement('div');
+    card.className = 'sched-card';
+    card.innerHTML =
+      '<div class="sched-card-top">' +
+        '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
+        '<span class="sched-card-name">' + s.name + '</span>' +
+        '<span class="status-badge ' + s.status + '"><span class="s-dot"></span>' + s.statusLabel + '</span>' +
+      '</div>' +
+      '<div class="sched-card-meta">' +
+        '<span>' + s.code + '</span><span class="sep">·</span>' +
+        '<span>' + s.duration + '</span><span class="sep">·</span>' +
+        '<span>' + s.type + '</span>' +
+      '</div>' +
+      '<div class="sched-card-advertiser">' + s.advertiser + '</div>';
+    listEl.appendChild(card);
+  });
+</script>
 </body>
 </html>
