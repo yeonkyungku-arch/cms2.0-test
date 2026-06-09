@@ -76,36 +76,56 @@
       display: grid; grid-template-columns: repeat(7, 1fr);
       border-left: 1px solid #E5E7EA;
     }
-    .cal-cell-wrap { position: relative; }
+
+    /* 셀 전체 */
     .cal-cell {
-      min-height: 110px;
+      min-height: 100px;
       border-right: 1px solid #E5E7EA;
       border-bottom: 1px solid #E5E7EA;
-      padding: 6px 8px 6px;
-      position: relative; vertical-align: top;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .cal-cell.other-month { opacity: .4; pointer-events: none; }
+    .cal-cell.selected { background: #F0FDF4; }
+
+    /* 날짜 헤더 영역 */
+    .cal-cell-head {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 6px 3px;
+    }
+
+    /* 날짜 숫자 — 클릭 시 일간 뷰 */
+    .cal-date-link {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      font-size: 12px; font-weight: 600; color: #24292E;
+      text-decoration: none;
+      flex-shrink: 0;
       transition: background 0.1s;
     }
-    .cal-cell.clickable { cursor: pointer; }
-    .cal-cell.clickable:hover { background: #F6F7F9; }
-    .cal-cell.other-month { background: #FAFAFA; }
-    .cal-cell.other-month .cal-date { color: #CED2D6; }
-    .cal-cell.today .cal-date {
-      background: #58C65D; color: #fff !important;
-      width: 22px; height: 22px; border-radius: 50%;
-      display: inline-flex; align-items: center; justify-content: center;
+    .cal-date-link:hover { background: #D1FAE5; }
+    .cal-cell.today .cal-date-link {
+      background: #58C65D; color: #fff;
     }
-    .cal-date {
-      font-size: 12px; font-weight: 600; color: #24292E;
-      display: inline-block; margin-bottom: 5px;
-      line-height: 22px;
+    .cal-date-link.sunday  { color: #E24B4B; }
+    .cal-date-link.saturday { color: #2D84ED; }
+    .cal-cell.today .cal-date-link { color: #fff !important; }
+
+    /* 셀 바디 — 클릭 시 패널 업데이트 */
+    .cal-cell-body {
+      flex: 1;
+      padding: 2px 6px 6px;
+      cursor: pointer;
     }
-    .cal-cell-wrap:nth-child(7n+1) .cal-date { color: #E24B4B; }
-    .cal-cell-wrap:nth-child(7n)   .cal-date { color: #2D84ED; }
-    .cal-cell.today .cal-date { color: #fff !important; }
+    .cal-cell-body:hover { background: rgba(0,0,0,.02); }
 
     /* Status dot row */
     .cal-status-row {
-      display: flex; align-items: center; gap: 5px; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 5px; margin-bottom: 5px;
     }
     .cal-status-dot {
       width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
@@ -113,7 +133,7 @@
     .cal-status-label { font-size: 10px; color: #596066; }
 
     /* Dual progress bars */
-    .cal-bars { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+    .cal-bars { display: flex; flex-direction: column; gap: 3px; }
     .cal-bar-row { display: flex; align-items: center; gap: 4px; }
     .cal-bar-label { font-size: 9px; color: #9EA5AD; width: 38px; flex-shrink: 0; }
     .cal-bar-track {
@@ -122,37 +142,6 @@
     }
     .cal-bar-fill { height: 100%; border-radius: 3px; }
     .cal-bar-val { font-size: 9px; color: #9EA5AD; width: 24px; text-align: right; flex-shrink: 0; }
-
-    /* Tooltip */
-    .cal-tooltip {
-      display: none;
-      position: absolute;
-      top: 0; left: calc(100% + 6px);
-      z-index: 200;
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.14);
-      padding: 12px 14px;
-      min-width: 180px;
-      max-width: 240px;
-      pointer-events: none;
-    }
-    .cal-cell-wrap.tip-left .cal-tooltip {
-      left: auto; right: calc(100% + 6px);
-    }
-    .cal-cell-wrap:hover .cal-tooltip { display: block; }
-    .cal-tooltip-date {
-      font-size: 12px; font-weight: 700; color: #24292E;
-      margin-bottom: 8px; padding-bottom: 6px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .cal-tooltip-row {
-      display: flex; justify-content: space-between;
-      font-size: 11px; color: #596066; margin-bottom: 4px; gap: 12px;
-    }
-    .cal-tooltip-row span:first-child { color: #9EA5AD; white-space: nowrap; }
-    .cal-tooltip-row span:last-child { font-weight: 600; color: #24292E; white-space: nowrap; }
 
     /* Legend */
     .legend {
@@ -169,18 +158,26 @@
       border: 1px solid #E5E7EA;
       border-radius: 10px;
       overflow: hidden;
+      position: sticky;
+      top: 76px;
     }
     .schedule-panel-header {
       padding: 14px 16px;
       border-bottom: 1px solid #E5E7EA;
       display: flex; align-items: center; justify-content: space-between;
+      gap: 8px;
     }
     .schedule-panel-title {
       font-size: 14px; font-weight: 700; color: #24292E;
     }
     .schedule-panel-count {
       font-size: 12px; color: #9EA5AD; font-weight: 500;
+      white-space: nowrap;
     }
+    .panel-day-link {
+      font-size: 11px; color: #2D84ED; text-decoration: none; white-space: nowrap;
+    }
+    .panel-day-link:hover { text-decoration: underline; }
     .schedule-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
 
     .sched-card {
@@ -225,6 +222,13 @@
     }
     .sched-card-meta .sep { color: #CED2D6; }
     .sched-card-advertiser { font-size: 11px; color: #596066; font-weight: 500; }
+
+    .panel-empty {
+      padding: 32px 16px;
+      text-align: center;
+      font-size: 12px;
+      color: #B0B7BE;
+    }
 
     /* ── Breadcrumb ── */
     .bcrumb {
@@ -360,11 +364,14 @@
         </div>
       </div>
 
-      <!-- RIGHT: Schedule list -->
+      <!-- RIGHT: Schedule panel -->
       <div class="schedule-panel">
         <div class="schedule-panel-header">
-          <span class="schedule-panel-title">운영 중 / 운영 예정</span>
-          <span class="schedule-panel-count">5개 스케줄</span>
+          <span class="schedule-panel-title" id="panelTitle">운영 중 / 운영 예정</span>
+          <span class="schedule-panel-count" id="panelCount">5개 스케줄</span>
+        </div>
+        <div id="panelDayLinkWrap" style="display:none; padding:8px 16px 0; border-bottom:1px solid #F0F1F3;">
+          <a href="schedule-media-day.html" class="panel-day-link" id="panelDayLink">일간 편성표 보기 →</a>
         </div>
         <div class="schedule-list" id="scheduleList"></div>
       </div>
@@ -374,42 +381,38 @@
   </div><!-- /content -->
 
 <script>
-  /* ── Calendar data – June 2026 (max sec=600, max slot=20) ── */
+  /* ── 스케줄 데이터 (날짜별 매핑) ── */
+  var schedules = [
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',  code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아', status: 'running',  statusLabel: '운영 중',  dates: [1,2,3,5,9,10,14,15,16,21,22,23,28,29,30] },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '삼성 여름 광고',      code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',   status: 'running',  statusLabel: '운영 중',  dates: [1,2,5,9,14,15,21,22,28] },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',      code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차', status: 'upcoming', statusLabel: '운영 예정', dates: [3,10,17,23] },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',      code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',    status: 'upcoming', statusLabel: '운영 예정', dates: [2,5,9,14,16,22,25,29] },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',    code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',   status: 'running',  statusLabel: '운영 중',  dates: [4,8,12,15,18,21,25,28] },
+  ];
+
+  /* ── 캘린더 데이터 ── */
   const calData = {
-    '2026-06-01': { sec: 540, slot: 18 },
-    '2026-06-02': { sec: 480, slot: 16 },
-    '2026-06-03': { sec: 390, slot: 13 },
-    '2026-06-04': { sec: 600, slot: 20 },
-    '2026-06-05': { sec: 300, slot: 10 },
-    '2026-06-06': { sec: 240, slot: 9  },
-    '2026-06-07': { sec: 120, slot: 4  },
-    '2026-06-08': { sec: 60,  slot: 2  },
-    '2026-06-09': { sec: 450, slot: 15 },
-    '2026-06-10': { sec: 500, slot: 17 },
-    '2026-06-11': { sec: 90,  slot: 3  },
-    '2026-06-12': { sec: 0,   slot: 0  },
-    '2026-06-13': { sec: 30,  slot: 1  },
-    '2026-06-14': { sec: 360, slot: 12 },
-    '2026-06-15': { sec: 420, slot: 14 },
-    '2026-06-16': { sec: 570, slot: 19 },
-    '2026-06-17': { sec: 150, slot: 5  },
-    '2026-06-18': { sec: 200, slot: 7  },
-    '2026-06-19': { sec: 0,   slot: 0  },
-    '2026-06-20': { sec: 50,  slot: 2  },
-    '2026-06-21': { sec: 310, slot: 11 },
-    '2026-06-22': { sec: 430, slot: 14 },
-    '2026-06-23': { sec: 510, slot: 18 },
-    '2026-06-24': { sec: 80,  slot: 3  },
-    '2026-06-25': { sec: 260, slot: 9  },
-    '2026-06-26': { sec: 0,   slot: 0  },
-    '2026-06-27': { sec: 40,  slot: 1  },
-    '2026-06-28': { sec: 580, slot: 20 },
-    '2026-06-29': { sec: 350, slot: 12 },
-    '2026-06-30': { sec: 190, slot: 6  },
+    '2026-06-01': { sec: 540, slot: 18 }, '2026-06-02': { sec: 480, slot: 16 },
+    '2026-06-03': { sec: 390, slot: 13 }, '2026-06-04': { sec: 600, slot: 20 },
+    '2026-06-05': { sec: 300, slot: 10 }, '2026-06-06': { sec: 240, slot: 9  },
+    '2026-06-07': { sec: 120, slot: 4  }, '2026-06-08': { sec: 60,  slot: 2  },
+    '2026-06-09': { sec: 450, slot: 15 }, '2026-06-10': { sec: 500, slot: 17 },
+    '2026-06-11': { sec: 90,  slot: 3  }, '2026-06-12': { sec: 0,   slot: 0  },
+    '2026-06-13': { sec: 30,  slot: 1  }, '2026-06-14': { sec: 360, slot: 12 },
+    '2026-06-15': { sec: 420, slot: 14 }, '2026-06-16': { sec: 570, slot: 19 },
+    '2026-06-17': { sec: 150, slot: 5  }, '2026-06-18': { sec: 200, slot: 7  },
+    '2026-06-19': { sec: 0,   slot: 0  }, '2026-06-20': { sec: 50,  slot: 2  },
+    '2026-06-21': { sec: 310, slot: 11 }, '2026-06-22': { sec: 430, slot: 14 },
+    '2026-06-23': { sec: 510, slot: 18 }, '2026-06-24': { sec: 80,  slot: 3  },
+    '2026-06-25': { sec: 260, slot: 9  }, '2026-06-26': { sec: 0,   slot: 0  },
+    '2026-06-27': { sec: 40,  slot: 1  }, '2026-06-28': { sec: 580, slot: 20 },
+    '2026-06-29': { sec: 350, slot: 12 }, '2026-06-30': { sec: 190, slot: 6  },
   };
 
   const MAX_SEC  = 600;
   const MAX_SLOT = 20;
+
+  var selectedDate = null;
 
   function getStatusColor(sec, slot) {
     const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
@@ -418,7 +421,6 @@
     if (minPct < 50)   return '#F59E0B';
     return '#10B981';
   }
-
   function getStatusLabel(sec, slot) {
     const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
     if (minPct === 0)  return '등록불가';
@@ -433,12 +435,78 @@
   let currentYear  = 2026;
   let currentMonth = 6;
 
+  function selectDate(dateKey, day, month, year) {
+    /* 토글 */
+    if (selectedDate === dateKey) {
+      selectedDate = null;
+    } else {
+      selectedDate = dateKey;
+    }
+    /* 셀 선택 표시 갱신 */
+    document.querySelectorAll('.cal-cell').forEach(function(el) {
+      el.classList.remove('selected');
+    });
+    if (selectedDate) {
+      var sel = document.querySelector('.cal-cell[data-key="' + selectedDate + '"]');
+      if (sel) sel.classList.add('selected');
+    }
+    renderPanel();
+  }
+
+  function renderPanel() {
+    var titleEl  = document.getElementById('panelTitle');
+    var countEl  = document.getElementById('panelCount');
+    var listEl   = document.getElementById('scheduleList');
+    var linkWrap = document.getElementById('panelDayLinkWrap');
+    listEl.innerHTML = '';
+
+    var list;
+    if (selectedDate) {
+      var day = parseInt(selectedDate.split('-')[2]);
+      list = schedules.filter(function(s) { return s.dates.indexOf(day) !== -1; });
+      var parts = selectedDate.split('-');
+      titleEl.textContent = parts[1] + '/' + parts[2] + ' 스케줄';
+      linkWrap.style.display = '';
+    } else {
+      list = schedules;
+      titleEl.textContent = '운영 중 / 운영 예정';
+      linkWrap.style.display = 'none';
+    }
+
+    countEl.textContent = list.length + '개 스케줄';
+
+    if (list.length === 0) {
+      listEl.innerHTML = '<div class="panel-empty">해당 날짜에 스케줄이 없습니다.</div>';
+      return;
+    }
+
+    list.forEach(function(s) {
+      var card = document.createElement('div');
+      card.className = 'sched-card';
+      card.innerHTML =
+        '<div class="sched-card-top">' +
+          '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
+          '<span class="sched-card-name">' + s.name + '</span>' +
+          '<span class="status-badge ' + s.status + '"><span class="s-dot"></span>' + s.statusLabel + '</span>' +
+        '</div>' +
+        '<div class="sched-card-meta">' +
+          '<span>' + s.code + '</span><span class="sep">·</span>' +
+          '<span>' + s.duration + '</span><span class="sep">·</span>' +
+          '<span>' + s.type + '</span>' +
+        '</div>' +
+        '<div class="sched-card-advertiser">' + s.advertiser + '</div>';
+      listEl.appendChild(card);
+    });
+  }
+
   function renderCalendar(year, month) {
     document.getElementById('monthLabel').textContent = year + '년 ' + month + '월';
     const grid = document.getElementById('calGrid');
     grid.innerHTML = '';
+    selectedDate = null;
+    renderPanel();
 
-    const firstDay    = new Date(year, month - 1, 1).getDay();   // 0=Sun
+    const firstDay    = new Date(year, month - 1, 1).getDay();
     const daysInMonth = new Date(year, month, 0).getDate();
     const daysInPrev  = new Date(year, month - 1, 0).getDate();
 
@@ -462,70 +530,62 @@
       const dateStr = c.thisMonth ? fmtKey(c.y, c.m, c.day) : null;
       const data    = dateStr ? (calData[dateStr] || null) : null;
 
-      const wrap = document.createElement('div');
-      wrap.className = 'cal-cell-wrap';
-      if (colIdx >= 5) wrap.classList.add('tip-left');
-
       const cell = document.createElement('div');
       cell.className = 'cal-cell';
       if (!c.thisMonth) cell.classList.add('other-month');
       if (dateStr === todayStr) cell.classList.add('today');
+      if (dateStr) cell.dataset.key = dateStr;
+
+      /* 셀 헤더: 날짜 숫자 링크 */
+      const head = document.createElement('div');
+      head.className = 'cal-cell-head';
+
+      const dateLink = document.createElement('a');
+      dateLink.href = 'schedule-media-day.html';
+      dateLink.className = 'cal-date-link';
+      if (colIdx === 0) dateLink.classList.add('sunday');
+      if (colIdx === 6) dateLink.classList.add('saturday');
+      dateLink.textContent = c.day;
+      dateLink.addEventListener('click', function(e) { e.stopPropagation(); });
+      head.appendChild(dateLink);
+      cell.appendChild(head);
+
+      /* 셀 바디: 클릭 시 패널 업데이트 */
       if (c.thisMonth) {
-        cell.classList.add('clickable');
-        cell.onclick = function() { window.location.href = 'schedule-media-day.html'; };
+        const body = document.createElement('div');
+        body.className = 'cal-cell-body';
+        body.addEventListener('click', function() {
+          selectDate(dateStr, c.day, month, year);
+        });
+
+        if (data) {
+          const color   = getStatusColor(data.sec, data.slot);
+          const label   = getStatusLabel(data.sec, data.slot);
+          const secPct  = Math.round((data.sec  / MAX_SEC)  * 100);
+          const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
+
+          body.innerHTML =
+            '<div class="cal-status-row">' +
+              '<span class="cal-status-dot" style="background:' + color + '"></span>' +
+              '<span class="cal-status-label">' + label + '</span>' +
+            '</div>' +
+            '<div class="cal-bars">' +
+              '<div class="cal-bar-row">' +
+                '<span class="cal-bar-label">사이클</span>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
+                '<span class="cal-bar-val">' + data.sec + 's</span>' +
+              '</div>' +
+              '<div class="cal-bar-row">' +
+                '<span class="cal-bar-label">슬롯</span>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
+                '<span class="cal-bar-val">' + data.slot + '</span>' +
+              '</div>' +
+            '</div>';
+        }
+        cell.appendChild(body);
       }
 
-      const dateEl = document.createElement('span');
-      dateEl.className = 'cal-date';
-      dateEl.textContent = c.day;
-      cell.appendChild(dateEl);
-
-      if (data && c.thisMonth) {
-        const color   = getStatusColor(data.sec, data.slot);
-        const label   = getStatusLabel(data.sec, data.slot);
-        const secPct  = Math.round((data.sec  / MAX_SEC)  * 100);
-        const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
-
-        // Status row
-        const sr = document.createElement('div');
-        sr.className = 'cal-status-row';
-        sr.innerHTML =
-          '<span class="cal-status-dot" style="background:' + color + '"></span>' +
-          '<span class="cal-status-label">' + label + '</span>';
-        cell.appendChild(sr);
-
-        // Dual bars
-        const bars = document.createElement('div');
-        bars.className = 'cal-bars';
-        bars.innerHTML =
-          '<div class="cal-bar-row">' +
-            '<span class="cal-bar-label">사이클</span>' +
-            '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
-            '<span class="cal-bar-val">' + data.sec + 's</span>' +
-          '</div>' +
-          '<div class="cal-bar-row">' +
-            '<span class="cal-bar-label">슬롯</span>' +
-            '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + ';opacity:0.7"></div></div>' +
-            '<span class="cal-bar-val">' + data.slot + '</span>' +
-          '</div>';
-        cell.appendChild(bars);
-
-        // Tooltip
-        const tip = document.createElement('div');
-        tip.className = 'cal-tooltip';
-        tip.innerHTML =
-          '<div class="cal-tooltip-date">' + year + '년 ' + month + '월 ' + c.day + '일</div>' +
-          '<div class="cal-tooltip-row"><span>잔여 사이클 시간</span><span>' + data.sec + '초 / ' + MAX_SEC + '초</span></div>' +
-          '<div class="cal-tooltip-row"><span>잔여 슬롯 수</span><span>' + data.slot + ' / ' + MAX_SLOT + '</span></div>' +
-          '<div class="cal-tooltip-row"><span>상태</span><span style="color:' + color + ';font-weight:700">' + label + '</span></div>';
-
-        wrap.appendChild(cell);
-        wrap.appendChild(tip);
-      } else {
-        wrap.appendChild(cell);
-      }
-
-      grid.appendChild(wrap);
+      grid.appendChild(cell);
     });
   }
 
@@ -537,34 +597,7 @@
   }
 
   renderCalendar(currentYear, currentMonth);
-
-  /* ── Schedule list ── */
-  var schedules = [
-    { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',  code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아', status: 'running',  statusLabel: '운영 중'  },
-    { product: '프로덕트 가', prodClass: 'prod-a', name: '삼성 여름 광고',      code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',   status: 'running',  statusLabel: '운영 중'  },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',      code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차', status: 'upcoming', statusLabel: '운영 예정' },
-    { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',      code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',    status: 'upcoming', statusLabel: '운영 예정' },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',    code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',   status: 'running',  statusLabel: '운영 중'  },
-  ];
-
-  var listEl = document.getElementById('scheduleList');
-  schedules.forEach(function(s) {
-    var card = document.createElement('div');
-    card.className = 'sched-card';
-    card.innerHTML =
-      '<div class="sched-card-top">' +
-        '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
-        '<span class="sched-card-name">' + s.name + '</span>' +
-        '<span class="status-badge ' + s.status + '"><span class="s-dot"></span>' + s.statusLabel + '</span>' +
-      '</div>' +
-      '<div class="sched-card-meta">' +
-        '<span>' + s.code + '</span><span class="sep">·</span>' +
-        '<span>' + s.duration + '</span><span class="sep">·</span>' +
-        '<span>' + s.type + '</span>' +
-      '</div>' +
-      '<div class="sched-card-advertiser">' + s.advertiser + '</div>';
-    listEl.appendChild(card);
-  });
+  renderPanel();
 </script>
 <script src="../assets/js/cms.js"></script>
 </body>
