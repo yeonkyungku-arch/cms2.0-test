@@ -122,9 +122,109 @@
     .schedule-card-meta .sep { color: #D1D5DB; }
     .tag-condition { display: inline-flex; align-items: center; gap: 3px; background: #EEF2FF; color: #4338CA; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; }
     .schedule-card-advertiser { font-size: 12px; color: #596066; font-weight: 500; }
+
+    /* ── 프로덕트 선택 오버레이 ── */
+    .product-select-overlay {
+      position: fixed; inset: 0; background: rgba(36,41,46,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; backdrop-filter: blur(2px);
+    }
+    .product-select-overlay.hidden { display: none; }
+    .product-select-modal {
+      background: #fff; border-radius: 14px;
+      width: 520px; max-width: calc(100vw - 48px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      overflow: hidden;
+    }
+    .product-select-head {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .product-select-head h2 {
+      font-size: 16px; font-weight: 700; color: #24292E; margin-bottom: 4px;
+    }
+    .product-select-head p {
+      font-size: 13px; color: #9EA5AD;
+    }
+    .product-select-search {
+      padding: 12px 24px;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .product-select-search input {
+      width: 100%; height: 36px; padding: 0 12px;
+      border: 1px solid #E5E7EA; border-radius: 8px;
+      font-size: 13px; color: #24292E; outline: none;
+      background: #F6F7F9;
+    }
+    .product-select-search input:focus { border-color: #58C65D; background: #fff; }
+    .product-select-list {
+      max-height: 320px; overflow-y: auto;
+      padding: 8px 0;
+    }
+    .product-select-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 24px; cursor: pointer;
+      transition: background 0.1s;
+    }
+    .product-select-item:hover { background: #F6F7F9; }
+    .product-select-item.selected { background: rgba(88,198,93,0.08); }
+    .product-select-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .product-select-info { flex: 1; min-width: 0; }
+    .product-select-name {
+      font-size: 14px; font-weight: 600; color: #24292E;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-select-meta {
+      font-size: 11px; color: #9EA5AD; margin-top: 2px;
+    }
+    .product-select-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #58C65D; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
+    }
+    .product-select-item.selected .product-select-check { opacity: 1; }
+    .product-select-foot {
+      padding: 14px 24px; border-top: 1px solid #E5E7EA;
+      display: flex; justify-content: flex-end; gap: 8px;
+    }
+    .btn-overlay-cancel {
+      height: 36px; padding: 0 16px;
+      border: 1px solid #E5E7EA; border-radius: 8px;
+      background: #fff; font-size: 13px; color: #596066; cursor: pointer;
+    }
+    .btn-overlay-confirm {
+      height: 36px; padding: 0 20px;
+      border: none; border-radius: 8px;
+      background: #58C65D; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-overlay-confirm:hover { background: #4ab54f; }
+    .btn-overlay-confirm:disabled { background: #C1E9C3; cursor: not-allowed; }
   </style>
 </head>
 <body>
+
+<!-- ── 프로덕트 선택 오버레이 ── -->
+<div class="product-select-overlay" id="productSelectOverlay">
+  <div class="product-select-modal">
+    <div class="product-select-head">
+      <h2>프로덕트 편성표</h2>
+      <p>편성표를 확인할 프로덕트를 선택해 주세요.</p>
+    </div>
+    <div class="product-select-search">
+      <input type="text" id="productSearchInput" placeholder="프로덕트명으로 검색..." oninput="filterProducts(this.value)">
+    </div>
+    <div class="product-select-list" id="productSelectList"></div>
+    <div class="product-select-foot">
+      <button class="btn-overlay-cancel" onclick="closeProductSelect()">취소</button>
+      <button class="btn-overlay-confirm" id="btnConfirmProduct" onclick="confirmProductSelect()" disabled>편성표 보기</button>
+    </div>
+  </div>
+</div>
 
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
@@ -166,7 +266,7 @@
     <div class="bcrumb">
       <span>편성표</span><span class="bcrumb-sep">›</span>
       <a href="schedule-product-month.html">프로덕트 편성표</a><span class="bcrumb-sep">›</span>
-      <span class="bcrumb-current">월간</span>
+      <span class="bcrumb-current" id="bcrumbProduct">프로덕트 선택</span>
     </div>
 
     <div class="page-grid">
@@ -175,7 +275,8 @@
       <div class="panel">
         <div class="cal-toolbar">
           <div class="cal-toolbar-left">
-            <span class="cal-product-name">강남 A지구 패키지</span>
+            <span class="cal-product-name" id="calProductName" style="cursor:pointer;" onclick="openProductSelect()" title="프로덕트 변경">프로덕트 선택 중...</span>
+            <button onclick="openProductSelect()" style="font-size:11px;color:#596066;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:5px;padding:3px 9px;cursor:pointer;white-space:nowrap;" title="프로덕트 변경">변경</button>
             <div class="cal-month-nav">
               <button title="이전 달"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <span class="cal-month-label">2026년 6월</span>
@@ -324,5 +425,80 @@
   </div>
 </main>
 
+<script>
+/* ── 프로덕트 목록 ── */
+var PRODUCTS = [
+  { id: 1, name: '강남 A지구 패키지',   media: '강남역 1번출구',   count: 3, icon: '🏙️', color: '#EEEDFE' },
+  { id: 2, name: '홍대 B존 패키지',      media: '홍대입구역 2번출구', count: 2, icon: '🎨', color: '#E1F5EE' },
+  { id: 3, name: '서울역 환승 패키지',   media: '서울역 중앙',       count: 4, icon: '🚆', color: '#FFF7ED' },
+  { id: 4, name: '삼성동 코엑스 패키지', media: '코엑스 B1',         count: 2, icon: '🏢', color: '#F0FDF4' },
+  { id: 5, name: '신촌 대학가 패키지',   media: '신촌역 1번출구',   count: 3, icon: '🎓', color: '#EFF6FF' },
+];
+
+var selectedProductId = null;
+var filteredProducts  = PRODUCTS.slice();
+
+function renderProductList(list) {
+  var el = document.getElementById('productSelectList');
+  if (!list.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:#9EA5AD;font-size:13px;">검색 결과가 없습니다</div>';
+    return;
+  }
+  el.innerHTML = list.map(function(p) {
+    var sel = selectedProductId === p.id ? ' selected' : '';
+    return '<div class="product-select-item' + sel + '" onclick="selectProduct(' + p.id + ')">' +
+      '<div class="product-select-icon" style="background:' + p.color + '">' + p.icon + '</div>' +
+      '<div class="product-select-info">' +
+        '<div class="product-select-name">' + p.name + '</div>' +
+        '<div class="product-select-meta">' + p.media + ' · 스케줄 ' + p.count + '개</div>' +
+      '</div>' +
+      '<div class="product-select-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+    '</div>';
+  }).join('');
+}
+
+function filterProducts(q) {
+  var kw = q.trim().toLowerCase();
+  filteredProducts = kw
+    ? PRODUCTS.filter(function(p) { return p.name.toLowerCase().includes(kw) || p.media.toLowerCase().includes(kw); })
+    : PRODUCTS.slice();
+  renderProductList(filteredProducts);
+}
+
+function selectProduct(id) {
+  selectedProductId = id;
+  renderProductList(filteredProducts);
+  document.getElementById('btnConfirmProduct').disabled = false;
+}
+
+function confirmProductSelect() {
+  if (!selectedProductId) return;
+  var p = PRODUCTS.find(function(p) { return p.id === selectedProductId; });
+  /* 선택된 프로덕트명을 캘린더 툴바에 반영 */
+  /* 캘린더 툴바 · 브레드크럼 업데이트 */
+  var nameEl = document.getElementById('calProductName');
+  if (nameEl) nameEl.textContent = p.name;
+  var bcEl = document.getElementById('bcrumbProduct');
+  if (bcEl) bcEl.textContent = p.name;
+  closeProductSelect();
+}
+
+function closeProductSelect() {
+  document.getElementById('productSelectOverlay').classList.add('hidden');
+  document.getElementById('productSearchInput').value = '';
+  filteredProducts = PRODUCTS.slice();
+}
+
+function openProductSelect() {
+  selectedProductId = null;
+  document.getElementById('btnConfirmProduct').disabled = true;
+  renderProductList(PRODUCTS);
+  document.getElementById('productSelectOverlay').classList.remove('hidden');
+  setTimeout(function() { document.getElementById('productSearchInput').focus(); }, 50);
+}
+
+/* 페이지 진입 시 자동 표시 */
+renderProductList(PRODUCTS);
+</script>
 </body>
 </html>
