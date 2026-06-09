@@ -423,13 +423,6 @@
           </a>
         </div>
         <div class="media-tabs" id="mediaTabs"></div>
-        <div class="media-info" id="mediaInfo">
-          <a href="product-detail.html" class="media-info-name drill-link" id="mediaName">강남역 1번출구 A</a>
-          <span class="media-info-dot">·</span>
-          <span class="media-info-badge">사이클 최대 600초</span>
-          <span class="media-info-badge">기준 슬롯 20개</span>
-          <span class="media-info-badge">최소 보장 138회/일</span>
-        </div>
       </div>
     </div>
 
@@ -735,14 +728,6 @@ function renderMediaTabs() {
 function selectMedia(idx) {
   currentMedia = idx;
   document.querySelectorAll('.media-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
-  const m = MEDIA_LIST[idx];
-  document.getElementById('mediaInfo').innerHTML = `
-    <a href="product-detail.html" class="media-info-name drill-link">${m.name}</a>
-    <span class="media-info-dot">·</span>
-    <span class="media-info-badge">사이클 최대 ${m.cycle}초</span>
-    <span class="media-info-badge">기준 슬롯 ${m.slots}개</span>
-    <span class="media-info-badge">최소 보장 ${m.min}회/일</span>
-  `;
 }
 
 /* ── Timeline render ── */
