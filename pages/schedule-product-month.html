@@ -842,9 +842,10 @@ function renderScheduleList(filterDay) {
 
   var titleEl = document.getElementById('schedPanelTitle');
   var hintEl  = document.getElementById('schedPanelHint');
-  /* 예약 버튼 표시: 날짜 선택 시만 */
+  /* 예약 버튼 표시: 날짜 선택 시만 + 오늘 이후만 */
   var btnEl = document.getElementById('btnAddSchedule');
-  if (btnEl) btnEl.style.display = filterDay ? '' : 'none';
+  var isFuture = filterDay && new Date(filterDay) >= new Date(new Date().toDateString());
+  if (btnEl) btnEl.style.display = isFuture ? '' : 'none';
 
   if (filterDay) {
     var parts = filterDay.split('-');
