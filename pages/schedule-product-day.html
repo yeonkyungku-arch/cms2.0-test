@@ -3,465 +3,798 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>편성표 · 프로덕트 일 보기 — D'ooh CMS</title>
+  <title>프로덕트 편성표 · 일간 타임라인 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <style>
-    /* ── 탭 ── */
-    .view-tabs {
-      display: flex;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      overflow: hidden;
-    }
-    .view-tabs button {
-      padding: 7px 18px;
-      font-size: 13px;
-      font-weight: 500;
-      background: #fff;
-      border: none;
-      cursor: pointer;
-      color: #596066;
-      transition: all 0.15s;
-    }
-    .view-tabs button.active { background: #24292E; color: #fff; }
-    .view-tabs button + button { border-left: 1px solid #CED2D6; }
+    /* ── Layout ── */
+    .page-wrap { margin-left: 93px; display: flex; flex-direction: column; min-height: 100vh; }
+    .page-body { margin-top: 108px; padding: 24px; background: #F6F7F9; flex: 1; }
 
-    .day-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+    /* ── Breadcrumb ── */
+    .bcrumb {
+      position: fixed; top: 56px; left: 93px; right: 0; z-index: 200;
+      background: #383F45; padding: 8px 24px;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: #9EA5AD;
     }
-    .cal-nav { display: flex; align-items: center; gap: 6px; }
-    .cal-nav button {
-      width: 30px; height: 30px;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      background: #fff;
-      cursor: pointer;
-      font-size: 14px;
-      color: #596066;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
-    .cal-nav button:hover { border-color: #58C65D; color: #58C65D; }
-    .cal-nav-label {
-      font-size: 15px;
-      font-weight: 600;
-      color: #24292E;
-      min-width: 130px;
-      text-align: center;
-    }
-    .product-select {
-      height: 34px;
-      padding: 0 12px;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      background: #fff;
-      font-size: 14px;
-      color: #24292E;
-      font-family: inherit;
-      cursor: pointer;
-      outline: none;
-      min-width: 200px;
-    }
-    .day-toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .bcrumb a { color: #9EA5AD; transition: color 0.15s; }
+    .bcrumb a:hover { color: #58C65D; }
+    .bcrumb-sep { color: #596066; }
+    .bcrumb-current { color: #CED2D6; font-weight: 500; }
 
-    /* ── 타임라인 ── */
-    .timeline-wrap {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      overflow: hidden;
+    /* ── Card ── */
+    .card {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 8px;
+      margin-bottom: 20px;
     }
-    .timeline-header {
-      display: flex;
-      background: #F6F7F9;
-      border-bottom: 2px solid #E5E7EA;
-    }
-    .tl-media-col {
-      width: 120px;
-      flex-shrink: 0;
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #596066;
-      border-right: 1px solid #E5E7EA;
-    }
-    .tl-time-header {
-      flex: 1;
-      display: flex;
-      position: relative;
-      overflow: hidden;
-    }
-    .tl-time-tick {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      color: #9EA5AD;
-      padding: 10px 0;
-      border-right: 1px solid #E5E7EA;
-    }
-    .tl-time-tick:last-child { border-right: none; }
-
-    /* 미디어 행 */
-    .tl-row {
-      display: flex;
-      border-bottom: 1px solid #E5E7EA;
-      min-height: 80px;
-    }
-    .tl-row:last-child { border-bottom: none; }
-    .tl-row-label {
-      width: 120px;
-      flex-shrink: 0;
-      padding: 12px 14px;
-      border-right: 1px solid #E5E7EA;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .tl-media-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #24292E;
-    }
-    .tl-media-sub {
-      font-size: 11px;
-      color: #9EA5AD;
-    }
-    .tl-track {
-      flex: 1;
-      position: relative;
-      background: #FAFAFA;
+    .card-body { padding: 20px; }
+    .card-title {
+      font-size: 14px; font-weight: 700; color: #24292E;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
     }
 
-    /* 시간 그리드 선 */
-    .tl-track::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent calc((100% / 11) - 1px),
-        #E5E7EA calc((100% / 11) - 1px),
-        #E5E7EA calc(100% / 11)
-      );
-      pointer-events: none;
+    /* ── Header card ── */
+    .header-card { padding: 16px 20px; }
+    .header-row1 {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .date-label { font-size: 17px; font-weight: 700; color: #24292E; }
+    .nav-btn {
+      height: 30px; padding: 0 10px;
+      border: 1px solid #CED2D6; border-radius: 4px;
+      background: #fff; font-size: 12px; color: #596066;
+      cursor: pointer; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .nav-btn:hover { border-color: #58C65D; color: #58C65D; }
+    .btn-month-view {
+      margin-left: auto;
+      height: 30px; padding: 0 14px;
+      border: 1px solid #CED2D6; border-radius: 4px;
+      background: #fff; font-size: 12px; color: #596066;
+      cursor: pointer; transition: all 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-month-view:hover { border-color: #58C65D; color: #58C65D; }
+
+    .media-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+    .media-tab {
+      height: 28px; padding: 0 14px;
+      border: 1px solid #CED2D6; border-radius: 20px;
+      background: #fff; font-size: 12px; color: #596066;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .media-tab:hover { border-color: #58C65D; color: #58C65D; }
+    .media-tab.active { background: #24292E; border-color: #24292E; color: #fff; font-weight: 600; }
+
+    .media-info {
+      font-size: 12px; color: #596066;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .media-info-name { font-weight: 600; color: #24292E; font-size: 13px; }
+    .media-info-dot { color: #CED2D6; }
+    .media-info-badge {
+      background: #F6F7F9; border: 1px solid #E5E7EA;
+      border-radius: 4px; padding: 2px 8px;
+      font-size: 11px; color: #596066;
     }
 
-    /* 블록 공통 */
-    .tl-block {
-      position: absolute;
-      top: 8px;
-      height: calc(100% - 16px);
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      font-size: 11px;
-      font-weight: 600;
-      overflow: hidden;
+    /* ── Timeline ── */
+    .timeline-card { overflow: hidden; }
+    .timeline-scroll-wrap { overflow-x: auto; }
+    .timeline-table {
+      min-width: 960px; width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tl-label-cell {
+      width: 104px; min-width: 104px;
+      background: #F6F7F9; border-right: 1px solid #E5E7EA;
+      padding: 8px 10px;
+      font-size: 11px; font-weight: 600; color: #596066;
+      vertical-align: middle;
+    }
+
+    /* Time axis */
+    .tl-axis-row td { border-bottom: 1px solid #E5E7EA; }
+    .tl-axis-cell { padding: 8px 0; background: #F6F7F9; position: relative; }
+    .tl-axis-inner { position: relative; height: 32px; }
+    .tl-tick {
+      position: absolute; display: flex; flex-direction: column; align-items: center;
+      transform: translateX(-50%);
+    }
+    .tl-tick-label { font-size: 11px; font-weight: 600; color: #596066; white-space: nowrap; }
+    .tl-tick-line { width: 1px; height: 6px; background: #CED2D6; margin-top: 3px; }
+
+    /* Jingle row */
+    .tl-jingle-row td { border-bottom: 1px solid #E5E7EA; }
+    .tl-jingle-label { font-size: 11px; font-weight: 700; color: #7F77DD; }
+    .tl-jingle-cell { padding: 4px 0; }
+    .jingle-bar { position: relative; height: 48px; }
+    .jingle-zone {
+      position: absolute; top: 0; height: 100%;
+    }
+    .jingle-zone-morning { background: #EEF4FF; }
+    .jingle-zone-midday  { background: #FFF8EE; }
+    .jingle-zone-evening { background: #EDFBF1; }
+    .jingle-marker {
+      position: absolute; top: 0; height: 100%;
+      display: flex; align-items: stretch;
+    }
+    .jingle-vline { width: 2px; background: #7F77DD; flex-shrink: 0; }
+    .jingle-badge {
+      position: absolute; top: 8px; left: 6px;
+      background: #EEEDFE; border: 1px solid #AFA9EC;
+      border-radius: 4px; padding: 3px 8px;
+      font-size: 11px; color: #3C3489; font-weight: 600;
       white-space: nowrap;
-      text-overflow: ellipsis;
-      transition: opacity 0.15s;
+      display: inline-flex; align-items: center; gap: 6px;
+      box-shadow: 0 1px 4px rgba(127,119,221,0.15);
     }
-    .tl-block:hover { opacity: 0.85; }
+    .jingle-edit-btn {
+      background: #fff; border: 1px solid #AFA9EC;
+      border-radius: 3px; font-size: 10px; color: #7F77DD;
+      cursor: pointer; padding: 1px 4px; line-height: 1.2;
+    }
+    .jingle-edit-btn:hover { background: #7F77DD; color: #fff; }
+    .jingle-ad-name { font-size: 10px; color: #6B60B0; font-weight: 400; }
 
-    /* 블록 타입 */
-    .block-confirmed { background: #2E9E34; color: #fff; }
-    .block-draft { background: #fff; color: #596066; border: 2px dashed #CED2D6; }
-    .block-booking { background: #2D84ED; color: #fff; }
-    .block-condition { background: repeating-linear-gradient(45deg,#F6F7F9,#F6F7F9 4px,#E5E7EA 4px,#E5E7EA 8px); color: #596066; border: 1px solid #CED2D6; }
-    .block-alt { background: #CED2D6; color: #596066; }
+    /* Segment header */
+    .seg-header-row td {
+      background: #F6F7F9; border-bottom: 1px solid #E5E7EA; border-top: 2px solid #E5E7EA;
+      padding: 7px 14px;
+    }
+    .seg-header-label { font-size: 12px; font-weight: 700; color: #24292E; }
+    .seg-header-count { font-size: 11px; color: #596066; margin-left: 8px; }
 
-    /* 사이클 구분선 */
-    .cycle-line {
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 2px;
-      background: rgba(88,198,93,0.3);
-      pointer-events: none;
+    /* Cycle rows */
+    .tl-cycle-row td { border-bottom: 1px solid #F1F2F4; }
+    .tl-cycle-label { font-size: 10px; line-height: 1.6; }
+    .tl-cycle-cell { padding: 4px 0; }
+    .cycle-bar { position: relative; height: 38px; }
+    .cycle-inner {
+      position: absolute; top: 5px; display: flex; align-items: center; height: 28px;
     }
 
-    /* 달성률 바 */
-    .achieve-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      background: #FAFAFA;
-      border-top: 1px solid #E5E7EA;
+    /* Chips */
+    .cycle-chip {
+      height: 26px; border-radius: 4px; border-width: 1px; border-style: solid;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 600; white-space: nowrap; overflow: hidden;
+      padding: 0 4px; flex-shrink: 0; cursor: default;
     }
-    .achieve-label { font-size: 12px; color: #596066; width: 120px; flex-shrink: 0; }
-    .achieve-bar-wrap { flex: 1; height: 8px; background: #E5E7EA; border-radius: 4px; overflow: hidden; }
-    .achieve-bar { height: 100%; background: #58C65D; border-radius: 4px; }
-    .achieve-pct { font-size: 12px; font-weight: 600; color: #2E9E34; min-width: 36px; }
+    .chip-gap { width: 2px; flex-shrink: 0; }
+    .chip-confirmed { background: #EEEDFE; border-color: #AFA9EC; color: #3C3489; }
+    .chip-selfop    { background: #E1F5EE; border-color: #5DCAA5; color: #085041; }
+    .chip-jingle    { background: #F3E8FF; border-color: #C084FC; color: #6B21A8; }
+    .chip-draft     { background: #F1F2F4; border-color: #B0B7BE; color: #596066; border-style: dashed; }
+    .chip-empty     { background: #fff; border: 1px dashed #CED2D6; color: #9EA5AD; font-weight: 400; font-style: italic; }
 
-    /* 범례 */
-    .legend {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
+    .cycle-more {
+      padding: 5px 14px;
+      font-size: 11px; color: #9EA5AD; font-style: italic;
+      border-bottom: 1px solid #F1F2F4;
     }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #596066;
+    .cycle-more strong { color: #596066; }
+
+    /* ── Summary table ── */
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .summary-table th {
+      background: #F6F7F9; color: #596066; font-weight: 600; font-size: 12px;
+      padding: 9px 12px; text-align: center;
+      border-bottom: 1px solid #E5E7EA; border-right: 1px solid #E5E7EA;
     }
-    .legend-dot {
-      width: 12px; height: 12px;
-      border-radius: 2px;
-      flex-shrink: 0;
+    .summary-table th:last-child { border-right: none; }
+    .summary-table td {
+      padding: 11px 12px; text-align: center;
+      border-bottom: 1px solid #F1F2F4; border-right: 1px solid #F1F2F4; color: #24292E;
     }
+    .summary-table td:last-child { border-right: none; }
+    .summary-table td:first-child { text-align: left; font-weight: 600; }
+    .summary-table tr:last-child td { border-bottom: none; }
+    .td-count { color: #3C3489; font-weight: 700; }
+    .td-ok { font-size: 16px; }
+    .table-footer {
+      padding: 10px 16px; font-size: 12px; color: #085041;
+      background: #E1F5EE; border-top: 1px solid #5DCAA5;
+      border-radius: 0 0 7px 7px;
+    }
+
+    /* ── Condition cards ── */
+    .cond-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) { .cond-grid { grid-template-columns: 1fr; } }
+    .cond-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 16px; }
+    .cond-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .cond-icon { font-size: 22px; line-height: 1; }
+    .cond-title { font-size: 14px; font-weight: 700; color: #24292E; }
+    .cond-subtitle { font-size: 12px; color: #596066; margin-top: 2px; }
+    .cond-row { display: flex; gap: 8px; margin-bottom: 7px; align-items: baseline; }
+    .cond-key { font-size: 11px; color: #9EA5AD; min-width: 80px; }
+    .cond-val { font-size: 12px; color: #24292E; font-weight: 500; }
+    .cond-badge {
+      display: inline-flex; align-items: center;
+      background: #FFF3DC; border: 1px solid #E8841A;
+      color: #6B3C00; border-radius: 4px;
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+    }
+    .cond-note {
+      margin-top: 10px; font-size: 11px; color: #596066;
+      padding: 7px 10px; background: #F6F7F9; border-radius: 4px;
+      border-left: 3px solid #E8841A;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 10px; width: 420px; max-width: 95vw;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      padding: 16px 20px; border-bottom: 1px solid #E5E7EA;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 15px; font-weight: 700; color: #24292E; }
+    .modal-close-btn {
+      width: 28px; height: 28px; border-radius: 4px;
+      border: 1px solid #E5E7EA; background: #fff;
+      cursor: pointer; font-size: 16px; color: #596066;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close-btn:hover { background: #F6F7F9; }
+    .modal-body { padding: 20px; }
+    .modal-footer {
+      padding: 14px 20px; border-top: 1px solid #E5E7EA;
+      display: flex; justify-content: flex-end; gap: 8px;
+    }
+
+    .jingle-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+    .jingle-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border: 1px solid #E5E7EA; border-radius: 6px;
+      background: #F6F7F9;
+    }
+    .jingle-rank { font-size: 12px; font-weight: 700; color: #7F77DD; min-width: 42px; }
+    .jingle-name { flex: 1; font-size: 13px; color: #24292E; font-weight: 500; }
+    .jingle-dur { font-size: 11px; color: #9EA5AD; }
+    .jingle-order-btns { display: flex; flex-direction: column; gap: 2px; }
+    .jingle-order-btn {
+      width: 24px; height: 20px; border: 1px solid #CED2D6; border-radius: 3px;
+      background: #fff; cursor: pointer; font-size: 11px; color: #596066;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .jingle-order-btn:hover:not(:disabled) { border-color: #7F77DD; color: #7F77DD; }
+    .jingle-order-btn:disabled { opacity: 0.35; cursor: default; }
+
+    .modal-section-label { font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 8px; }
+    .radio-group { display: flex; flex-direction: column; gap: 9px; }
+    .radio-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: #24292E; cursor: pointer;
+    }
+    .radio-row input[type="date"] {
+      height: 28px; padding: 0 8px; border: 1px solid #CED2D6;
+      border-radius: 4px; font-size: 12px; font-family: inherit; outline: none;
+    }
+    .radio-row input[type="date"]:focus { border-color: #7F77DD; }
+
+    .btn-cancel {
+      height: 34px; padding: 0 16px; border: 1px solid #CED2D6; border-radius: 4px;
+      background: #fff; font-size: 13px; color: #596066; cursor: pointer;
+    }
+    .btn-cancel:hover { border-color: #9EA5AD; }
+    .btn-save {
+      height: 34px; padding: 0 18px; border: none; border-radius: 4px;
+      background: #7F77DD; color: #fff; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-save:hover { background: #6860c9; }
   </style>
 </head>
 <body>
 
-<!-- ① GNB Sidebar -->
+<!-- GNB -->
 <nav class="gnb">
   <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="8" fill="#58C65D"/>
-      <text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
-    </svg>
+    <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
   </div>
   <ul class="gnb-nav">
-    <li>
-      <a href="dashboard.html">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
-        대시보드
-      </a>
-    </li>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>
-        미디어
-      </a>
-    </li>
-    <li>
-      <a href="product-list.html">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>
-        프로덕트
-      </a>
-    </li>
-    <li>
-      <a href="contents.html">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>
-        콘텐츠
-      </a>
-    </li>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-        스케줄
-      </a>
-    </li>
-    <li>
-      <a href="schedule-product-month.html" class="active">
-        <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        편성표
-      </a>
-    </li>
+    <li><a href="dashboard.html">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor"/></svg>
+      대시보드
+    </a></li>
+    <li><a href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>
+      미디어
+    </a></li>
+    <li><a href="product-list.html">
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>
+      프로덕트
+    </a></li>
+    <li><a href="contents.html">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>
+      콘텐츠
+    </a></li>
+    <li><a href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      스케줄
+    </a></li>
+    <li><a href="schedule-product-month.html" class="active">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      편성표
+    </a></li>
     <div class="gnb-divider"></div>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-        모니터링
-      </a>
-    </li>
+    <li><a href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      모니터링
+    </a></li>
   </ul>
 </nav>
 
-<!-- ② Topbar -->
-<header class="topbar">
-  <div class="topbar-search">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-    <input type="text" placeholder="전체 검색">
-  </div>
-  <div class="topbar-user">
-    <div class="topbar-icon-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <span class="dot-badge"></span>
+<div class="page-wrap">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="전체 검색">
     </div>
-    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
-      <div class="topbar-avatar">구</div>
-      <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
-        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+    <div class="topbar-user">
+      <div class="topbar-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span class="dot-badge"></span>
       </div>
-      <span class="topbar-caret">▾</span>
-      <div class="profile-dropdown">
-        <a href="#">내 정보</a>
-        <a href="#" class="logout">로그아웃</a>
+      <div class="topbar-profile">
+        <div class="topbar-avatar">구</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name">구연경</div>
+          <div class="topbar-profile-org">엠앤엠네트웍스</div>
+        </div>
       </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- ③ Breadcrumb Bar -->
-<div class="bcrumb">
-  <span>편성표</span>
-  <span class="bcrumb-sep">›</span>
-  <span>프로덕트 기준</span>
-  <span class="bcrumb-sep">›</span>
-  <span class="bcrumb-current">일 보기</span>
+  <!-- Breadcrumb -->
+  <div class="bcrumb">
+    <span>편성표</span>
+    <span class="bcrumb-sep">›</span>
+    <a href="schedule-product-month.html">프로덕트 편성표</a>
+    <span class="bcrumb-sep">›</span>
+    <span class="bcrumb-current">일간 타임라인</span>
+  </div>
+
+  <!-- Page Body -->
+  <div class="page-body">
+
+    <!-- 1. Header Card -->
+    <div class="card">
+      <div class="header-card">
+        <div class="header-row1">
+          <span class="date-label" id="currentDateLabel">📅 2026년 6월 1일 (월)</span>
+          <button class="nav-btn" onclick="changeDay(-1)">← 전날</button>
+          <button class="nav-btn" onclick="changeDay(1)">다음날 →</button>
+          <a href="schedule-product-month.html" class="btn-month-view">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 5.5h12" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 2V1M9.5 2V1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            월간 뷰
+          </a>
+        </div>
+        <div class="media-tabs">
+          <button class="media-tab active" onclick="selectMedia(0)">미디어 A</button>
+          <button class="media-tab" onclick="selectMedia(1)">미디어 B</button>
+          <button class="media-tab" onclick="selectMedia(2)">미디어 C</button>
+        </div>
+        <div class="media-info" id="mediaInfo">
+          <span class="media-info-name" id="mediaName">강남역 1번출구 A</span>
+          <span class="media-info-dot">·</span>
+          <span class="media-info-badge">사이클 최대 600초</span>
+          <span class="media-info-badge">기준 슬롯 20개</span>
+          <span class="media-info-badge">최소 보장 138회/일</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Timeline Card -->
+    <div class="card timeline-card">
+      <div class="timeline-scroll-wrap">
+        <table class="timeline-table" id="timelineTable"></table>
+      </div>
+    </div>
+
+    <!-- 3. 일반 광고 송출 현황 -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="11" rx="1.5" stroke="#24292E" stroke-width="1.4"/><path d="M1 6h14" stroke="#24292E" stroke-width="1.4"/><path d="M5 9.5h2M9 9.5h2" stroke="#24292E" stroke-width="1.2" stroke-linecap="round"/></svg>
+          일반 광고 송출 현황
+        </div>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;min-width:140px">스케줄</th>
+              <th>플레이플랜</th>
+              <th>광고주</th>
+              <th>07~12시<br><span style="font-weight:400;color:#9EA5AD">(200회)</span></th>
+              <th>12~18시<br><span style="font-weight:400;color:#9EA5AD">(240회)</span></th>
+              <th>18~22시<br><span style="font-weight:400;color:#9EA5AD">(160회)</span></th>
+              <th>일 총계</th>
+              <th>최소 보장</th>
+              <th>충족</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>나이키 6월 캠페인</td>
+              <td>가-2</td>
+              <td>나이키코리아</td>
+              <td class="td-count">200회</td>
+              <td class="td-count">240회</td>
+              <td class="td-count">160회</td>
+              <td class="td-count" style="font-weight:800;font-size:14px">600회</td>
+              <td>138회</td>
+              <td class="td-ok">✅</td>
+            </tr>
+            <tr>
+              <td>삼성 여름 광고</td>
+              <td>가-1</td>
+              <td>삼성전자</td>
+              <td class="td-count">200회</td>
+              <td class="td-count">240회</td>
+              <td class="td-count">160회</td>
+              <td class="td-count" style="font-weight:800;font-size:14px">600회</td>
+              <td>138회</td>
+              <td class="td-ok">✅</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">✅ 전체 스케줄 최소 보장 횟수 138회 이상 충족</div>
+      </div>
+    </div>
+
+    <!-- 4. 조건 광고 현황 -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#24292E" stroke-width="1.4"/><path d="M8 5v4M8 11v.5" stroke="#24292E" stroke-width="1.5" stroke-linecap="round"/></svg>
+          조건 광고 현황
+        </div>
+        <div class="cond-grid">
+          <div class="cond-card">
+            <div class="cond-card-header">
+              <span class="cond-icon">🌤️</span>
+              <div>
+                <div class="cond-title">환경 조건</div>
+                <div class="cond-subtitle">현대 날씨 조건 광고</div>
+              </div>
+            </div>
+            <div class="cond-row">
+              <span class="cond-key">재생 시간</span>
+              <span class="cond-val">40초</span>
+            </div>
+            <div class="cond-row">
+              <span class="cond-key">조건</span>
+              <span class="cond-val">기온 10도 이하 · 강수량 5mm 이상</span>
+            </div>
+            <div class="cond-row">
+              <span class="cond-key">최대 가능</span>
+              <span class="cond-val"><span class="cond-badge">520회</span></span>
+            </div>
+            <div class="cond-note">⚠️ 조건 미충족 시: 빈 시간 누적 → 일반 광고 추가</div>
+          </div>
+          <div class="cond-card">
+            <div class="cond-card-header">
+              <span class="cond-icon">👥</span>
+              <div>
+                <div class="cond-title">타겟 조건</div>
+                <div class="cond-subtitle">나이키 타겟 조건 광고</div>
+              </div>
+            </div>
+            <div class="cond-row">
+              <span class="cond-key">재생 시간</span>
+              <span class="cond-val">30초</span>
+            </div>
+            <div class="cond-row">
+              <span class="cond-key">조건</span>
+              <span class="cond-val">20~30대 · 반경 500m 이내</span>
+            </div>
+            <div class="cond-row">
+              <span class="cond-key">최대 가능</span>
+              <span class="cond-val"><span class="cond-badge">520회</span></span>
+            </div>
+            <div class="cond-note">⚠️ 조건 미충족 시: 빈 시간 누적 → 일반 광고 추가</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /page-wrap -->
+
+<!-- 5. 시보 순서 변경 모달 -->
+<div class="modal-overlay" id="jingleModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">12:00 시보 순서 변경</span>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="jingle-list" id="jingleList"></div>
+      <div class="modal-section-label">적용 범위</div>
+      <div class="radio-group">
+        <label class="radio-row">
+          <input type="radio" name="jrange" value="today" checked> 오늘만
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="jrange" value="from"> 오늘부터 ~
+          <input type="date" id="rangeEndDate" value="2026-06-30">
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="jrange" value="all"> 전체 기간
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" id="saveBtn" onclick="saveJingle()">저장</button>
+    </div>
+  </div>
 </div>
 
-<!-- ④ Content -->
-<main class="content">
-  <div class="content-inner">
+<script>
+/* ── Data ── */
+const MEDIA_LIST = [
+  { name: '강남역 1번출구 A', cycle: 600, slots: 20, min: 138 },
+  { name: '강남역 1번출구 B', cycle: 600, slots: 20, min: 138 },
+  { name: '강남역 2번출구',   cycle: 600, slots: 18, min: 120 },
+];
 
-    <!-- 상단 툴바 -->
-    <div class="day-toolbar">
-      <div class="view-tabs">
-        <button onclick="location.href='schedule-main.html'">미디어 기준</button>
-        <button class="active">프로덕트 기준</button>
+const JINGLES_DATA = {
+  '12:00': [
+    { name: '롯데 30초', dur: '30초' },
+    { name: '현대 15초', dur: '15초' },
+    { name: 'CJ 15초',   dur: '15초' },
+  ],
+  '18:00': [
+    { name: '현대 30초', dur: '30초' },
+    { name: '롯데 20초', dur: '20초' },
+    { name: '삼성 10초', dur: '10초' },
+  ],
+};
+// Deep copy for modal editing
+let jingleOrder = JSON.parse(JSON.stringify(JINGLES_DATA));
+
+const SEGMENTS = [
+  { label: '07:00 ~ 12:00 구간', count: 200, start: 7,  end: 12, hasJingle: false },
+  { label: '12:00 ~ 18:00 구간', count: 240, start: 12, end: 18, hasJingle: true, jTime: '12:00', jAd: '롯데 30초' },
+  { label: '18:00 ~ 22:00 구간', count: 160, start: 18, end: 22, hasJingle: true, jTime: '18:00', jAd: '현대 30초' },
+];
+
+const CYCLE_ADS = [
+  { name: '나이키 30초',     dur: 30, type: 'confirmed' },
+  { name: '삼성 20초',       dur: 20, type: 'confirmed' },
+  { name: '롯데백화점 30초', dur: 30, type: 'draft' },
+  { name: '자체운영 10초',   dur: 10, type: 'selfop' },
+];
+const CYCLE_MAX = 600;
+const CYCLE_USED = CYCLE_ADS.reduce((s, a) => s + a.dur, 0); // 90
+
+const DAY_KO = ['일','월','화','수','목','금','토'];
+
+/* ── State ── */
+let currentDate = new Date(2026, 5, 1);
+let currentMedia = 0;
+let currentJingleTime = '12:00';
+
+/* ── Date nav ── */
+function changeDay(delta) {
+  currentDate.setDate(currentDate.getDate() + delta);
+  const d = currentDate;
+  document.getElementById('currentDateLabel').textContent =
+    `📅 ${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${DAY_KO[d.getDay()]})`;
+}
+
+/* ── Media tabs ── */
+function selectMedia(idx) {
+  currentMedia = idx;
+  document.querySelectorAll('.media-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  const m = MEDIA_LIST[idx];
+  document.getElementById('mediaInfo').innerHTML = `
+    <span class="media-info-name">${m.name}</span>
+    <span class="media-info-dot">·</span>
+    <span class="media-info-badge">사이클 최대 ${m.cycle}초</span>
+    <span class="media-info-badge">기준 슬롯 ${m.slots}개</span>
+    <span class="media-info-badge">최소 보장 ${m.min}회/일</span>
+  `;
+}
+
+/* ── Timeline render ── */
+function pct(num, total) {
+  return (num / total * 100).toFixed(3) + '%';
+}
+
+function chipClass(type) {
+  return type === 'confirmed' ? 'chip-confirmed'
+       : type === 'selfop'    ? 'chip-selfop'
+       : type === 'draft'     ? 'chip-draft'
+       : 'chip-confirmed';
+}
+
+function renderTimeline() {
+  const START_H = 7, END_H = 22, TOTAL_H = END_H - START_H; // 15h
+
+  let html = '';
+
+  /* ── Row 1: Time axis ── */
+  html += `<tr class="tl-axis-row">
+    <td class="tl-label-cell" style="font-size:11px;color:#9EA5AD;font-weight:600">시간</td>
+    <td class="tl-axis-cell"><div class="tl-axis-inner">`;
+
+  for (let h = START_H; h <= END_H; h += 2) {
+    html += `<div class="tl-tick" style="left:${pct(h - START_H, TOTAL_H)}">
+      <span class="tl-tick-label">${String(h).padStart(2,'0')}:00</span>
+      <div class="tl-tick-line"></div>
+    </div>`;
+  }
+  html += `</div></td></tr>`;
+
+  /* ── Row 2: Jingle/시보 row ── */
+  html += `<tr class="tl-jingle-row">
+    <td class="tl-label-cell"><span class="tl-jingle-label">🔔 시보 구간</span></td>
+    <td class="tl-jingle-cell"><div class="jingle-bar">`;
+
+  // Zone backgrounds
+  [
+    { from: 7,  to: 12, cls: 'jingle-zone-morning' },
+    { from: 12, to: 18, cls: 'jingle-zone-midday'  },
+    { from: 18, to: 22, cls: 'jingle-zone-evening' },
+  ].forEach(z => {
+    html += `<div class="jingle-zone ${z.cls}" style="left:${pct(z.from - START_H, TOTAL_H)};width:${pct(z.to - z.from, TOTAL_H)}"></div>`;
+  });
+
+  // Markers
+  [
+    { h: 12, label: '12:00 시보', ad: '롯데 30초' },
+    { h: 18, label: '18:00 시보', ad: '현대 30초' },
+  ].forEach(m => {
+    html += `<div class="jingle-marker" style="left:${pct(m.h - START_H, TOTAL_H)}">
+      <div class="jingle-vline"></div>
+      <div class="jingle-badge">
+        🔔 ${m.label}
+        <button class="jingle-edit-btn" onclick="openModal('${m.h}:00')">✎</button>
+        <span class="jingle-ad-name">${m.ad}</span>
       </div>
+    </div>`;
+  });
 
-      <select class="product-select">
-        <option selected>강남 프리미엄 패키지</option>
-        <option>홍대 입구역 프리미엄</option>
-        <option>신촌 역세권 디스플레이</option>
-      </select>
+  html += `</div></td></tr>`;
 
-      <div class="view-tabs">
-        <button onclick="location.href='schedule-product-month.html'">월간</button>
-        <button class="active">일 보기</button>
-      </div>
+  /* ── Segments ── */
+  SEGMENTS.forEach((seg, si) => {
+    // Segment header
+    html += `<tr class="seg-header-row">
+      <td class="tl-label-cell" style="font-size:11px;font-weight:700;color:#24292E;background:#F6F7F9">
+        ${String(seg.start).padStart(2,'0')}:00<br>~ ${String(seg.end).padStart(2,'0')}:00
+      </td>
+      <td style="background:#F6F7F9;border-bottom:1px solid #E5E7EA;border-top:2px solid #E5E7EA;padding:7px 14px">
+        <span class="seg-header-label">${seg.label}</span>
+        <span class="seg-header-count">| ${seg.count}사이클</span>
+      </td>
+    </tr>`;
 
-      <div class="cal-nav">
-        <button title="이전 날">‹</button>
-        <span class="cal-nav-label">2025.10.15 (수)</span>
-        <button title="다음 날">›</button>
-      </div>
+    // 3 sample cycle rows
+    for (let ci = 0; ci < 3; ci++) {
+      const cNum = si * 3 + ci + 1;
+      const minStep = Math.floor(ci * 5);
+      const timeStr = `${String(seg.start).padStart(2,'0')}:${String(minStep).padStart(2,'0')}`;
 
-      <div class="day-toolbar-right">
-        <button class="btn btn-primary" onclick="location.href='schedule-register-form.html'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-          스케줄 등록
-        </button>
+      // Calculate used duration including jingle
+      const jingleDur = (seg.hasJingle && ci === 0) ? 15 : 0;
+      const totalUsed = jingleDur + CYCLE_USED;
+      const remain = CYCLE_MAX - totalUsed;
+
+      const segLeft = pct(seg.start - START_H, TOTAL_H);
+      const segWidth = pct(seg.end - seg.start, TOTAL_H);
+
+      html += `<tr class="tl-cycle-row">
+        <td class="tl-label-cell">
+          <div class="tl-cycle-label">
+            <span style="color:#7F77DD;font-weight:700">C${String(cNum).padStart(3,'0')}</span>
+            <span style="color:#9EA5AD">${timeStr}</span>
+          </div>
+        </td>
+        <td class="tl-cycle-cell">
+          <div class="cycle-bar">
+            <div class="cycle-inner" style="left:${segLeft};width:${segWidth}">`;
+
+      // Jingle chip for first cycle of segments 2 & 3
+      if (seg.hasJingle && ci === 0) {
+        const jW = pct(15, CYCLE_MAX);
+        html += `<div class="cycle-chip chip-jingle" style="width:${jW};min-width:36px" title="시보 15초">🔔 15s</div>
+          <div class="chip-gap"></div>`;
+      }
+
+      // Ad chips
+      CYCLE_ADS.forEach(ad => {
+        const w = pct(ad.dur, CYCLE_MAX);
+        const cls = chipClass(ad.type);
+        const label = ad.dur >= 20 ? ad.name : `${ad.dur}초`;
+        html += `<div class="cycle-chip ${cls}" style="width:${w};min-width:28px" title="${ad.name}">${label}</div>
+          <div class="chip-gap"></div>`;
+      });
+
+      // Remaining empty
+      const rW = pct(remain, CYCLE_MAX);
+      html += `<div class="cycle-chip chip-empty" style="width:${rW};min-width:50px" title="잔여 ${remain}초">잔여 ${remain}초</div>`;
+
+      html += `</div></div></td></tr>`;
+    }
+
+    // More indicator
+    const more = seg.count - 3;
+    html += `<tr>
+      <td class="tl-label-cell" style="background:#fff;border-bottom:1px solid #F1F2F4"></td>
+      <td class="cycle-more">… 동일 패턴으로 <strong>${more}사이클</strong> 더 반복</td>
+    </tr>`;
+  });
+
+  document.getElementById('timelineTable').innerHTML = html;
+}
+
+/* ── Modal ── */
+function openModal(time) {
+  currentJingleTime = time;
+  jingleOrder[time] = JSON.parse(JSON.stringify(JINGLES_DATA[time] || []));
+  document.getElementById('modalTitle').textContent = `${time} 시보 순서 변경`;
+  renderJingleList();
+  document.getElementById('jingleModal').classList.add('open');
+}
+
+function renderJingleList() {
+  const list = jingleOrder[currentJingleTime] || [];
+  document.getElementById('jingleList').innerHTML = list.map((j, i) => `
+    <div class="jingle-item">
+      <span class="jingle-rank">${i+1}순위</span>
+      <span class="jingle-name">${j.name}</span>
+      <span class="jingle-dur">${j.dur}</span>
+      <div class="jingle-order-btns">
+        <button class="jingle-order-btn" onclick="moveJingle(${i},-1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="jingle-order-btn" onclick="moveJingle(${i},1)"  ${i === list.length-1 ? 'disabled' : ''}>↓</button>
       </div>
     </div>
+  `).join('');
+}
 
-    <!-- 범례 -->
-    <div class="legend">
-      <span class="legend-item"><span class="legend-dot" style="background:#2E9E34;"></span>확정 스케줄</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#fff;border:2px dashed #CED2D6;"></span>초안</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#2D84ED;"></span>Booking</span>
-      <span class="legend-item"><span class="legend-dot" style="background:repeating-linear-gradient(45deg,#F6F7F9,#F6F7F9 3px,#E5E7EA 3px,#E5E7EA 6px);border:1px solid #CED2D6;"></span>조건 광고</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#CED2D6;"></span>대체 콘텐츠</span>
-      <span class="legend-item"><span style="width:12px;height:12px;background:rgba(88,198,93,0.3);display:inline-block;"></span>사이클 구분</span>
-    </div>
+function moveJingle(idx, dir) {
+  const list = jingleOrder[currentJingleTime];
+  const ni = idx + dir;
+  if (ni < 0 || ni >= list.length) return;
+  [list[idx], list[ni]] = [list[ni], list[idx]];
+  renderJingleList();
+}
 
-    <!-- 타임라인 -->
-    <div class="timeline-wrap">
-      <!-- 헤더 -->
-      <div class="timeline-header">
-        <div class="tl-media-col">미디어</div>
-        <div class="tl-time-header">
-          <div class="tl-time-tick">09:00</div>
-          <div class="tl-time-tick">10:00</div>
-          <div class="tl-time-tick">11:00</div>
-          <div class="tl-time-tick">12:00</div>
-          <div class="tl-time-tick">13:00</div>
-          <div class="tl-time-tick">14:00</div>
-          <div class="tl-time-tick">15:00</div>
-          <div class="tl-time-tick">16:00</div>
-          <div class="tl-time-tick">17:00</div>
-          <div class="tl-time-tick">18:00</div>
-          <div class="tl-time-tick">20:00</div>
-        </div>
-      </div>
+function closeModal() {
+  document.getElementById('jingleModal').classList.remove('open');
+}
 
-      <!-- 미디어 A -->
-      <div class="tl-row">
-        <div class="tl-row-label">
-          <div class="tl-media-name">미디어 A</div>
-          <div class="tl-media-sub">강남역 1번출구</div>
-        </div>
-        <div class="tl-track">
-          <!-- 사이클 구분선 -->
-          <div class="cycle-line" style="left: 18.18%;"></div>
-          <div class="cycle-line" style="left: 36.36%;"></div>
-          <div class="cycle-line" style="left: 54.54%;"></div>
-          <div class="cycle-line" style="left: 72.72%;"></div>
-          <!-- 블록들 -->
-          <div class="tl-block block-confirmed" style="left:2%;width:15%;" onclick="location.href='schedule-block-detail.html'" title="강남역 CF 광고">강남역 CF 광고</div>
-          <div class="tl-block block-booking" style="left:20%;width:18%;" onclick="location.href='schedule-booking-detail.html'" title="Booking">Booking</div>
-          <div class="tl-block block-confirmed" style="left:40%;width:12%;" onclick="location.href='schedule-block-detail.html'" title="브랜드 광고">브랜드 광고</div>
-          <div class="tl-block block-draft" style="left:55%;width:16%;" onclick="location.href='schedule-block-detail.html'" title="가을 캠페인 (초안)">가을 캠페인</div>
-          <div class="tl-block block-alt" style="left:73%;width:10%;" title="대체 콘텐츠">대체 콘텐츠</div>
-        </div>
-      </div>
+function saveJingle() {
+  JINGLES_DATA[currentJingleTime] = [...jingleOrder[currentJingleTime]];
+  closeModal();
+  const btn = document.getElementById('saveBtn');
+  const orig = btn.textContent;
+  btn.textContent = '저장됨 ✓';
+  btn.style.background = '#5DCAA5';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1600);
+}
 
-      <!-- 미디어 B -->
-      <div class="tl-row">
-        <div class="tl-row-label">
-          <div class="tl-media-name">미디어 B</div>
-          <div class="tl-media-sub">강남역 2번출구</div>
-        </div>
-        <div class="tl-track">
-          <div class="cycle-line" style="left: 18.18%;"></div>
-          <div class="cycle-line" style="left: 36.36%;"></div>
-          <div class="cycle-line" style="left: 54.54%;"></div>
-          <div class="cycle-line" style="left: 72.72%;"></div>
-          <div class="tl-block block-confirmed" style="left:2%;width:14%;" onclick="location.href='schedule-block-detail.html'" title="강남역 CF 광고">강남역 CF 광고</div>
-          <div class="tl-block block-condition" style="left:19%;width:10%;" onclick="location.href='schedule-block-detail.html'" title="조건부 광고">조건부 광고</div>
-          <div class="tl-block block-confirmed" style="left:38%;width:16%;" onclick="location.href='schedule-block-detail.html'" title="브랜드 광고">브랜드 광고</div>
-          <div class="tl-block block-booking" style="left:57%;width:20%;" onclick="location.href='schedule-booking-detail.html'" title="Booking">Booking</div>
-        </div>
-      </div>
+// Close on overlay click
+document.getElementById('jingleModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 
-      <!-- 미디어 C -->
-      <div class="tl-row">
-        <div class="tl-row-label">
-          <div class="tl-media-name">미디어 C</div>
-          <div class="tl-media-sub">강남역 출구광장</div>
-        </div>
-        <div class="tl-track">
-          <div class="cycle-line" style="left: 18.18%;"></div>
-          <div class="cycle-line" style="left: 36.36%;"></div>
-          <div class="cycle-line" style="left: 54.54%;"></div>
-          <div class="cycle-line" style="left: 72.72%;"></div>
-          <div class="tl-block block-draft" style="left:2%;width:18%;" onclick="location.href='schedule-block-detail.html'" title="신규 광고 (초안)">신규 광고 (초안)</div>
-          <div class="tl-block block-confirmed" style="left:22%;width:14%;" onclick="location.href='schedule-block-detail.html'" title="브랜드 광고">브랜드 광고</div>
-          <div class="tl-block block-condition" style="left:38%;width:12%;" onclick="location.href='schedule-block-detail.html'" title="조건부 광고">조건부 광고</div>
-          <div class="tl-block block-confirmed" style="left:55%;width:15%;" onclick="location.href='schedule-block-detail.html'" title="강남역 CF 광고">강남역 CF 광고</div>
-          <div class="tl-block block-alt" style="left:74%;width:8%;" title="대체 콘텐츠">대체</div>
-        </div>
-      </div>
-
-      <!-- 달성률 -->
-      <div class="achieve-row">
-        <div class="achieve-label" style="font-size:12px;font-weight:600;color:#596066;">미디어별 보장 달성률</div>
-        <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:12px;color:#596066;min-width:60px;">미디어 A</span>
-            <div class="achieve-bar-wrap"><div class="achieve-bar" style="width:78%;"></div></div>
-            <span class="achieve-pct">78%</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:12px;color:#596066;min-width:60px;">미디어 B</span>
-            <div class="achieve-bar-wrap"><div class="achieve-bar" style="width:92%;"></div></div>
-            <span class="achieve-pct">92%</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:12px;color:#596066;min-width:60px;">미디어 C</span>
-            <div class="achieve-bar-wrap"><div class="achieve-bar" style="width:55%;background:#F5A623;"></div></div>
-            <span class="achieve-pct" style="color:#B97B00;">55%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</main>
+/* ── Init ── */
+renderTimeline();
+</script>
 </body>
 </html>
