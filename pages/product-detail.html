@@ -495,37 +495,40 @@
 
     /* ── Media summary section ── */
     .media-summary-layout {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
     .media-map-panel {
       overflow: hidden;
       background: #F0F4F8;
-      border-bottom: 1px solid #E5E7EA;
+      border-right: 1px solid #E5E7EA;
+      display: flex;
+      flex-direction: column;
     }
     .media-map-header {
-      padding: 10px 20px;
+      padding: 10px 16px;
       font-size:12px; font-weight:700; color:#596066;
       background:#fff; border-bottom:1px solid #E5E7EA;
       display:flex; align-items:center; justify-content:space-between; gap:6px;
+      flex-shrink: 0;
     }
-    .media-map-body { position:relative; height:380px; overflow:hidden; }
+    .media-map-body { position:relative; flex:1; min-height:320px; overflow:hidden; }
+    .media-map-legend { padding:8px 16px; background:#fff; border-top:1px solid #E5E7EA; display:flex; gap:16px; font-size:11px; color:#596066; flex-shrink:0; }
     .media-summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
+      display: flex;
+      flex-direction: column;
     }
     .media-summary-grid .media-card {
       border-radius: 0;
       border-left: none;
+      border-right: none;
       border-top: none;
-      border-right: 1px solid #E5E7EA;
-      border-bottom: none;
+      border-bottom: 1px solid #E5E7EA;
     }
-    .media-summary-grid .media-card:last-child { border-right: none; }
+    .media-summary-grid .media-card:last-child { border-bottom: none; }
     @media (max-width: 900px) {
-      .media-summary-grid { grid-template-columns: 1fr; }
-      .media-summary-grid .media-card { border-right: none; border-bottom: 1px solid #E5E7EA; }
+      .media-summary-layout { grid-template-columns: 1fr; }
+      .media-map-panel { border-right: none; border-bottom: 1px solid #E5E7EA; }
     }
     .map-pin {
       position: absolute;
@@ -895,23 +898,23 @@
             <text x="130" y="80" text-anchor="middle" font-size="10" fill="#9EA5AD">강남대로</text>
           </svg>
           <!-- 핀 1: 강남역 1번출구 A -->
-          <div class="map-pin" style="left:236px;top:112px;" title="강남역 1번출구 A">
+          <div class="map-pin" style="left:33.7%;top:29.5%;" title="강남역 1번출구 A">
             <div class="map-pin-label">1번출구 A</div>
-            <div class="map-pin-dot online" style="width:28px;height:28px;">
+            <div class="map-pin-dot online" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">A</span>
             </div>
           </div>
           <!-- 핀 2: 강남역 1번출구 B -->
-          <div class="map-pin" style="left:274px;top:112px;" title="강남역 1번출구 B">
+          <div class="map-pin" style="left:39.1%;top:29.5%;" title="강남역 1번출구 B">
             <div class="map-pin-label">1번출구 B</div>
-            <div class="map-pin-dot online" style="width:28px;height:28px;">
+            <div class="map-pin-dot online" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">B</span>
             </div>
           </div>
           <!-- 핀 3: 강남역 2번출구 (점검 중) -->
-          <div class="map-pin" style="left:500px;top:112px;" title="강남역 2번출구">
+          <div class="map-pin" style="left:71.4%;top:29.5%;" title="강남역 2번출구">
             <div class="map-pin-label">2번출구</div>
-            <div class="map-pin-dot offline" style="width:28px;height:28px;">
+            <div class="map-pin-dot offline" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">2</span>
             </div>
           </div>
