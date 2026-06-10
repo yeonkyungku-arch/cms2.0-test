@@ -1020,14 +1020,8 @@ function openBookingModal(key) {
   /* 상태 초기화 */
   bkState.planTab    = 'select';
   bkState.schedType  = 'normal';
-  bkState.slotChecked = false;
   switchPlanTab('select');
   setSchedType('normal');
-  document.getElementById('slotCheckSection').style.display = 'none';
-  document.getElementById('btnBkSubmit').disabled = true;
-  document.getElementById('bkFootHint').textContent = '';
-  document.getElementById('bkDuration').value = 30;
-
   document.getElementById('bookingOverlay').classList.remove('hidden');
 }
 
@@ -1085,8 +1079,7 @@ function onDurationChange() { resetSlotCheck(); }
 
 function resetSlotCheck() {
   bkState.slotChecked = false;
-  document.getElementById('slotCheckSection').style.display = 'none';
-  document.getElementById('btnBkSubmit').disabled = true;
+  document.getElementById('btnBkSubmit').disabled = false;
   document.getElementById('bkFootHint').textContent = '';
 }
 
@@ -1147,22 +1140,11 @@ function checkSlot() {
 
   html += '</div>';
 
-  document.getElementById('slotCheckSection').style.display = '';
-  document.getElementById('slotCheckResult').innerHTML = html;
-
   bkState.slotChecked = true;
-  if (someOk) {
-    document.getElementById('btnBkSubmit').disabled = false;
-    document.getElementById('bkFootHint').textContent = allOk ? '' : '일부 미디어에만 등록됩니다.';
-  } else {
-    document.getElementById('btnBkSubmit').disabled = true;
-    document.getElementById('bkFootHint').textContent = '등록 가능한 미디어가 없습니다.';
-  }
 }
 
 /* ── 예약 등록 ── */
 function submitBooking() {
-  if (!bkState.slotChecked) return;
   var btn = document.getElementById('btnBkSubmit');
   btn.textContent = '등록됨 ✓';
   btn.style.background = '#5DCAA5';
