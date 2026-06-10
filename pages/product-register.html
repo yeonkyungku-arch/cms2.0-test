@@ -82,7 +82,6 @@
     }
     .media-list-col {
       display: flex; flex-direction: column;
-      height: 420px;
     }
     .media-search-area {
       border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
@@ -91,6 +90,7 @@
     .media-map-wrap {
       border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
       position: sticky; top: 80px;
+      display: flex; flex-direction: column;
     }
     .media-map-header {
       display: flex; align-items: center; gap: 6px;
@@ -100,7 +100,7 @@
     }
     .media-map-svg-wrap {
       position: relative; background: #E8EDF2;
-      height: 420px; overflow: hidden;
+      flex: 1; overflow: hidden;
     }
     .media-map-pin {
       position: absolute;
@@ -598,8 +598,6 @@
                 <!-- 렌더링됨 -->
               </div>
             </div>
-            <div id="selectedChips" class="selected-chips"></div>
-            <div id="mediaSelMsg" class="input-error" style="margin-top:8px;">미디어를 1개 이상 선택해 주세요.</div>
           </div>
 
           <!-- 우: 지도 -->
@@ -618,6 +616,10 @@
             </div>
           </div>
         </div>
+
+        <!-- 선택된 미디어 칩 -->
+        <div id="selectedChips" class="selected-chips" style="margin-top:10px;"></div>
+        <div id="mediaSelMsg" class="input-error" style="margin-top:8px;">미디어를 1개 이상 선택해 주세요.</div>
 
         <!-- 제공 가능한 광고 옵션 -->
         <div id="adOptionsPanel" style="display:none;margin-top:16px;">
