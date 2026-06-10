@@ -371,52 +371,6 @@
       white-space: nowrap;
     }
 
-    /* ── 시보 순서 모달 ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45); z-index: 200;
-      align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: #fff; border-radius: 12px; width: 480px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18); overflow: hidden;
-    }
-    .modal-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 22px; border-bottom: 1px solid #E5E7EA;
-    }
-    .modal-head h3 { font-size: 16px; font-weight: 700; color: #24292E; margin: 0; }
-    .modal-close {
-      width: 30px; height: 30px; border: none; background: none; cursor: pointer;
-      color: #9EA5AD; font-size: 22px; display: flex; align-items: center; justify-content: center;
-      border-radius: 4px; transition: background 0.15s;
-    }
-    .modal-close:hover { background: #F6F7F9; color: #24292E; }
-    .modal-body { padding: 20px 22px; }
-    .modal-desc { font-size: 13px; color: #596066; margin-bottom: 16px; }
-    .jingle-order-list { display: flex; flex-direction: column; gap: 8px; }
-    .jingle-order-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px;
-      border: 1px solid #E5E7EA; border-radius: 8px;
-      background: #FAFAFA;
-      font-size: 13px;
-    }
-    .jingle-order-num {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: #7F77DD; color: #fff;
-      font-size: 12px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .jingle-order-name { flex: 1; font-weight: 600; color: #24292E; }
-    .jingle-order-dur { color: #9EA5AD; font-size: 12px; }
-    .jingle-order-drag { color: #CED2D6; cursor: grab; font-size: 16px; }
-    .modal-foot {
-      padding: 14px 22px; border-top: 1px solid #E5E7EA;
-      display: flex; justify-content: flex-end; gap: 8px;
-    }
 
     @media (max-width: 900px) {
       .cond-cards { grid-template-columns: 1fr; }
@@ -610,7 +564,6 @@
           <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#596066;">
             <span style="width:10px;height:10px;border-radius:2px;background:#F3E8FF;border:1px solid #C084FC;display:inline-block;"></span>시보
           </span>
-          <button class="btn btn-ghost btn-sm" onclick="openJingleModal()">시보 순서 변경</button>
         </div>
       </div>
 
@@ -822,51 +775,6 @@
   </div><!-- /content-inner -->
 </main>
 
-<!-- 시보 순서 변경 모달 -->
-<div class="modal-overlay" id="jingleModal" onclick="if(event.target===this)closeJingleModal()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3>🔔 시보 순서 변경</h3>
-      <button class="modal-close" onclick="closeJingleModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-desc">시보 구간 내 광고 순서를 드래그하여 조정하세요. 변경 사항은 다음 사이클부터 적용됩니다.</div>
-      <div class="jingle-order-list">
-        <div class="jingle-order-item">
-          <span class="jingle-order-num">1</span>
-          <span class="jingle-order-name">🔔 시보 시그널</span>
-          <span class="jingle-order-dur">15초</span>
-          <span class="jingle-order-drag">⠿</span>
-        </div>
-        <div class="jingle-order-item">
-          <span class="jingle-order-num">2</span>
-          <span class="jingle-order-name">가:나이키 — 나이키 6월 캠페인</span>
-          <span class="jingle-order-dur">30초</span>
-          <span class="jingle-order-drag">⠿</span>
-        </div>
-        <div class="jingle-order-item">
-          <span class="jingle-order-num">3</span>
-          <span class="jingle-order-name">나:현대 — 현대 여름 광고</span>
-          <span class="jingle-order-dur">30초</span>
-          <span class="jingle-order-drag">⠿</span>
-        </div>
-        <div class="jingle-order-item">
-          <span class="jingle-order-num">4</span>
-          <span class="jingle-order-name">가:삼성 — 삼성 여름 광고</span>
-          <span class="jingle-order-dur">20초</span>
-          <span class="jingle-order-drag">⠿</span>
-        </div>
-      </div>
-      <div style="margin-top:14px;padding:10px 14px;background:#F6F7F9;border-radius:6px;font-size:12px;color:#596066;">
-        총 구성: <strong>95초</strong> · 12:00, 18:00 시보 구간 동일 적용
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost btn-sm" onclick="closeJingleModal()">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="closeJingleModal()">저장</button>
-    </div>
-  </div>
-</div>
 
 <script>
 // ── 데이터 정의 ──
@@ -941,9 +849,6 @@ function renderUnifiedTimeline() {
     /* 구간 헤더 */
     zoneHtml += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">';
     zoneHtml += '<span style="font-size:10px;color:#9EA5AD;white-space:nowrap;">' + String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시 · ' + cycles + '사이클</span>';
-    if (isJingle) {
-      zoneHtml += '<button onclick="openJingleModal()" style="margin-left:auto;font-size:9px;color:#7F77DD;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:3px;padding:1px 6px;cursor:pointer;">✎ 시보 변경</button>';
-    }
     zoneHtml += '</div>';
 
     /* 시보 + 사이클을 하나의 블록으로 좌→우 표현 */
@@ -1024,22 +929,22 @@ function renderCondScheduleRow() {
 // content.selfOp: true → 자체운영 콘텐츠
 var cycleOrder = [
   {
-    id: 0, name: '나이키 6월 캠페인', dur: 30,
+    id: 0, name: '나이키 6월 캠페인', product: '강남 A지구 패키지', dur: 30,
     scheduleType: 'general', condType: null, status: 'confirmed',
     content: { thumb: '#3C3489', emoji: '👟', name: '나이키_에어맥스2026_30s.mp4', selfOp: false }
   },
   {
-    id: 1, name: '삼성 여름 광고', dur: 20,
+    id: 1, name: '삼성 여름 광고', product: '강남 A지구 패키지', dur: 20,
     scheduleType: 'cond', condType: 'target', status: 'confirmed',
     content: { thumb: '#2D84ED', emoji: '📱', name: '삼성_갤럭시S25_20s.mp4', selfOp: false }
   },
   {
-    id: 2, name: '현대 아이오닉 캠페인', dur: 30,
+    id: 2, name: '현대 아이오닉 캠페인', product: '홍대 입구역 프리미엄', dur: 30,
     scheduleType: 'cond', condType: 'env', status: 'unconfirmed',
     content: { thumb: '#F59E0B', emoji: '🚗', name: '현대_아이오닉9_30s.mp4', selfOp: false }
   },
   {
-    id: 3, name: '강남역 자체 홍보', dur: 10,
+    id: 3, name: '강남역 자체 홍보', product: '강남 A지구 패키지', dur: 10,
     scheduleType: 'general', condType: null, status: 'confirmed',
     content: { thumb: '#5DCAA5', emoji: '🏪', name: '강남역_자체홍보_10s.mp4', selfOp: true }
   }
@@ -1075,12 +980,12 @@ function renderCycleOrder() {
   h += '<button onclick="saveCycleOrder(event)" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>';
   h += '</div>';
 
-  /* 열: 순서 | 드래그 | 스케줄명 | 상태 | 유형 | 콘텐츠 | 재생시간 | 순서조작 */
-  var COL = '36px 24px 1fr 52px 80px 2fr 64px 60px';
+  /* 열: 순서 | 드래그 | 스케줄명 | 프로덕트 | 상태 | 유형 | 콘텐츠 | 재생시간 | 순서조작 */
+  var COL = '36px 24px 1fr 120px 52px 80px 2fr 64px 60px';
 
   /* 헤더 */
   h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">';
-  h += '<span>순서</span><span></span><span>스케줄명</span><span>상태</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>';
+  h += '<span>순서</span><span></span><span>스케줄명</span><span>프로덕트</span><span>상태</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>';
 
   /* 아이템 목록 */
   cycleOrder.forEach(function(ad, idx) {
@@ -1098,6 +1003,9 @@ function renderCycleOrder() {
     h += '<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">' + ad.name + '</span>';
     h += '<a href="#" style="font-size:10px;color:#2D84ED;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">상세</a>';
     h += '</div>';
+
+    /* 프로덕트명 */
+    h += '<span style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (ad.product || '') + '">' + (ad.product || '-') + '</span>';
 
     /* 상태 */
     h += '<span style="font-size:10px;font-weight:600;color:' + (statusColor[ad.status] || '#9EA5AD') + ';white-space:nowrap;">' + (statusLabel[ad.status] || ad.status) + '</span>';
@@ -1162,13 +1070,6 @@ function saveCycleOrder(event) {
   setTimeout(function() { btn.textContent = '순서 저장'; btn.style.background = '#24292E'; }, 1800);
 }
 
-// ── 모달 ──
-function openJingleModal() {
-  document.getElementById('jingleModal').classList.add('open');
-}
-function closeJingleModal() {
-  document.getElementById('jingleModal').classList.remove('open');
-}
 
 // ── 스케줄 상태에 따른 현황 섹션 표시/숨김 ──
 // scheduleStatus: 'upcoming' | 'running' | 'ended' | 'completed'
