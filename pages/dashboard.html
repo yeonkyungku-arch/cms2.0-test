@@ -202,7 +202,7 @@
     <!-- Nav items -->
     <nav class="gnb-nav">
       <!-- 대시보드 (active) -->
-      <a href="dashboard.html" class="active" onclick="return false;">
+      <a href="dashboard" class="active" onclick="return false;">
         <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <rect x="2" y="2" width="7" height="7" rx="1"/>
           <rect x="11" y="2" width="7" height="7" rx="1"/>
@@ -315,7 +315,7 @@
         <div class="profile-dropdown" id="profileDropdown">
           <a href="#">내 정보</a>
           <a href="#">비밀번호 변경</a>
-          <a href="login.html" class="logout">로그아웃</a>
+          <a href="login" class="logout">로그아웃</a>
         </div>
       </div>
     </div>
@@ -323,7 +323,7 @@
 
   <!-- ZONE 3: Breadcrumb -->
   <div class="bcrumb">
-    <a href="dashboard.html" class="cur">대시보드</a>
+    <a href="dashboard" class="cur">대시보드</a>
     <span class="sep">&rsaquo;</span>
     <span class="cur">운영 현황</span>
   </div>
@@ -342,28 +342,19 @@
 
         <!-- 온라인 (active = green) -->
         <div class="stat-card active">
-          <div class="stat-card-label">
-            <span class="stat-dot dot-online"></span>
-            온라인
-          </div>
+          <div class="stat-card-label">온라인</div>
           <div class="stat-card-value">115</div>
         </div>
 
         <!-- 오프라인 -->
         <div class="stat-card">
-          <div class="stat-card-label">
-            <span class="stat-dot dot-offline"></span>
-            오프라인
-          </div>
+          <div class="stat-card-label">오프라인</div>
           <div class="stat-card-value">8</div>
         </div>
 
         <!-- 점검 중 -->
         <div class="stat-card">
-          <div class="stat-card-label">
-            <span class="stat-dot dot-error"></span>
-            점검 중
-          </div>
+          <div class="stat-card-label">점검 중</div>
           <div class="stat-card-value">5</div>
         </div>
       </div>

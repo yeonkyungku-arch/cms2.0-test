@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking 등록 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <style>
+    /* ── 모달 오버레이 레이아웃 ── */
+    body {
+      margin: 0;
+      background: rgba(24, 29, 33, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: inherit;
+    }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(24, 29, 33, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      width: 480px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #24292E;
+    }
+    .modal-close {
+      width: 28px; height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #9EA5AD;
+      font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: #F6F7F9; color: #24292E; }
+    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 16px 24px;
+      border-top: 1px solid #E5E7EA;
+      background: #FAFAFA;
+    }
+
+    /* ── 폼 필드 ── */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #596066;
+    }
+    .form-label .req { color: #C83434; margin-left: 2px; }
+    .form-input {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #24292E;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: #58C65D; }
+    .form-textarea {
+      padding: 10px 12px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #24292E;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.15s;
+    }
+    .form-textarea:focus { border-color: #58C65D; }
+    .form-row { display: flex; align-items: center; gap: 8px; }
+    .form-row .form-input { flex: 1; }
+    .form-row-sep { color: #9EA5AD; font-size: 14px; flex-shrink: 0; }
+    .form-suffix { font-size: 14px; color: #596066; flex-shrink: 0; }
+    .input-with-suffix { display: flex; align-items: center; gap: 8px; }
+    .input-with-suffix .form-input { flex: 1; }
+
+    /* 안내 텍스트 */
+    .form-hint {
+      font-size: 12px;
+      color: #9EA5AD;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="modal-backdrop" onclick="handleBackdropClick(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <span class="modal-title">Booking 등록</span>
+      <button class="modal-close" onclick="history.back()" title="닫기">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- 기간 -->
+      <div class="form-group">
+        <label class="form-label">기간 <span class="req">*</span></label>
+        <div class="form-row">
+          <input type="date" class="form-input" value="2025-10-15">
+          <span class="form-row-sep">~</span>
+          <input type="date" class="form-input" value="2025-10-31">
+        </div>
+        <div class="form-hint">드래그로 선택한 경우 자동 입력됩니다. 수정 가능합니다.</div>
+      </div>
+
+      <!-- 재생 시간 -->
+      <div class="form-group">
+        <label class="form-label">재생 시간 <span class="req">*</span></label>
+        <div class="input-with-suffix">
+          <input type="number" class="form-input" placeholder="0" min="1">
+          <span class="form-suffix">초</span>
+        </div>
+      </div>
+
+      <!-- 보장 횟수 -->
+      <div class="form-group">
+        <label class="form-label">보장 횟수 <span class="req">*</span></label>
+        <div class="input-with-suffix">
+          <input type="number" class="form-input" placeholder="0" min="1">
+          <span class="form-suffix">회</span>
+        </div>
+        <div class="form-hint">저장 시 해당 기간의 잔여 시간이 임시 선점됩니다.</div>
+      </div>
+
+      <!-- 메모 -->
+      <div class="form-group">
+        <label class="form-label">메모</label>
+        <textarea class="form-textarea" placeholder="협의 중인 내용, 특이사항 등을 입력하세요 (선택)"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="history.back()">취소</button>
+      <button class="btn btn-primary" onclick="saveBooking()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function handleBackdropClick(e) {
+    if (e.target === e.currentTarget) history.back();
+  }
+  function saveBooking() {
+    alert('Booking이 등록되었습니다. 해당 기간 잔여 시간이 임시 선점됩니다.');
+    history.back();
+  }
+</script>
+</body>
+</html>
