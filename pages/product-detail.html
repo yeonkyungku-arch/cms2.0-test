@@ -815,24 +815,43 @@
     .adex-title { font-size:13px; font-weight:700; color:#24292E; }
     .adex-sub { font-size:11px; color:#9EA5AD; }
     /* ─── 스케줄 예약 모달 ─── */
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; }
-    .modal-overlay.open { display:flex; }
-    .modal-box { background:#fff; border-radius:12px; width:860px; max-width:95vw; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; }
-    .modal-head { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; border-bottom:1px solid #E5E7EA; }
-    .modal-title { font-size:16px; font-weight:700; color:#24292E; }
-    .modal-body { display:flex; gap:0; flex:1; overflow:hidden; }
-    .modal-form { flex:1; padding:24px; overflow-y:auto; border-right:1px solid #E5E7EA; }
-    .modal-validation { width:280px; padding:20px; background:#F6F7F9; overflow-y:auto; flex-shrink:0; }
-    .modal-footer { padding:14px 24px; border-top:1px solid #E5E7EA; display:flex; justify-content:flex-end; gap:8px; }
-    .val-title { font-size:12px; font-weight:700; color:#24292E; margin-bottom:12px; }
-    .val-item { margin-bottom:10px; }
-    .val-status { font-size:12px; font-weight:700; margin-bottom:2px; }
-    .val-status.ok { color:#2E9E34; }
-    .val-status.ng { color:#E97474; }
-    .val-detail { font-size:11px; color:#596066; line-height:1.5; }
-    .val-divider { height:1px; background:#E5E7EA; margin:12px 0; }
-    .val-summary { font-size:12px; color:#596066; line-height:1.8; }
-    .val-summary strong { color:#24292E; }
+    .booking-overlay { position:fixed; inset:0; background:rgba(36,41,46,.5); display:flex; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(2px); }
+    .booking-overlay.hidden { display:none; }
+    .booking-modal { background:#fff; border-radius:14px; width:520px; max-width:calc(100vw - 32px); max-height:90vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.2); }
+    .booking-modal-head { padding:18px 22px 14px; border-bottom:1px solid #E5E7EA; display:flex; align-items:flex-start; justify-content:space-between; }
+    .booking-modal-head h3 { font-size:15px; font-weight:700; color:#24292E; margin-bottom:2px; }
+    .booking-modal-head p  { font-size:12px; color:#9EA5AD; }
+    .booking-modal-close { width:28px; height:28px; border:none; background:#F6F7F9; border-radius:6px; cursor:pointer; font-size:16px; color:#596066; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .booking-modal-close:hover { background:#E5E7EA; }
+    .booking-modal-body { padding:18px 22px; display:flex; flex-direction:column; gap:16px; }
+    .booking-field label { display:block; font-size:11px; font-weight:600; color:#596066; margin-bottom:5px; }
+    .booking-field select,
+    .booking-field input[type=text],
+    .booking-field input[type=date],
+    .booking-field input[type=number] { width:100%; height:36px; padding:0 10px; border:1px solid #E5E7EA; border-radius:8px; font-size:13px; color:#24292E; outline:none; background:#fff; box-sizing:border-box; }
+    .booking-field select:focus, .booking-field input:focus { border-color:#58C65D; }
+    .booking-field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .plan-tabs { display:flex; border:1px solid #E5E7EA; border-radius:8px; overflow:hidden; }
+    .plan-tab { flex:1; padding:8px 0; font-size:12px; font-weight:600; color:#596066; background:#F6F7F9; border:none; cursor:pointer; transition:background .12s,color .12s; }
+    .plan-tab.active { background:#24292E; color:#fff; }
+    .playplan-list { border:1px solid #E5E7EA; border-radius:8px; overflow:hidden; max-height:180px; overflow-y:auto; }
+    .playplan-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid #F0F1F3; cursor:pointer; transition:background .1s; }
+    .playplan-item:last-child { border-bottom:none; }
+    .playplan-item:hover { background:#F6F7F9; }
+    .playplan-item.selected { background:rgba(88,198,93,.08); }
+    .playplan-item input[type=radio] { accent-color:#58C65D; width:15px; height:15px; flex-shrink:0; }
+    .playplan-item-name { font-size:13px; font-weight:500; color:#24292E; flex:1; }
+    .playplan-item-meta { font-size:11px; color:#9EA5AD; }
+    .type-toggle { display:flex; gap:8px; }
+    .type-btn { flex:1; height:36px; border:1px solid #E5E7EA; border-radius:8px; background:#F6F7F9; font-size:13px; color:#596066; cursor:pointer; font-weight:500; transition:all .12s; }
+    .type-btn.active { border-color:#58C65D; background:rgba(88,198,93,.08); color:#065F46; font-weight:700; }
+    .booking-modal-foot { padding:14px 22px; border-top:1px solid #E5E7EA; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .booking-foot-hint { font-size:11px; color:#9EA5AD; }
+    .booking-foot-btns { display:flex; gap:8px; }
+    .btn-bk-cancel { height:36px; padding:0 16px; border:1px solid #E5E7EA; border-radius:8px; background:#fff; font-size:13px; color:#596066; cursor:pointer; }
+    .btn-bk-submit { height:36px; padding:0 18px; border:none; border-radius:8px; background:#58C65D; font-size:13px; font-weight:700; color:#fff; cursor:pointer; transition:background .12s; }
+    .btn-bk-submit:hover { background:#4AB050; }
+    .btn-bk-submit:disabled { background:#CED2D6; cursor:not-allowed; }
   </style>
 </head>
 <body>
@@ -2205,137 +2224,123 @@ const PP_DATA = {
 };
 
 function openSchedModal() {
-  document.getElementById('schedModal').classList.add('open');
-  updateSchedValidation();
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('schedDateStart').value = today;
+  document.getElementById('schedDateEnd').value   = today;
+  document.getElementById('schedDateInfo').style.display = 'none';
+  document.getElementById('schedFootHint').textContent   = '';
+  schedSwitchPlanTab('select');
+  document.getElementById('schedModal').classList.remove('hidden');
 }
 function closeSchedModal() {
-  document.getElementById('schedModal').classList.remove('open');
+  document.getElementById('schedModal').classList.add('hidden');
 }
-function updateSchedValidation() {
-  const mediaKey = document.getElementById('schedMedia').value;
-  const ppKey    = document.getElementById('schedPP').value;
-  const inv = INV_DATA[mediaKey];
-  const pp  = PP_DATA[ppKey];
-
-  // auto-fill duration
-  document.getElementById('schedDuration').value = pp.duration + '초';
-
-  const newUsedTime  = inv.usedTime  + pp.duration;
-  const newUsedSlots = inv.usedSlots + 1;
-  const timeOK  = newUsedTime  <= inv.cycleMax;
-  const slotOK  = newUsedSlots <= inv.baseSlots;
-  const remainTime  = inv.cycleMax  - newUsedTime;
-  const remainSlots = inv.baseSlots - newUsedSlots;
-  const estCycle = newUsedTime;
-  const estPlays = Math.floor(inv.opsTime / estCycle);
-  const guarOK   = estPlays >= inv.guaranteed;
-
-  const valEl = document.getElementById('schedValidation');
-  valEl.innerHTML = `
-    <div class="val-title">실시간 인벤토리 확인</div>
-    <div class="val-item">
-      <div class="val-status ${timeOK?'ok':'ng'}">${timeOK?'✅':'❌'} 시간 기준</div>
-      <div class="val-detail">합산 ${newUsedTime}초 ${timeOK?'≤':'>'} 사이클 최대 ${inv.cycleMax}초</div>
-    </div>
-    <div class="val-item">
-      <div class="val-status ${slotOK?'ok':'ng'}">${slotOK?'✅':'❌'} 슬롯 수 기준</div>
-      <div class="val-detail">등록 ${newUsedSlots}개 ${slotOK?'≤':'>'} 기준 슬롯 수 ${inv.baseSlots}개</div>
-    </div>
-    <div class="val-divider"></div>
-    <div class="val-summary">
-      예상 실제 사이클 시간: <strong>${estCycle}초</strong>&nbsp;&nbsp;(+${pp.duration}초 추가 시)<br>
-      예상 일 송출 횟수: <strong>${estPlays}회</strong><br>
-      <span class="${guarOK?'val-status ok':'val-status ng'}">${guarOK?'✅':'❌'} 최소 보장 ${inv.guaranteed}회 이상</span>
-    </div>
-  `;
-
-  const submitBtn = document.getElementById('schedSubmitBtn');
-  submitBtn.disabled = !(timeOK && slotOK);
-  submitBtn.style.opacity = (timeOK && slotOK) ? '1' : '0.5';
+function schedSwitchPlanTab(tab) {
+  document.getElementById('schedPanePlanSelect').style.display = tab === 'select' ? '' : 'none';
+  document.getElementById('schedPanePlanDirect').style.display = tab === 'direct' ? '' : 'none';
+  document.getElementById('schedTabSelect').classList.toggle('active', tab === 'select');
+  document.getElementById('schedTabDirect').classList.toggle('active', tab === 'direct');
 }
-
-function toggleCondFields() {
-  const adType = document.querySelector('input[name="adType"]:checked').value;
-  const condSection = document.getElementById('condSection');
-  condSection.style.display = adType === 'cond' ? 'block' : 'none';
+function schedSelectPlayplan(el, id) {
+  document.querySelectorAll('#schedPanePlanSelect .playplan-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input[type=radio]').checked = true;
+}
+function schedSetType(type) {
+  document.getElementById('schedTypeBtnNormal').classList.toggle('active', type === 'normal');
+  document.getElementById('schedTypeBtnCond').classList.toggle('active', type === 'condition');
+  document.getElementById('schedCondFields').style.display = type === 'condition' ? '' : 'none';
+}
+function submitSchedBooking() {
+  var btn = document.getElementById('schedSubmitBtn');
+  btn.textContent = '등록됨 ✓';
+  btn.style.background = '#5DCAA5';
+  setTimeout(function() { closeSchedModal(); btn.textContent = '예약 등록'; btn.style.background = ''; }, 1200);
 }
 </script>
 
 <!-- ─── 스케줄 예약 모달 ─── -->
-<div class="modal-overlay" id="schedModal" onclick="if(event.target===this)closeSchedModal()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <span class="modal-title">스케줄 예약</span>
-      <button onclick="closeSchedModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:#9EA5AD;line-height:1;">×</button>
+<div class="booking-overlay hidden" id="schedModal" onclick="if(event.target===this)closeSchedModal()">
+  <div class="booking-modal">
+    <div class="booking-modal-head">
+      <div>
+        <h3>스케줄 예약</h3>
+        <p id="schedModalDate"></p>
+      </div>
+      <button class="booking-modal-close" onclick="closeSchedModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <!-- 왼쪽: 입력 폼 -->
-      <div class="modal-form">
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">미디어 선택</label>
-          <select id="schedMedia" onchange="updateSchedValidation()" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
-            <option value="A">강남역 1번출구 A</option>
-            <option value="B">강남역 1번출구 B</option>
-            <option value="C">강남역 2번출구</option>
-          </select>
+    <div class="booking-modal-body">
+
+      <!-- ① 광고 기간 -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">1</span>
+          광고 기간
         </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">스케줄명</label>
-          <input type="text" placeholder="스케줄명 입력" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;box-sizing:border-box;">
+        <div class="booking-field-row">
+          <div class="booking-field"><label>시작일</label><input type="date" id="schedDateStart"></div>
+          <div class="booking-field"><label>종료일</label><input type="date" id="schedDateEnd"></div>
         </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">광고주명</label>
-          <input type="text" placeholder="광고주명 입력" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;box-sizing:border-box;">
+        <div id="schedDateInfo" style="display:none;margin-top:7px;font-size:11px;color:#596066;padding:6px 10px;background:#F6F7F9;border-radius:6px;"></div>
+      </div>
+
+      <!-- ② 플레이 플랜 -->
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">2</span>
+          플레이 플랜
         </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">플레이플랜 선택</label>
-          <select id="schedPP" onchange="updateSchedValidation()" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
-            <option value="pp0">30초 일반</option>
-            <option value="pp1">20초 일반</option>
-            <option value="pp2">30초 조건</option>
-          </select>
+        <div class="plan-tabs" style="margin-bottom:10px;">
+          <button class="plan-tab active" id="schedTabSelect" onclick="schedSwitchPlanTab('select')">플레이 플랜 선택</button>
+          <button class="plan-tab" id="schedTabDirect" onclick="schedSwitchPlanTab('direct')">직접 입력</button>
         </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">재생 시간</label>
-          <input type="text" id="schedDuration" readonly style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#596066;background:#F6F7F9;box-sizing:border-box;">
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">광고 유형</label>
-          <div style="display:flex;gap:8px;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="radio" name="adType" value="normal" checked onchange="toggleCondFields()"> 일반</label>
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="radio" name="adType" value="cond" onchange="toggleCondFields()"> 조건</label>
+        <div id="schedPanePlanSelect">
+          <div class="playplan-list">
+            <div class="playplan-item selected" onclick="schedSelectPlayplan(this,'pp1')">
+              <input type="radio" name="schedPlayplan" value="pp1" checked>
+              <div style="flex:1;"><div class="playplan-item-name">기본 편성 플랜 A</div><div class="playplan-item-meta">30초 · 일반 · 사이클 순서 1번</div></div>
+              <span class="playplan-item-meta">사용 30초</span>
+            </div>
+            <div class="playplan-item" onclick="schedSelectPlayplan(this,'pp2')">
+              <input type="radio" name="schedPlayplan" value="pp2">
+              <div style="flex:1;"><div class="playplan-item-name">프리미엄 편성 플랜 B</div><div class="playplan-item-meta">30초 · 일반 · 시보 후 우선 편성</div></div>
+              <span class="playplan-item-meta">사용 30초</span>
+            </div>
+            <div class="playplan-item" onclick="schedSelectPlayplan(this,'pp3')">
+              <input type="radio" name="schedPlayplan" value="pp3">
+              <div style="flex:1;"><div class="playplan-item-name">조건 편성 플랜 C</div><div class="playplan-item-meta">20초 · 조건 · 기온 &gt; 28°C</div></div>
+              <span class="playplan-item-meta">사용 20초</span>
+            </div>
           </div>
         </div>
-        <div id="condSection" style="display:none;">
-          <div style="margin-bottom:16px;">
-            <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">조건 유형</label>
-            <select style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
-              <option>환경 조건</option>
-              <option>타겟 조건</option>
-            </select>
+        <div id="schedPanePlanDirect" style="display:none;">
+          <div class="booking-field" style="margin-bottom:10px;">
+            <label>스케줄 유형</label>
+            <div class="type-toggle">
+              <button class="type-btn active" id="schedTypeBtnNormal" onclick="schedSetType('normal')">일반</button>
+              <button class="type-btn" id="schedTypeBtnCond" onclick="schedSetType('condition')">조건</button>
+            </div>
           </div>
-          <div style="margin-bottom:16px;">
-            <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">조건 상세</label>
-            <input type="text" placeholder="조건 상세 입력" style="width:100%;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;box-sizing:border-box;">
+          <div id="schedCondFields" style="display:none;margin-bottom:10px;">
+            <div class="booking-field">
+              <label>조건 설정</label>
+              <select><option>기온 조건</option><option>날씨 조건</option><option>시간 조건</option></select>
+            </div>
           </div>
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:6px;">광고 기간</label>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="date" style="flex:1;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
-            <span style="color:#9EA5AD;font-size:12px;">~</span>
-            <input type="date" style="flex:1;padding:8px 10px;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;color:#24292E;">
+          <div class="booking-field">
+            <label>재생 시간 (초)</label>
+            <input type="number" id="schedDuration" min="5" max="600" step="5" value="30" placeholder="30">
           </div>
         </div>
       </div>
-      <!-- 오른쪽: 실시간 검증 패널 -->
-      <div class="modal-validation" id="schedValidation">
-        <div class="val-title">실시간 인벤토리 확인</div>
-      </div>
+
     </div>
-    <div class="modal-footer">
-      <button class="btn-outline" onclick="closeSchedModal()">취소</button>
-      <button class="btn-primary" id="schedSubmitBtn" onclick="alert('스케줄 예약 완료 (목업)')">스케줄 예약</button>
+    <div class="booking-modal-foot">
+      <span class="booking-foot-hint" id="schedFootHint"></span>
+      <div class="booking-foot-btns">
+        <button class="btn-bk-cancel" onclick="closeSchedModal()">취소</button>
+        <button class="btn-bk-submit" id="schedSubmitBtn" onclick="submitSchedBooking()">예약 등록</button>
+      </div>
     </div>
   </div>
 </div>
