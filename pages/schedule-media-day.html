@@ -630,14 +630,14 @@
     <!-- 사이클 편성 순서 -->
     <div class="card">
       <div class="card-head">
-        <span class="card-title">사이클 편성 순서</span>
+        <span class="card-title">일반 광고 편성 순서</span>
         <span style="font-size:12px;color:#9EA5AD;">사이클당 재생 순서 (잔여 슬롯은 일반 광고로 채움)</span>
       </div>
       <div id="cycleDetail" style="border:1px solid #E5E7EA;border-radius:6px;overflow:hidden;margin:0 16px 16px;"></div>
     </div>
 
-    <!-- 3. 일반 광고 송출 현황 -->
-    <div class="card">
+    <!-- 3. 일반 광고 송출 현황 (운영 중/운영 종료 상태에서만 표시) -->
+    <div class="card" id="generalAdStats">
       <div class="card-head">
         <span class="card-title">일반 광고 송출 현황</span>
         <span style="font-size:12px;color:#596066;">기준일: 2026년 6월 1일</span>
@@ -702,11 +702,11 @@
       </div>
     </div>
 
-    <!-- 4. 조건 광고 현황 -->
-    <div style="margin-bottom:8px;">
+    <!-- 4. 조건 광고 현황 (운영 중/운영 종료 상태에서만 표시) -->
+    <div id="condAdStatsHeader" style="margin-bottom:8px;">
       <span style="font-size:15px;font-weight:700;color:#24292E;">조건 광고 현황</span>
     </div>
-    <div class="cond-cards">
+    <div class="cond-cards" id="condAdStats">
       <!-- 환경 조건 -->
       <div class="cond-card">
         <div class="cond-card-top">
@@ -926,7 +926,7 @@ function renderUnifiedTimeline() {
 
   /* ── zone bar: 사이클을 단일 블록으로 반복 표현 ── */
   var zoneHtml = '<div style="display:flex;align-items:stretch;border-top:1px solid #E5E7EA;">';
-  zoneHtml += '<div style="flex-shrink:0;width:var(--tl-label-w,120px);font-size:11px;font-weight:700;color:#596066;padding:10px 10px;border-right:1px solid #E5E7EA;display:flex;align-items:center;">사이클 구간</div>';
+  zoneHtml += '<div style="flex-shrink:0;width:var(--tl-label-w,120px);font-size:11px;font-weight:700;color:#596066;padding:10px 10px;border-right:1px solid #E5E7EA;display:flex;align-items:center;">일반 광고 구간</div>';
   zoneHtml += '<div style="flex:1;display:flex;">';
 
   SEGMENTS.forEach(function(seg) {
@@ -968,7 +968,7 @@ function renderUnifiedTimeline() {
     zoneHtml += '운영 시간 구간: ' + segLabel;
     zoneHtml += '</div>';
     zoneHtml += '<div style="flex:1;height:32px;background:#E8EDFF;border:1px solid #AFA9EC;border-radius:4px;display:flex;align-items:center;padding:0 10px;">';
-    zoneHtml += '<span style="font-size:11px;font-weight:600;color:#3C3489;">사이클</span>';
+    zoneHtml += '<span style="font-size:11px;font-weight:600;color:#3C3489;">일반 광고 롤링</span>';
     zoneHtml += '<span style="font-size:10px;color:#9EA5AD;margin-left:6px;">' + cycles + '회</span>';
     zoneHtml += '</div>';
     zoneHtml += '</div>';
@@ -1170,9 +1170,25 @@ function closeJingleModal() {
   document.getElementById('jingleModal').classList.remove('open');
 }
 
+// ── 스케줄 상태에 따른 현황 섹션 표시/숨김 ──
+// scheduleStatus: 'upcoming' | 'running' | 'ended' | 'completed'
+// 운영 예정(upcoming) 상태에서는 일반 광고 송출 현황 및 조건 광고 현황 섹션을 숨김
+var scheduleStatus = 'running'; // 현재 페이지의 스케줄 상태
+
+function applyScheduleStatusVisibility() {
+  var showStats = scheduleStatus === 'running' || scheduleStatus === 'ended' || scheduleStatus === 'completed';
+  var generalAdStats    = document.getElementById('generalAdStats');
+  var condAdStats       = document.getElementById('condAdStats');
+  var condAdStatsHeader = document.getElementById('condAdStatsHeader');
+  if (generalAdStats)    { generalAdStats.style.display    = showStats ? '' : 'none'; }
+  if (condAdStats)       { condAdStats.style.display       = showStats ? '' : 'none'; }
+  if (condAdStatsHeader) { condAdStatsHeader.style.display = showStats ? '' : 'none'; }
+}
+
 // ── 초기화 ──
 renderTimeAxis();
 renderUnifiedTimeline();
+applyScheduleStatusVisibility();
 </script>
 <script src="../assets/js/cms.js"></script>
 </body>
