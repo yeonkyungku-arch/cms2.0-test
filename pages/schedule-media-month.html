@@ -197,7 +197,14 @@
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg>
         </div>
         <div>
-          <a id="infoMediaName" href="product-detail.html" style="font-size:14px;font-weight:700;color:#24292E;text-decoration:none;">강남역 1번출구 A</a>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <select id="mediaSelect" onchange="onMediaChange(this.value)" style="font-size:14px;font-weight:700;color:#24292E;border:none;background:transparent;cursor:pointer;padding:0;outline:none;appearance:none;-webkit-appearance:none;">
+              <option value="a" selected>강남역 1번출구 A</option>
+              <option value="b">강남역 1번출구 B</option>
+              <option value="c">강남역 2번출구</option>
+            </select>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0;pointer-events:none;"><path d="M3 4.5l3 3 3-3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <div id="infoMediaAddr" style="font-size:11px;color:#9EA5AD;margin-top:1px;">서울 강남구 강남대로 396</div>
         </div>
       </div>
@@ -233,11 +240,6 @@
       <div class="panel">
         <div class="cal-toolbar">
           <div class="cal-toolbar-left">
-            <select class="select-dropdown" id="mediaSelect">
-              <option value="a" selected>강남역 1번출구 A</option>
-              <option value="b">강남역 1번출구 B</option>
-              <option value="c">강남역 2번출구</option>
-            </select>
             <div class="cal-month-nav">
               <button onclick="changeMonth(-1)">&#8592;</button>
               <span class="cal-month-label" id="monthLabel">2026년 6월</span>
@@ -286,6 +288,32 @@
   </div><!-- /content -->
 
 <script>
+  /* ── 미디어 데이터 ── */
+  var MEDIA_INFO = {
+    a: { name: '강남역 1번출구 A', addr: '서울 강남구 강남대로 396', install: '실외 · 세로형', hours: '07:00–22:00', cycle: '600초', slot: '30초 × 20개', guarantee: '90회/일', status: 'online', statusLabel: '운영 중' },
+    b: { name: '강남역 1번출구 B', addr: '서울 강남구 강남대로 396', install: '실외 · 가로형', hours: '07:00–22:00', cycle: '600초', slot: '30초 × 16개', guarantee: '112회/일', status: 'online', statusLabel: '운영 중' },
+    c: { name: '강남역 2번출구',   addr: '서울 강남구 강남대로 지하', install: '실외 · 세로형', hours: '08:00–21:00', cycle: '600초', slot: '30초 × 18개', guarantee: '86회/일',  status: 'offline', statusLabel: '점검 중' },
+  };
+
+  function onMediaChange(val) {
+    var m = MEDIA_INFO[val];
+    if (!m) return;
+    document.getElementById('infoMediaAddr').textContent  = m.addr;
+    document.getElementById('infoInstall').textContent    = m.install;
+    document.getElementById('infoHours').textContent      = m.hours;
+    document.getElementById('infoCycleMax').textContent   = m.cycle;
+    document.getElementById('infoSlot').textContent       = m.slot;
+    document.getElementById('infoGuarantee').textContent  = m.guarantee;
+    var statusEl = document.getElementById('infoStatus');
+    if (m.status === 'online') {
+      statusEl.style.color = '#2E9E34'; statusEl.style.background = '#E8F8E9';
+      statusEl.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#58C65D;display:inline-block;"></span>' + m.statusLabel;
+    } else {
+      statusEl.style.color = '#9EA5AD'; statusEl.style.background = '#F1F2F4';
+      statusEl.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#CED2D6;display:inline-block;"></span>' + m.statusLabel;
+    }
+  }
+
   /* ── 스케줄 데이터 (날짜별 매핑) ── */
   var schedules = [
     { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',  code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아', status: 'running',  statusLabel: '운영 중',  dates: [1,2,3,5,9,10,14,15,16,21,22,23,28,29,30] },
