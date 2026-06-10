@@ -1308,25 +1308,6 @@
     </div>
   </div>
 
-  <!-- ─── Section B: 미디어별 잔여 현황 ─── -->
-  <div class="section-card">
-    <div class="section-header">
-      <h2 class="section-title">미디어별 잔여 현황</h2>
-      <div class="chart-header-right">
-        <div class="toggle-pill">
-          <button class="pill-btn active" id="btnTime" onclick="switchChart('time')">잔여 시간</button>
-          <button class="pill-btn" id="btnSlot" onclick="switchChart('slot')">잔여 슬롯 수</button>
-        </div>
-        <a class="link-btn" href="schedule-product-month">편성표 보기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <div class="chart-canvas-wrap">
-        <canvas id="remainChart"></canvas>
-      </div>
-    </div>
-  </div>
-
   <!-- ─── Section C: 스케줄 현황 ─── -->
   <div class="section-card">
     <div class="section-header">
@@ -2255,11 +2236,11 @@ function updateSchedValidation() {
     <div class="val-title">실시간 인벤토리 확인</div>
     <div class="val-item">
       <div class="val-status ${timeOK?'ok':'ng'}">${timeOK?'✅':'❌'} 시간 기준</div>
-      <div class="val-detail">합산 ${newUsedTime}초 ${timeOK?'≤':'>'} 사이클 최대 ${inv.cycleMax}초&nbsp;&nbsp;잔여 ${remainTime}초</div>
+      <div class="val-detail">합산 ${newUsedTime}초 ${timeOK?'≤':'>'} 사이클 최대 ${inv.cycleMax}초</div>
     </div>
     <div class="val-item">
       <div class="val-status ${slotOK?'ok':'ng'}">${slotOK?'✅':'❌'} 슬롯 수 기준</div>
-      <div class="val-detail">등록 ${newUsedSlots}개 ${slotOK?'≤':'>'} 기준 슬롯 수 ${inv.baseSlots}개&nbsp;&nbsp;잔여 ${remainSlots}개</div>
+      <div class="val-detail">등록 ${newUsedSlots}개 ${slotOK?'≤':'>'} 기준 슬롯 수 ${inv.baseSlots}개</div>
     </div>
     <div class="val-divider"></div>
     <div class="val-summary">

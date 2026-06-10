@@ -616,9 +616,7 @@
       <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
         <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">사이클 최대</span><span style="font-weight:600;color:#24292E;">600초</span></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">편성 사용</span><span style="font-weight:600;color:#24292E;">90초</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">잔여</span><span style="font-weight:600;color:#58C65D;">510초</span></div>
         <div style="height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;"><div style="height:100%;width:15%;background:#3C3489;border-radius:3px;"></div></div>
-        <div style="font-size:11px;color:#9EA5AD;">슬롯: 3/20개 사용 (잔여 17개)</div>
         <div style="height:1px;background:#F0F1F3;"></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">일 총 사이클</span><span style="font-weight:600;color:#24292E;">600회</span></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">최소 보장</span><span style="font-weight:600;color:#24292E;">138회</span></div>
@@ -873,7 +871,7 @@ function renderCycleOrder() {
   h += `<div style="flex:1;">`;
   h += `<div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;margin-bottom:5px;">`;
   h += `<div style="width:${usedPct}%;height:100%;background:#58C65D;border-radius:4px;transition:width .3s;"></div></div>`;
-  h += `<div style="font-size:11px;color:#596066;"><strong style="color:#24292E;">${usedDur}초</strong> 사용 / 600초 최대 · 잔여 <strong style="color:#58C65D;">${remDur}초</strong></div>`;
+  h += `<div style="font-size:11px;color:#596066;"><strong style="color:#24292E;">${usedDur}초</strong> 사용 / 600초 최대</div>`;
   h += `</div>`;
   h += `<button onclick="saveCycleOrder()" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>`;
   h += `</div>`;
@@ -933,16 +931,6 @@ function renderCycleOrder() {
     h += `</div>`;
   });
 
-  /* 잔여 슬롯 행 */
-  if (remDur > 0) {
-    h += `<div style="display:grid;grid-template-columns:${COL};align-items:center;padding:8px 12px;background:#FAFAFA;border-bottom:1px solid #F0F1F3;gap:8px;opacity:.7;">`;
-    h += `<span style="font-size:12px;font-weight:700;color:#CED2D6;">${cycleOrder.length+1}</span>`;
-    h += `<span></span>`;
-    h += `<div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:2px;border:1px dashed #CED2D6;flex-shrink:0;"></div><span style="font-size:13px;color:#9EA5AD;">잔여 슬롯</span></div>`;
-    h += `<span></span><span></span><span></span>`;
-    h += `<span style="font-size:12px;color:#9EA5AD;text-align:center;">${remDur}초</span>`;
-    h += `<span></span></div>`;
-  }
 
   document.getElementById('cycleDetail').innerHTML = h;
 }

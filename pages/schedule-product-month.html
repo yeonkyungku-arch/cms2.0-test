@@ -546,12 +546,7 @@
         </div>
       </div>
 
-      <!-- ③ 잔여 슬롯 확인 -->
       <div id="slotCheckSection" style="display:none;">
-        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">3</span>
-          잔여 슬롯 확인
-        </div>
         <div id="slotCheckResult"></div>
       </div>
 
@@ -562,7 +557,6 @@
       <span class="booking-foot-hint" id="bkFootHint"></span>
       <div class="booking-foot-btns">
         <button class="btn-bk-cancel" onclick="closeBookingModal()">취소</button>
-        <button class="btn-bk-check" onclick="checkSlot()">잔여 슬롯 확인</button>
         <button class="btn-bk-submit" id="btnBkSubmit" onclick="submitBooking()" disabled>예약 등록</button>
       </div>
     </div>
@@ -913,7 +907,6 @@ function renderCalendar() {
         ' onmouseleave="hideTooltip()">' +
         '<div class="cal-cell-head">' +
           '<span class="' + dateNumCls + '">' + d + '</span>' +
-          statusBar +
         '</div>' +
         '<div class="cal-cell-body" onclick="selectCalDate(\'' + key + '\')">' +
           chips +
@@ -1148,13 +1141,6 @@ function checkSlot() {
     html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">';
     html += '<span style="font-size:12px;font-weight:600;color:#24292E;">' + r.name + '</span>';
     html += '<span style="font-size:11px;padding:1px 7px;border-radius:10px;background:' + (r.ok?'#D1FAE5':'#FEF2F2') + ';color:' + (r.ok?'#065F46':'#991B1B') + ';font-weight:600;">' + (r.ok?'등록 가능':'등록 불가') + '</span>';
-    html += '</div>';
-    /* 시간 현황 바 */
-    html += '<div class="slot-check-row"><span class="slot-check-label">사이클 잔여 시간</span>';
-    html += '<span class="slot-check-val ' + (r.canTime ? 'ok-val' : 'err-val') + '">' + r.remaining + '초 잔여 (요청 ' + r.reqSec + '초)</span></div>';
-    html += '<div class="slot-check-bar" style="margin:4px 0 6px;">';
-    html += '<div class="slot-check-fill" style="width:' + usedPct + '%;background:#E5E7EA;float:left;"></div>';
-    html += '<div class="slot-check-fill" style="width:' + (afterPct - usedPct) + '%;background:' + fillColor + ';float:left;"></div>';
     html += '</div>';
     /* 슬롯 현황 */
     html += '<div class="slot-check-row"><span class="slot-check-label">사이클 슬롯</span>';
