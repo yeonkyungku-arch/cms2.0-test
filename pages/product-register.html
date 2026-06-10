@@ -78,10 +78,15 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
-      align-items: start;
+      align-items: stretch;
+    }
+    .media-list-col {
+      display: flex; flex-direction: column;
+      height: 420px;
     }
     .media-search-area {
       border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
+      flex: 1; display: flex; flex-direction: column;
     }
     .media-map-wrap {
       border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden;
@@ -174,7 +179,7 @@
       border: none; outline: none; background: none;
       font-size: 12px; color: #596066; font-family: inherit; cursor: pointer;
     }
-    .media-list { height: 420px; overflow-y: auto; }
+    .media-list { flex: 1; overflow-y: auto; min-height: 0; }
     /* ── 미디어 테이블 ── */
     .media-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .media-table thead th {
@@ -578,7 +583,7 @@
       <div class="section-body">
         <div class="media-section-layout">
           <!-- 좌: 검색 + 리스트 -->
-          <div>
+          <div class="media-list-col">
             <div class="media-search-area">
               <div class="media-search-bar">
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l3 3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
