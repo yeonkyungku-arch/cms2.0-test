@@ -980,12 +980,12 @@ function renderCycleOrder() {
   h += '<button onclick="saveCycleOrder(event)" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>';
   h += '</div>';
 
-  /* 열: 순서 | 드래그 | 스케줄명 | 프로덕트 | 상태 | 유형 | 콘텐츠 | 재생시간 | 순서조작 */
-  var COL = '36px 24px 1fr 120px 52px 80px 2fr 64px 60px';
+  /* 열: 순서 | 드래그 | 프로덕트 | 스케줄명 | 상태 | 유형 | 콘텐츠 | 재생시간 | 순서조작 */
+  var COL = '36px 24px 120px 1fr 52px 80px 2fr 64px 60px';
 
   /* 헤더 */
   h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">';
-  h += '<span>순서</span><span></span><span>스케줄명</span><span>프로덕트</span><span>상태</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>';
+  h += '<span>순서</span><span></span><span>프로덕트</span><span>스케줄명</span><span>상태</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>';
 
   /* 아이템 목록 */
   cycleOrder.forEach(function(ad, idx) {
@@ -998,14 +998,14 @@ function renderCycleOrder() {
     h += '<span style="font-size:12px;font-weight:700;color:#9EA5AD;">' + (idx + 1) + '</span>';
     h += '<span style="font-size:14px;color:#CED2D6;cursor:grab;user-select:none;" title="드래그로 순서 변경">⠿</span>';
 
+    /* 프로덕트명 */
+    h += '<span style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (ad.product || '') + '">' + (ad.product || '-') + '</span>';
+
     /* 스케줄명 */
     h += '<div style="min-width:0;display:flex;align-items:center;gap:6px;">';
     h += '<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">' + ad.name + '</span>';
     h += '<a href="#" style="font-size:10px;color:#2D84ED;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">상세</a>';
     h += '</div>';
-
-    /* 프로덕트명 */
-    h += '<span style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (ad.product || '') + '">' + (ad.product || '-') + '</span>';
 
     /* 상태 */
     h += '<span style="font-size:10px;font-weight:600;color:' + (statusColor[ad.status] || '#9EA5AD') + ';white-space:nowrap;">' + (statusLabel[ad.status] || ad.status) + '</span>';
