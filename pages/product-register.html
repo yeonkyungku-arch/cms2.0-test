@@ -539,7 +539,7 @@
           <div class="form-label">프로덕트명 <span class="req">*</span></div>
           <div class="form-field">
             <input type="text" class="input" id="inputName" placeholder="프로덕트명을 입력하세요"
-              style="max-width:460px;" oninput="validateForm()">
+              oninput="validateForm()">
             <div class="input-error" id="errName">프로덕트명을 입력해 주세요.</div>
             <div class="input-hint">등록 후 기본 비활성 상태로 저장됩니다. 상세 페이지에서 활성화할 수 있습니다.</div>
           </div>
@@ -794,7 +794,7 @@
         <div class="form-row">
           <div class="form-label">태그</div>
           <div class="form-field">
-            <div class="tag-input-wrap" style="max-width:460px;" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
+            <div class="tag-input-wrap" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
               <span class="tag-item">강남 <button onclick="this.parentNode.remove()">×</button></span>
               <span class="tag-item">실외 <button onclick="this.parentNode.remove()">×</button></span>
               <input type="text" id="tagInput" placeholder="태그 입력 후 Enter" onkeydown="addTag(event)">
@@ -805,7 +805,7 @@
         <div class="form-row" style="border-bottom:none;">
           <div class="form-label">설명</div>
           <div class="form-field">
-            <textarea class="textarea" placeholder="프로덕트에 대한 설명을 입력하세요" style="max-width:560px;"></textarea>
+            <textarea class="textarea" placeholder="프로덕트에 대한 설명을 입력하세요" style="width:100%;"></textarea>
           </div>
         </div>
       </div>
@@ -1100,7 +1100,7 @@ function renderAdOptions() {
 
   content.innerHTML = `
     <div style="font-size:12px;color:#596066;margin-bottom:8px;">일반 광고 + 아래 조건 광고 유형을 제공할 수 있습니다.</div>
-    <div style="display:flex;flex-direction:column;gap:6px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;">
       ${available.map(s => {
         const info = SENSOR_AD_MAP[s];
         return `
