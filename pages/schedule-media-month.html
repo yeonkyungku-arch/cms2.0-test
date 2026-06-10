@@ -95,21 +95,21 @@
     /* 날짜 호버 툴팁 */
     #calTooltip {
       position: fixed; z-index: 9999;
-      background: #fff; border: 1px solid #E5E7EA; border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.13);
-      padding: 0; min-width: 240px; max-width: 300px;
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      padding: 0; width: 210px;
       pointer-events: none; opacity: 0; transition: opacity .12s;
     }
     #calTooltip.visible { opacity: 1; }
-    .ct-header { padding: 10px 14px 8px; border-bottom: 1px solid #F0F1F3; display: flex; align-items: center; justify-content: space-between; }
-    .ct-date { font-size: 12px; font-weight: 700; color: #24292E; }
-    .ct-count { font-size: 11px; color: #9EA5AD; }
-    .ct-list { padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto; }
-    .ct-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; background: #FAFBFC; }
-    .ct-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .ct-name { font-size: 12px; font-weight: 600; color: #24292E; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ct-header { padding: 8px 12px 6px; border-bottom: 1px solid #F0F1F3; display: flex; align-items: center; justify-content: space-between; }
+    .ct-date { font-size: 11px; font-weight: 700; color: #24292E; }
+    .ct-count { font-size: 10px; color: #9EA5AD; }
+    .ct-list { padding: 5px 6px; display: flex; flex-direction: column; gap: 3px; max-height: 220px; overflow-y: auto; }
+    .ct-item { display: flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 5px; background: #FAFBFC; }
+    .ct-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .ct-name { font-size: 11px; font-weight: 600; color: #24292E; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ct-meta { font-size: 10px; color: #9EA5AD; white-space: nowrap; }
-    .ct-empty { padding: 14px; text-align: center; font-size: 12px; color: #C9CDD2; }
+    .ct-empty { padding: 12px; text-align: center; font-size: 11px; color: #C9CDD2; }
 
     .schedule-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 5px; background: #fff; }
     .schedule-card:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
@@ -411,12 +411,13 @@
       }).join('');
     }
     var rect = cell.getBoundingClientRect();
-    var tw = 260, th = tooltip.offsetHeight || 180;
-    var left = rect.left + rect.width / 2 - tw / 2;
-    var top  = rect.top - th - 8;
-    if (top < 8) top = rect.bottom + 8;
-    if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
-    if (left < 8) left = 8;
+    var tw = 210;
+    var th = tooltip.offsetHeight || 160;
+    var left = rect.right + 6;
+    var top  = rect.top + rect.height / 2 - th / 2;
+    if (left + tw > window.innerWidth - 8) left = rect.left - tw - 6;
+    if (top < 8) top = 8;
+    if (top + th > window.innerHeight - 8) top = window.innerHeight - th - 8;
     tooltip.style.left  = left + 'px';
     tooltip.style.top   = top  + 'px';
     tooltip.style.width = tw   + 'px';
