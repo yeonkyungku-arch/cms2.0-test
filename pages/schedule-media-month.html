@@ -119,12 +119,17 @@
     .product-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; white-space: nowrap; }
     .prod-a { background: #EEF2FF; color: #3730A3; }
     .prod-b { background: #FFF7ED; color: #9A3412; }
+    .prod-c { background: #F5F3FF; color: #5B21B6; }
     .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
-    .badge-green { background: #D1FAE5; color: #065F46; }
-    .badge-blue  { background: #DBEAFE; color: #1E40AF; }
+    .badge-confirmed   { background: #D1FAE5; color: #065F46; }
+    .badge-unconfirmed { background: #FEF9C3; color: #713F12; }
+    .badge-reserved    { background: #F0F9FF; color: #0369A1; }
+    .badge-ended       { background: #F3F4F6; color: #6B7280; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .badge-dot-green { background: #10B981; }
-    .badge-dot-blue  { background: #3B82F6; }
+    .badge-dot-confirmed   { background: #10B981; }
+    .badge-dot-unconfirmed { background: #F59E0B; }
+    .badge-dot-reserved    { background: #7DD3FC; }
+    .badge-dot-ended       { background: #D1D5DB; }
     .schedule-card-meta { font-size: 11px; color: #9EA5AD; display: flex; align-items: center; gap: 4px; }
     .schedule-card-meta .sep { color: #D1D5DB; }
     .schedule-card-advertiser { font-size: 12px; color: #596066; font-weight: 500; }
@@ -356,14 +361,15 @@
 
   /* ── 스케줄 데이터 (날짜별 매핑) ── */
   var schedules = [
-    { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',  code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아', status: 'running',  statusLabel: '운영 중',  dates: [1,2,3,5,9,10,14,15,16,21,22,23,28,29,30], adMix: { commercial:70, public:10, art:10, house:10 } },
-    { product: '프로덕트 가', prodClass: 'prod-a', name: '삼성 여름 광고',      code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',   status: 'running',  statusLabel: '운영 중',  dates: [1,2,5,9,14,15,21,22,28],               adMix: { commercial:80, public:0,  art:5,  house:15 } },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',      code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차', status: 'upcoming', statusLabel: '운영 예정', dates: [3,10,17,23],                            adMix: { commercial:60, public:20, art:0,  house:20 } },
-    { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',      code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',    status: 'upcoming', statusLabel: '운영 예정', dates: [2,5,9,14,16,22,25,29],                 adMix: { commercial:75, public:5,  art:10, house:10 } },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',    code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',   status: 'running',  statusLabel: '운영 중',  dates: [4,8,12,15,18,21,25,28],                adMix: { commercial:50, public:30, art:10, house:10 } },
-    { product: '프로덕트 다', prodClass: 'prod-c', name: '애플 신제품 런칭',    code: '다-1', duration: '15초', type: '일반', advertiser: '애플코리아', status: 'running',  statusLabel: '운영 중',  dates: [9,14,15,21,22],                         adMix: { commercial:90, public:0,  art:10, house:0  } },
-    { product: '프로덕트 다', prodClass: 'prod-c', name: '카카오 브랜드 광고',  code: '다-2', duration: '30초', type: '일반', advertiser: '카카오',     status: 'upcoming', statusLabel: '운영 예정', dates: [14,15,21,22,28,29],                    adMix: { commercial:55, public:15, art:20, house:10 } },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '배달의민족 여름 특집', code: '나-5', duration: '20초', type: '조건', advertiser: '우아한형제들', status: 'running', statusLabel: '운영 중',  dates: [9,14,21,22],                            adMix: { commercial:45, public:25, art:15, house:15 } },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',   code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아',  status: 'confirmed',   statusLabel: '확정',  dates: [1,2,3,5,9,10,14,15,16,21,22,23,28,29,30], adMix: { commercial:70, public:10, art:10, house:10 } },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '삼성 여름 광고',       code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',     status: 'confirmed',   statusLabel: '확정',  dates: [1,2,5,9,14,15,21,22,28],               adMix: { commercial:80, public:0,  art:5,  house:15 } },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',       code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차',   status: 'unconfirmed', statusLabel: '미확정', dates: [3,10,17,23],                            adMix: { commercial:60, public:20, art:0,  house:20 } },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',       code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',       status: 'reserved',    statusLabel: '예약',  dates: [2,5,9,14,16,22,25,29],                 adMix: { commercial:75, public:5,  art:10, house:10 } },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',     code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',     status: 'confirmed',   statusLabel: '확정',  dates: [4,8,12,15,18,21,25,28],                adMix: { commercial:50, public:30, art:10, house:10 } },
+    { product: '프로덕트 다', prodClass: 'prod-c', name: '애플 신제품 런칭',     code: '다-1', duration: '15초', type: '일반', advertiser: '애플코리아',   status: 'confirmed',   statusLabel: '확정',  dates: [9,14,15,21,22],                         adMix: { commercial:90, public:0,  art:10, house:0  } },
+    { product: '프로덕트 다', prodClass: 'prod-c', name: '카카오 브랜드 광고',   code: '다-2', duration: '30초', type: '일반', advertiser: '카카오',       status: 'reserved',    statusLabel: '예약',  dates: [14,15,21,22,28,29],                    adMix: { commercial:55, public:15, art:20, house:10 } },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '배달의민족 여름 특집', code: '나-5', duration: '20초', type: '조건', advertiser: '우아한형제들', status: 'confirmed',   statusLabel: '확정',  dates: [9,14,21,22],                            adMix: { commercial:45, public:25, art:15, house:15 } },
+    { product: '프로덕트 가', prodClass: 'prod-a', name: '5월 봄 기획전',        code: '가-0', duration: '20초', type: '일반', advertiser: '이마트',       status: 'ended',       statusLabel: '종료',  dates: [1,2,3,4,5],                             adMix: { commercial:65, public:15, art:10, house:10 } },
   ];
 
   /* ── 캘린더 데이터 ── */
@@ -534,8 +540,8 @@
     }
 
     list.forEach(function(s) {
-      var badgeCls  = s.status === 'running' ? 'badge-green' : 'badge-blue';
-      var dotCls    = s.status === 'running' ? 'badge-dot-green' : 'badge-dot-blue';
+      var badgeCls = 'badge-' + s.status;
+      var dotCls   = 'badge-dot-' + s.status;
       var card = document.createElement('div');
       card.className = 'schedule-card';
       card.innerHTML =

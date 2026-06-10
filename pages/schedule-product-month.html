@@ -74,6 +74,7 @@
     .chip-confirmed   { background: transparent; color: #065F46; border-color: #6EE7B7; }
     .chip-unconfirmed { background: transparent; color: #713F12; border-color: #FDE047; }
     .chip-reserved    { background: transparent; color: #9CA3AF; border-color: transparent; }
+    .chip-ended       { background: transparent; color: #9CA3AF; border-color: #D1D5DB; }
     .cal-more-chip { font-size: 9px; color: #B0B7BE; padding: 0 3px; }
 
     /* ── 예약 모달 ── */
@@ -777,13 +778,14 @@ var DAY_SCHEDULES = {
 };
 
 /* 상태 → 칩 CSS 클래스 */
-var STATE_CHIP = { confirmed:'chip-confirmed', unconfirmed:'chip-unconfirmed', reserved:'chip-reserved' };
+var STATE_CHIP = { confirmed:'chip-confirmed', unconfirmed:'chip-unconfirmed', reserved:'chip-reserved', ended:'chip-ended' };
 
 /* 상태 → 뱃지 텍스트/스타일 (오른쪽 패널) */
 var STATE_BADGE = {
-  confirmed:   { cls:'',  bg:'#D1FAE5', color:'#065F46', txt:'확정'  },
-  unconfirmed: { cls:'',  bg:'#FEF9C3', color:'#713F12', txt:'미확정' },
-  reserved:    { cls:'',  bg:'#F0F9FF', color:'#0369A1', txt:'예약'  },
+  confirmed:   { bg:'#D1FAE5', color:'#065F46', txt:'확정'  },
+  unconfirmed: { bg:'#FEF9C3', color:'#713F12', txt:'미확정' },
+  reserved:    { bg:'#F0F9FF', color:'#0369A1', txt:'예약'  },
+  ended:       { bg:'#F3F4F6', color:'#6B7280', txt:'종료'  },
 };
 
 var ALL_SCHEDULES = [
@@ -792,6 +794,7 @@ var ALL_SCHEDULES = [
   { name:'현대 날씨 조건',     state:'unconfirmed', slot:'나-4', sec:'40초', type:'조건',    advertiser:'현대자동차',   dates:[3,10,17,23] },
   { name:'LG 가전 캠페인',     state:'reserved',    slot:'가-3', sec:'15초', type:'일반',    advertiser:'LG전자',       dates:[2,5,9,11,16,18,23,25,26,30] },
   { name:'롯데백화점 프로모',  state:'confirmed',   slot:'가-2', sec:'30초', type:'일반',    advertiser:'롯데쇼핑',     dates:[4,8,12,15,19,22,25,26,29,30] },
+  { name:'5월 기획전 광고',    state:'ended',       slot:'가-1', sec:'20초', type:'일반',    advertiser:'이마트',       dates:[1,2,3,4,5] },
 ];
 
 var selectedDate = null; // "YYYY-MM-DD"
