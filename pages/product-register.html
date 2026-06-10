@@ -175,31 +175,25 @@
       font-size: 12px; color: #596066; font-family: inherit; cursor: pointer;
     }
     .media-list { max-height: 420px; overflow-y: auto; }
-    .media-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 10px 14px 0; border-bottom: 1px solid #F6F7F9;
-      transition: background 0.12s;
+    /* ── 미디어 테이블 ── */
+    .media-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .media-table thead th {
+      position: sticky; top: 0; background: #F6F7F9;
+      padding: 7px 10px; text-align: left; font-size: 11px; font-weight: 600;
+      color: #9EA5AD; border-bottom: 1px solid #E5E7EA; white-space: nowrap;
     }
-    .media-item:last-child { border-bottom: none; }
-    .media-item:hover { background: #FAFAFA; }
-    .media-item input[type=checkbox] { accent-color: #58C65D; width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; margin-top: 3px; }
-    .media-item-inner { flex: 1; min-width: 0; }
-    .media-item-row { display: flex; align-items: center; gap: 8px; }
-    .media-item-name { font-size: 13px; font-weight: 500; color: #24292E; }
-    .media-item-sub  { font-size: 12px; color: #9EA5AD; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .media-ops-inline {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 0; border: 1px solid #EEF0F2; border-radius: 6px; overflow: hidden;
-      background: #FAFCFF; margin: 8px 0 10px;
-    }
-    .media-ops-inline-item {
-      padding: 6px 10px; border-right: 1px solid #EEF0F2;
-    }
-    .media-ops-inline-item:last-child { border-right: none; }
-    .media-ops-inline-label { font-size: 10px; color: #9EA5AD; margin-bottom: 2px; }
-    .media-ops-inline-value { font-size: 11px; font-weight: 600; color: #24292E; }
-    .media-ops-inline-value.green { color: #2E9E34; }
-    .media-sensor-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .media-table thead th:first-child { width: 36px; text-align: center; }
+    .media-table tbody tr { border-bottom: 1px solid #F0F2F4; transition: background 0.1s; cursor: pointer; }
+    .media-table tbody tr:last-child { border-bottom: none; }
+    .media-table tbody tr:hover { background: #FAFAFA; }
+    .media-table tbody tr.selected-row { background: #F0F9F1; }
+    .media-table td { padding: 8px 10px; vertical-align: middle; color: #24292E; white-space: nowrap; }
+    .media-table td:first-child { text-align: center; }
+    .media-table td input[type=checkbox] { accent-color: #58C65D; width: 14px; height: 14px; cursor: pointer; }
+    .media-td-name { font-weight: 500; font-size: 12px; }
+    .media-td-addr { font-size: 10px; color: #9EA5AD; margin-top: 1px; }
+    .media-td-val  { font-size: 12px; color: #24292E; }
+    .media-td-green { font-size: 12px; color: #2E9E34; font-weight: 600; }
     .sensor-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 10px; }
     .sensor-badge.sensor-weather { background: #E8F5FF; color: #1A7CC0; }
     .sensor-badge.sensor-target  { background: #FFF0E8; color: #C05A1A; }
@@ -912,49 +906,43 @@ let currentAdType = 'general';
 /* ═══════════════════════════════════════════════ 미디어 렌더링 */
 function renderMediaList(filter = '', statusFilter = '') {
   const list = document.getElementById('mediaList');
-  list.innerHTML = '';
-  MEDIA_DATA
-    .filter(m => {
-      const matchText = !filter || m.name.includes(filter) || m.sub.includes(filter);
-      const matchStatus = !statusFilter || m.status === statusFilter;
-      return matchText && matchStatus;
-    })
-    .forEach(m => {
-      const label = document.createElement('label');
-      label.className = 'media-item';
-      label.innerHTML = `
-        <input type="checkbox" ${selectedMedia.has(m.id) ? 'checked' : ''}
-          data-id="${m.id}" onchange="toggleMedia('${m.id}', this.checked)">
-        <div class="media-item-inner">
-          <div class="media-item-row">
-            <div class="media-item-name">${m.name}</div>
-            <span class="status-dot ${m.status}"></span>
-          </div>
-          <div class="media-item-sub">${m.sub}</div>
-          <div class="media-ops-inline">
-            <div class="media-ops-inline-item">
-              <div class="media-ops-inline-label">설치 유형</div>
-              <div class="media-ops-inline-value">${m.installType}</div>
-            </div>
-            <div class="media-ops-inline-item">
-              <div class="media-ops-inline-label">운영 시간</div>
-              <div class="media-ops-inline-value">${m.opsHours}</div>
-            </div>
-            <div class="media-ops-inline-item">
-              <div class="media-ops-inline-label">기준 슬롯</div>
-              <div class="media-ops-inline-value">${m.refSlotSec}초 × ${m.refSlots}슬롯</div>
-            </div>
-            <div class="media-ops-inline-item">
-              <div class="media-ops-inline-label">최소 보장</div>
-              <div class="media-ops-inline-value green">${m.guaranteed}회/일</div>
-            </div>
-          </div>
-          <div class="media-sensor-row">
-            ${(m.sensors || []).map(s => `<span class="sensor-badge sensor-${s}">${SENSOR_LABEL[s] || s}</span>`).join('')}
-          </div>
-        </div>`;
-      list.appendChild(label);
-    });
+  const filtered = MEDIA_DATA.filter(m => {
+    const matchText = !filter || m.name.includes(filter) || m.sub.includes(filter);
+    const matchStatus = !statusFilter || m.status === statusFilter;
+    return matchText && matchStatus;
+  });
+  list.innerHTML = `
+    <table class="media-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>미디어명</th>
+          <th>설치유형</th>
+          <th>운영시간</th>
+          <th>사이클</th>
+          <th>기준슬롯</th>
+          <th>센서</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filtered.map(m => `
+          <tr class="${selectedMedia.has(m.id) ? 'selected-row' : ''}" onclick="toggleMedia('${m.id}', !selectedMedia.has('${m.id}'))">
+            <td><input type="checkbox" ${selectedMedia.has(m.id) ? 'checked' : ''}
+              data-id="${m.id}" onclick="event.stopPropagation()" onchange="toggleMedia('${m.id}', this.checked)"></td>
+            <td>
+              <div class="media-td-name">${m.name}</div>
+              <div class="media-td-addr">${m.sub}</div>
+            </td>
+            <td class="media-td-val">${m.installType}</td>
+            <td class="media-td-val">${m.opsHours}</td>
+            <td class="media-td-val">${m.cycleMax}초</td>
+            <td class="media-td-val">${m.refSlotSec}초 × ${m.refSlots}</td>
+            <td>${(m.sensors || []).map(s => `<span class="sensor-badge sensor-${s}">${SENSOR_LABEL[s] || s}</span>`).join(' ')}</td>
+            <td><span class="status-dot ${m.status}" style="margin:0 auto;display:block;"></span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
 }
 
 function filterMedia(v)       { renderMediaList(v, document.querySelector('.media-search-bar select').value); }
