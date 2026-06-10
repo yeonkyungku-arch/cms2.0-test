@@ -52,8 +52,8 @@
     .cal-cell:nth-child(7n) { border-right: none; }
     .cal-cell.other-month { opacity: .35; pointer-events: none; }
     .cal-cell.weekend { background: #FAFBFC; }
-    .cal-cell.selected { background: #F0FDF4; }
-    .cal-cell.today .cal-date-link { background: #58C65D; color: #fff !important; }
+    .cal-cell.selected { background: #fff; box-shadow: inset 0 0 0 2px #58C65D; }
+    .cal-cell.today .cal-date-link { background: #58C65D; color: #fff !important; box-shadow: 0 2px 6px rgba(88,198,93,.4); }
 
     /* 날짜 숫자 링크 */
     .cal-cell-head { display: flex; align-items: center; gap: 4px; padding: 4px 5px 2px; }
@@ -77,8 +77,8 @@
     .cal-bars { display: flex; flex-direction: column; gap: 3px; }
     .cal-bar-row { display: flex; align-items: center; gap: 4px; }
     .cal-bar-label { font-size: 9px; color: #B0B7BE; width: 34px; flex-shrink: 0; }
-    .cal-bar-track { flex: 1; height: 4px; background: #F0F1F3; border-radius: 2px; overflow: hidden; }
-    .cal-bar-fill { height: 100%; border-radius: 2px; }
+    .cal-bar-track { flex: 1; height: 3px; background: #ECEEF0; border-radius: 99px; overflow: hidden; }
+    .cal-bar-fill { height: 100%; border-radius: 99px; }
     .cal-bar-val { font-size: 9px; color: #B0B7BE; width: 22px; text-align: right; flex-shrink: 0; }
 
     /* Legend */
@@ -91,6 +91,25 @@
     .schedule-panel-title { font-size: 13px; font-weight: 700; color: #24292E; }
     .schedule-panel-hint { font-size: 11px; color: #9EA5AD; }
     .schedule-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+    /* 날짜 호버 툴팁 */
+    #calTooltip {
+      position: fixed; z-index: 9999;
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.13);
+      padding: 0; min-width: 240px; max-width: 300px;
+      pointer-events: none; opacity: 0; transition: opacity .12s;
+    }
+    #calTooltip.visible { opacity: 1; }
+    .ct-header { padding: 10px 14px 8px; border-bottom: 1px solid #F0F1F3; display: flex; align-items: center; justify-content: space-between; }
+    .ct-date { font-size: 12px; font-weight: 700; color: #24292E; }
+    .ct-count { font-size: 11px; color: #9EA5AD; }
+    .ct-list { padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto; }
+    .ct-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; background: #FAFBFC; }
+    .ct-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .ct-name { font-size: 12px; font-weight: 600; color: #24292E; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ct-meta { font-size: 10px; color: #9EA5AD; white-space: nowrap; }
+    .ct-empty { padding: 14px; text-align: center; font-size: 12px; color: #C9CDD2; }
 
     .schedule-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 5px; background: #fff; }
     .schedule-card:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
@@ -283,6 +302,15 @@
 
       </div>
     </div>
+
+<!-- 날짜 호버 툴팁 -->
+<div id="calTooltip">
+  <div class="ct-header">
+    <span class="ct-date" id="ctDate"></span>
+    <span class="ct-count" id="ctCount"></span>
+  </div>
+  <div class="ct-list" id="ctList"></div>
+</div>
   </div>
   </div><!-- /content-inner -->
   </div><!-- /content -->
@@ -321,6 +349,9 @@
     { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',      code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차', status: 'upcoming', statusLabel: '운영 예정', dates: [3,10,17,23] },
     { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',      code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',    status: 'upcoming', statusLabel: '운영 예정', dates: [2,5,9,14,16,22,25,29] },
     { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',    code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',   status: 'running',  statusLabel: '운영 중',  dates: [4,8,12,15,18,21,25,28] },
+    { product: '프로덕트 다', prodClass: 'prod-c', name: '애플 신제품 런칭',    code: '다-1', duration: '15초', type: '일반', advertiser: '애플코리아', status: 'running',  statusLabel: '운영 중',  dates: [9,14,15,21,22] },
+    { product: '프로덕트 다', prodClass: 'prod-c', name: '카카오 브랜드 광고',  code: '다-2', duration: '30초', type: '일반', advertiser: '카카오',     status: 'upcoming', statusLabel: '운영 예정', dates: [14,15,21,22,28,29] },
+    { product: '프로덕트 나', prodClass: 'prod-b', name: '배달의민족 여름 특집', code: '나-5', duration: '20초', type: '조건', advertiser: '우아한형제들', status: 'running', statusLabel: '운영 중',  dates: [9,14,21,22] },
   ];
 
   /* ── 캘린더 데이터 ── */
@@ -346,6 +377,57 @@
   const MAX_SLOT = 20;
 
   var selectedDate = null;
+
+  /* ── 날짜별 스케줄 맵 ── */
+  var dateSchedules = {};
+  schedules.forEach(function(s) {
+    s.dates.forEach(function(d) {
+      var key = '2026-06-' + (d < 10 ? '0' + d : d);
+      if (!dateSchedules[key]) dateSchedules[key] = [];
+      dateSchedules[key].push(s);
+    });
+  });
+
+  /* ── 캘린더 툴팁 ── */
+  var tooltip = document.getElementById('calTooltip');
+  var tooltipTimeout;
+
+  function showTooltip(cell, dateStr, dateLabel) {
+    clearTimeout(tooltipTimeout);
+    var list = dateSchedules[dateStr] || [];
+    document.getElementById('ctDate').textContent = dateLabel;
+    document.getElementById('ctCount').textContent = list.length ? list.length + '개 스케줄' : '스케줄 없음';
+    var ctList = document.getElementById('ctList');
+    if (list.length === 0) {
+      ctList.innerHTML = '<div class="ct-empty">등록된 스케줄이 없습니다</div>';
+    } else {
+      ctList.innerHTML = list.map(function(s) {
+        var dot = s.status === 'running' ? '#58C65D' : '#F59E0B';
+        return '<div class="ct-item">' +
+          '<span class="ct-dot" style="background:' + dot + ';"></span>' +
+          '<span class="ct-name">' + s.name + '</span>' +
+          '<span class="ct-meta">' + s.duration + ' · ' + s.product + '</span>' +
+        '</div>';
+      }).join('');
+    }
+    var rect = cell.getBoundingClientRect();
+    var tw = 260, th = tooltip.offsetHeight || 180;
+    var left = rect.left + rect.width / 2 - tw / 2;
+    var top  = rect.top - th - 8;
+    if (top < 8) top = rect.bottom + 8;
+    if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+    if (left < 8) left = 8;
+    tooltip.style.left  = left + 'px';
+    tooltip.style.top   = top  + 'px';
+    tooltip.style.width = tw   + 'px';
+    tooltip.classList.add('visible');
+  }
+
+  function hideTooltip() {
+    tooltipTimeout = setTimeout(function() {
+      tooltip.classList.remove('visible');
+    }, 80);
+  }
 
   function getStatusColor(sec, slot) {
     const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
@@ -486,13 +568,18 @@
       head.appendChild(dateLink);
       cell.appendChild(head);
 
-      /* 셀 바디: 클릭 시 패널 업데이트 */
+      /* 셀 바디: 클릭 시 패널 업데이트, 호버 시 툴팁 */
       if (c.thisMonth) {
         const body = document.createElement('div');
         body.className = 'cal-cell-body';
         body.addEventListener('click', function() {
           selectDate(dateStr, c.day, month, year);
         });
+        var dateLabel = month + '월 ' + c.day + '일';
+        body.addEventListener('mouseenter', function() { showTooltip(cell, dateStr, dateLabel); });
+        body.addEventListener('mouseleave', hideTooltip);
+        head.addEventListener('mouseenter', function() { showTooltip(cell, dateStr, dateLabel); });
+        head.addEventListener('mouseleave', hideTooltip);
 
         if (data) {
           const color   = getStatusColor(data.sec, data.slot);
@@ -509,12 +596,12 @@
             '<div class="cal-bars">' +
               '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">사이클</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + ';opacity:0.8"></div></div>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + '"></div></div>' +
                 '<span class="cal-bar-val">' + data.sec + 's</span>' +
               '</div>' +
               '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">슬롯</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + ';opacity:0.8"></div></div>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + '"></div></div>' +
                 '<span class="cal-bar-val">' + data.slot + '</span>' +
               '</div>' +
             '</div>';

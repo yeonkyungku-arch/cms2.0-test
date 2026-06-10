@@ -45,8 +45,8 @@
     .cal-cell:nth-child(7n) { border-right: none; }
     .cal-cell.other-month { opacity: .35; pointer-events: none; }
     .cal-cell.weekend { background: #FAFBFC; }
-    .cal-cell.selected { background: #F0FDF4; }
-    .cal-cell.today .cal-date-num { background: #58C65D; color: #fff !important; border-radius: 50%; }
+    .cal-cell.selected { background: #fff; box-shadow: inset 0 0 0 2px #58C65D; }
+    .cal-cell.today .cal-date-num { background: #58C65D; color: #fff !important; border-radius: 50%; box-shadow: 0 2px 6px rgba(88,198,93,.4); }
 
     /* 날짜 숫자 링크 */
     .cal-date-link { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; text-decoration: none; border-radius: 50%; transition: background .1s; }
@@ -69,7 +69,7 @@
     .cal-cell-body:hover { background: rgba(0,0,0,.02); }
 
     /* 스케줄 칩 */
-    .cal-schedule-chip { font-size: 10px; padding: 1px 4px; border-radius: 2px; border-left: 2px solid; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
+    .cal-schedule-chip { font-size: 10px; padding: 2px 5px; border-radius: 4px; border-left: 2px solid; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; font-weight: 500; }
     .chip-confirmed   { background: transparent; color: #065F46; border-color: #6EE7B7; }
     .chip-unconfirmed { background: transparent; color: #713F12; border-color: #FDE047; }
     .chip-reserved    { background: transparent; color: #9CA3AF; border-color: transparent; }
@@ -144,6 +144,25 @@
     .schedule-panel-title { font-size: 13px; font-weight: 700; color: #24292E; }
     .schedule-panel-hint { font-size: 11px; color: #9EA5AD; }
     .schedule-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+    /* 날짜 호버 툴팁 */
+    #calTooltip {
+      position: fixed; z-index: 9999;
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.13);
+      padding: 0; min-width: 240px; max-width: 300px;
+      pointer-events: none; opacity: 0; transition: opacity .12s;
+    }
+    #calTooltip.visible { opacity: 1; }
+    .ct-header { padding: 10px 14px 8px; border-bottom: 1px solid #F0F1F3; display: flex; align-items: center; justify-content: space-between; }
+    .ct-date { font-size: 12px; font-weight: 700; color: #24292E; }
+    .ct-count { font-size: 11px; color: #9EA5AD; }
+    .ct-list { padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto; }
+    .ct-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; background: #FAFBFC; }
+    .ct-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .ct-name { font-size: 12px; font-weight: 600; color: #24292E; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ct-meta { font-size: 10px; color: #9EA5AD; white-space: nowrap; }
+    .ct-empty { padding: 14px; text-align: center; font-size: 12px; color: #C9CDD2; }
     .btn-add-schedule { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; background: #58C65D; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .btn-add-schedule:hover { background: #4ab54f; }
 
@@ -418,6 +437,15 @@
     </div>
   </div>
 </main>
+
+<!-- 날짜 호버 툴팁 -->
+<div id="calTooltip">
+  <div class="ct-header">
+    <span class="ct-date" id="ctDate"></span>
+    <span class="ct-count" id="ctCount"></span>
+  </div>
+  <div class="ct-list" id="ctList"></div>
+</div>
 
 <!-- ── 스케줄 예약 모달 ── -->
 <div class="booking-overlay hidden" id="bookingOverlay">
@@ -705,10 +733,25 @@ var DAY_SCHEDULES = {
     { name:'롯데백화점 프로모', state:'confirmed'   },
     { name:'삼성 여름 광고',    state:'confirmed'   },
   ]},
+  '2026-06-21': { capacity:'orange', scheds:[
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'롯데백화점 프로모', state:'confirmed'   },
+    { name:'애플 신제품 런칭',  state:'unconfirmed' },
+    { name:'카카오 브랜드 광고', state:'reserved'   },
+  ]},
+  '2026-06-14': { capacity:'orange', scheds:[
+    { name:'나이키 6월 캠페인', state:'confirmed'   },
+    { name:'삼성 여름 광고',    state:'confirmed'   },
+    { name:'LG 가전 캠페인',    state:'unconfirmed' },
+    { name:'애플 신제품 런칭',  state:'unconfirmed' },
+    { name:'카카오 브랜드 광고', state:'reserved'   },
+  ]},
   '2026-06-15': { capacity:'green',  scheds:[
     { name:'삼성 여름 광고',    state:'confirmed'   },
     { name:'나이키 6월 캠페인', state:'confirmed'   },
     { name:'롯데백화점 프로모', state:'confirmed'   },
+    { name:'배달의민족 여름',   state:'reserved'    },
   ]},
   '2026-06-16': { capacity:'green',  scheds:[
     { name:'나이키 6월 캠페인', state:'confirmed'   },
@@ -772,6 +815,48 @@ var ALL_SCHEDULES = [
 
 var selectedDate = null; // "YYYY-MM-DD"
 
+/* ── 캘린더 툴팁 ── */
+var tooltip = document.getElementById('calTooltip');
+var tooltipTimeout;
+
+function showTooltip(cell, dateStr, dateLabel) {
+  clearTimeout(tooltipTimeout);
+  var day = DAY_SCHEDULES[dateStr];
+  var list = day ? day.scheds : [];
+  document.getElementById('ctDate').textContent = dateLabel;
+  document.getElementById('ctCount').textContent = list.length ? list.length + '개 스케줄' : '스케줄 없음';
+  var ctList = document.getElementById('ctList');
+  if (list.length === 0) {
+    ctList.innerHTML = '<div class="ct-empty">등록된 스케줄이 없습니다</div>';
+  } else {
+    ctList.innerHTML = list.map(function(s) {
+      var dot = s.state === 'confirmed' ? '#58C65D' : s.state === 'unconfirmed' ? '#F59E0B' : '#C9CDD2';
+      return '<div class="ct-item">' +
+        '<span class="ct-dot" style="background:' + dot + ';"></span>' +
+        '<span class="ct-name">' + s.name + '</span>' +
+        '<span class="ct-meta">' + (s.state === 'confirmed' ? '확정' : s.state === 'unconfirmed' ? '미확정' : '예약') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+  var rect = cell.getBoundingClientRect();
+  var tw = 260, th = tooltip.offsetHeight || 180;
+  var left = rect.left + rect.width / 2 - tw / 2;
+  var top  = rect.top - th - 8;
+  if (top < 8) top = rect.bottom + 8;
+  if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+  if (left < 8) left = 8;
+  tooltip.style.left  = left + 'px';
+  tooltip.style.top   = top  + 'px';
+  tooltip.style.width = tw   + 'px';
+  tooltip.classList.add('visible');
+}
+
+function hideTooltip() {
+  tooltipTimeout = setTimeout(function() {
+    tooltip.classList.remove('visible');
+  }, 80);
+}
+
 function dateKey(y, m, d) {
   return y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
 }
@@ -831,8 +916,11 @@ function renderCalendar() {
       chips += '<div class="cal-more-chip">+' + (scheds.length - MAX_CHIPS) + '개 더</div>';
     }
 
+    var dateLabel = CAL_MONTH + '월 ' + d + '일';
     cells +=
-      '<div class="' + cls + '">' +
+      '<div class="' + cls + '" data-key="' + key + '"' +
+        ' onmouseenter="showTooltip(this,\'' + key + '\',\'' + dateLabel + '\')"' +
+        ' onmouseleave="hideTooltip()">' +
         '<div class="cal-cell-head">' +
           '<a href="schedule-product-day.html" class="cal-date-link" onclick="event.stopPropagation()">' +
             '<span class="' + dateNumCls + '">' + d + '</span>' +
@@ -1146,10 +1234,6 @@ renderCalendar();
   }
 })();
 
-/* selected 셀 CSS 추가 */
-var styleEl = document.createElement('style');
-styleEl.textContent = '.cal-cell.selected .cal-cell-body { background: rgba(88,198,93,.06); } .cal-cell.selected { outline: 2px solid #58C65D; outline-offset: -2px; }';
-document.head.appendChild(styleEl);
 </script>
 <script src="../assets/js/cms.js"></script>
 </body>
