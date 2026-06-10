@@ -1766,9 +1766,9 @@ function toPct(raw, key, mode) {
 }
 
 let chartMode = 'time';
-let remainChart;
 
 function buildChart() {
+  if (!document.getElementById('remainChart')) return;
   const ctx = document.getElementById('remainChart').getContext('2d');
   const isTime = chartMode === 'time';
 
@@ -2168,7 +2168,6 @@ function switchEffectTab(btn, tab) {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-  buildChart();
   buildTimeslotCharts();  /* 기본 탭 시간대별 차트 초기화 */
 });
 
