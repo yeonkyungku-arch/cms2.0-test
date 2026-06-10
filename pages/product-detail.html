@@ -551,8 +551,38 @@
       padding: 2px 7px; border-radius: 4px;
       white-space: nowrap;
       pointer-events: none;
+      display: none;
     }
-    .map-pin:hover .map-pin-label { display: block; }
+    .map-pin-tooltip {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      padding: 10px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .map-pin-tooltip-inner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .map-pin-tooltip-img {
+      width: 56px; height: 56px;
+      border-radius: 6px;
+      background: #F6F7F9;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .map-pin-tooltip-name {
+      font-size: 12px; font-weight: 600; color: #24292E;
+    }
+    .map-pin-tooltip-addr {
+      font-size: 10px; color: #9EA5AD; margin-top: 3px;
+    }
     .media-addr { font-size:11px; color:#9EA5AD; margin-top:2px; }
     .media-card {
       border: 1px solid #E5E7EA;
@@ -939,22 +969,19 @@
             <text x="672" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="#3C54A0" font-family="sans-serif">N</text>
           </svg>
           <!-- 핀 1: 강남역 1번출구 A (강남대로 서쪽, 테헤란로 북쪽) -->
-          <div class="map-pin" style="left:28%;top:31%;" title="강남역 1번출구 A">
-            <div class="map-pin-label">1번출구 A</div>
+          <div class="map-pin" style="left:28%;top:31%;" onmouseenter="showMapPinTooltip(event,'강남역 1번출구 A','서울 강남구 강남대로 396')" onmouseleave="hideMapPinTooltip()">
             <div class="map-pin-dot online" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">A</span>
             </div>
           </div>
           <!-- 핀 2: 강남역 1번출구 B (강남대로 동쪽, 테헤란로 북쪽) -->
-          <div class="map-pin" style="left:36%;top:31%;" title="강남역 1번출구 B">
-            <div class="map-pin-label">1번출구 B</div>
+          <div class="map-pin" style="left:36%;top:31%;" onmouseenter="showMapPinTooltip(event,'강남역 1번출구 B','서울 강남구 강남대로 396')" onmouseleave="hideMapPinTooltip()">
             <div class="map-pin-dot online" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">B</span>
             </div>
           </div>
           <!-- 핀 3: 강남역 2번출구 (강남대로 동쪽, 테헤란로 남쪽, 점검 중) -->
-          <div class="map-pin" style="left:37%;top:45%;" title="강남역 2번출구">
-            <div class="map-pin-label">2번출구</div>
+          <div class="map-pin" style="left:37%;top:45%;" onmouseenter="showMapPinTooltip(event,'강남역 2번출구','서울 강남구 강남대로')" onmouseleave="hideMapPinTooltip()">
             <div class="map-pin-dot offline" style="width:26px;height:26px;">
               <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">2</span>
             </div>
@@ -2328,5 +2355,31 @@ function toggleCondFields() {
   </div>
 </div>
 <script src="../assets/js/cms.js"></script>
+<div id="mapPinTooltip" class="map-pin-tooltip">
+  <div class="map-pin-tooltip-inner">
+    <div class="map-pin-tooltip-img">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#CED2D6" stroke-width="1.5" fill="none"/><circle cx="12" cy="13" r="4" stroke="#CED2D6" stroke-width="1.5" fill="none"/></svg>
+    </div>
+    <div>
+      <div class="map-pin-tooltip-name" id="mapPinName"></div>
+      <div class="map-pin-tooltip-addr" id="mapPinAddr"></div>
+    </div>
+  </div>
+</div>
+<script>
+function showMapPinTooltip(e, name, addr) {
+  var tip = document.getElementById('mapPinTooltip');
+  document.getElementById('mapPinName').textContent = name;
+  document.getElementById('mapPinAddr').textContent = addr || '';
+  tip.style.display = 'block';
+  var pin = e.target.closest('.map-pin');
+  var rect = pin.getBoundingClientRect();
+  tip.style.left = (rect.right + 8) + 'px';
+  tip.style.top = (rect.top + rect.height / 2 - 38) + 'px';
+}
+function hideMapPinTooltip() {
+  document.getElementById('mapPinTooltip').style.display = 'none';
+}
+</script>
 </body>
 </html>

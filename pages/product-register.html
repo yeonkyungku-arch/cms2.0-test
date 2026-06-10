@@ -122,17 +122,36 @@
       font-size: 9px; font-weight: 800; color: #fff;
     }
     .media-map-tooltip {
-      position: absolute;
-      bottom: calc(100% + 6px); left: 50%;
-      transform: translateX(-50%);
-      background: #24292E; color: #fff;
-      font-size: 10px; font-weight: 600;
-      padding: 3px 8px; border-radius: 4px;
-      white-space: nowrap;
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      padding: 10px;
       pointer-events: none;
-      opacity: 0; transition: opacity 0.1s;
+      white-space: nowrap;
     }
-    .media-map-pin:hover .media-map-tooltip { opacity: 1; }
+    .media-map-tooltip-inner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .media-map-tooltip-img {
+      width: 56px; height: 56px;
+      border-radius: 6px;
+      background: #F6F7F9;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .media-map-tooltip-name {
+      font-size: 12px; font-weight: 600; color: #24292E;
+    }
+    .media-map-tooltip-addr {
+      font-size: 10px; color: #9EA5AD; margin-top: 3px;
+    }
     .media-map-legend {
       display: flex; gap: 12px; padding: 7px 12px;
       background: #fff; border-top: 1px solid #E5E7EA;
@@ -1064,8 +1083,7 @@ function renderMediaMap() {
     const pct_x = (m.mapX / 100 * 300).toFixed(1);
     const pct_y = (m.mapY / 100 * 260).toFixed(1);
     html += `
-      <div class="media-map-pin" style="left:${pct_x}px;top:${pct_y}px;" onclick="toggleMediaFromMap('${m.id}')" title="${m.name}">
-        <div class="media-map-tooltip">${m.name}</div>
+      <div class="media-map-pin" style="left:${pct_x}px;top:${pct_y}px;" onclick="toggleMediaFromMap('${m.id}')" onmouseenter="showMediaPinTooltip(event, '${m.id}')" onmouseleave="hideMediaPinTooltip()">
         <div class="media-map-pin-dot ${dotCls}">
           <span class="media-map-pin-inner">${m.id}</span>
         </div>
@@ -1073,6 +1091,34 @@ function renderMediaMap() {
   });
 
   wrap.innerHTML = html;
+}
+
+function showMediaPinTooltip(e, id) {
+  const m = MEDIA_DATA.find(x => x.id === id);
+  if (!m) return;
+  let tip = document.getElementById('mediaMapTooltip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.id = 'mediaMapTooltip';
+    tip.className = 'media-map-tooltip';
+    tip.innerHTML = '<div class="media-map-tooltip-inner">' +
+      '<div class="media-map-tooltip-img">' +
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#CED2D6" stroke-width="1.5" fill="none"/><circle cx="12" cy="13" r="4" stroke="#CED2D6" stroke-width="1.5" fill="none"/></svg>' +
+      '</div>' +
+      '<div><div class="media-map-tooltip-name" id="mtipName"></div><div class="media-map-tooltip-addr" id="mtipAddr"></div></div>' +
+      '</div>';
+    document.body.appendChild(tip);
+  }
+  document.getElementById('mtipName').textContent = m.name;
+  document.getElementById('mtipAddr').textContent = m.sub || '';
+  tip.style.display = 'block';
+  const rect = e.target.closest('.media-map-pin').getBoundingClientRect();
+  tip.style.left = (rect.right + 8) + 'px';
+  tip.style.top = (rect.top + rect.height / 2 - 38) + 'px';
+}
+function hideMediaPinTooltip() {
+  const tip = document.getElementById('mediaMapTooltip');
+  if (tip) tip.style.display = 'none';
 }
 
 function toggleMediaFromMap(id) {
