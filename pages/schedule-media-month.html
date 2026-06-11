@@ -574,12 +574,12 @@
           '<span class="badge ' + badgeCls + '"><span class="badge-dot ' + dotCls + '"></span>' + s.statusLabel + '</span>' +
         '</div>' +
         '<div class="schedule-card-meta">' +
-          '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
+          '<span>' + s.product + '</span>' +
           '<span class="sep">·</span>' +
           '<span>' + s.code + '</span><span class="sep">·</span>' +
           '<span>' + s.duration + '</span><span class="sep">·</span>' +
           '<span>' + s.type + '</span>' +
-          (adTagTxt ? '<span class="sep">·</span><span class="' + adTagCls + '">' + adTagTxt + '</span>' : '') +
+          (adTagTxt ? '<span class="sep">·</span><span>' + adTagTxt + '</span>' : '') +
         '</div>' +
         '<div style="font-size:11px;color:#9EA5AD;margin-top:1px;">📅 ' + periodStr + '</div>' +
         '<div class="schedule-card-advertiser">' + s.advertiser + '</div>';
