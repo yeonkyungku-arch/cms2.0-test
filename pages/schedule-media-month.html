@@ -114,6 +114,9 @@
 
     .schedule-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 5px; background: #fff; }
     .schedule-card:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .schedule-card.hovered { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .cal-cell.sched-highlight .cal-cell-body { background: #F0FDF4; }
+    .cal-cell.sched-highlight .cal-date-link { background: #D1FAE5; }
     .schedule-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .schedule-card-name { font-size: 13px; font-weight: 600; color: #24292E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .product-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; white-space: nowrap; }
@@ -556,6 +559,13 @@
       var dotCls   = 'badge-dot-' + s.status;
       var adTagCls = s.adType ? 'adtype-tag adtype-tag-' + s.adType : '';
       var adTagTxt = s.adType ? AD_TYPE_LABELS[s.adType] : '';
+
+      var sortedDates = s.dates.slice().sort(function(a, b) { return a - b; });
+      var startDay = sortedDates[0];
+      var endDay   = sortedDates[sortedDates.length - 1];
+      var ym = selectedDate ? selectedDate.substring(0, 7) : (currentYear + '-' + (currentMonth < 10 ? '0' + currentMonth : currentMonth));
+      var periodStr = ym + '-' + (startDay < 10 ? '0' + startDay : startDay) + ' ~ ' + ym + '-' + (endDay < 10 ? '0' + endDay : endDay);
+
       var card = document.createElement('div');
       card.className = 'schedule-card';
       card.innerHTML =
@@ -571,8 +581,27 @@
           '<span>' + s.type + '</span>' +
           (adTagTxt ? '<span class="sep">·</span><span class="' + adTagCls + '">' + adTagTxt + '</span>' : '') +
         '</div>' +
+        '<div style="font-size:11px;color:#9EA5AD;margin-top:1px;">📅 ' + periodStr + '</div>' +
         '<div class="schedule-card-advertiser">' + s.advertiser + '</div>';
+
+      card.addEventListener('mouseenter', function() { highlightScheduleDates(s.dates); });
+      card.addEventListener('mouseleave', clearScheduleHighlight);
       listEl.appendChild(card);
+    });
+  }
+
+  function highlightScheduleDates(dates) {
+    clearScheduleHighlight();
+    dates.forEach(function(d) {
+      var key = currentYear + '-' + (currentMonth < 10 ? '0' + currentMonth : currentMonth) + '-' + (d < 10 ? '0' + d : d);
+      var cell = document.querySelector('.cal-cell[data-key="' + key + '"]');
+      if (cell) cell.classList.add('sched-highlight');
+    });
+  }
+
+  function clearScheduleHighlight() {
+    document.querySelectorAll('.cal-cell.sched-highlight').forEach(function(el) {
+      el.classList.remove('sched-highlight');
     });
   }
 
