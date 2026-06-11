@@ -928,7 +928,6 @@ function renderMediaList(filter = '', statusFilter = '') {
           <th>미디어명</th>
           <th>설치유형</th>
           <th>운영시간</th>
-          <th>사이클</th>
           <th>기준슬롯</th>
           <th>센서</th>
           <th>상태</th>
@@ -945,7 +944,6 @@ function renderMediaList(filter = '', statusFilter = '') {
             </td>
             <td class="media-td-val">${m.installType}</td>
             <td class="media-td-val">${m.opsHours}</td>
-            <td class="media-td-val">${m.cycleMax}초</td>
             <td class="media-td-val">${m.refSlotSec}초 × ${m.refSlots}</td>
             <td>${(m.sensors || []).map(s => `<span class="sensor-badge sensor-${s}">${SENSOR_LABEL[s] || s}</span>`).join(' ')}</td>
             <td><span class="status-dot ${m.status}" style="margin:0 auto;display:block;"></span></td>
