@@ -980,12 +980,12 @@ function renderCycleOrder() {
   h += '<button onclick="saveCycleOrder(event)" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>';
   h += '</div>';
 
-  /* 열: 순서 | 드래그 | 프로덕트 | 스케줄명 | 상태 | 유형 | 콘텐츠 | 재생시간 | 순서조작 */
-  var COL = '36px 24px 120px 1fr 52px 80px 2fr 64px 60px';
+  /* 열: 순서 | 드래그 | 프로덕트 | 스케줄명 | 상태 | 유형 | 콘텐츠 | 순서조작 */
+  var COL = '36px 24px 120px 1fr 52px 80px 2fr 60px';
 
   /* 헤더 */
   h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">';
-  h += '<span>순서</span><span></span><span>프로덕트</span><span>스케줄명</span><span>상태</span><span>유형</span><span>콘텐츠</span><span style="text-align:center;">재생 시간</span><span></span></div>';
+  h += '<span>순서</span><span></span><span>프로덕트</span><span>스케줄명</span><span>상태</span><span>유형</span><span>콘텐츠</span><span></span></div>';
 
   /* 아이템 목록 */
   cycleOrder.forEach(function(ad, idx) {
@@ -1033,11 +1033,6 @@ function renderCycleOrder() {
       h += '<span style="font-size:11px;color:#CED2D6;">콘텐츠 미지정</span>';
       h += '</div>';
     }
-
-    /* 재생 시간 */
-    h += '<div style="display:flex;align-items:center;gap:4px;justify-content:center;">';
-    h += '<div style="height:5px;background:#E5E7EA;border-radius:3px;overflow:hidden;width:36px;"><div style="height:100%;background:' + tBg + ';width:' + Math.min(100, Math.round(ad.dur / 600 * 500)) + '%;"></div></div>';
-    h += '<span style="font-size:12px;font-weight:600;color:#24292E;">' + ad.dur + '초</span></div>';
 
     var upDis = idx === 0 ? 'disabled' : '';
     var dnDis = idx === cycleOrder.length - 1 ? 'disabled' : '';
