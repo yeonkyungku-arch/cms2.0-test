@@ -399,7 +399,6 @@
   function calcUsedSlots(dateKey, slotSec) {
     var list = dateSchedules[dateKey] || [];
     return list.reduce(function(sum, s) {
-      if (s.status === 'ended') return sum;
       return sum + Math.ceil(parseDurSec(s.duration) / slotSec);
     }, 0);
   }
