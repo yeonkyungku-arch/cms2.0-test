@@ -354,7 +354,6 @@
     document.getElementById('infoMediaAddr').textContent  = m.addr;
     document.getElementById('infoInstall').textContent    = m.install;
     document.getElementById('infoHours').textContent      = m.hours;
-    document.getElementById('infoCycleMax').textContent   = m.cycle;
     document.getElementById('infoSlot').textContent       = m.slot;
     document.getElementById('infoGuarantee').textContent  = m.guarantee;
     var statusEl = document.getElementById('infoStatus');
@@ -384,26 +383,26 @@
     { product: '삼성역 COEX 프리미엄', prodClass: 'prod-c', name: '안전운전 습관 캠페인', code: '다-4', duration: '30초', type: '조건', advertiser: '교통안전공단', status: 'reserved',    statusLabel: '예약',  dates: [6,8,13,15,20,22,27,29],                adType: 'public'     },
   ];
 
-  /* ── 캘린더 데이터 ── */
-  const calData = {
-    '2026-06-01': { sec: 540, slot: 18 }, '2026-06-02': { sec: 480, slot: 16 },
-    '2026-06-03': { sec: 390, slot: 13 }, '2026-06-04': { sec: 600, slot: 20 },
-    '2026-06-05': { sec: 300, slot: 10 }, '2026-06-06': { sec: 240, slot: 9  },
-    '2026-06-07': { sec: 120, slot: 4  }, '2026-06-08': { sec: 60,  slot: 2  },
-    '2026-06-09': { sec: 450, slot: 15 }, '2026-06-10': { sec: 500, slot: 17 },
-    '2026-06-11': { sec: 90,  slot: 3  }, '2026-06-12': { sec: 0,   slot: 0  },
-    '2026-06-13': { sec: 30,  slot: 1  }, '2026-06-14': { sec: 360, slot: 12 },
-    '2026-06-15': { sec: 420, slot: 14 }, '2026-06-16': { sec: 570, slot: 19 },
-    '2026-06-17': { sec: 150, slot: 5  }, '2026-06-18': { sec: 200, slot: 7  },
-    '2026-06-19': { sec: 0,   slot: 0  }, '2026-06-20': { sec: 50,  slot: 2  },
-    '2026-06-21': { sec: 310, slot: 11 }, '2026-06-22': { sec: 430, slot: 14 },
-    '2026-06-23': { sec: 510, slot: 18 }, '2026-06-24': { sec: 80,  slot: 3  },
-    '2026-06-25': { sec: 260, slot: 9  }, '2026-06-26': { sec: 0,   slot: 0  },
-    '2026-06-27': { sec: 40,  slot: 1  }, '2026-06-28': { sec: 580, slot: 20 },
-    '2026-06-29': { sec: 350, slot: 12 }, '2026-06-30': { sec: 190, slot: 6  },
-  };
+  /* 슬롯 설정: "30초 × 20개" → { slotSec: 30, maxSlot: 20 } */
+  function parseSlotConfig(slotStr) {
+    var m = slotStr.match(/(\d+)초\s*×\s*(\d+)개/);
+    return m ? { slotSec: parseInt(m[1]), maxSlot: parseInt(m[2]) } : { slotSec: 30, maxSlot: 20 };
+  }
 
-  const MAX_SLOT = 20;
+  /* duration 문자열 → 초 */
+  function parseDurSec(durStr) {
+    var m = durStr.match(/(\d+)/);
+    return m ? parseInt(m[1]) : 30;
+  }
+
+  /* 날짜별 사용 슬롯 수 계산 (ended 제외) */
+  function calcUsedSlots(dateKey, slotSec) {
+    var list = dateSchedules[dateKey] || [];
+    return list.reduce(function(sum, s) {
+      if (s.status === 'ended') return sum;
+      return sum + Math.ceil(parseDurSec(s.duration) / slotSec);
+    }, 0);
+  }
 
   var selectedDate = null;
 
@@ -459,18 +458,17 @@
     }, 80);
   }
 
-  function getStatusColor(sec, slot) {
-    const pct = (slot / MAX_SLOT) * 100;
-    if (pct === 0)  return '#EF4444';
-    if (pct < 20)   return '#F97316';
-    if (pct < 50)   return '#F59E0B';
+  /* usedPct: 사용된 슬롯 비율(%) 기준 */
+  function getStatusColor(usedPct) {
+    if (usedPct >= 100) return '#EF4444';
+    if (usedPct >= 80)  return '#F97316';
+    if (usedPct >= 50)  return '#F59E0B';
     return '#10B981';
   }
-  function getStatusLabel(sec, slot) {
-    const pct = (slot / MAX_SLOT) * 100;
-    if (pct === 0)  return '등록불가';
-    if (pct < 20)   return '매우위험';
-    if (pct < 50)   return '위험';
+  function getStatusLabel(usedPct) {
+    if (usedPct >= 100) return '등록불가';
+    if (usedPct >= 80)  return '매우위험';
+    if (usedPct >= 50)  return '위험';
     return '여유';
   }
 
@@ -611,7 +609,6 @@
     cells.forEach(function(c, idx) {
       const colIdx  = idx % 7;
       const dateStr = c.thisMonth ? fmtKey(c.y, c.m, c.day) : null;
-      const data    = dateStr ? (calData[dateStr] || null) : null;
 
       const cell = document.createElement('div');
       cell.className = 'cal-cell';
@@ -646,12 +643,15 @@
         head.addEventListener('mouseenter', function() { showTooltip(cell, dateStr, dateLabel); });
         head.addEventListener('mouseleave', hideTooltip);
 
-        if (data) {
-          const color   = getStatusColor(data.sec, data.slot);
-          const capCls  = { '#10B981':'cap-green', '#F59E0B':'cap-amber', '#F97316':'cap-orange', '#EF4444':'cap-red' }[color] || 'cap-green';
-          const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
+        var slotCfg  = parseSlotConfig(MEDIA_INFO[document.getElementById('mediaSelect').value].slot);
+        var used     = calcUsedSlots(dateStr, slotCfg.slotSec);
+        var maxSlot  = slotCfg.maxSlot;
+        var usedPct  = Math.round((used / maxSlot) * 100);
 
-          /* cap-dot는 head에 추가 */
+        if (used > 0 || (dateSchedules[dateStr] || []).length > 0) {
+          const color  = getStatusColor(usedPct);
+          const capCls = { '#10B981':'cap-green', '#F59E0B':'cap-amber', '#F97316':'cap-orange', '#EF4444':'cap-red' }[color] || 'cap-green';
+
           const dot = document.createElement('span');
           dot.className = 'cap-dot ' + capCls;
           head.appendChild(dot);
@@ -660,8 +660,8 @@
             '<div class="cal-bars">' +
               '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">슬롯</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + '"></div></div>' +
-                '<span class="cal-bar-val">' + data.slot + '</span>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + Math.min(usedPct, 100) + '%;background:' + color + '"></div></div>' +
+                '<span class="cal-bar-val">' + used + '/' + maxSlot + '</span>' +
               '</div>' +
             '</div>';
         }
@@ -682,7 +682,7 @@
   // 오늘 날짜 자동 선택
   var _today = new Date();
   var _todayKey = fmtKey(_today.getFullYear(), _today.getMonth() + 1, _today.getDate());
-  if (calData[_todayKey]) {
+  if (dateSchedules[_todayKey] || _todayKey.startsWith('2026-06')) {
     selectDate(_todayKey, _today.getDate(), _today.getMonth() + 1, _today.getFullYear());
   }
   renderCalendar(currentYear, currentMonth, true);
