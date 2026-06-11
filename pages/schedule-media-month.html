@@ -136,6 +136,9 @@
     .schedule-card-meta { font-size: 11px; color: #9EA5AD; display: flex; align-items: center; gap: 4px; }
     .schedule-card-meta .sep { color: #D1D5DB; }
     .schedule-card-advertiser { font-size: 12px; color: #596066; font-weight: 500; }
+    .scard-fields { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin-top: 6px; }
+    .scard-label { font-size: 11px; color: #9EA5AD; white-space: nowrap; }
+    .scard-val   { font-size: 11px; color: #596066; }
     /* 광고 유형 */
     .adtype-tag { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
     .adtype-tag-commercial { background: #F0FDF4; color: #166534; }
@@ -573,16 +576,15 @@
           '<span class="schedule-card-name">' + s.name + '</span>' +
           '<span class="badge ' + badgeCls + '"><span class="badge-dot ' + dotCls + '"></span>' + s.statusLabel + '</span>' +
         '</div>' +
-        '<div class="schedule-card-meta">' +
-          '<span>' + s.product + '</span>' +
-          '<span class="sep">·</span>' +
-          '<span>' + s.code + '</span><span class="sep">·</span>' +
-          '<span>' + s.duration + '</span><span class="sep">·</span>' +
-          '<span>' + s.type + '</span>' +
-          (adTagTxt ? '<span class="sep">·</span><span>' + adTagTxt + '</span>' : '') +
-        '</div>' +
-        '<div style="font-size:11px;color:#9EA5AD;margin-top:1px;">📅 ' + periodStr + '</div>' +
-        '<div class="schedule-card-advertiser">' + s.advertiser + '</div>';
+        '<div class="scard-fields">' +
+          '<span class="scard-label">프로덕트</span><span class="scard-val">' + s.product + '</span>' +
+          '<span class="scard-label">플레이플랜</span><span class="scard-val">' + s.code + '</span>' +
+          '<span class="scard-label">광고 유형</span><span class="scard-val">' + (adTagTxt || '–') + '</span>' +
+          '<span class="scard-label">재생 시간</span><span class="scard-val">' + s.duration + '</span>' +
+          '<span class="scard-label">스케줄 유형</span><span class="scard-val">' + s.type + '</span>' +
+          '<span class="scard-label">광고 기간</span><span class="scard-val">' + periodStr + '</span>' +
+          '<span class="scard-label">광고주</span><span class="scard-val">' + s.advertiser + '</span>' +
+        '</div>';
 
       card.addEventListener('mouseenter', function() { highlightScheduleDates(s.dates); });
       card.addEventListener('mouseleave', clearScheduleHighlight);
