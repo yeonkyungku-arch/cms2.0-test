@@ -255,7 +255,6 @@
       <div style="display:flex;gap:20px;flex-wrap:wrap;">
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">설치 유형</div><div id="infoInstall" style="font-size:12px;font-weight:600;color:#24292E;">실외 · 세로형</div></div>
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">운영 시간</div><div id="infoHours" style="font-size:12px;font-weight:600;color:#24292E;">07:00–22:00</div></div>
-        <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">사이클 최대</div><div id="infoCycleMax" style="font-size:12px;font-weight:600;color:#24292E;">600초</div></div>
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">기준 슬롯</div><div id="infoSlot" style="font-size:12px;font-weight:600;color:#24292E;">30초 × 20개</div></div>
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">최소 보장</div><div id="infoGuarantee" style="font-size:12px;font-weight:600;color:#24292E;">90회/일</div></div>
       </div>
@@ -404,7 +403,6 @@
     '2026-06-29': { sec: 350, slot: 12 }, '2026-06-30': { sec: 190, slot: 6  },
   };
 
-  const MAX_SEC  = 600;
   const MAX_SLOT = 20;
 
   var selectedDate = null;
@@ -462,17 +460,17 @@
   }
 
   function getStatusColor(sec, slot) {
-    const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
-    if (minPct === 0)  return '#EF4444';
-    if (minPct < 20)   return '#F97316';
-    if (minPct < 50)   return '#F59E0B';
+    const pct = (slot / MAX_SLOT) * 100;
+    if (pct === 0)  return '#EF4444';
+    if (pct < 20)   return '#F97316';
+    if (pct < 50)   return '#F59E0B';
     return '#10B981';
   }
   function getStatusLabel(sec, slot) {
-    const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
-    if (minPct === 0)  return '등록불가';
-    if (minPct < 20)   return '매우위험';
-    if (minPct < 50)   return '위험';
+    const pct = (slot / MAX_SLOT) * 100;
+    if (pct === 0)  return '등록불가';
+    if (pct < 20)   return '매우위험';
+    if (pct < 50)   return '위험';
     return '여유';
   }
 
@@ -651,7 +649,6 @@
         if (data) {
           const color   = getStatusColor(data.sec, data.slot);
           const capCls  = { '#10B981':'cap-green', '#F59E0B':'cap-amber', '#F97316':'cap-orange', '#EF4444':'cap-red' }[color] || 'cap-green';
-          const secPct  = Math.round((data.sec  / MAX_SEC)  * 100);
           const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
 
           /* cap-dot는 head에 추가 */
@@ -661,11 +658,6 @@
 
           body.innerHTML =
             '<div class="cal-bars">' +
-              '<div class="cal-bar-row">' +
-                '<span class="cal-bar-label">사이클</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + '"></div></div>' +
-                '<span class="cal-bar-val">' + data.sec + 's</span>' +
-              '</div>' +
               '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">슬롯</span>' +
                 '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + '"></div></div>' +
