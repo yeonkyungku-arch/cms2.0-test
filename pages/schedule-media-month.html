@@ -395,12 +395,9 @@
     return m ? parseInt(m[1]) : 30;
   }
 
-  /* 날짜별 사용 슬롯 수 계산 (ended 제외) */
-  function calcUsedSlots(dateKey, slotSec) {
-    var list = dateSchedules[dateKey] || [];
-    return list.reduce(function(sum, s) {
-      return sum + Math.ceil(parseDurSec(s.duration) / slotSec);
-    }, 0);
+  /* 날짜별 사용 슬롯 수 계산 (스케줄 1개 = 슬롯 1개) */
+  function calcUsedSlots(dateKey) {
+    return (dateSchedules[dateKey] || []).length;
   }
 
   var selectedDate = null;
@@ -643,7 +640,7 @@
         head.addEventListener('mouseleave', hideTooltip);
 
         var slotCfg  = parseSlotConfig(MEDIA_INFO[document.getElementById('mediaSelect').value].slot);
-        var used     = calcUsedSlots(dateStr, slotCfg.slotSec);
+        var used     = calcUsedSlots(dateStr);
         var maxSlot  = slotCfg.maxSlot;
         var usedPct  = Math.round((used / maxSlot) * 100);
 
