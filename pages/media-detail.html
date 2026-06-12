@@ -2,505 +2,355 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 상세 정보 — Dooh Service</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>미디어 상세 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    #nav-expanded:checked ~ .gnb { width: 200px; }
-    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
-    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
-    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
-    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
-    #nav-expanded:checked ~ .content { margin-left: 200px; }
-    #operation-select-modal:checked ~ .operation-select-modal-view { display: grid !important; }
-
-    .detail-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; margin-top: 20px; }
-    .detail-sidebar { display: grid; gap: 12px; position: sticky; top: 120px; }
-    .detail-main { min-width: 0; }
-    .detail-info-panel, .detail-analysis-panel { display: grid; gap: 16px; }
-    .detail-connected-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .detail-tabs { margin-bottom: 0; }
-    .count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--bg); color: var(--muted); font-size: 12px; font-weight: 600; }
-    .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
-    .kpi-strip__item { display: grid; gap: 4px; }
-    .kpi-strip__label { font-size: 12px; color: var(--muted); }
-    .kpi-strip__value { font-size: 22px; font-weight: 700; }
-    .analytics-filter-bar { display: flex; align-items: center; gap: 10px; padding: 12px 0; }
-    .analytics-filter-bar__label { font-size: 12px; color: var(--muted); }
-    .analysis-chart-group { display: grid; gap: 12px; }
-    .analysis-chart-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .chart-card { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
-    .chart-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .chart-card__label { font-size: 13px; font-weight: 600; }
-    .chart-card__peak { font-size: 12px; color: var(--muted); }
-    .analysis-insight { padding: 12px 16px; background: rgba(45,132,237,0.06); border-left: 3px solid var(--main); border-radius: 0 var(--radius) var(--radius) 0; color: var(--text); line-height: 1.6; margin: 0; }
-
-    /* Photo slider */
-    .media-photo-slider__frame { position: relative; margin: 0; overflow: hidden; border-radius: var(--radius); }
-    .media-photo-slider__nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border: 1px solid var(--border); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; line-height: 1; }
-    .media-photo-slider__nav--prev { left: 10px; }
-    .media-photo-slider__nav--next { right: 10px; }
-    .media-photo-slider__meta { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
-    .media-photo-slider__counter { font-size: 12px; color: var(--muted); }
-    .media-photo-slider__dots { display: flex; gap: 6px; }
-    .media-photo-slider__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; padding: 0; }
-    .media-photo-slider__dot--active { background: var(--main); }
-
-    /* Remaining capacity chart */
-    .rc-bar-chart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; padding: 16px 0 8px; }
-    .rc-col { display: grid; gap: 4px; text-align: center; align-items: end; }
-    .rc-bar-wrap { height: 80px; display: flex; align-items: flex-end; justify-content: center; }
-    .rc-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; }
-    .rc-bar--good { background: var(--main); }
-    .rc-bar--warn { background: #F5C842; }
-    .rc-bar--near { background: #E97474; opacity: 0.7; }
-    .rc-bar--full { background: var(--danger); }
-    .rc-closed-wrap { height: 80px; display: flex; align-items: center; justify-content: center; }
-    .rc-closed { font-size: 11px; color: var(--danger); font-weight: 700; background: rgba(233,116,116,0.1); border-radius: var(--radius); padding: 4px 6px; }
-    .rc-non-wrap { height: 80px; display: flex; align-items: center; justify-content: center; }
-    .rc-non { font-size: 11px; color: var(--muted); }
-    .rc-count { font-size: 13px; font-weight: 700; }
-    .rc-date { font-size: 11px; color: var(--muted); }
-    .rc-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
-    .rc-legend__item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
-    .rc-legend__dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-
-    /* Connected cards */
-    .connected-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .connected-card-header h2 { display: flex; align-items: center; gap: 8px; }
-    .related-card { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: var(--radius); border: 1px solid var(--line); text-decoration: none; color: var(--text); font-size: 13px; transition: var(--transition); margin-bottom: 8px; }
-    .related-card:last-child { margin-bottom: 0; }
-    .related-card:hover { border-color: var(--main); background: #fff; }
-    .related-card__name { font-weight: 600; }
-    .related-card__sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .related-card__arrow { color: var(--muted); font-size: 16px; }
-
-    /* Operation modal list */
-    .operation-choice-list { display: grid; gap: 8px; }
-    .operation-choice-list label { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: var(--transition); }
-    .operation-choice-list label:hover { border-color: var(--main); background: rgba(45,132,237,0.04); }
-    .operation-choice-list input[type="radio"] { flex-shrink: 0; }
-    .operation-choice-list label > div { flex: 1; }
-    .operation-choice-list strong { display: block; font-size: 14px; }
-    .operation-choice-list em { display: block; font-size: 12px; color: var(--muted); font-style: normal; margin-top: 2px; }
-    .modal-copy { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
-
-    /* Analysis 2-col chart row */
-    .analysis-chart-row-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .content { padding-top: 84px !important; padding-left: 24px !important; padding-right: 24px !important; }
+    .page { display: block; }
+    /* Modal state */
+    #operation-select-modal:checked ~ .operation-select-modal-view { display: grid; }
+    /* Detail tabs JS-driven, but need CSS for initial state */
+    .detail-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
+    .detail-sidebar { position: sticky; top: 96px; display: grid; gap: 12px; }
+    .detail-info-panel { display: grid; gap: 16px; }
+    .detail-analysis-panel { display: none; }  /* hidden initially */
+    .detail-connected-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
 <body>
+  <input class="state" type="checkbox" id="operation-select-modal">
 
-<input class="state" type="checkbox" id="nav-expanded">
-<input class="state" type="checkbox" id="operation-select-modal">
+  <!-- Product GNB (active: 미디어) -->
+  <nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li class="gnb-disabled"><a href="#">대시보드 <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+    <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+  </div>
+  </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+  </ul>
+</nav>
 
-<!-- GNB -->
-<aside class="gnb">
-  <label class="gnb__toggle" for="nav-expanded" title="메뉴 접기/펼치기"><span></span></label>
-  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
-  <nav class="gnb__nav">
-    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
-    <a class="gnb__item is-active" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
-    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
-    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
-    <a class="gnb__item" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
-    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
-    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
-  </nav>
-</aside>
-
-<!-- Topbar -->
-<header class="topbar">
-  <div class="topbar__logo"></div>
-  <div class="topbar__user">
-    <div class="avatar">S</div>
-    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
-    <span class="caret">⌄</span>
+  <header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
   </div>
 </header>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-  <a class="breadcrumb__back" href="media-list">‹</a>
-  <span>미디어</span> <span>›</span> <a href="media-list" style="color:var(--shell-400)">미디어 조회</a> <span>›</span> <strong>미디어 상세 정보</strong>
-</div>
-
-<!-- Main Content -->
-<main class="content">
-  <div class="page-card">
-
-    <!-- Page Header -->
-    <header class="page-header">
-      <div>
-        <p class="eyebrow">Media Detail</p>
-        <h1>강남대로 DID 01</h1>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-sm btn-ghost" type="button">삭제하기</button>
-        <a class="btn btn-primary btn-sm" href="media-register">수정하기</a>
-      </div>
-    </header>
-
-    <!-- Detail Tabs -->
-    <nav class="tabs detail-tabs">
-      <button class="is-active" type="button" data-detail-tab="info">상세 정보</button>
-      <button type="button" data-detail-tab="analysis">데이터 분석</button>
-    </nav>
-
-    <!-- Detail Layout -->
-    <div class="detail-layout">
-
-      <!-- Sidebar -->
-      <aside class="detail-sidebar">
-
-        <!-- 기본 정보 -->
-        <section class="info-card">
-          <h2>기본 정보</h2>
-          <dl class="info-list">
-            <dt>미디어명</dt><dd>강남대로 DID 01</dd>
-            <dt>설치형태</dt><dd>가로형</dd>
-            <dt>Display유형</dt><dd>LCD 55" FHD</dd>
-            <dt>Player정보</dt><dd>Quber Settop</dd>
-            <dt>설치주소</dt><dd>서울 강남구 강남대로 396</dd>
-            <dt>센서포함여부</dt><dd>센서 포함</dd>
-            <dt>센서유형</dt><dd>환경센서 / 비전센서</dd>
-            <dt>상태</dt><dd><span class="status status-ok">운영 중</span></dd>
-          </dl>
-        </section>
-
-        <!-- 운영 설정 -->
-        <section class="info-card">
-          <div class="form-section__hd">
-            <h2>운영 설정</h2>
-            <label class="btn btn-ghost btn-sm" for="operation-select-modal">변경</label>
+  <main class="content">
+    <section class="page page-detail" style="display:block">
+      <div class="page-card">
+        <header class="page-header">
+          <div>
+            <p class="eyebrow">Media Detail</p>
+            <h1>강남대로 DID 01</h1>
           </div>
-          <dl class="info-list">
-            <dt>운영정보명</dt><dd>운영설정①</dd>
-            <dt>운영요일</dt><dd>평일(월~금)</dd>
-            <dt>운영시간</dt><dd>09:00~18:00</dd>
-            <dt>기준슬롯</dt><dd>20초×30슬롯</dd>
-          </dl>
-        </section>
+          <div class="header-actions">
+            <button class="btn btn-sm btn-danger" type="button" data-toast="삭제 기능은 추후 제공됩니다.">삭제하기</button>
+            <a class="btn btn-primary btn-sm" href="media-register">수정하기</a>
+          </div>
+        </header>
+        <nav class="tabs detail-tabs" data-detail-tabs="media"><button class="is-active" type="button" data-detail-tab="info">상세 정보</button><button type="button" data-detail-tab="analysis">데이터 분석</button></nav>
 
-      </aside>
+        <div class="detail-layout">
+          <!-- ── 사이드바 ─────────────────────────────── -->
+          <aside class="detail-sidebar">
+            <section class="info-card">
+              <h2>기본 정보</h2>
+              <dl class="info-list">
+                <dt>미디어명</dt><dd>강남대로 DID 01</dd>
+                <dt>설치 형태</dt><dd>가로형</dd>
+                <dt>Display 유형</dt><dd>LCD 55" FHD</dd>
+                <dt>Player 정보</dt><dd>Quber Settop</dd>
+                <dt>설치 주소</dt><dd>서울 강남구 강남대로 396</dd>
+                <dt>센서 포함 여부</dt><dd>센서 포함</dd>
+                <dt>센서 유형</dt><dd>환경센서 / 비전센서</dd>
+                <dt>상태</dt><dd><span class="status status-ok">운영 중</span></dd>
+              </dl>
+            </section>
+            <section class="info-card">
+              <div class="form-section__hd">
+                <h2>운영 설정</h2>
+                <label class="btn btn-ghost btn-sm" for="operation-select-modal">변경</label>
+              </div>
+              <dl class="info-list">
+                <dt>운영 정보명</dt><dd>운영설정①</dd>
+                <dt>운영 요일</dt><dd>평일 (월~금)</dd>
+                <dt>운영 시간</dt><dd>09:00 ~ 18:00</dd>
+                <dt>기준 슬롯</dt><dd>20초 × 30슬롯</dd>
+              </dl>
+            </section>
+          </aside>
 
-      <!-- Main -->
-      <div class="detail-main">
+          <!-- ── 메인 영역 ───────────────────────────── -->
+          <div class="detail-main">
 
-        <!-- Info Tab Panel -->
-        <div class="detail-info-panel">
-
-          <!-- 현장 설치 사진 -->
-          <section class="info-card media-detail__photo">
-            <h2>현장 설치 사진</h2>
-            <div class="media-photo-slider" data-slider>
-              <figure class="media-photo-slider__frame">
-                <div style="height:220px;background:var(--bg);display:grid;place-items:center;color:var(--muted)">
-                  <div style="text-align:center">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                    <br>설치 사진 1
+            <!-- 상세 정보 패널 -->
+            <div class="detail-info-panel">
+              <section class="info-card media-detail__photo">
+                <h2>현장 설치 사진</h2>
+                <div class="media-photo-slider" data-slider>
+                  <figure class="media-photo-slider__frame">
+                    <div class="media-photo-placeholder" data-placeholder-index="0">
+                      <div class="media-photo-placeholder__icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>설치 사진 1</span>
+                      </div>
+                    </div>
+                    <button class="media-photo-slider__nav media-photo-slider__nav--prev" type="button" aria-label="이전 사진">‹</button>
+                    <button class="media-photo-slider__nav media-photo-slider__nav--next" type="button" aria-label="다음 사진">›</button>
+                  </figure>
+                  <div class="media-photo-slider__meta">
+                    <span class="media-photo-slider__counter">1 / 3</span>
+                    <div class="media-photo-slider__dots">
+                      <button class="media-photo-slider__dot media-photo-slider__dot--active" type="button" aria-label="1번 사진"></button>
+                      <button class="media-photo-slider__dot" type="button" aria-label="2번 사진"></button>
+                      <button class="media-photo-slider__dot" type="button" aria-label="3번 사진"></button>
+                    </div>
                   </div>
                 </div>
-                <button class="media-photo-slider__nav media-photo-slider__nav--prev" type="button">‹</button>
-                <button class="media-photo-slider__nav media-photo-slider__nav--next" type="button">›</button>
-              </figure>
-              <div class="media-photo-slider__meta">
-                <span class="media-photo-slider__counter">1 / 3</span>
-                <div class="media-photo-slider__dots">
-                  <button class="media-photo-slider__dot media-photo-slider__dot--active" type="button"></button>
-                  <button class="media-photo-slider__dot" type="button"></button>
-                  <button class="media-photo-slider__dot" type="button"></button>
+              </section>
+
+              <div class="detail-connected-row">
+                <section class="info-card">
+                  <div class="form-section__hd">
+                    <h2>연결 프로덕트 <span class="count-badge">2</span></h2>
+                    <a class="btn btn-ghost btn-sm" href="product-list">전체 보기</a>
+                  </div>
+                  <a class="related-card" href="product-list"><strong>신제품 캠페인 A</strong><span>플레이플랜: Standard</span><span class="status status-ok">연결 중</span></a>
+                  <a class="related-card" href="product-list"><strong>브랜드 리마인드 B</strong><span>플레이플랜: Premium</span><span class="status status-ok">연결 중</span></a>
+                </section>
+                <section class="info-card">
+                  <div class="form-section__hd">
+                    <h2>연결 스케줄 <span class="count-badge">1</span></h2>
+                    <a class="btn btn-ghost btn-sm" href="schedule-detail">전체 보기</a>
+                  </div>
+                  <a class="related-card" href="schedule-detail"><strong>6월 강남 출퇴근 패키지</strong><span>15초 · 2026.06.01~06.30 · 일반 광고</span><span class="status status-ok">운영 중</span></a>
+                </section>
+              </div>
+
+              <section class="info-card">
+                <h2>잔여 현황</h2>
+                <div class="remaining-chart-wrap">
+                  <div class="remaining-chart">
+                    <div class="remaining-chart__y-axis">
+                      <span>20</span>
+                      <span>15</span>
+                      <span>10</span>
+                      <span>5</span>
+                      <span>0</span>
+                    </div>
+                    <div class="remaining-chart__cols">
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val">15</span>
+                        <div class="remaining-chart__bar-wrap"><div class="remaining-chart__bar rc-good" style="height:75%"></div></div>
+                        <span class="remaining-chart__date">6/7<br><small>일</small></span>
+                      </div>
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val">8</span>
+                        <div class="remaining-chart__bar-wrap"><div class="remaining-chart__bar rc-manage" style="height:40%"></div></div>
+                        <span class="remaining-chart__date">6/8<br><small>월</small></span>
+                      </div>
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val">3</span>
+                        <div class="remaining-chart__bar-wrap"><div class="remaining-chart__bar rc-near" style="height:15%"></div></div>
+                        <span class="remaining-chart__date">6/9<br><small>화</small></span>
+                      </div>
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val rc-closed-val">마감</span>
+                        <div class="remaining-chart__bar-wrap rc-closed-wrap"></div>
+                        <span class="remaining-chart__date">6/10<br><small>수</small></span>
+                      </div>
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val">12</span>
+                        <div class="remaining-chart__bar-wrap"><div class="remaining-chart__bar rc-good" style="height:60%"></div></div>
+                        <span class="remaining-chart__date">6/11<br><small>목</small></span>
+                      </div>
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val rc-non-val">—</span>
+                        <div class="remaining-chart__bar-wrap rc-non-wrap"></div>
+                        <span class="remaining-chart__date">6/12<br><small>금</small></span>
+                      </div>
+                      <div class="remaining-chart__col">
+                        <span class="remaining-chart__val">11</span>
+                        <div class="remaining-chart__bar-wrap"><div class="remaining-chart__bar rc-good" style="height:55%"></div></div>
+                        <span class="remaining-chart__date">6/13<br><small>토</small></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="remaining-chart__legend">
+                    <span><i class="dot blue"></i>여유</span>
+                    <span><i class="dot yellow"></i>혼잡</span>
+                    <span><i class="dot orange"></i>마감 임박</span>
+                    <span><i class="dot red"></i>마감</span>
+                    <span><i class="dot gray"></i>운영일 아님</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- 데이터 분석 패널 -->
+            <div class="detail-analysis-panel">
+              <div class="kpi-strip">
+                <div class="kpi-strip__item">
+                  <span class="kpi-strip__label">월 평균 유동</span>
+                  <strong class="kpi-strip__value">204,000명</strong>
+                </div>
+                <div class="kpi-strip__item">
+                  <span class="kpi-strip__label">최다 시간대</span>
+                  <strong class="kpi-strip__value">12–13시</strong>
+                </div>
+                <div class="kpi-strip__item">
+                  <span class="kpi-strip__label">주요 오디언스</span>
+                  <strong class="kpi-strip__value">30대 남성</strong>
+                </div>
+                <div class="kpi-strip__item">
+                  <span class="kpi-strip__label">거주 집중 지역</span>
+                  <strong class="kpi-strip__value">강남·서초구</strong>
+                </div>
+              </div>
+              <p class="analysis-insight">이 미디어는 <strong>5월 수요일 12~13시</strong>에 유동인구가 가장 많으며, 주요 오디언스는 <strong>30대 남성(직장인)</strong>입니다. 조건 광고 운영 시 점심시간대 타겟 도달 효과를 기대할 수 있습니다.</p>
+              <div class="analytics-filter-bar">
+                <span class="analytics-filter-bar__label">전체 차트 적용</span>
+                <select><option>전체 성별</option><option>남성</option><option>여성</option></select>
+                <select><option>전체 연령대</option><option>20대</option><option>30대</option><option>40대</option></select>
+                <select><option>일 평균</option><option>월별</option><option>요일별</option></select>
+              </div>
+              <div class="analysis-chart-group">
+                <h3>유동 패턴</h3>
+                <div class="analysis-chart-row">
+                  <article class="chart-card">
+                    <div class="chart-card__header">
+                      <span class="chart-card__label">월별 유동인구</span>
+                      <span class="chart-card__peak">최다 <strong>5월</strong></span>
+                    </div>
+                    <div class="chart-canvas-wrap"><canvas id="media-month-chart"></canvas></div>
+                  </article>
+                  <article class="chart-card">
+                    <div class="chart-card__header">
+                      <span class="chart-card__label">요일별 유동인구</span>
+                      <span class="chart-card__peak">최다 <strong>수요일</strong></span>
+                    </div>
+                    <div class="chart-canvas-wrap"><canvas id="media-weekday-chart"></canvas></div>
+                  </article>
+                  <article class="chart-card chart-card--wide">
+                    <div class="chart-card__header">
+                      <span class="chart-card__label">시간대별 유동인구</span>
+                      <span class="chart-card__peak">최다 <strong>12-13시</strong></span>
+                    </div>
+                    <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="media-hour-chart"></canvas></div>
+                  </article>
+                </div>
+              </div>
+              <div class="analysis-chart-group">
+                <h3>오디언스 분석</h3>
+                <div class="analysis-chart-row">
+                  <article class="chart-card chart-card--wide">
+                    <div class="chart-card__header">
+                      <span class="chart-card__label">연령·성별 분포</span>
+                      <span class="chart-card__peak">최다 <strong>30대 남성</strong></span>
+                    </div>
+                    <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="media-age-chart"></canvas></div>
+                  </article>
+                  <article class="chart-card chart-card--wide">
+                    <div class="chart-card__header">
+                      <span class="chart-card__label">거주·근무지 분포</span>
+                      <span class="chart-card__peak">최다 <strong>강남구</strong></span>
+                    </div>
+                    <div class="chart-canvas-wrap chart-canvas-wrap--tall"><canvas id="media-life-chart"></canvas></div>
+                  </article>
                 </div>
               </div>
             </div>
-          </section>
 
-          <!-- 연결 프로덕트 / 연결 스케줄 -->
-          <div class="detail-connected-row">
-
-            <!-- 연결 프로덕트 -->
-            <section class="info-card">
-              <div class="connected-card-header">
-                <h2>연결 프로덕트 <span class="count-badge">2</span></h2>
-                <a href="product-list" style="font-size:12px;color:var(--main);">전체보기</a>
-              </div>
-              <a class="related-card" href="product-list">
-                <div>
-                  <div class="related-card__name">강남대로 패키지 A</div>
-                  <div class="related-card__sub">LCD 55" · 가로형</div>
-                </div>
-                <span class="related-card__arrow">›</span>
-              </a>
-              <a class="related-card" href="product-list">
-                <div>
-                  <div class="related-card__name">강남대로 패키지 B</div>
-                  <div class="related-card__sub">LCD 55" · 가로형</div>
-                </div>
-                <span class="related-card__arrow">›</span>
-              </a>
-            </section>
-
-            <!-- 연결 스케줄 -->
-            <section class="info-card">
-              <div class="connected-card-header">
-                <h2>연결 스케줄 <span class="count-badge">1</span></h2>
-                <a href="schedule-list" style="font-size:12px;color:var(--main);">전체보기</a>
-              </div>
-              <a class="related-card" href="schedule-detail">
-                <div>
-                  <div class="related-card__name">6월 강남 출퇴근 패키지</div>
-                  <div class="related-card__sub">2026.06.01 ~ 2026.06.30</div>
-                </div>
-                <span class="related-card__arrow">›</span>
-              </a>
-            </section>
-
-          </div>
-
-          <!-- 잔여 현황 -->
-          <section class="info-card">
-            <h2>잔여 현황</h2>
-
-            <div class="rc-bar-chart">
-
-              <!-- 6/7 일 -->
-              <div class="rc-col">
-                <div class="rc-bar-wrap">
-                  <div class="rc-bar rc-bar--good" style="height:75%"></div>
-                </div>
-                <div class="rc-count">15</div>
-                <div class="rc-date">6/7 일</div>
-              </div>
-
-              <!-- 6/8 월 -->
-              <div class="rc-col">
-                <div class="rc-bar-wrap">
-                  <div class="rc-bar rc-bar--warn" style="height:40%"></div>
-                </div>
-                <div class="rc-count">8</div>
-                <div class="rc-date">6/8 월</div>
-              </div>
-
-              <!-- 6/9 화 -->
-              <div class="rc-col">
-                <div class="rc-bar-wrap">
-                  <div class="rc-bar rc-bar--near" style="height:15%"></div>
-                </div>
-                <div class="rc-count">3</div>
-                <div class="rc-date">6/9 화</div>
-              </div>
-
-              <!-- 6/10 수 — 마감 -->
-              <div class="rc-col">
-                <div class="rc-closed-wrap">
-                  <span class="rc-closed">마감</span>
-                </div>
-                <div class="rc-count" style="color:var(--danger)">0</div>
-                <div class="rc-date">6/10 수</div>
-              </div>
-
-              <!-- 6/11 목 -->
-              <div class="rc-col">
-                <div class="rc-bar-wrap">
-                  <div class="rc-bar rc-bar--good" style="height:60%"></div>
-                </div>
-                <div class="rc-count">12</div>
-                <div class="rc-date">6/11 목</div>
-              </div>
-
-              <!-- 6/12 금 — 운영일아님 -->
-              <div class="rc-col">
-                <div class="rc-non-wrap">
-                  <span class="rc-non">—</span>
-                </div>
-                <div class="rc-count" style="color:var(--muted)">—</div>
-                <div class="rc-date">6/12 금</div>
-              </div>
-
-              <!-- 6/13 토 -->
-              <div class="rc-col">
-                <div class="rc-bar-wrap">
-                  <div class="rc-bar rc-bar--good" style="height:55%"></div>
-                </div>
-                <div class="rc-count">11</div>
-                <div class="rc-date">6/13 토</div>
-              </div>
-
-            </div>
-
-            <!-- Legend -->
-            <div class="rc-legend">
-              <span class="rc-legend__item"><span class="rc-legend__dot" style="background:var(--main)"></span>여유</span>
-              <span class="rc-legend__item"><span class="rc-legend__dot" style="background:#F5C842"></span>혼잡</span>
-              <span class="rc-legend__item"><span class="rc-legend__dot" style="background:rgba(233,116,116,0.7)"></span>마감임박</span>
-              <span class="rc-legend__item"><span class="rc-legend__dot" style="background:var(--danger)"></span>마감</span>
-              <span class="rc-legend__item"><span class="rc-legend__dot" style="background:var(--border)"></span>운영일아님</span>
-            </div>
-          </section>
-
-        </div>
-
-        <!-- Analysis Tab Panel (hidden by default) -->
-        <div class="detail-analysis-panel" style="display:none">
-
-          <!-- KPI Strip -->
-          <div class="kpi-strip">
-            <div class="kpi-strip__item">
-              <span class="kpi-strip__label">월평균유동</span>
-              <span class="kpi-strip__value">204,000<small style="font-size:14px;font-weight:400;color:var(--muted)">명</small></span>
-            </div>
-            <div class="kpi-strip__item">
-              <span class="kpi-strip__label">최다시간대</span>
-              <span class="kpi-strip__value">12-13시</span>
-            </div>
-            <div class="kpi-strip__item">
-              <span class="kpi-strip__label">주요오디언스</span>
-              <span class="kpi-strip__value" style="font-size:16px;padding-top:4px;">30대 남성</span>
-            </div>
-            <div class="kpi-strip__item">
-              <span class="kpi-strip__label">거주집중지역</span>
-              <span class="kpi-strip__value" style="font-size:16px;padding-top:4px;">강남·서초구</span>
-            </div>
-          </div>
-
-          <!-- Insight -->
-          <p class="analysis-insight">
-            강남대로 DID 01은 출퇴근 시간대(08~09시, 18~19시)에 유동인구가 집중되며, 주중 대비 주말 유동량은 약 40% 수준입니다. 주요 오디언스는 30대 남성으로 직장인 비율이 높고, 거주 집중 지역은 강남·서초구로 구매력이 높은 타겟 도달에 유리한 매체입니다.
-          </p>
-
-          <!-- Filter Bar -->
-          <div class="analytics-filter-bar">
-            <span class="analytics-filter-bar__label">필터</span>
-            <select class="form-select form-select--sm">
-              <option>성별 전체</option>
-              <option>남성</option>
-              <option>여성</option>
-            </select>
-            <select class="form-select form-select--sm">
-              <option>연령 전체</option>
-              <option>10대</option>
-              <option>20대</option>
-              <option>30대</option>
-              <option>40대</option>
-              <option>50대 이상</option>
-            </select>
-            <select class="form-select form-select--sm">
-              <option>최근 1개월</option>
-              <option>최근 3개월</option>
-              <option>최근 6개월</option>
-              <option>최근 1년</option>
-            </select>
-          </div>
-
-          <!-- 유동 패턴 -->
-          <div class="analysis-chart-group">
-            <h2 style="font-size:14px;font-weight:700;">유동 패턴</h2>
-            <div class="analysis-chart-row">
-              <div class="chart-card">
-                <div class="chart-card__header">
-                  <span class="chart-card__label">월별 유동량</span>
-                  <span class="chart-card__peak">피크: 5월</span>
-                </div>
-                <div style="height:160px;background:var(--bg);border-radius:var(--radius);display:grid;place-items:center;color:var(--muted);font-size:12px">차트 데이터 준비 중</div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-card__header">
-                  <span class="chart-card__label">요일별 유동량</span>
-                  <span class="chart-card__peak">피크: 화요일</span>
-                </div>
-                <div style="height:160px;background:var(--bg);border-radius:var(--radius);display:grid;place-items:center;color:var(--muted);font-size:12px">차트 데이터 준비 중</div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-card__header">
-                  <span class="chart-card__label">시간대별 유동량</span>
-                  <span class="chart-card__peak">피크: 12-13시</span>
-                </div>
-                <div style="height:160px;background:var(--bg);border-radius:var(--radius);display:grid;place-items:center;color:var(--muted);font-size:12px">차트 데이터 준비 중</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 오디언스 분석 -->
-          <div class="analysis-chart-group">
-            <h2 style="font-size:14px;font-weight:700;">오디언스 분석</h2>
-            <div class="analysis-chart-row-2">
-              <div class="chart-card">
-                <div class="chart-card__header">
-                  <span class="chart-card__label">성별 분포</span>
-                </div>
-                <div style="height:160px;background:var(--bg);border-radius:var(--radius);display:grid;place-items:center;color:var(--muted);font-size:12px">차트 데이터 준비 중</div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-card__header">
-                  <span class="chart-card__label">연령대 분포</span>
-                </div>
-                <div style="height:160px;background:var(--bg);border-radius:var(--radius);display:grid;place-items:center;color:var(--muted);font-size:12px">차트 데이터 준비 중</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <!-- /analysis tab panel -->
-
+          </div><!-- /detail-main -->
+        </div><!-- /detail-layout -->
       </div>
-      <!-- /detail-main -->
+    </section>
+  </main>
 
-    </div>
-    <!-- /detail-layout -->
-
-  </div>
-</main>
-
-<!-- Operation Select Modal -->
-<div class="operation-select-modal-view modal" style="display:none">
-  <label class="modal__scrim" for="operation-select-modal"></label>
-  <div class="modal__panel">
-    <div class="modal__header">
-      <h2>운영 설정 선택</h2>
-      <label class="modal__close" for="operation-select-modal">×</label>
-    </div>
-    <div class="modal__body">
-      <p class="modal-copy">이 미디어에 적용할 운영 설정을 선택하세요.</p>
-      <div class="operation-choice-list">
-        <label>
-          <input type="radio" name="op-select" checked>
-          <div><strong>운영설정①</strong><em>평일 · 09:00~18:00 · 20초 | 30슬롯</em></div>
-          <span class="status status-ok">사용 중</span>
-        </label>
-        <label>
-          <input type="radio" name="op-select">
-          <div><strong>운영설정②</strong><em>주말 · 08:00~22:00 · 15초 | 30슬롯</em></div>
-          <span class="status status-ok">사용 중</span>
-        </label>
-        <label>
-          <input type="radio" name="op-select">
-          <div><strong>운영설정③</strong><em>월·화·수·목 · 10:00~23:00 · 20초 | 36슬롯</em></div>
-          <span class="status status-ok">사용 중</span>
-        </label>
+  <!-- operation-select-modal-view -->
+  <div class="modal operation-select-modal-view" role="dialog" aria-modal="true" aria-labelledby="operation-select-title">
+    <label class="modal__scrim" for="operation-select-modal"></label>
+    <section class="modal__panel operation-select-modal">
+      <header class="modal__header">
+        <h2 id="operation-select-title">운영 설정 선택</h2>
+        <label class="modal__close" for="operation-select-modal">×</label>
+      </header>
+      <div class="modal__body">
+        <p class="modal-copy">등록된 운영 설정 중 하나를 선택하여 현재 미디어에 적용하거나 변경합니다.</p>
+        <div class="operation-choice-list">
+          <label>
+            <input type="radio" name="operation-choice" checked>
+            <span class="op-name-label"><strong>강남 평일 09-18 기본 운영</strong><em>평일 · 09:00~18:00 · 20초 × 30슬롯 · 사이클 600초 · 최소 54회</em></span>
+            <span class="status status-ok">18개 미디어</span>
+          </label>
+          <label>
+            <input type="radio" name="operation-choice">
+            <span class="op-name-label"><strong>코엑스 매일 08-22 운영</strong><em>매일 · 08:00~22:00 · 15초 × 30슬롯 · 사이클 450초 · 최소 112회</em></span>
+            <span class="status status-ok">24개 미디어</span>
+          </label>
+          <label>
+            <input type="radio" name="operation-choice">
+            <span class="op-name-label"><strong>홍대 저녁 10-23 운영</strong><em>매일 · 10:00~23:00 · 20초 × 36슬롯 · 사이클 720초 · 최소 65회</em></span>
+            <span class="status status-ok">9개 미디어</span>
+          </label>
+          <label>
+            <input type="radio" name="operation-choice">
+            <span class="op-name-label"><strong>공항 24시간 전일 운영</strong><em>매일 · 00:00~24:00 · 30초 × 30슬롯 · 사이클 900초 · 최소 96회</em></span>
+            <span class="status status-ok">6개 미디어</span>
+          </label>
+        </div>
+        <div class="select-modal-footer-note">
+          <label class="btn btn-ghost btn-sm" for="operation-modal">새 운영 설정 추가</label>
+        </div>
       </div>
-    </div>
-    <div class="modal__actions">
-      <label class="btn btn-ghost" for="operation-select-modal">취소</label>
-      <label class="btn btn-primary" for="operation-select-modal">적용</label>
-    </div>
+      <footer class="modal__actions">
+        <label class="btn btn-ghost" for="operation-select-modal">취소</label>
+        <label class="btn btn-primary" for="operation-select-modal">적용하기</label>
+      </footer>
+    </section>
   </div>
-</div>
 
-<script src="../assets/js/app.js"></script>
-<script>
-  // Tab switching
-  const detailTabs = document.querySelectorAll('[data-detail-tab]');
-  const infoPanel = document.querySelector('.detail-info-panel');
-  const analysisPanel = document.querySelector('.detail-analysis-panel');
-  detailTabs.forEach(btn => {
-    btn.addEventListener('click', function() {
-      detailTabs.forEach(b => b.classList.remove('is-active'));
-      this.classList.add('is-active');
-      const tab = this.dataset.detailTab;
-      infoPanel.style.display = tab === 'info' ? 'grid' : 'none';
-      analysisPanel.style.display = tab === 'analysis' ? 'grid' : 'none';
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // Tab switching for detail tabs
+    const detailTabs = document.querySelectorAll('.detail-tabs button[data-detail-tab]');
+    detailTabs.forEach(btn => {
+      btn.addEventListener('click', function() {
+        detailTabs.forEach(b => b.classList.remove('is-active'));
+        this.classList.add('is-active');
+        const tab = this.dataset.detailTab;
+        document.querySelector('.detail-info-panel').style.display = tab === 'info' ? 'grid' : 'none';
+        document.querySelector('.detail-analysis-panel').style.display = tab === 'analysis' ? 'block' : 'none';
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>

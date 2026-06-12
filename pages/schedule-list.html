@@ -2,464 +2,171 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>스케줄 조회 — Dooh CMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>스케줄 조회 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* ── Nav-expanded state ── */
-    #nav-expanded:checked ~ .gnb { width: 200px; }
-    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
-    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
-    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
-    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
-    #nav-expanded:checked ~ .content { margin-left: 200px; }
-
-    /* ── Schedule create menu ── */
-    .schedule-create-menu { position: relative; }
-    .schedule-create-menu__panel {
-      position: absolute; right: 0; top: calc(100% + 8px); z-index: 12;
-      display: none; width: 300px; padding: 8px;
-      border: 1px solid var(--line); border-radius: var(--radius);
-      background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.16);
-    }
-    .schedule-create-menu__panel a:hover { background: var(--bg); }
-    .schedule-create-menu:focus-within .schedule-create-menu__panel { display: grid; gap: 6px; }
-
-    /* ── Schedule views ── */
+    .content { padding-top: 84px !important; padding-left: 24px !important; padding-right: 24px !important; }
+    .page { display: block; }
     .schedule-view { display: none; }
     .schedule-view.is-active { display: block; }
-    .schedule-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .schedule-view.is-active.schedule-card-grid { display: grid; }
-
-    /* ── Table ── */
-    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
-    .sched-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-    .sched-table th,
-    .sched-table td {
-      padding: 12px 14px; border-bottom: 1px solid var(--line);
-      text-align: left; vertical-align: middle; font-size: 13px;
-    }
-    .sched-table th {
-      background: var(--bg); color: var(--muted);
-      font-weight: 500; border-top: 1px solid var(--line);
-    }
-    .sched-table tbody tr:hover { background: #FAFBFC; }
-    .sched-table tbody tr:last-child td { border-bottom: none; }
-
-    /* ── Cards ── */
-    .sched-card {
-      background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
-      padding: 16px; display: flex; flex-direction: column; gap: 10px;
-      transition: box-shadow 0.2s;
-    }
-    .sched-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.08); }
-    .sched-card__head {
-      display: flex; align-items: flex-start;
-      justify-content: space-between; gap: 8px;
-    }
-    .sched-card h3 { margin: 0; font-size: 14px; font-weight: 600; }
-    .sched-card p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
-    .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
-    .tag {
-      height: 22px; padding: 0 8px; display: inline-flex; align-items: center;
-      border-radius: 4px; font-size: 11px;
-      background: var(--bg); color: var(--shell-600); border: 1px solid var(--line);
-    }
-    .sched-card dl {
-      display: grid; grid-template-columns: 70px 1fr; gap: 5px 8px; margin: 0;
-    }
-    .sched-card dt { font-size: 12px; color: var(--muted); }
-    .sched-card dd { margin: 0; font-size: 12px; }
-
-    /* ── Segmented toggle ── */
-    .segmented { display: inline-flex; padding: 3px; border: 1px solid var(--border); border-radius: 4px; background: #fff; }
-    .segmented button {
-      min-height: 30px; padding: 0 14px; border: 0; background: transparent;
-      border-radius: 3px; color: var(--muted); font-size: 13px; cursor: pointer; transition: all 0.15s;
-    }
-    .segmented button.is-active { background: var(--green); color: #fff; font-weight: 600; }
-
-    /* ── Page header / schedule layout ── */
-    .schedule-page__header { margin-bottom: 16px; }
+    .schedule-create-menu { position: relative; }
+    .schedule-create-menu__panel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 12; display: none; min-width: 300px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.16); }
+    .schedule-create-menu:focus-within .schedule-create-menu__panel,
+    .schedule-create-menu.is-open .schedule-create-menu__panel { display: grid; gap: 6px; }
   </style>
 </head>
 <body>
-
-<input class="state" type="checkbox" id="nav-expanded">
-
-<!-- GNB -->
-<aside class="gnb">
-  <label class="gnb__toggle" for="nav-expanded" title="메뉴 접기/펼치기"><span></span></label>
-  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
-  <nav class="gnb__nav">
-    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
-    <a class="gnb__item" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
-    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
-    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
-    <a class="gnb__item is-active" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
-    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
-    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
+  <!-- Product GNB (active: 스케줄) -->
+  <nav class="gnb">
+    <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+    <ul class="gnb-nav">
+      <li class="gnb-disabled"><a href="#">대시보드 <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+      <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+      <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+      <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+      <li><a href="schedule-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+      <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+      <div class="gnb-sub">
+      <div class="gnb-sub-title">편성표</div>
+      <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+      <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+      <div class="gnb-divider"></div>
+      <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    </ul>
   </nav>
-</aside>
 
-<!-- Topbar -->
-<header class="topbar">
-  <div class="topbar__logo"></div>
-  <div class="topbar__user">
-    <div class="avatar">S</div>
-    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
-    <span class="caret">⌄</span>
-  </div>
-</header>
-
-<!-- Breadcrumb -->
-<nav class="breadcrumb">
-  <a class="breadcrumb__back" href="javascript:history.back()">‹</a>
-  <span>스케줄</span>
-  <span>›</span>
-  <strong>스케줄 조회</strong>
-</nav>
-
-<!-- Content -->
-<main class="content">
-  <div class="page-card">
-
-    <!-- Page Header -->
-    <header class="page-header schedule-page__header">
-      <div>
-        <p class="eyebrow">Schedule Management</p>
-        <h1>스케줄 조회</h1>
+  <header class="topbar">
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="전체 검색">
+    </div>
+    <div class="topbar-user">
+      <div class="topbar-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span class="dot-badge"></span>
       </div>
-      <div class="schedule-create-menu">
-        <button class="btn btn-primary" type="button">스케줄 등록</button>
-        <div class="schedule-create-menu__panel">
-          <a href="schedule-register-general" style="display:grid;gap:4px;padding:12px;border-radius:6px;text-decoration:none;color:inherit"><strong>일반 스케줄 등록</strong><span style="color:var(--muted);font-size:12px">조건 없이 지정한 기간 동안 광고를 송출합니다.</span></a>
-          <a href="schedule-register-condition" style="display:grid;gap:4px;padding:12px;border-radius:6px;text-decoration:none;color:inherit"><strong>조건 스케줄 등록</strong><span style="color:var(--muted);font-size:12px">시간, 환경, 타겟 조건에 따라 광고를 송출합니다.</span></a>
+      <div class="topbar-profile">
+        <div class="topbar-avatar">구</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name">구연경</div>
+          <div class="topbar-profile-org">엠앤엠네트웍스</div>
         </div>
-      </div>
-    </header>
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <form class="searchbar" onsubmit="return false">
-        <select>
-          <option>전체</option>
-          <option>스케줄명</option>
-          <option>Product</option>
-          <option>콘텐츠</option>
-        </select>
-        <input type="search" placeholder="스케줄명, 프로덕트, 콘텐츠를 검색해 주세요.">
-        <button type="reset">×</button>
-      </form>
-      <div class="filter-grid">
-        <select>
-          <option>스케줄 유형</option>
-          <option>일반</option>
-          <option>조건</option>
-        </select>
-        <select>
-          <option>Product</option>
-          <option>강남 프라임 패키지</option>
-          <option>공항 프리미엄 네트워크</option>
-          <option>홍대 타겟 테스트</option>
-        </select>
-        <select>
-          <option>광고 기간</option>
-          <option>이번달</option>
-          <option>다음달</option>
-          <option>지난달</option>
-        </select>
-        <select>
-          <option>조건 옵션</option>
-          <option>타임</option>
-          <option>환경</option>
-          <option>타겟</option>
-        </select>
-        <select>
-          <option>싱크 송출 여부</option>
-          <option>ON</option>
-          <option>OFF</option>
-        </select>
-        <select>
-          <option>운영 상태</option>
-          <option>미확정</option>
-          <option>예정</option>
-          <option>운영중</option>
-          <option>일시정지</option>
-          <option>조기종료</option>
-          <option>종료</option>
-        </select>
       </div>
     </div>
+  </header>
 
-    <!-- Viewbar -->
-    <div class="viewbar">
-      <div class="summary-strip">
-        <button class="is-active" data-status-filter="all"><span>8</span>&nbsp;전체</button>
-        <button data-status-filter="unconfirmed"><span>2</span>&nbsp;미확정</button>
-        <button data-status-filter="running"><span>2</span>&nbsp;운영중</button>
-        <button data-status-filter="reserved"><span>2</span>&nbsp;예정</button>
+  <main class="content">
+    <section class="page page-schedule" style="display:block">
+      <div class="page-card">
+        <header class="page-header schedule-page__header">
+          <div><p class="eyebrow">Schedule Management</p><h1>스케줄 조회</h1></div>
+          <div class="schedule-create-menu">
+            <button class="btn btn-primary" type="button">스케줄 등록</button>
+            <div class="schedule-create-menu__panel">
+              <a href="schedule-register-general"><strong>일반 스케줄 등록</strong><span>조건 없이 지정한 기간 동안 광고를 송출합니다.</span></a>
+              <a href="schedule-register-condition"><strong>조건 스케줄 등록</strong><span>시간, 환경, 타겟 조건에 따라 광고를 송출합니다.</span></a>
+            </div>
+          </div>
+        </header>
+        <div class="toolbar schedule-list__filters">
+          <form class="searchbar"><select><option>전체</option><option>스케줄명</option><option>Product</option><option>콘텐츠</option></select><input type="search" placeholder="스케줄명, Product, 콘텐츠를 검색해 주세요."><button type="reset" title="검색어 지우기">×</button></form>
+          <div class="filter-grid">
+            <select><option>스케줄 유형</option><option>일반</option><option>조건</option></select>
+            <select><option>Product</option><option>강남 프라임 패키지</option><option>공항 프리미엄 네트워크</option><option>홍대 타겟 테스트</option></select>
+            <select><option>광고 기간</option><option>이번 달</option><option>다음 달</option><option>지난 달</option></select>
+            <select><option>조건 옵션</option><option>타임</option><option>환경</option><option>타겟</option></select>
+            <select><option>싱크 송출 여부</option><option>ON</option><option>OFF</option></select>
+            <select><option>운영 상태</option><option>미확정</option><option>예정</option><option>운영 중</option><option>일시정지</option><option>조기종료</option><option>종료</option></select>
+          </div>
+        </div>
+        <div class="viewbar">
+          <div class="summary-strip">
+            <button class="is-active" type="button"><span>8</span> 전체 스케줄</button>
+            <button type="button"><span>2</span> 미확정</button>
+            <button type="button"><span>2</span> 운영 중</button>
+            <button type="button"><span>2</span> 예정</button>
+          </div>
+          <div class="segmented schedule-view-toggle"><button class="is-active" type="button" data-schedule-view="list">리스트</button><button type="button" data-schedule-view="card">카드</button></div>
+        </div>
+        <div class="schedule-view schedule-view-list is-active">
+          <div class="table-wrap"><table class="schedule-table"><thead><tr><th>스케줄명</th><th>스케줄 유형</th><th>Product</th><th>광고 기간</th><th>조건 옵션</th><th>싱크 송출</th><th>운영 상태</th><th>등록일</th></tr></thead><tbody>
+            <tr><td><a class="link" href="schedule-detail">6월 강남 출퇴근 패키지</a></td><td>조건</td><td>강남 프라임 패키지</td><td>2026.06.01~06.30</td><td>타임</td><td>ON</td><td><span class="status status-ok">운영 중</span></td><td>2026.05.28</td></tr>
+            <tr><td><a class="link" href="schedule-detail">여름 특집 환경 캠페인</a></td><td>조건</td><td>강남 프라임 패키지</td><td>2026.06.09~06.30</td><td>환경</td><td>ON</td><td><span class="status status-ok">운영 중</span></td><td>2026.06.01</td></tr>
+            <tr><td><a class="link" href="schedule-detail">공항 브랜드 리마인드</a></td><td>일반</td><td>공항 프리미엄 네트워크</td><td>2026.06.10~06.24</td><td>-</td><td>OFF</td><td><span class="status status-plan">예정</span></td><td>2026.06.07</td></tr>
+            <tr><td><a class="link" href="schedule-detail">브랜드 위크 패키지</a></td><td>일반</td><td>공항 프리미엄 네트워크</td><td>2026.07.01~07.07</td><td>-</td><td>OFF</td><td><span class="status status-plan">예정</span></td><td>2026.06.05</td></tr>
+            <tr><td><a class="link" href="schedule-detail">홍대 타겟 테스트</a></td><td>조건</td><td>홍대 타겟 테스트</td><td>2026.06.15~06.20</td><td>타겟</td><td>ON</td><td><span class="status status-muted">미확정</span></td><td>2026.06.08</td></tr>
+            <tr><td><a class="link" href="schedule-detail">환경 감응 광고 테스트</a></td><td>조건</td><td>홍대 타겟 테스트</td><td>2026.06.20~06.25</td><td>환경</td><td>OFF</td><td><span class="status status-muted">미확정</span></td><td>2026.06.09</td></tr>
+            <tr><td><a class="link" href="schedule-detail">스프링 클리어런스</a></td><td>일반</td><td>강남 프라임 패키지</td><td>2026.04.01~04.30</td><td>-</td><td>OFF</td><td><span class="status status-warn">일시정지</span></td><td>2026.03.25</td></tr>
+            <tr><td><a class="link" href="schedule-detail">5월 강남 뷰티 캠페인</a></td><td>일반</td><td>강남 프라임 패키지</td><td>2026.05.01~05.31</td><td>-</td><td>OFF</td><td><span class="status status-neutral">종료</span></td><td>2026.04.20</td></tr>
+          </tbody></table></div>
+        </div>
+        <div class="schedule-view schedule-view-card schedule-card-grid">
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>6월 강남 출퇴근 패키지</h3><span class="status status-ok">운영 중</span></div>
+            <p>타임 조건 기반으로 출퇴근 시간대에 송출합니다.</p>
+            <div class="tag-row"><span class="tag">조건</span><span class="tag">타임</span><span class="tag">싱크 ON</span></div>
+            <dl><dt>Product</dt><dd>강남 프라임 패키지</dd><dt>광고 기간</dt><dd>2026.06.01~06.30</dd><dt>조건 옵션</dt><dd>타임</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>여름 특집 환경 캠페인</h3><span class="status status-ok">운영 중</span></div>
+            <p>온도·날씨 조건에 반응하는 여름 시즌 캠페인입니다.</p>
+            <div class="tag-row"><span class="tag">조건</span><span class="tag">환경</span><span class="tag">싱크 ON</span></div>
+            <dl><dt>Product</dt><dd>강남 프라임 패키지</dd><dt>광고 기간</dt><dd>2026.06.09~06.30</dd><dt>조건 옵션</dt><dd>환경</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>공항 브랜드 리마인드</h3><span class="status status-plan">예정</span></div>
+            <p>미디어별 콘텐츠를 매핑하는 일반 스케줄입니다.</p>
+            <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
+            <dl><dt>Product</dt><dd>공항 프리미엄 네트워크</dd><dt>광고 기간</dt><dd>2026.06.10~06.24</dd><dt>조건 옵션</dt><dd>-</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>브랜드 위크 패키지</h3><span class="status status-plan">예정</span></div>
+            <p>7월 첫 주 집중 노출을 목표로 하는 공항 광고 패키지입니다.</p>
+            <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
+            <dl><dt>Product</dt><dd>공항 프리미엄 네트워크</dd><dt>광고 기간</dt><dd>2026.07.01~07.07</dd><dt>조건 옵션</dt><dd>-</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>홍대 타겟 테스트</h3><span class="status status-muted">미확정</span></div>
+            <p>비전센서 기반 타겟 조건 광고 검증 테스트 스케줄입니다.</p>
+            <div class="tag-row"><span class="tag">조건</span><span class="tag">타겟</span><span class="tag">싱크 ON</span></div>
+            <dl><dt>Product</dt><dd>홍대 타겟 테스트</dd><dt>광고 기간</dt><dd>2026.06.15~06.20</dd><dt>조건 옵션</dt><dd>타겟</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>환경 감응 광고 테스트</h3><span class="status status-muted">미확정</span></div>
+            <p>환경 센서 기반 조건 광고 검증을 위한 테스트 스케줄입니다.</p>
+            <div class="tag-row"><span class="tag">조건</span><span class="tag">환경</span><span class="tag">싱크 OFF</span></div>
+            <dl><dt>Product</dt><dd>홍대 타겟 테스트</dd><dt>광고 기간</dt><dd>2026.06.20~06.25</dd><dt>조건 옵션</dt><dd>환경</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>스프링 클리어런스</h3><span class="status status-warn">일시정지</span></div>
+            <p>봄 시즌 특가 캠페인으로 현재 운영이 일시 중단된 상태입니다.</p>
+            <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
+            <dl><dt>Product</dt><dd>강남 프라임 패키지</dd><dt>광고 기간</dt><dd>2026.04.01~04.30</dd><dt>조건 옵션</dt><dd>-</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+          <article class="schedule-card">
+            <div class="schedule-card__head"><h3>5월 강남 뷰티 캠페인</h3><span class="status status-neutral">종료</span></div>
+            <p>5월 한 달간 진행한 뷰티 브랜드 집중 광고 캠페인입니다.</p>
+            <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
+            <dl><dt>Product</dt><dd>강남 프라임 패키지</dd><dt>광고 기간</dt><dd>2026.05.01~05.31</dd><dt>조건 옵션</dt><dd>-</dd></dl>
+            <a class="btn btn-ghost btn-sm schedule-card__cta" href="schedule-detail">상세 보기 →</a>
+          </article>
+        </div>
       </div>
-      <div class="segmented">
-        <button class="is-active" data-schedule-view="list">리스트</button>
-        <button data-schedule-view="card">카드</button>
-      </div>
-    </div>
+    </section>
+  </main>
 
-    <!-- List View -->
-    <div class="schedule-view schedule-view-list is-active">
-      <div class="table-wrap">
-        <table class="sched-table">
-          <thead>
-            <tr>
-              <th>스케줄명</th>
-              <th>스케줄유형</th>
-              <th>Product</th>
-              <th>광고기간</th>
-              <th>조건옵션</th>
-              <th>싱크송출</th>
-              <th>운영상태</th>
-              <th>등록일</th>
-            </tr>
-          </thead>
-          <tbody id="sched-tbody">
-            <tr data-sched-status="running">
-              <td><a class="link" href="schedule-detail">6월 강남 출퇴근 패키지</a></td>
-              <td>조건</td>
-              <td>강남 프라임 패키지</td>
-              <td>2026.06.01~06.30</td>
-              <td>타임</td>
-              <td>ON</td>
-              <td><span class="status status-ok">운영중</span></td>
-              <td>2026.05.28</td>
-            </tr>
-            <tr data-sched-status="running">
-              <td><a class="link" href="schedule-detail">여름 특집 환경 캠페인</a></td>
-              <td>조건</td>
-              <td>강남 프라임 패키지</td>
-              <td>2026.06.09~06.30</td>
-              <td>환경</td>
-              <td>ON</td>
-              <td><span class="status status-ok">운영중</span></td>
-              <td>2026.06.01</td>
-            </tr>
-            <tr data-sched-status="reserved">
-              <td><a class="link" href="schedule-detail">공항 브랜드 리마인드</a></td>
-              <td>일반</td>
-              <td>공항 프리미엄 네트워크</td>
-              <td>2026.06.10~06.24</td>
-              <td>-</td>
-              <td>OFF</td>
-              <td><span class="status status-plan">예정</span></td>
-              <td>2026.06.07</td>
-            </tr>
-            <tr data-sched-status="reserved">
-              <td><a class="link" href="schedule-detail">브랜드 위크 패키지</a></td>
-              <td>일반</td>
-              <td>공항 프리미엄 네트워크</td>
-              <td>2026.07.01~07.07</td>
-              <td>-</td>
-              <td>OFF</td>
-              <td><span class="status status-plan">예정</span></td>
-              <td>2026.06.05</td>
-            </tr>
-            <tr data-sched-status="unconfirmed">
-              <td><a class="link" href="schedule-detail">홍대 타겟 테스트</a></td>
-              <td>조건</td>
-              <td>홍대 타겟 테스트</td>
-              <td>2026.06.15~06.20</td>
-              <td>타겟</td>
-              <td>ON</td>
-              <td><span class="status status-muted">미확정</span></td>
-              <td>2026.06.08</td>
-            </tr>
-            <tr data-sched-status="unconfirmed">
-              <td><a class="link" href="schedule-detail">환경 감응 광고 테스트</a></td>
-              <td>조건</td>
-              <td>홍대 타겟 테스트</td>
-              <td>2026.06.20~06.25</td>
-              <td>환경</td>
-              <td>OFF</td>
-              <td><span class="status status-muted">미확정</span></td>
-              <td>2026.06.09</td>
-            </tr>
-            <tr data-sched-status="paused">
-              <td><a class="link" href="schedule-detail">스프링 클리어런스</a></td>
-              <td>일반</td>
-              <td>강남 프라임 패키지</td>
-              <td>2026.04.01~04.30</td>
-              <td>-</td>
-              <td>OFF</td>
-              <td><span class="status status-warn">일시정지</span></td>
-              <td>2026.03.25</td>
-            </tr>
-            <tr data-sched-status="ended">
-              <td><a class="link" href="schedule-detail">5월 강남 뷰티 캠페인</a></td>
-              <td>일반</td>
-              <td>강남 프라임 패키지</td>
-              <td>2026.05.01~05.31</td>
-              <td>-</td>
-              <td>OFF</td>
-              <td><span class="status status-neutral">종료</span></td>
-              <td>2026.04.20</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Card View -->
-    <div class="schedule-view schedule-view-card schedule-card-grid">
-      <article class="sched-card" data-sched-status="running">
-        <div class="sched-card__head">
-          <h3>6월 강남 출퇴근 패키지</h3>
-          <span class="status status-ok">운영중</span>
-        </div>
-        <p>타임 조건 기반으로 출퇴근 시간대에 광고를 송출합니다.</p>
-        <div class="tag-row"><span class="tag">조건</span><span class="tag">타임</span><span class="tag">싱크 ON</span></div>
-        <dl>
-          <dt>Product</dt><dd>강남 프라임 패키지</dd>
-          <dt>광고 기간</dt><dd>2026.06.01~06.30</dd>
-          <dt>조건 옵션</dt><dd>타임</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="running">
-        <div class="sched-card__head">
-          <h3>여름 특집 환경 캠페인</h3>
-          <span class="status status-ok">운영중</span>
-        </div>
-        <p>온도·날씨 조건에 반응하는 여름 시즌 환경 감응형 캠페인입니다.</p>
-        <div class="tag-row"><span class="tag">조건</span><span class="tag">환경</span><span class="tag">싱크 ON</span></div>
-        <dl>
-          <dt>Product</dt><dd>강남 프라임 패키지</dd>
-          <dt>광고 기간</dt><dd>2026.06.09~06.30</dd>
-          <dt>조건 옵션</dt><dd>환경</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="reserved">
-        <div class="sched-card__head">
-          <h3>공항 브랜드 리마인드</h3>
-          <span class="status status-plan">예정</span>
-        </div>
-        <p>공항 네트워크 미디어를 통해 브랜드 인지도를 높이는 일반 스케줄입니다.</p>
-        <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
-        <dl>
-          <dt>Product</dt><dd>공항 프리미엄 네트워크</dd>
-          <dt>광고 기간</dt><dd>2026.06.10~06.24</dd>
-          <dt>조건 옵션</dt><dd>-</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="reserved">
-        <div class="sched-card__head">
-          <h3>브랜드 위크 패키지</h3>
-          <span class="status status-plan">예정</span>
-        </div>
-        <p>7월 첫 주 집중 노출을 목표로 하는 공항 네트워크 광고 패키지입니다.</p>
-        <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
-        <dl>
-          <dt>Product</dt><dd>공항 프리미엄 네트워크</dd>
-          <dt>광고 기간</dt><dd>2026.07.01~07.07</dd>
-          <dt>조건 옵션</dt><dd>-</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="unconfirmed">
-        <div class="sched-card__head">
-          <h3>홍대 타겟 테스트</h3>
-          <span class="status status-muted">미확정</span>
-        </div>
-        <p>비전센서 기반 타겟 조건 광고 검증을 위한 테스트 스케줄입니다.</p>
-        <div class="tag-row"><span class="tag">조건</span><span class="tag">타겟</span><span class="tag">싱크 ON</span></div>
-        <dl>
-          <dt>Product</dt><dd>홍대 타겟 테스트</dd>
-          <dt>광고 기간</dt><dd>2026.06.15~06.20</dd>
-          <dt>조건 옵션</dt><dd>타겟</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="unconfirmed">
-        <div class="sched-card__head">
-          <h3>환경 감응 광고 테스트</h3>
-          <span class="status status-muted">미확정</span>
-        </div>
-        <p>환경 센서 조건 광고 검증을 위한 홍대 테스트 스케줄입니다.</p>
-        <div class="tag-row"><span class="tag">조건</span><span class="tag">환경</span><span class="tag">싱크 OFF</span></div>
-        <dl>
-          <dt>Product</dt><dd>홍대 타겟 테스트</dd>
-          <dt>광고 기간</dt><dd>2026.06.20~06.25</dd>
-          <dt>조건 옵션</dt><dd>환경</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="paused" style="opacity:.78">
-        <div class="sched-card__head">
-          <h3>스프링 클리어런스</h3>
-          <span class="status status-warn">일시정지</span>
-        </div>
-        <p>봄 시즌 특가 캠페인으로 현재 운영이 일시 중단된 상태입니다.</p>
-        <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
-        <dl>
-          <dt>Product</dt><dd>강남 프라임 패키지</dd>
-          <dt>광고 기간</dt><dd>2026.04.01~04.30</dd>
-          <dt>조건 옵션</dt><dd>-</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-
-      <article class="sched-card" data-sched-status="ended" style="opacity:.78">
-        <div class="sched-card__head">
-          <h3>5월 강남 뷰티 캠페인</h3>
-          <span class="status status-neutral">종료</span>
-        </div>
-        <p>5월 한 달간 진행한 강남 뷰티 브랜드 집중 광고 캠페인입니다.</p>
-        <div class="tag-row"><span class="tag">일반</span><span class="tag">싱크 OFF</span></div>
-        <dl>
-          <dt>Product</dt><dd>강남 프라임 패키지</dd>
-          <dt>광고 기간</dt><dd>2026.05.01~05.31</dd>
-          <dt>조건 옵션</dt><dd>-</dd>
-        </dl>
-        <a class="btn btn-ghost btn-sm sched-card__cta" href="schedule-detail">상세 보기 →</a>
-      </article>
-    </div>
-
-  </div><!-- /page-card -->
-</main>
-
-<script src="../assets/js/app.js"></script>
-<script>
-// ── View toggle ──
-document.querySelectorAll('[data-schedule-view]').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('[data-schedule-view]').forEach(b => b.classList.remove('is-active'));
-    this.classList.add('is-active');
-    document.querySelectorAll('.schedule-view').forEach(v => v.classList.remove('is-active'));
-    document.querySelector('.schedule-view-' + this.dataset.scheduleView)?.classList.add('is-active');
-  });
-});
-
-// ── Summary strip filter ──
-document.querySelectorAll('.summary-strip button').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.summary-strip button').forEach(b => b.classList.remove('is-active'));
-    this.classList.add('is-active');
-    const f = this.dataset.statusFilter;
-    document.querySelectorAll('#sched-tbody tr').forEach(row => {
-      row.style.display = (f === 'all' || row.dataset.schedStatus === f) ? '' : 'none';
-    });
-    document.querySelectorAll('.sched-card').forEach(card => {
-      card.style.display = (f === 'all' || card.dataset.schedStatus === f) ? '' : 'none';
-    });
-  });
-});
-</script>
+  <script src="../assets/js/app.js"></script>
 </body>
 </html>
