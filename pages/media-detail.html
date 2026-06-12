@@ -7,14 +7,51 @@
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* Modal state */
-    #operation-select-modal:checked ~ .operation-select-modal-view { display: grid; }
-    /* Detail tabs JS-driven, but need CSS for initial state */
-    .detail-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
-    .detail-sidebar { position: sticky; top: 96px; display: grid; gap: 12px; }
-    .detail-info-panel { display: grid; gap: 16px; }
-    .detail-analysis-panel { display: none; }  /* hidden initially */
-    .detail-connected-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    #operation-select-modal:checked ~ .modal.operation-select-modal-view { display: grid; }
+
+    /* Detail layout — override app.css defaults for wider gap */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .detail-sidebar {
+      position: sticky;
+      top: 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .detail-main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 0;
+    }
+    .detail-info-panel,
+    .detail-analysis-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .detail-analysis-panel { display: none; }
+    .detail-connected-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .page-card { padding: 28px 32px; }
+    .page-header { padding-bottom: 24px; margin-bottom: 4px; }
+    .kpi-strip { gap: 16px; margin-bottom: 4px; }
+    .kpi-strip__item { padding: 18px 20px; }
+    .kpi-strip__value { font-size: 24px; }
+    .analysis-insight { margin: 0; }
+    .analytics-filter-bar { padding: 10px 16px; }
+    .analysis-chart-group { margin-bottom: 28px; }
+    .analysis-chart-row { gap: 16px; }
+    .info-card { padding: 20px; }
+    .info-list { gap: 14px; }
   </style>
 </head>
 <body>
@@ -336,17 +373,25 @@
     </section>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script src="../assets/js/app.js"></script>
   <script>
-    // Tab switching for detail tabs
     const detailTabs = document.querySelectorAll('.detail-tabs button[data-detail-tab]');
+    const infoPanel     = document.querySelector('.detail-info-panel');
+    const analysisPanel = document.querySelector('.detail-analysis-panel');
+
     detailTabs.forEach(btn => {
       btn.addEventListener('click', function() {
         detailTabs.forEach(b => b.classList.remove('is-active'));
         this.classList.add('is-active');
         const tab = this.dataset.detailTab;
-        document.querySelector('.detail-info-panel').style.display = tab === 'info' ? 'grid' : 'none';
-        document.querySelector('.detail-analysis-panel').style.display = tab === 'analysis' ? 'block' : 'none';
+
+        infoPanel.style.display     = tab === 'info'     ? 'flex' : 'none';
+        analysisPanel.style.display = tab === 'analysis' ? 'flex' : 'none';
+
+        if (tab === 'analysis') {
+          setTimeout(() => { if (typeof initCharts === 'function') initCharts(); }, 50);
+        }
       });
     });
   </script>
