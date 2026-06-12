@@ -3938,6 +3938,23 @@ label.field-check {
 }
 .verify-accordion__body p { margin: 0; }
 
+/* ── Responsive breakpoints ── */
+
+@media (max-width: 1280px) {
+  /* Detail page: stack sidebar below main on narrower screens */
+  .detail-layout { grid-template-columns: 1fr; }
+  .detail-sidebar { position: static; max-height: none; overflow-y: visible; flex-direction: row; flex-wrap: wrap; }
+  .detail-connected-row { grid-template-columns: 1fr; }
+
+  /* Schedule register: stack sidebar */
+  .schedule-register-grid { grid-template-columns: 1fr; }
+  .schedule-mapping-grid, .mapping-summary { grid-template-columns: 1fr; }
+
+  /* Charts: stack to single column */
+  .analysis-chart-row { grid-template-columns: 1fr; }
+  .analysis-chart-row .chart-card--wide { grid-column: 1; }
+}
+
 @media (max-width: 1180px) {
   .filter-grid, .toolbar-compact { grid-template-columns: repeat(3, minmax(140px, 1fr)); }
   .summary-strip { grid-template-columns: repeat(2, minmax(150px, 1fr)); }
@@ -3945,19 +3962,15 @@ label.field-check {
   .applied-item { grid-template-columns: 1fr 1fr; }
   .remaining-list div { grid-template-columns: 70px 1fr; }
   .remaining-list em { grid-column: 2; }
+
+  /* KPI strip: 2 columns */
+  .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* Schedule card grid: fewer columns */
+  .schedule-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 760px) {
-  .gnb { width: 68px; }
-  .gnb__item { padding: 0 17px; }
-  .gnb__brand, .topbar__logo { font-size: 18px; }
-  .topbar { padding-left: 86px; padding-right: 14px; }
-  .breadcrumb { left: 68px; padding: 0 14px; }
-  .content { margin-left: 68px; padding: 112px 12px 28px; }
-  #nav-expanded:checked ~ .gnb { width: 180px; }
-  #nav-expanded:checked ~ .topbar { padding-left: 194px; }
-  #nav-expanded:checked ~ .breadcrumb { left: 180px; }
-  #nav-expanded:checked ~ .content { margin-left: 180px; }
   .page-card { padding: 16px; }
   .page-header { align-items: flex-start; flex-direction: column; }
   .filter-grid, .toolbar-compact, .field-row, .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -3969,7 +3982,15 @@ label.field-check {
   .searchbar button { width: 100%; border-left: 0; border-top: 1px solid var(--line); }
   .media-card dl, .info-list, .calc-box dl, .pin-card dl { grid-template-columns: 1fr; }
   .modal { padding: 12px; }
-  .topbar__user div:not(.avatar) { display: none; }
+
+  /* KPI strip: 1 column */
+  .kpi-strip { grid-template-columns: 1fr; }
+
+  /* Schedule card grid: single column */
+  .schedule-card-grid { grid-template-columns: 1fr; }
+
+  /* Detail sidebar: full width stacked */
+  .detail-sidebar { flex-direction: column; }
 }
 
 /* ────────────────────────────────────────
