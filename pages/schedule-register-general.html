@@ -1263,7 +1263,7 @@ function toggleSync(chk) {
 /* ─── Tab navigation ─── */
 function switchTab(tab) {
   if (tab === 'condition') {
-    window.location.href = 'schedule-register-condition.html';
+    window.location.href = 'schedule-register-condition';
   }
   /* 'general' is current page — no-op */
 }
@@ -1306,7 +1306,7 @@ function submitForm(btn) {
     btn.innerHTML = orig;
     btn.disabled  = false;
     showToast('스케줄이 등록되었습니다!', true);
-    setTimeout(() => { window.location.href = 'schedule-list.html'; }, 1200);
+    setTimeout(() => { window.location.href = 'schedule-list'; }, 1200);
   }, 900);
 }
 
