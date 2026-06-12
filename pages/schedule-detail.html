@@ -131,19 +131,19 @@
                           <strong>강남 프라임 패키지</strong>
                           <span>운영 미디어 3개 · 일반 / 조건 지원</span>
                         </div>
-                        <a class="btn btn-ghost btn-sm" href="product-list">상세 보기</a>
+                        <a class="btn btn-ghost btn-sm" href="product-detail">상세 보기</a>
                       </div>
                       <ul class="schedule-media-brief-list">
                         <li>
-                          <span class="schedule-media-brief-list__name">강남대로 DID 01</span>
+                          <a class="schedule-media-brief-list__name" href="media-detail">강남대로 DID 01</a>
                           <span class="schedule-media-brief-list__op">운영설정① · 평일 · 09:00~18:00 · 20초</span>
                         </li>
                         <li>
-                          <span class="schedule-media-brief-list__name">홍대입구 미디어보드</span>
+                          <a class="schedule-media-brief-list__name" href="media-detail">홍대입구 미디어보드</a>
                           <span class="schedule-media-brief-list__op">운영설정② · 주말 · 08:00~22:00 · 15초</span>
                         </li>
                         <li>
-                          <span class="schedule-media-brief-list__name">잠실 롯데월드몰 2F</span>
+                          <a class="schedule-media-brief-list__name" href="media-detail">잠실 롯데월드몰 2F</a>
                           <span class="schedule-media-brief-list__op">운영설정③ · 월·화·수·목 · 10:00~23:00 · 20초</span>
                         </li>
                       </ul>
@@ -169,7 +169,7 @@
                     <div class="media-content-map" data-map-show="per-media">
                       <article>
                         <div class="media-content-map__header">
-                          <span class="media-content-map__name">강남대로 DID 01</span>
+                          <a class="media-content-map__name" href="media-detail">강남대로 DID 01</a>
                           <span class="media-content-map__op">운영설정① · 평일 · 09:00~18:00 · 20초</span>
                         </div>
                         <div class="schedule-content-card">
@@ -184,7 +184,7 @@
                       </article>
                       <article>
                         <div class="media-content-map__header">
-                          <span class="media-content-map__name">홍대입구 미디어보드</span>
+                          <a class="media-content-map__name" href="media-detail">홍대입구 미디어보드</a>
                           <span class="media-content-map__op">운영설정② · 주말 · 08:00~22:00 · 15초</span>
                         </div>
                         <div class="schedule-content-card">
@@ -199,7 +199,7 @@
                       </article>
                       <article>
                         <div class="media-content-map__header">
-                          <span class="media-content-map__name">잠실 롯데월드몰 2F</span>
+                          <a class="media-content-map__name" href="media-detail">잠실 롯데월드몰 2F</a>
                           <span class="media-content-map__op">운영설정③ · 월·화·수·목 · 10:00~23:00 · 20초</span>
                         </div>
                         <div class="schedule-content-card">
@@ -411,23 +411,5 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script src="../assets/js/app.js"></script>
-  <script>
-    // Tab switching for schedule detail tabs
-    const tabs = document.querySelectorAll('[data-schedule-detail-tab]');
-    tabs.forEach(btn => {
-      btn.addEventListener('click', function() {
-        tabs.forEach(b => b.classList.remove('is-active'));
-        this.classList.add('is-active');
-        document.querySelectorAll('[data-schedule-detail-panel]').forEach(p => p.style.display = 'none');
-        const panel = document.querySelector(`[data-schedule-detail-panel="${this.dataset.scheduleDetailTab}"]`);
-        if (panel) {
-          panel.style.display = 'block';
-          if (this.dataset.scheduleDetailTab === 'status') {
-            setTimeout(() => { if (typeof initCharts === 'function') initCharts(); }, 50);
-          }
-        }
-      });
-    });
-  </script>
 </body>
 </html>

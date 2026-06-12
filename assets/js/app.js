@@ -1360,12 +1360,17 @@ document.querySelectorAll("[data-schedule-detail-tabs] button").forEach((button)
     const tab = button.dataset.scheduleDetailTab;
     document.querySelectorAll("[data-schedule-detail-tabs] button").forEach((item) => item.classList.toggle("is-active", item === button));
     document.querySelectorAll("[data-schedule-detail-panel]").forEach((panel) => {
-      panel.hidden = panel.dataset.scheduleDetailPanel !== tab;
+      panel.style.display = panel.dataset.scheduleDetailPanel === tab ? "block" : "none";
     });
-    window.setTimeout(() => {
-      initCharts();
-      if (typeof window._applyStatusFilter === 'function') window._applyStatusFilter();
-    }, 50);
+    if (tab === "status") {
+      window.setTimeout(() => {
+        ["schedule-daily-chart", "schedule-performance-chart"].forEach((id) => {
+          const c = chartInstances[id];
+          if (c) { c.resize(); } else { initCharts(); }
+        });
+        if (typeof window._applyStatusFilter === "function") window._applyStatusFilter();
+      }, 80);
+    }
   });
 });
 
@@ -1765,7 +1770,10 @@ function initCharts() {
     options: horizontalChartOptions("유동인구 (명)", "연령대")
   });
 
-  // ── 스케줄 차트 ──
+  // ── 스케줄 차트 (송출 현황 탭이 활성화된 경우에만 생성) ──
+  const _statusPanel = document.querySelector('[data-schedule-detail-panel="status"]');
+  const _statusVisible = _statusPanel && (_statusPanel.style.display === "block" || (!_statusPanel.hasAttribute("hidden") && _statusPanel.style.display !== "none"));
+  if (_statusVisible) {
   makeChart("schedule-daily-chart", {
     type: "bar",
     data: { labels: ["5/1","5/5","5/10","5/15","5/20","5/25","5/30","6/1"], datasets: [
@@ -1784,6 +1792,7 @@ function initCharts() {
     ]},
     options: chartOptions(false)
   });
+  } // end: status panel visibility guard
 }
 
 window.addEventListener("load", () => window.setTimeout(() => {

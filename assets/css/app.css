@@ -2894,7 +2894,9 @@ label.field-check {
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
+  text-decoration: none;
 }
+a.media-content-map__name:hover { color: var(--main); text-decoration: underline; }
 .media-content-map__op {
   font-size: 11px;
   color: var(--muted);
@@ -2995,7 +2997,9 @@ label.field-check {
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
+  text-decoration: none;
 }
+a.schedule-media-brief-list__name:hover { color: var(--main); text-decoration: underline; }
 .schedule-media-brief-list__op {
   font-size: 11px;
   color: var(--muted);
