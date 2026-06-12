@@ -3,1340 +3,611 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 등록 — CMS 2.0</title>
-  <link rel="stylesheet" href="../assets/css/reset.css">
+  <title>미디어 등록 — Dooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* ============================================================
-       design.md 토큰
-       green=#58C65D  |  grayscale-900=#24292E  |  grayscale-800=#383F45
-       grayscale-700=#454C52  |  grayscale-600=#596066  |  grayscale-400=#9EA5AD
-       grayscale-300=#CED2D6  |  grayscale-200=#E5E7EA
-       surface-bg=#F6F7F9  |  surface-card=#FFFFFF
-       danger=#E97474
-    ============================================================ */
+    /* ── State machine overrides ── */
+    #operation-modal:checked ~ .operation-modal-view,
+    #address-modal:checked ~ .address-modal-view { display: grid !important; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%; height: 100%;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-      font-size: 14px;
-      background: #24292E;     /* grayscale-900 — body bg behind shell */
-      color: #24292E;
-    }
-    a { text-decoration: none; color: inherit; }
-    button { font-family: inherit; cursor: pointer; border: none; background: none; }
-    ul, ol { list-style: none; }
+    #nav-expanded:checked ~ .gnb { width: 200px; }
+    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
+    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
+    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
+    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
+    #nav-expanded:checked ~ .content { margin-left: 200px; }
 
-    /* ── 스크롤바 (content only) ──────────────────── */
-    .content::-webkit-scrollbar { width: 6px; }
-    .content::-webkit-scrollbar-track { background: transparent; }
-    .content::-webkit-scrollbar-thumb { background: #CED2D6; border-radius: 3px; }
+    /* ── Form layout ── */
+    .form-layout { display: grid; gap: 24px; max-width: 860px; }
+    .form-section { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .form-section__hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+    .form-section__hd h2 { font-size: 14px; font-weight: 600; }
+    .form-section__body { padding: 20px; display: grid; gap: 16px; }
+    .field-row { display: grid; gap: 6px; }
+    .field-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .field-row-inline { display: flex; gap: 8px; align-items: flex-end; }
+    .form-input { height: 38px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; width: 100%; }
+    .form-input:focus { outline: none; border-color: var(--green); }
+    .form-input[readonly] { background: var(--bg); color: var(--muted); cursor: default; }
+    .helper-text { font-size: 12px; color: var(--green); margin-top: 4px; }
+    .helper-text.err { color: var(--danger); }
 
-    /* ============================================================
-       ZONE 1 — GNB Sidebar
-       fixed, left:0, width:93px, bg:#454C52
-    ============================================================ */
-    .gnb {
-      position: fixed;
-      top: 0; left: 0;
-      width: 93px; height: 100vh;
-      background: #454C52;      /* grayscale-700 */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 0 24px;
-      z-index: 300;
-    }
+    /* ── Radio groups ── */
+    .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .radio-chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: 13px; }
+    .radio-chip input { display: none; }
+    .radio-chip:has(input:checked) { background: var(--green); border-color: var(--green); color: #fff; }
 
-    /* 로고 */
-    .gnb-logo {
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 32px;
-    }
-    .gnb-logo svg text { font-weight: 700; }
+    /* ── Display panels ── */
+    .display-panel { display: none; }
+    .display-subgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
 
-    /* 네비 아이템 */
-    .gnb-nav { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-    .gnb-nav a {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 10px 0;
-      color: #9EA5AD;           /* grayscale-400: 비활성 */
-      font-size: 10px;
-      transition: all 0.25s ease;
-      position: relative;
-    }
-    .gnb-nav a svg { fill: #9EA5AD; transition: fill 0.25s ease; }
-    .gnb-nav a:hover { color: #fff; background: #596066; }
-    .gnb-nav a:hover svg { fill: #fff; }
-    /* 활성: 흰색 아이콘 + 왼쪽 그린 인디케이터 */
-    .gnb-nav a.active {
-      color: #fff;
-      background: rgba(88,198,93,0.12);
-    }
-    .gnb-nav a.active svg { fill: #fff; }
-    .gnb-nav a.active::before {
-      content: '';
-      position: absolute; left: 0; top: 50%;
-      transform: translateY(-50%);
-      width: 3px; height: 32px;
-      background: #58C65D;
-      border-radius: 0 2px 2px 0;
-    }
+    /* ── STB list ── */
+    .stb-inline-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .stb-inline { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-size: 13px; }
+    .stb-inline input { accent-color: var(--green); }
+    .stb-inline:has(input:checked) { border-color: var(--green); background: #f0fbf0; }
 
-    .gnb-divider {
-      width: 40px; height: 1px;
-      background: #596066;
-      margin: 8px auto;
-    }
+    /* ── Location two-col ── */
+    .location-two-col { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
+    .location-fields { display: grid; gap: 12px; }
+    .location-fields__label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+    .loc-field-group { display: grid; gap: 6px; }
+    .location-addr-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+    .gps-section { display: grid; gap: 6px; }
+    .gps-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .location-map { position: relative; height: 200px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: #e8ecf0; }
+    .location-map__streets { width: 100%; height: 100%; }
+    .location-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); font-size: 24px; }
 
-    /* ============================================================
-       ZONE 2 — Topbar
-       fixed, top:0, left:93px, right:0, height:60px, bg:#383F45
-    ============================================================ */
-    .topbar {
-      position: fixed;
-      top: 0; left: 93px; right: 0;
-      height: 60px;
-      background: #383F45;      /* grayscale-800 */
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 200;
-    }
+    /* ── Photo upload ── */
+    .photo-upload-area { display: flex; gap: 10px; flex-wrap: wrap; }
+    .media-photo-thumb { position: relative; width: 96px; height: 96px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); display: grid; place-items: center; overflow: hidden; }
+    .media-photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .media-photo-thumb--add { border: 1.5px dashed var(--border); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted); font-size: 12px; }
 
-    /* 검색 */
-    .topbar-search {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #454C52;
-      border: 1px solid #596066;
-      border-radius: 4px;
-      padding: 0 12px;
-      height: 36px;
-      width: 240px;
-      transition: border-color 0.25s ease;
-    }
-    .topbar-search:focus-within { border-color: #58C65D; }
-    .topbar-search input {
-      background: none; border: none; outline: none;
-      font-size: 14px; color: #fff; width: 100%;
-    }
-    .topbar-search input::placeholder { color: #596066; }
-    .topbar-search svg { fill: #9EA5AD; flex-shrink: 0; }
+    /* ── Sensor cards ── */
+    .sensor-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    .sensor-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; opacity: .45; pointer-events: none; }
+    .sensor-card.is-active { opacity: 1; pointer-events: auto; }
+    .sensor-card__icon { font-size: 22px; margin-bottom: 8px; }
+    .sensor-card__name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .sensor-card__desc { font-size: 12px; color: var(--muted); }
 
-    /* 유저 영역 */
-    .topbar-user {
-      display: flex; align-items: center; gap: 20px;
-    }
-    .topbar-icon-btn {
-      position: relative;
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background 0.25s ease;
-    }
-    .topbar-icon-btn:hover { background: #454C52; }
-    .topbar-icon-btn svg { stroke: #9EA5AD; }
-    .topbar-icon-btn .badge {
-      position: absolute; top: 2px; right: 2px;
-      width: 7px; height: 7px;
-      background: #E97474;
-      border-radius: 50%;
-      border: 1px solid #383F45;
-    }
+    /* ── Op setting select ── */
+    .op-radio-list { display: grid; gap: 8px; }
+    .op-radio-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
+    .op-radio-item input { accent-color: var(--green); }
+    .op-radio-item:has(input:checked) { border-color: var(--green); background: #f0fbf0; }
+    .op-radio-item__info { flex: 1; }
+    .op-radio-item__name { font-size: 13px; font-weight: 600; }
+    .op-radio-item__meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-    .topbar-profile {
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer;
-      position: relative;
-    }
-    .topbar-avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: #596066;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600; color: #fff;
-    }
-    .topbar-profile-info { line-height: 1.3; }
-    .topbar-profile-name { font-size: 14px; color: #fff; font-weight: 400; }
-    .topbar-profile-org  { font-size: 11px; color: #9EA5AD; }
-    .topbar-caret svg { fill: #9EA5AD; transition: transform 0.2s ease; }
+    /* ── Form footer ── */
+    .form-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 20px 0 40px; }
 
-    /* 드롭다운 */
-    .profile-dropdown {
-      display: none;
-      position: absolute;
-      top: calc(100% + 10px); right: 0;
-      width: 160px;
-      background: #383F45;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      padding: 6px 0;
-      z-index: 999;
-    }
-    .profile-dropdown.open { display: block; }
-    .profile-dropdown a {
-      display: block;
-      padding: 9px 16px;
-      font-size: 13px;
-      color: #fff;
-      transition: background 0.2s ease;
-    }
-    .profile-dropdown a:hover { background: #454C52; }
-    .profile-dropdown .logout { color: #9EA5AD; }
+    /* ── Modal ── */
+    .modal { position: fixed; inset: 0; z-index: 100; display: none; place-items: center; }
+    .modal__scrim { position: absolute; inset: 0; background: rgba(0,0,0,.5); cursor: pointer; }
+    .modal__panel { position: relative; background: #fff; border-radius: var(--radius); width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+    .modal__header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid var(--line); }
+    .modal__header h2 { font-size: 16px; font-weight: 600; }
+    .modal__close { cursor: pointer; font-size: 22px; color: var(--muted); line-height: 1; }
+    .modal__body { padding: 20px 24px; display: grid; gap: 18px; }
+    .modal__actions { padding: 16px 24px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal-field-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+    .modal-input { width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; }
 
-    /* ============================================================
-       ZONE 3 — Breadcrumb Bar
-       fixed, top:60px, left:93px, right:0, height:40px, bg:#383F45
-    ============================================================ */
-    .breadcrumb-bar {
-      position: fixed;
-      top: 60px; left: 93px; right: 0;
-      height: 40px;
-      background: #383F45;
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-      gap: 6px;
-      z-index: 100;
-      border-top: 1px solid #454C52;
-    }
-    .breadcrumb-back {
-      display: flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px;
-      border-radius: 4px;
-      color: #9EA5AD;
-      font-size: 16px;
-      transition: all 0.25s ease;
-      cursor: pointer;
-      margin-right: 4px;
-    }
-    .breadcrumb-back:hover { background: #454C52; color: #fff; }
-    .breadcrumb-item {
-      font-size: 12px;
-      color: #9EA5AD;
-    }
-    .breadcrumb-item.link:hover { color: #fff; cursor: pointer; }
-    .breadcrumb-sep {
-      font-size: 12px;
-      color: #596066;
-    }
-    .breadcrumb-item.current { color: #CED2D6; }
+    /* ── Weekday chips ── */
+    .weekday-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .weekday-chips label { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 13px; }
+    .weekday-chips input { display: none; }
+    .weekday-chips input:checked + label { background: var(--green); border-color: var(--green); color: #fff; }
 
-    /* ============================================================
-       ZONE 4 — Content Area
-       margin-left:93px, padding-top:100px, bg:#F6F7F9
-    ============================================================ */
-    .content {
-      margin-left: 93px;
-      padding-top: 100px;       /* 60px topbar + 40px breadcrumb */
-      min-height: 100vh;
-      background: #F6F7F9;
-      overflow-y: auto;
-      padding-bottom: 48px;
-    }
+    /* ── Toggle switch ── */
+    .toggle-line { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+    .toggle-sw { appearance: none; width: 40px; height: 22px; background: var(--border); border-radius: 100px; position: relative; cursor: pointer; transition: background .2s; }
+    .toggle-sw:checked { background: var(--green); }
+    .toggle-sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: left .2s; }
+    .toggle-sw:checked::after { left: 21px; }
 
-    .content-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 32px;
-    }
+    /* ── Slot radios ── */
+    .slot-radios { display: flex; gap: 8px; }
+    .slot-radios label { padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: 13px; }
+    .slot-radios input { display: none; }
+    .slot-radios input:checked + label { background: var(--green); border-color: var(--green); color: #fff; }
 
-    /* ============================================================
-       Page Card (white on light-gray)
-    ============================================================ */
-    .page-card {
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-    }
+    /* ── Time range ── */
+    .time-range { display: flex; align-items: center; gap: 8px; }
+    .time-range input[type="time"] { height: 36px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; }
 
-    /* 카드 헤더 */
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #24292E;
-    }
-
-    /* ============================================================
-       폼 레이아웃
-    ============================================================ */
-    .form-body { padding: 24px; }
-
-    /* 섹션 블록 */
-    .form-section {
-      margin-bottom: 36px;
-    }
-    .form-section:last-child { margin-bottom: 0; }
-
-    /* 섹션 헤더 */
-    .form-section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #24292E;
-      padding-bottom: 12px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #E5E7EA;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .form-section-title .section-icon {
-      width: 6px; height: 6px;
-      background: #58C65D;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* 필드 행 */
-    .form-row {
-      display: flex;
-      align-items: flex-start;
-      min-height: 40px;
-      margin-bottom: 16px;
-    }
-    .form-row:last-child { margin-bottom: 0; }
-
-    /* 레이블 */
-    .form-label {
-      flex: 0 0 160px;
-      font-size: 14px;
-      font-weight: 400;
-      color: #596066;
-      line-height: 40px;       /* 인풋 높이에 맞춤 */
-      padding-right: 20px;
-      white-space: nowrap;
-    }
-    .form-label .req {
-      color: #E97474;
-      margin-left: 2px;
-    }
-
-    /* 인풋 영역 */
-    .form-control {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      min-height: 40px;
-    }
-
-    /* ── 텍스트 / 숫자 인풋 ─────────────────── */
-    .inp {
-      height: 40px;
-      padding: 0 12px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #24292E;
-      transition: border-color 0.25s ease;
-    }
-    .inp::placeholder { color: #CED2D6; }
-    .inp:focus { outline: none; border-color: #58C65D; }
-    .inp[readonly], .inp[disabled] {
-      background: #F6F7F9;
-      color: #9EA5AD;
-    }
-    .inp-full  { width: 100%; max-width: 520px; }
-    .inp-lg    { width: 320px; }
-    .inp-md    { width: 220px; }
-    .inp-sm    { width: 120px; }
-    .inp-xs    { width: 80px; }
-
-    /* ── 셀렉트 ─────────────────────────────── */
-    .sel {
-      height: 40px;
-      padding: 0 32px 0 12px;
-      background: #fff url('../assets/images/select_arrow.svg') no-repeat right 10px center;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #24292E;
-      appearance: none;
-      cursor: pointer;
-      transition: border-color 0.25s ease;
-    }
-    .sel:focus { outline: none; border-color: #58C65D; }
-    .sel.sel-md { width: 220px; }
-    .sel.sel-sm { width: 160px; }
-    .sel.sel-xs { width: 120px; }
-
-    /* ── 텍스트에어리어 ─────────────────────── */
-    .textarea {
-      width: 100%; max-width: 520px;
-      padding: 10px 12px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #24292E;
-      resize: vertical;
-      min-height: 80px;
-      line-height: 1.6;
-      transition: border-color 0.25s ease;
-    }
-    .textarea::placeholder { color: #CED2D6; }
-    .textarea:focus { outline: none; border-color: #58C65D; }
-
-    /* ── 인풋 단위 서픽스 ───────────────────── */
-    .inp-suffix {
-      font-size: 14px;
-      color: #9EA5AD;
-      line-height: 40px;
-    }
-
-    /* ── 힌트 텍스트 ────────────────────────── */
-    .hint {
-      width: 100%;
-      font-size: 12px;
-      color: #9EA5AD;
-      line-height: 1.5;
-      margin-top: 4px;
-    }
-    .hint.green { color: #58C65D; }
-
-    /* ── 체크박스 그룹 ──────────────────────── */
-    .check-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 20px;
-      align-items: center;
-      min-height: 40px;
-    }
-    .check-group label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      color: #24292E;
-      cursor: pointer;
-      user-select: none;
-    }
-    .check-group input[type="checkbox"] {
-      width: 15px; height: 15px;
-      accent-color: #58C65D;
-      cursor: pointer;
-    }
-
-    /* ── btn-wrap 세그먼트 ──────────────────── */
-    .seg {
-      display: inline-flex;
-      height: 40px;
-    }
-    .seg-btn {
-      height: 40px;
-      padding: 0 18px;
-      font-size: 14px;
-      color: #596066;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-left: none;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-    .seg-btn:first-child {
-      border-left: 1px solid #CED2D6;
-      border-radius: 4px 0 0 4px;
-    }
-    .seg-btn:last-child { border-radius: 0 4px 4px 0; }
-    .seg-btn.on {
-      background: rgba(88,198,93,0.1);
-      border-color: #C1E9C3;
-      color: #58C65D;
-      font-weight: 500;
-    }
-    .seg-btn:hover:not(.on) { background: #F6F7F9; }
-
-    /* ── 토글 스위치 ────────────────────────── */
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      height: 40px;
-    }
-    .toggle-track {
-      width: 38px; height: 22px;
-      border-radius: 100px;
-      background: #CED2D6;
-      position: relative;
-      cursor: pointer;
-      transition: background 0.25s ease;
-      flex-shrink: 0;
-    }
-    .toggle-track.on { background: #58C65D; }
-    .toggle-thumb {
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      position: absolute;
-      top: 3px; left: 3px;
-      transition: left 0.25s ease-in;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .toggle-track.on .toggle-thumb { left: calc(100% - 19px); }
-    .toggle-label { font-size: 14px; color: #24292E; }
-
-    /* ── 주소 검색 ──────────────────────────── */
-    .addr-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 8px;
-    }
-    .addr-row .inp { flex: 1; }
-
-    /* ── 연결 상태 뱃지 ─────────────────────── */
-    .conn-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      height: 40px;
-      padding: 0 14px;
-      border-radius: 4px;
-      font-size: 13px;
-      background: #F6F7F9;
-      border: 1px solid #CED2D6;
-      color: #9EA5AD;
-      white-space: nowrap;
-    }
-    .conn-badge .dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #CED2D6;
-      flex-shrink: 0;
-    }
-    .conn-badge.online  { background: rgba(88,198,93,0.08); border-color: #C1E9C3; color: #58C65D; }
-    .conn-badge.online .dot  { background: #58C65D; }
-    .conn-badge.checking { background: rgba(88,198,93,0.05); border-color: #C1E9C3; color: #58C65D; }
-    .conn-badge.checking .dot { background: #58C65D; opacity: 0.5; }
-
-    /* ── 지도 플레이스홀더 ──────────────────── */
-    .map-holder {
-      width: 100%; max-width: 520px;
-      height: 220px;
-      background: #EFF0F2;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      color: #9EA5AD;
-      font-size: 13px;
-      position: relative;
-      overflow: hidden;
-    }
-    .map-pin {
-      width: 20px; height: 20px;
-      fill: #58C65D;
-      opacity: 0.6;
-    }
-
-    /* ── 시간 선택 ──────────────────────────── */
-    .time-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      height: 40px;
-    }
-    .time-sep { font-size: 14px; color: #9EA5AD; }
-    input[type="time"].inp { width: 130px; }
-
-    /* ============================================================
-       버튼
-    ============================================================ */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      height: 40px;
-      padding: 0 20px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-    /* 기본 CTA — green fill */
-    .btn-primary {
-      background: #58C65D;
-      border-color: #58C65D;
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: #fff;
-      color: #58C65D;
-    }
-    /* 보조 — 아웃라인 그린 */
-    .btn-outline {
-      background: #fff;
-      border-color: #C1E9C3;
-      color: #58C65D;
-    }
-    .btn-outline:hover {
-      background: rgba(88,198,93,0.08);
-    }
-    /* 취소 — gray */
-    .btn-ghost {
-      background: #fff;
-      border-color: #CED2D6;
-      color: #596066;
-    }
-    .btn-ghost:hover { background: #F6F7F9; }
-    /* 작은 버튼 */
-    .btn-sm {
-      height: 36px;
-      padding: 0 16px;
-      font-size: 13px;
-    }
-
-    /* ── 폼 액션 바 ─────────────────────────── */
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      padding: 20px 24px;
-      border-top: 1px solid #E5E7EA;
-    }
-
-    /* ============================================================
-       모달 (popup-light)
-    ============================================================ */
-    .modal-backdrop {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 900;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      width: 420px;
-      overflow: hidden;
-    }
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 20px 14px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .modal-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #24292E;
-    }
-    .modal-close {
-      width: 28px; height: 28px;
-      border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      color: #9EA5AD;
-      font-size: 18px;
-      transition: all 0.2s ease;
-    }
-    .modal-close:hover { background: #F6F7F9; color: #24292E; }
-    .modal-body {
-      padding: 20px;
-      font-size: 14px;
-      color: #596066;
-      line-height: 1.7;
-    }
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      padding: 14px 20px 18px;
-      border-top: 1px solid #E5E7EA;
-    }
-
-    /* ── 성공 모달 ─── */
-    .success-modal .modal-body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 32px 24px;
-      text-align: center;
-    }
-    .success-icon {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: rgba(88,198,93,0.12);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px;
-    }
-    .success-modal .modal-body h3 {
-      font-size: 16px; font-weight: 600;
-      color: #24292E; margin-bottom: 8px;
-    }
-    .success-modal .modal-body p {
-      font-size: 13px; color: #9EA5AD;
-      margin-bottom: 24px;
-    }
+    /* ── Address modal list ── */
+    .address-list { display: grid; gap: 6px; margin-top: 12px; }
+    .address-list label { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
+    .address-list label:hover { border-color: var(--green); }
+    .address-list label strong { display: block; font-size: 13px; }
+    .address-list label span { font-size: 12px; color: var(--muted); }
+    .address-list input { accent-color: var(--green); margin-top: 2px; flex-shrink: 0; }
   </style>
 </head>
 <body>
 
-<!-- ================================================================
-     ZONE 1 — GNB Sidebar (dark #454C52, 93px)
-================================================================ -->
+<!-- ── State inputs ── -->
+<input class="state" type="checkbox" id="nav-expanded">
+<input class="state" type="checkbox" id="operation-modal">
+<input class="state" type="checkbox" id="address-modal">
+
+<!-- ── GNB ── -->
 <aside class="gnb">
-
-  <!-- DL 로고 -->
-  <div class="gnb-logo">
-    <svg width="44" height="44" viewBox="0 0 44 44">
-      <rect width="44" height="44" rx="10" fill="rgba(255,255,255,0.12)"/>
-      <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle"
-            fill="#58C65D" font-size="14" font-weight="700" font-family="sans-serif">DL</text>
-    </svg>
-  </div>
-
-  <nav class="gnb-nav">
-    <!-- 대시보드 -->
-    <a href="dashboard" title="대시보드">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/>
-      </svg>
-      <span style="font-size:10px;">대시보드</span>
-    </a>
-    <!-- 미디어 (active) -->
-    <a href="media-list" title="미디어" class="active">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/>
-      </svg>
-      <span style="font-size:10px;">미디어</span>
-    </a>
-      <!-- 프로덕트 -->
-      <a href="product-list" title="프로덕트">
-        <svg width="22" height="22" viewBox="0 0 24 24">
-          <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z" fill="currentColor"/>
-          <circle cx="20" cy="18" r="2.5" fill="currentColor"/>
-        </svg>
-        <span>프로덕트</span>
-      </a>
-
-    <!-- 콘텐츠 -->
-    <a href="contents" title="콘텐츠">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/>
-      </svg>
-      <span style="font-size:10px;">콘텐츠</span>
-    </a>
-    <!-- 스케줄 -->
-    <a href="schedule-list" title="스케줄">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/>
-      </svg>
-      <span style="font-size:10px;">스케줄</span>
-    </a>
-    <!-- 편성표 -->
-    <a href="schedule-media-month" title="편성표">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <path d="M3 9h18M8 2v3M16 2v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-      </svg>
-      <span style="font-size:10px;">편성표</span>
-    </a>
-    <!-- 모니터링 -->
-    <a href="#" title="모니터링">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M3 3h18v14H3V3zm2 2v10h14V5H5zm-2 12h18v2H3v-2zm5-8h2v5H8v-5zm3-2h2v7h-2V7zm3 3h2v4h-2v-4z"/>
-      </svg>
-      <span style="font-size:10px;">모니터링</span>
-    </a>
-
-    <div class="gnb-divider"></div>
-
-    <!-- 태그검색 -->
-    <a href="#" title="태그검색">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/>
-      </svg>
-      <span style="font-size:10px;">태그검색</span>
-    </a>
+  <label class="gnb__toggle" for="nav-expanded" title="메뉴 접기/펼치기"><span></span></label>
+  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
+  <nav class="gnb__nav">
+    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
+    <a class="gnb__item is-active" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
+    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
+    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
+    <a class="gnb__item" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
+    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
+    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
   </nav>
 </aside>
 
-<!-- ================================================================
-     ZONE 2 — Topbar (dark #383F45, 60px)
-================================================================ -->
+<!-- ── Topbar ── -->
 <header class="topbar">
-
-  <!-- 검색창 -->
-  <div class="topbar-search">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="11" cy="11" r="7" stroke="#9EA5AD" stroke-width="2"/>
-      <path d="M16.5 16.5L21 21" stroke="#9EA5AD" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-    <input type="text" placeholder="검색어를 입력하세요">
-  </div>
-
-  <!-- 유저 영역 -->
-  <div class="topbar-user">
-    <!-- 알림 -->
-    <div class="topbar-icon-btn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2a7 7 0 00-7 7v4l-1.5 2.5h17L19 13V9a7 7 0 00-7-7z" stroke="#9EA5AD" stroke-width="1.5" fill="none"/>
-        <path d="M10 19a2 2 0 004 0" stroke="#9EA5AD" stroke-width="1.5" fill="none"/>
-      </svg>
-      <span class="badge"></span>
-    </div>
-    <!-- 오류 -->
-    <div class="topbar-icon-btn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="#9EA5AD" stroke-width="1.5"/>
-        <line x1="12" y1="7" x2="12" y2="13" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="12" cy="16" r="0.8" fill="#9EA5AD"/>
-      </svg>
-    </div>
-    <!-- 프로필 -->
-    <div class="topbar-profile" onclick="toggleProfile(this)">
-      <div class="topbar-avatar">관리</div>
-      <div class="topbar-profile-info">
-        <div class="topbar-profile-name">관리자</div>
-        <div class="topbar-profile-org">DOOH Service</div>
-      </div>
-      <span class="topbar-caret">
-        <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
-      </span>
-      <!-- 드롭다운 -->
-      <div class="profile-dropdown" id="profileDropdown">
-        <a href="#">내 정보</a>
-        <a href="#">비밀번호 변경</a>
-        <a href="login" class="logout">로그아웃</a>
-      </div>
-    </div>
+  <div class="topbar__logo"></div>
+  <div class="topbar__user">
+    <div class="avatar">S</div>
+    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
+    <span class="caret">⌄</span>
   </div>
 </header>
 
-<!-- ================================================================
-     ZONE 3 — Breadcrumb Bar (dark #383F45, 40px)
-================================================================ -->
-<div class="breadcrumb-bar">
-  <span class="breadcrumb-back" onclick="history.back()">&#8249;</span>
-  <span class="breadcrumb-item link" onclick="window.location='#'">미디어</span>
-  <span class="breadcrumb-sep">›</span>
-  <span class="breadcrumb-item link" onclick="window.location='#'">미디어 목록</span>
-  <span class="breadcrumb-sep">›</span>
-  <span class="breadcrumb-item current">미디어 등록</span>
+<!-- ── Breadcrumb ── -->
+<div class="breadcrumb">
+  <a class="breadcrumb__back" href="/media-list">‹</a>
+  <span>미디어</span>
+  <span>›</span>
+  <strong>미디어 등록</strong>
 </div>
 
-<!-- ================================================================
-     ZONE 4 — Content Area (light #F6F7F9)
-================================================================ -->
+<!-- ── Main content ── -->
 <main class="content">
-  <div class="content-inner">
 
-    <!-- Page Card (white) -->
-    <div class="page-card">
+  <div class="page-header">
+    <div class="page-header__text">
+      <p class="page-header__eyebrow">Create Media</p>
+      <h1 class="page-header__title">미디어 등록</h1>
+    </div>
+  </div>
 
-      <!-- 카드 헤더 -->
-      <div class="card-header">
-        <h1 class="card-title">미디어 등록</h1>
-        <div style="font-size:12px; color:#9EA5AD;">
-          Media = Display + Settop + Location <span style="margin-left:8px; color:#CED2D6;">1:1:1</span>
+  <form class="form-layout" onsubmit="return false">
+
+    <!-- ① 미디어 기본 정보 -->
+    <div class="form-section">
+      <div class="form-section__hd"><h2>미디어 기본 정보</h2></div>
+      <div class="form-section__body">
+        <div class="field-row">
+          <div class="field-label">미디어명 <span style="color:var(--danger)">*</span></div>
+          <div class="field-row-inline">
+            <input class="form-input" type="text" placeholder="미디어 이름을 입력하세요" style="flex:1">
+            <button class="btn btn-gray" type="button" style="white-space:nowrap">중복확인</button>
+          </div>
+          <p class="helper-text">사용 가능한 미디어명입니다.</p>
         </div>
       </div>
+    </div>
 
-      <!-- ──────────────────────────────────────────
-           폼 본문
-      ────────────────────────────────────────── -->
-      <div class="form-body">
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             1. 기본 정보
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>기본 정보
-          </h2>
-
-          <!-- 미디어명 -->
-          <div class="form-row">
-            <label class="form-label">미디어명<span class="req">*</span></label>
-            <div class="form-control">
-              <input type="text" class="inp inp-full" id="mediaName"
-                     placeholder="미디어 이름을 입력하세요">
-            </div>
+    <!-- ② Display 정보 -->
+    <div class="form-section">
+      <div class="form-section__hd"><h2>Display 정보</h2></div>
+      <div class="form-section__body">
+        <div class="field-row">
+          <div class="field-label">Display 유형 <span style="color:var(--danger)">*</span></div>
+          <div class="radio-group">
+            <label class="radio-chip"><input type="radio" name="display-type" value="lcd" checked> LCD</label>
+            <label class="radio-chip"><input type="radio" name="display-type" value="led"> LED</label>
           </div>
-
-          <!-- 미디어 유형 -->
-          <div class="form-row">
-            <label class="form-label">미디어 유형<span class="req">*</span></label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">실내형</button>
-                <button class="seg-btn"    onclick="seg(this)">실외형</button>
-                <button class="seg-btn"    onclick="seg(this)">복합형</button>
-              </div>
-            </div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">방향</div>
+          <div class="radio-group">
+            <label class="radio-chip"><input type="radio" name="display-orient" checked> 가로형</label>
+            <label class="radio-chip"><input type="radio" name="display-orient"> 세로형</label>
           </div>
+        </div>
 
-          <!-- 운영 상태 -->
-          <div class="form-row">
-            <label class="form-label">운영 상태</label>
-            <div class="form-control">
-              <div class="toggle-wrap">
-                <input type="checkbox" id="statusChk" checked style="display:none;"
-                       onchange="syncToggle(this)">
-                <span class="toggle-track on" id="statusTrack"
-                      onclick="document.getElementById('statusChk').click()">
-                  <span class="toggle-thumb"></span>
-                </span>
-                <span class="toggle-label" id="statusLbl">운영 중</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             2. 디스플레이 (Display)
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>디스플레이 (Display)
-          </h2>
-
-          <!-- 해상도 -->
-          <div class="form-row">
-            <label class="form-label">해상도<span class="req">*</span></label>
-            <div class="form-control">
-              <select class="sel sel-md" onchange="toggleCustomRes(this)">
-                <option value="">해상도 선택</option>
-                <option value="1920x1080">1920 × 1080 (FHD 가로)</option>
-                <option value="1080x1920">1080 × 1920 (FHD 세로)</option>
-                <option value="3840x2160">3840 × 2160 (4K 가로)</option>
-                <option value="2160x3840">2160 × 3840 (4K 세로)</option>
-                <option value="custom">직접 입력</option>
-              </select>
-              <span id="customResWrap" style="display:none; align-items:center; gap:8px;">
-                <input type="number" class="inp inp-xs" placeholder="너비" min="1">
-                <span class="inp-suffix">px ×</span>
-                <input type="number" class="inp inp-xs" placeholder="높이" min="1">
-                <span class="inp-suffix">px</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- 화면 방향 -->
-          <div class="form-row">
-            <label class="form-label">화면 방향<span class="req">*</span></label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">가로</button>
-                <button class="seg-btn"    onclick="seg(this)">세로</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 화면 크기 -->
-          <div class="form-row">
-            <label class="form-label">화면 크기</label>
-            <div class="form-control" style="align-items:center;">
-              <input type="number" class="inp inp-xs" placeholder="0" min="1" max="999" step="0.1">
-              <span class="inp-suffix">인치</span>
-            </div>
-          </div>
-
-          <!-- 콘텐츠 재생 포맷 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:2px;">콘텐츠 재생 포맷<span class="req">*</span></label>
-            <div class="form-control">
-              <div class="check-group">
-                <label><input type="checkbox" checked> MP4</label>
-                <label><input type="checkbox" checked> JPG</label>
-                <label><input type="checkbox" checked> PNG</label>
-                <label><input type="checkbox"> GIF</label>
-                <label><input type="checkbox"> WebP</label>
-                <label><input type="checkbox"> AVI</label>
-                <label><input type="checkbox"> MOV</label>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             3. 셋탑 (Settop)
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>셋탑 (Settop)
-          </h2>
-
-          <!-- 셋탑 OS — Android 전용 -->
-          <div class="form-row">
-            <label class="form-label">운영체제 (OS)</label>
-            <div class="form-control">
-              <span style="display:inline-flex; align-items:center; height:40px; padding:0 12px;
-                            background:#F6F7F9; border:1px solid #CED2D6; border-radius:4px;
-                            font-size:14px; color:#24292E; gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#58C65D">
-                  <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-2.5-1C2.67 17 2 17.67 2 18.5v-9C2 8.67 2.67 8 3.5 8S5 8.67 5 9.5v9c0 .83-.67 1.5-1.5 1.5zm17 0c-.83 0-1.5-.67-1.5-1.5v-9c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v9c0 .83-.67 1.5-1.5 1.5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C7.08 3.04 6 4.57 6 6.35V7h12v-.65c0-1.78-1.08-3.31-2.47-4.19zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
-                </svg>
-                Android
-              </span>
-              <span class="hint" style="width:auto; margin-top:0;">본 서비스는 Android 운영체제만 지원합니다</span>
-            </div>
-          </div>
-
-          <!-- 셋탑 S/N -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label">셋탑 S/N<span class="req">*</span></label>
-            <div class="form-control" style="flex-direction:column; align-items:flex-start;">
-              <div style="display:flex; gap:8px; align-items:center;">
-                <input type="text" class="inp inp-md" id="settopSN" placeholder="시리얼 번호 입력">
-                <button class="btn btn-outline btn-sm" onclick="checkConn()">연결 확인</button>
-                <span class="conn-badge" id="connBadge">
-                  <span class="dot"></span>미확인
-                </span>
-              </div>
-              <p class="hint">셋탑 장치에 부착된 S/N 스티커의 번호를 입력하세요.</p>
-            </div>
-          </div>
-
-          <!-- Player 버전 (자동) -->
-          <div class="form-row">
-            <label class="form-label">Player 버전</label>
-            <div class="form-control">
-              <input type="text" class="inp inp-sm" id="playerVer" placeholder="예: v2.4.1" readonly>
-              <span class="hint green" style="width:auto; margin-top:0;">연결 확인 후 자동 조회</span>
-            </div>
-          </div>
-
-          <!-- Updater 버전 (자동) -->
-          <div class="form-row">
-            <label class="form-label">Updater 버전</label>
-            <div class="form-control">
-              <input type="text" class="inp inp-sm" id="updaterVer" placeholder="예: v1.2.0" readonly>
-            </div>
-          </div>
-
-          <!-- 연결 방식 -->
-          <div class="form-row">
-            <label class="form-label">연결 방식</label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">유선 (LAN)</button>
-                <button class="seg-btn"    onclick="seg(this)">무선 (Wi-Fi)</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             4. 설치 위치 (Location)
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>설치 위치 (Location)
-          </h2>
-
-          <!-- 주소 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label">주소<span class="req">*</span></label>
-            <div class="form-control" style="flex-direction:column; align-items:flex-start; gap:8px;">
-              <div class="addr-row">
-                <input type="text" class="inp inp-sm" id="zipCode" placeholder="우편번호" readonly>
-                <button class="btn btn-outline btn-sm" onclick="searchAddr()">주소 검색</button>
-              </div>
-              <input type="text" class="inp inp-full" id="addr1" placeholder="기본 주소" readonly>
-              <input type="text" class="inp inp-full" id="addr2" placeholder="상세 주소 입력">
-            </div>
-          </div>
-
-          <!-- 지역 구분 -->
-          <div class="form-row">
-            <label class="form-label">지역 구분<span class="req">*</span></label>
-            <div class="form-control">
-              <select class="sel sel-sm">
-                <option value="">지역 선택</option>
-                <optgroup label="수도권">
-                  <option>서울</option><option>경기</option><option>인천</option>
-                </optgroup>
-                <optgroup label="충청권">
-                  <option>대전</option><option>세종</option><option>충북</option><option>충남</option>
-                </optgroup>
-                <optgroup label="영남권">
-                  <option>부산</option><option>대구</option><option>울산</option><option>경북</option><option>경남</option>
-                </optgroup>
-                <optgroup label="호남권">
-                  <option>광주</option><option>전북</option><option>전남</option>
-                </optgroup>
-                <optgroup label="기타">
-                  <option>강원</option><option>제주</option>
-                </optgroup>
+        <!-- LCD panel -->
+        <div class="display-panel display-lcd">
+          <div class="display-subgrid">
+            <div class="field-row">
+              <div class="field-label">화면비</div>
+              <select class="form-input" style="height:38px">
+                <option>16:9</option>
+                <option>9:16</option>
+                <option>4:3</option>
+                <option>21:9</option>
               </select>
             </div>
-          </div>
-
-          <!-- 설치 환경 -->
-          <div class="form-row">
-            <label class="form-label">설치 환경</label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">실내</button>
-                <button class="seg-btn"    onclick="seg(this)">실외</button>
-                <button class="seg-btn"    onclick="seg(this)">반실외</button>
-              </div>
+            <div class="field-row">
+              <div class="field-label">해상도</div>
+              <select class="form-input" style="height:38px">
+                <option>FHD (1920×1080)</option>
+                <option>UHD (3840×2160)</option>
+                <option>HD (1280×720)</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field-label">화면 크기 (inch)</div>
+              <input class="form-input" type="number" placeholder="55" min="10" max="200">
+            </div>
+            <div class="field-row">
+              <div class="field-label">mm 환산값 (자동계산)</div>
+              <input class="form-input" type="text" value="1218mm × 685mm" readonly>
             </div>
           </div>
+        </div>
 
-          <!-- 위치 설명 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:10px;">위치 설명</label>
-            <div class="form-control">
-              <textarea class="textarea" rows="3"
-                        placeholder="미디어 설치 위치에 대한 상세 설명을 입력하세요.&#10;예: 2호선 강남역 2번 출구 앞 기둥, 유동인구 밀집 구역"></textarea>
+        <!-- LED panel -->
+        <div class="display-panel display-led">
+          <div class="display-subgrid">
+            <div class="field-row">
+              <div class="field-label">가로 (mm)</div>
+              <input class="form-input" type="number" placeholder="6144">
+            </div>
+            <div class="field-row">
+              <div class="field-label">세로 (mm)</div>
+              <input class="form-input" type="number" placeholder="1728">
+            </div>
+            <div class="field-row">
+              <div class="field-label">Pitch (mm)</div>
+              <select class="form-input" style="height:38px">
+                <option>P2.5</option>
+                <option>P3.0</option>
+                <option>P4.0</option>
+                <option>P5.0</option>
+                <option>P6.0</option>
+                <option>P8.0</option>
+                <option>P10.0</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field-label">자동 해상도 (자동계산)</div>
+              <input class="form-input" type="text" value="2457 × 691" readonly>
             </div>
           </div>
+        </div>
 
-          <!-- 지도 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:10px;">지도</label>
-            <div class="form-control">
-              <div class="map-holder">
-                <svg class="map-pin" viewBox="0 0 24 24">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-                <span>주소 검색 후 지도가 표시됩니다</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             5. 운영 정보
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>운영 정보
-          </h2>
-
-          <!-- 운영 시간 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label">운영 시간<span class="req">*</span></label>
-            <div class="form-control" style="flex-direction:column; align-items:flex-start; gap:4px;">
-              <div class="time-row">
-                <input type="time" class="inp" value="07:00" id="opStart">
-                <span class="time-sep">~</span>
-                <input type="time" class="inp" value="23:00" id="opEnd">
-              </div>
-              <p class="hint">Play Plan의 기본 기준 시간으로 사용됩니다.</p>
-            </div>
-          </div>
-
-          <!-- 운영 요일 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:2px;">운영 요일</label>
-            <div class="form-control">
-              <div class="check-group">
-                <label><input type="checkbox" checked> 월</label>
-                <label><input type="checkbox" checked> 화</label>
-                <label><input type="checkbox" checked> 수</label>
-                <label><input type="checkbox" checked> 목</label>
-                <label><input type="checkbox" checked> 금</label>
-                <label><input type="checkbox"> 토</label>
-                <label><input type="checkbox"> 일</label>
-                <label><input type="checkbox"> 공휴일</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- 담당자 -->
-          <div class="form-row">
-            <label class="form-label">담당자</label>
-            <div class="form-control">
-              <input type="text" class="inp inp-md" placeholder="담당자 이름">
-              <input type="text" class="inp inp-md" placeholder="연락처 (예: 010-0000-0000)">
-            </div>
-          </div>
-
-          <!-- 비고 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:10px;">비고</label>
-            <div class="form-control">
-              <textarea class="textarea" rows="3"
-                        placeholder="기타 특이사항을 입력하세요."></textarea>
-            </div>
-          </div>
-        </section>
-
-      </div><!-- /.form-body -->
-
-      <!-- 액션 버튼 바 -->
-      <div class="form-actions">
-        <button class="btn btn-ghost" onclick="history.back()">취소</button>
-        <button class="btn btn-primary" onclick="submitForm()">등록하기 ›</button>
       </div>
+    </div>
 
-    </div><!-- /.page-card -->
-  </div><!-- /.content-inner -->
+    <!-- ③ 셋탑 코드 -->
+    <div class="form-section">
+      <div class="form-section__hd"><h2>셋탑 코드</h2></div>
+      <div class="form-section__body">
+        <div class="field-row">
+          <div class="field-label">셋탑 코드 선택 <span style="color:var(--danger)">*</span></div>
+          <div class="stb-inline-list">
+            <label class="stb-inline"><input type="radio" name="stb-code" value="STB009"> STB009</label>
+            <label class="stb-inline"><input type="radio" name="stb-code" value="STB010" checked> STB010</label>
+            <label class="stb-inline"><input type="radio" name="stb-code" value="STB011"> STB011</label>
+          </div>
+          <p style="font-size:12px; color:var(--muted); margin-top:6px;">각 셋탑 코드는 하나의 미디어에만 할당됩니다. 이미 등록된 코드는 선택할 수 없습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ Location 정보 -->
+    <div class="form-section">
+      <div class="form-section__hd"><h2>Location 정보</h2></div>
+      <div class="form-section__body">
+        <div class="location-two-col">
+          <div class="location-fields">
+
+            <div class="loc-field-group">
+              <div class="location-fields__label">설치 장소</div>
+              <div class="radio-group">
+                <label class="radio-chip"><input type="radio" name="install-type" checked> 실내</label>
+                <label class="radio-chip"><input type="radio" name="install-type"> 실외</label>
+                <label class="radio-chip"><input type="radio" name="install-type"> 이동수단 내부</label>
+                <label class="radio-chip"><input type="radio" name="install-type"> 이동수단 외부</label>
+              </div>
+            </div>
+
+            <div class="loc-field-group">
+              <div class="location-fields__label">광고물 유형</div>
+              <select class="form-input" style="height:38px">
+                <option>선택</option>
+                <option>간판</option>
+                <option>현수막</option>
+                <option>벽보</option>
+                <option>전광판</option>
+                <option>기타</option>
+              </select>
+            </div>
+
+            <div class="loc-field-group">
+              <div class="location-fields__label">설치 주소 <span style="color:var(--danger)">*</span></div>
+              <div class="location-addr-row">
+                <input class="form-input" type="text" placeholder="주소를 검색하세요" readonly>
+                <label class="btn btn-gray btn-sm" for="address-modal">주소 검색</label>
+              </div>
+              <input class="form-input" type="text" placeholder="상세주소 입력" style="margin-top:6px">
+            </div>
+
+            <div class="gps-section">
+              <div class="location-fields__label">GPS 좌표</div>
+              <div class="gps-fields">
+                <input class="form-input" type="text" placeholder="위도 (Latitude)">
+                <input class="form-input" type="text" placeholder="경도 (Longitude)">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Mini map -->
+          <div>
+            <div class="location-fields__label" style="margin-bottom:8px">지도 미리보기</div>
+            <div class="location-map">
+              <svg class="location-map__streets" viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
+                <rect width="280" height="200" fill="#e8ecf0"/>
+                <!-- Roads -->
+                <rect x="0" y="88" width="280" height="6" fill="#fff" opacity=".6"/>
+                <rect x="0" y="140" width="280" height="4" fill="#fff" opacity=".4"/>
+                <rect x="100" y="0" width="5" height="200" fill="#fff" opacity=".5"/>
+                <rect x="180" y="0" width="4" height="200" fill="#fff" opacity=".4"/>
+                <!-- Blocks -->
+                <rect x="10" y="10" width="82" height="70" rx="4" fill="#d0d5db" opacity=".5"/>
+                <rect x="113" y="10" width="58" height="70" rx="4" fill="#d0d5db" opacity=".5"/>
+                <rect x="192" y="10" width="78" height="70" rx="4" fill="#d0d5db" opacity=".5"/>
+                <rect x="10" y="102" width="82" height="88" rx="4" fill="#d0d5db" opacity=".5"/>
+                <rect x="113" y="102" width="58" height="88" rx="4" fill="#d0d5db" opacity=".5"/>
+                <rect x="192" y="102" width="78" height="88" rx="4" fill="#d0d5db" opacity=".5"/>
+              </svg>
+              <div class="location-map__pin">📍</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 현장 설치 사진 -->
+    <div class="form-section">
+      <div class="form-section__hd"><h2>현장 설치 사진</h2></div>
+      <div class="form-section__body">
+        <div class="photo-upload-area">
+          <!-- Sample thumb -->
+          <div class="media-photo-thumb">
+            <svg viewBox="0 0 96 96" width="96" height="96" xmlns="http://www.w3.org/2000/svg">
+              <rect width="96" height="96" fill="#d4d8dd"/>
+              <rect x="16" y="24" width="64" height="48" rx="3" fill="#b0b5bc"/>
+              <circle cx="32" cy="38" r="6" fill="#e8ecf0"/>
+              <polygon points="16,72 40,44 58,60 72,42 80,72" fill="#c5c9cf"/>
+            </svg>
+          </div>
+          <!-- Add button -->
+          <label class="media-photo-thumb media-photo-thumb--add">
+            <input type="file" accept="image/*" style="display:none">
+            <span style="font-size:22px; color:var(--muted)">+</span>
+            <span>사진 추가</span>
+          </label>
+        </div>
+        <p style="font-size:12px; color:var(--muted); margin-top:8px;">JPG, PNG, WEBP 지원. 파일당 최대 10MB. 최대 10장.</p>
+      </div>
+    </div>
+
+    <!-- ⑥ 센서 정보 -->
+    <div class="form-section">
+      <div class="form-section__hd"><h2>센서 정보</h2></div>
+      <div class="form-section__body">
+        <div class="field-row">
+          <div class="field-label">센서 포함 여부</div>
+          <div class="radio-group">
+            <label class="radio-chip"><input type="radio" name="sensor-yn" id="sensor-no" checked> 미포함</label>
+            <label class="radio-chip"><input type="radio" name="sensor-yn" id="sensor-yes"> 포함</label>
+          </div>
+        </div>
+        <div class="sensor-cards" id="sensor-cards">
+          <div class="sensor-card">
+            <div class="sensor-card__icon">🌡️</div>
+            <div class="sensor-card__name">환경 센서</div>
+            <div class="sensor-card__desc">온도, 습도, 조도 등 환경 데이터를 수집합니다.</div>
+          </div>
+          <div class="sensor-card">
+            <div class="sensor-card__icon">🔴</div>
+            <div class="sensor-card__name">IR 센서</div>
+            <div class="sensor-card__desc">적외선으로 유동 인구 수를 감지합니다.</div>
+          </div>
+          <div class="sensor-card">
+            <div class="sensor-card__icon">👁️</div>
+            <div class="sensor-card__name">비전 센서</div>
+            <div class="sensor-card__desc">카메라로 시청자 수 및 특성을 분석합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑦ 미디어 운영 설정 -->
+    <div class="form-section">
+      <div class="form-section__hd">
+        <h2>미디어 운영 설정</h2>
+        <label class="btn btn-ghost btn-sm" for="operation-modal">+ 운영 설정 추가</label>
+      </div>
+      <div class="form-section__body">
+        <div class="op-radio-list">
+          <label class="op-radio-item">
+            <input type="radio" name="op-setting" checked>
+            <div class="op-radio-item__info">
+              <div class="op-radio-item__name">운영설정 선택 안 함</div>
+              <div class="op-radio-item__meta">나중에 미디어 조회에서 설정할 수 있습니다.</div>
+            </div>
+          </label>
+          <label class="op-radio-item">
+            <input type="radio" name="op-setting">
+            <div class="op-radio-item__info">
+              <div class="op-radio-item__name">운영설정①</div>
+              <div class="op-radio-item__meta">평일 09:00~18:00 | 20초|30슬롯 | 보장 54회</div>
+            </div>
+          </label>
+          <label class="op-radio-item">
+            <input type="radio" name="op-setting">
+            <div class="op-radio-item__info">
+              <div class="op-radio-item__name">운영설정②</div>
+              <div class="op-radio-item__meta">주말 08:00~22:00 | 15초|30슬롯 | 보장 112회</div>
+            </div>
+          </label>
+          <label class="op-radio-item">
+            <input type="radio" name="op-setting">
+            <div class="op-radio-item__info">
+              <div class="op-radio-item__name">운영설정③</div>
+              <div class="op-radio-item__meta">월·화·수·목 10:00~23:00 | 20초|36슬롯 | 보장 65회</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer buttons -->
+    <div class="form-footer">
+      <a class="btn btn-ghost" href="media-list">취소</a>
+      <a class="btn btn-primary" href="media-detail">등록하기</a>
+    </div>
+
+  </form>
+
 </main>
 
-<!-- ================================================================
-     등록 확인 모달
-================================================================ -->
-<div class="modal-backdrop" id="confirmBackdrop">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 class="modal-title">미디어 등록 확인</h2>
-      <button class="modal-close" onclick="closeConfirm()">✕</button>
+<!-- ── Operation modal (운영 설정 추가) ── -->
+<div class="operation-modal-view modal" style="display:none">
+  <label class="modal__scrim" for="operation-modal"></label>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2>운영 설정 추가</h2>
+      <label class="modal__close" for="operation-modal">×</label>
     </div>
-    <div class="modal-body">
-      입력한 정보로 미디어를 등록하겠습니까?<br>
-      등록 후 미디어 목록에서 확인할 수 있습니다.
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeConfirm()">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="completeRegister()">확인</button>
-    </div>
-  </div>
-</div>
-
-<!-- ================================================================
-     등록 성공 모달
-================================================================ -->
-<div class="modal-backdrop" id="successBackdrop">
-  <div class="modal success-modal">
-    <div class="modal-body">
-      <div class="success-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-          <path d="M5 13l4 4L19 7" stroke="#58C65D" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+    <div class="modal__body">
+      <div>
+        <div class="modal-field-label">운영 설정명</div>
+        <input class="modal-input" type="text" placeholder="예: 운영설정④">
       </div>
-      <h3>미디어 등록이 완료되었습니다.</h3>
-      <p>미디어 목록 페이지로 이동합니다.</p>
-      <button class="btn btn-primary" onclick="goToList()">목록으로 이동 ›</button>
+      <div>
+        <div class="modal-field-label">운영 요일</div>
+        <div class="weekday-chips">
+          <span><input type="checkbox" id="mr-wd-sun" name="weekday2"><label for="mr-wd-sun">일</label></span>
+          <span><input type="checkbox" id="mr-wd-mon" name="weekday2"><label for="mr-wd-mon">월</label></span>
+          <span><input type="checkbox" id="mr-wd-tue" name="weekday2"><label for="mr-wd-tue">화</label></span>
+          <span><input type="checkbox" id="mr-wd-wed" name="weekday2"><label for="mr-wd-wed">수</label></span>
+          <span><input type="checkbox" id="mr-wd-thu" name="weekday2"><label for="mr-wd-thu">목</label></span>
+          <span><input type="checkbox" id="mr-wd-fri" name="weekday2"><label for="mr-wd-fri">금</label></span>
+          <span><input type="checkbox" id="mr-wd-sat" name="weekday2"><label for="mr-wd-sat">토</label></span>
+        </div>
+      </div>
+      <div>
+        <div class="modal-field-label">운영 시간</div>
+        <div class="time-range">
+          <input type="time" value="09:00">
+          <span>~</span>
+          <input type="time" value="18:00">
+        </div>
+      </div>
+      <div>
+        <div class="modal-field-label">공휴일 제외</div>
+        <div class="toggle-line">
+          <input class="toggle-sw" type="checkbox" id="mr-holiday-toggle">
+          <label for="mr-holiday-toggle" style="font-size:13px; color: var(--muted);">공휴일에는 운영하지 않음</label>
+        </div>
+      </div>
+      <div>
+        <div class="modal-field-label">기준 슬롯 재생 시간</div>
+        <div class="slot-radios">
+          <span><input type="radio" name="mr-slot-time" id="mr-slot-15"><label for="mr-slot-15">15초</label></span>
+          <span><input type="radio" name="mr-slot-time" id="mr-slot-20" checked><label for="mr-slot-20">20초</label></span>
+          <span><input type="radio" name="mr-slot-time" id="mr-slot-30"><label for="mr-slot-30">30초</label></span>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <div class="modal-field-label">슬롯 구성 (자동 계산)</div>
+          <input class="modal-input" type="text" value="30슬롯" readonly style="background:var(--bg); color:var(--muted);">
+        </div>
+        <div>
+          <div class="modal-field-label">최소 보장 횟수 (자동 계산)</div>
+          <input class="modal-input" type="text" value="54회" readonly style="background:var(--bg); color:var(--muted);">
+        </div>
+      </div>
+    </div>
+    <div class="modal__actions">
+      <label class="btn btn-ghost" for="operation-modal">취소</label>
+      <label class="btn btn-primary" for="operation-modal">저장</label>
     </div>
   </div>
 </div>
 
-<!-- ================================================================
-     JavaScript
-================================================================ -->
+<!-- ── Address modal ── -->
+<div class="address-modal-view modal" style="display:none">
+  <label class="modal__scrim" for="address-modal"></label>
+  <div class="modal__panel" style="max-width:480px">
+    <div class="modal__header">
+      <h2>주소 검색</h2>
+      <label class="modal__close" for="address-modal">×</label>
+    </div>
+    <div class="modal__body">
+      <div class="searchbar" style="display:flex; gap:8px;">
+        <input type="text" placeholder="도로명, 지번, 건물명으로 검색하세요." style="flex:1; height:36px; padding:0 12px; border:1px solid var(--border); border-radius:var(--radius); font-size:13px;">
+        <button type="button" style="height:36px; padding:0 16px; background:var(--green); color:#fff; border:0; border-radius:var(--radius); font-size:13px; cursor:pointer;">검색</button>
+      </div>
+      <div class="address-list">
+        <label>
+          <input type="radio" name="addr">
+          <div>
+            <strong>서울 강남구 강남대로 396</strong>
+            <span>논현동 1-1</span>
+          </div>
+        </label>
+        <label>
+          <input type="radio" name="addr">
+          <div>
+            <strong>서울 강남구 강남대로 392</strong>
+            <span>역삼동 831</span>
+          </div>
+        </label>
+        <label>
+          <input type="radio" name="addr">
+          <div>
+            <strong>서울 강남구 강남대로 390</strong>
+            <span>역삼동 830</span>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div class="modal__actions">
+      <label class="btn btn-ghost" for="address-modal">취소</label>
+      <label class="btn btn-primary" for="address-modal">선택</label>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
 <script>
-  /* ── 프로필 드롭다운 ── */
-  function toggleProfile(el) {
-    var dd = document.getElementById('profileDropdown');
-    dd.classList.toggle('open');
-  }
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.topbar-profile')) {
-      document.getElementById('profileDropdown').classList.remove('open');
-    }
+  // Display type toggle (LCD / LED)
+  document.querySelectorAll('input[name="display-type"]').forEach(r => {
+    r.addEventListener('change', function() {
+      document.querySelectorAll('.display-panel').forEach(p => p.style.display = 'none');
+      const panel = document.querySelector('.display-' + this.value);
+      if (panel) panel.style.display = 'block';
+    });
   });
+  // Show LCD panel on load
+  const lcdPanel = document.querySelector('.display-lcd');
+  if (lcdPanel) lcdPanel.style.display = 'block';
 
-  /* ── 세그먼트 컨트롤 (btn-wrap) ── */
-  function seg(btn) {
-    var parent = btn.parentElement;
-    parent.querySelectorAll('.seg-btn').forEach(function(b) { b.classList.remove('on'); });
-    btn.classList.add('on');
-  }
-
-  /* ── 해상도 직접 입력 ── */
-  function toggleCustomRes(sel) {
-    var w = document.getElementById('customResWrap');
-    w.style.display = sel.value === 'custom' ? 'flex' : 'none';
-  }
-
-  /* ── 토글 스위치 ── */
-  function syncToggle(chk) {
-    var track = document.getElementById('statusTrack');
-    var lbl   = document.getElementById('statusLbl');
-    if (chk.checked) {
-      track.classList.add('on');
-      lbl.textContent = '운영 중';
-    } else {
-      track.classList.remove('on');
-      lbl.textContent = '운영 중지';
-    }
-  }
-
-  /* ── 셋탑 연결 확인 (시뮬레이션) ── */
-  function checkConn() {
-    var sn = document.getElementById('settopSN').value.trim();
-    if (!sn) { alert('셋탑 S/N을 입력하세요.'); return; }
-    var badge = document.getElementById('connBadge');
-    badge.className = 'conn-badge checking';
-    badge.innerHTML = '<span class="dot"></span>확인 중...';
-    setTimeout(function() {
-      badge.className = 'conn-badge online';
-      badge.innerHTML = '<span class="dot"></span>온라인';
-      document.getElementById('playerVer').value  = 'v2.4.1';
-      document.getElementById('updaterVer').value = 'v1.2.0';
-    }, 1200);
-  }
-
-  /* ── 주소 검색 (시뮬레이션 — 실제: Kakao 우편번호 API) ── */
-  function searchAddr() {
-    document.getElementById('zipCode').value = '06141';
-    document.getElementById('addr1').value   = '서울특별시 강남구 테헤란로 212';
-    document.getElementById('addr2').focus();
-  }
-
-  /* ── 폼 유효성 ── */
-  function validateForm() {
-    var err = [];
-    if (!document.getElementById('mediaName').value.trim()) err.push('미디어명을 입력하세요.');
-    if (!document.getElementById('settopSN').value.trim())  err.push('셋탑 S/N을 입력하세요.');
-    if (!document.getElementById('addr1').value.trim())     err.push('주소를 검색하여 입력하세요.');
-    if (err.length) { alert(err.join('\n')); return false; }
-    return true;
-  }
-
-  /* ── 등록 버튼 ── */
-  function submitForm() {
-    if (!validateForm()) return;
-    document.getElementById('confirmBackdrop').classList.add('open');
-  }
-
-  /* ── 확인 모달 닫기 ── */
-  function closeConfirm() {
-    document.getElementById('confirmBackdrop').classList.remove('open');
-  }
-
-  /* ── 등록 완료 ── */
-  function completeRegister() {
-    closeConfirm();
-    setTimeout(function() {
-      document.getElementById('successBackdrop').classList.add('open');
-    }, 150);
-  }
-
-  /* ── 목록으로 ── */
-  function goToList() {
-    window.location.href = '#';
-  }
+  // Sensor toggle
+  document.querySelectorAll('input[name="sensor-yn"]').forEach(r => {
+    r.addEventListener('change', function() {
+      const cards = document.querySelectorAll('#sensor-cards .sensor-card');
+      const active = this.id === 'sensor-yes';
+      cards.forEach(c => c.classList.toggle('is-active', active));
+    });
+  });
 </script>
-
 </body>
 </html>
