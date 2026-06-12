@@ -3,933 +3,564 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>스케줄 등록 (조건) — D'ooh CMS</title>
-  <link rel="stylesheet" href="../assets/css/reset.css">
+  <title>조건 스케줄 등록 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #24292E; color: #24292E; margin: 0; }
+    #nav-expanded:checked ~ .gnb { width: 200px; }
+    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
+    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
+    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
+    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
+    #nav-expanded:checked ~ .content { margin-left: 200px; }
+    #schedule-product-modal:checked ~ .schedule-product-modal-view { display: grid !important; }
+    #schedule-content-modal:checked ~ .schedule-content-modal-view { display: grid !important; }
 
-    /* ── GNB ── */
-    .gnb {
-      position: fixed; left: 0; top: 0;
-      width: 93px; height: 100vh;
-      background: #454C52;
-      display: flex; flex-direction: column; align-items: center;
-      padding: 16px 0; z-index: 200; overflow-y: auto;
-    }
-    .gnb-logo {
-      width: 44px; height: 44px;
-      background: #58C65D; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 24px; flex-shrink: 0;
-    }
-    .gnb-nav { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .gnb-nav li { width: 100%; }
-    .gnb-nav li a {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 4px; padding: 10px 6px; text-decoration: none;
-      color: #9EA5AD; font-size: 10px; font-weight: 500;
-      border-radius: 6px; transition: all 0.15s; cursor: pointer;
-      width: 100%;
-    }
-    .gnb-nav li a:hover { color: #fff; background: rgba(255,255,255,0.07); }
-    .gnb-nav li a svg { fill: none; stroke: currentColor; }
-    .gnb-nav li.active > a,
-    .gnb-nav li > a.active { color: #58C65D; }
-    .gnb-divider { width: 40px; height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0; }
+    .schedule-register-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+    .schedule-register-main { display: grid; gap: 16px; }
 
-    /* ── Topbar ── */
-    .topbar {
-      position: fixed; top: 0; left: 93px; right: 0;
-      height: 60px; background: #383F45;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; z-index: 150;
-    }
-    .topbar-search {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.08); border-radius: 6px;
-      padding: 0 12px; height: 36px; width: 260px;
-    }
-    .topbar-search input {
-      background: none; border: none; color: #fff; font-size: 13px;
-      outline: none; flex: 1;
-    }
-    .topbar-search input::placeholder { color: #9EA5AD; }
-    .topbar-user { display: flex; align-items: center; gap: 12px; }
-    .topbar-icon-btn { position: relative; cursor: pointer; color: #9EA5AD; }
-    .topbar-profile {
-      display: flex; align-items: center; gap: 8px;
-      cursor: pointer; position: relative; padding: 4px 8px; border-radius: 6px;
-    }
-    .topbar-profile:hover { background: rgba(255,255,255,0.07); }
-    .topbar-avatar {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: #58C65D; color: #fff; font-size: 12px;
-      font-weight: 700; display: flex; align-items: center; justify-content: center;
-    }
-    .topbar-profile-name { font-size: 13px; font-weight: 600; color: #fff; }
-    .topbar-profile-org { font-size: 11px; color: #9EA5AD; }
-    .topbar-caret { color: #9EA5AD; font-size: 11px; }
-    .profile-dropdown {
-      display: none; position: absolute; top: calc(100% + 6px); right: 0;
-      background: #fff; border: 1px solid #E5E7EA; border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 120px; z-index: 300;
-    }
-    .profile-dropdown.open { display: block; }
-    .profile-dropdown a {
-      display: block; padding: 10px 16px; font-size: 13px;
-      color: #24292E; text-decoration: none;
-    }
-    .profile-dropdown a:hover { background: #F6F7F9; }
-    .profile-dropdown a.logout { color: #E97474; border-top: 1px solid #E5E7EA; }
-    .dot-badge {
-      position: absolute; top: -2px; right: -2px;
-      width: 7px; height: 7px; background: #E97474; border-radius: 50%;
-      border: 1.5px solid #383F45;
-    }
-
-    /* ── Breadcrumb ── */
-    .bcrumb {
-      position: fixed; top: 60px; left: 93px; right: 0;
-      height: 40px; background: #383F45;
-      display: flex; align-items: center;
-      padding: 0 24px; gap: 6px; z-index: 140;
-      font-size: 12px; border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .bcrumb a { color: #58C65D; text-decoration: none; }
-    .bcrumb a:hover { text-decoration: underline; }
-    .bcrumb-sep { color: #596066; }
-    .bcrumb-current { color: #9EA5AD; }
-
-    /* ── Content ── */
-    .content {
-      margin-left: 93px;
-      padding-top: 100px;
-      background: #F6F7F9;
-      min-height: 100vh;
-    }
-    .content-inner {
-      padding: 24px 28px 100px;
-    }
-
-    /* ── Page header ── */
-    .page-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .page-title { font-size: 18px; font-weight: 700; color: #24292E; }
-
-    /* ── Type tabs ── */
-    .type-tabs {
-      display: flex; gap: 0;
-      border-bottom: 2px solid #E5E7EA;
-      margin-bottom: 24px;
-    }
-    .type-tabs a, .type-tabs button {
-      padding: 10px 24px; font-size: 14px; font-weight: 600;
-      background: none; border: none; border-bottom: 2px solid transparent;
-      margin-bottom: -2px; cursor: pointer;
-      color: #9EA5AD; text-decoration: none;
-      transition: all 0.15s; display: inline-block;
-    }
-    .type-tabs a:hover { color: #24292E; }
-    .type-tabs a.active, .type-tabs button.active {
-      color: #58C65D; border-bottom-color: #58C65D;
-    }
-
-    /* ── Form sections ── */
     .form-section {
       background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      padding: 20px 24px;
-      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
     }
-    .form-section-title {
-      font-size: 14px; font-weight: 700; color: #24292E;
-      margin-bottom: 18px; padding-bottom: 10px;
-      border-bottom: 1px solid #E5E7EA;
+    .form-section h2 {
+      margin: 0 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
     }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .form-grid.col1 { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.span2 { grid-column: span 2; }
-    .form-label { font-size: 13px; font-weight: 600; color: #596066; }
-    .form-label .req { color: #C83434; margin-left: 2px; }
-    .form-input, .form-select {
-      height: 38px; padding: 0 12px;
-      border: 1px solid #CED2D6; border-radius: 6px;
-      font-size: 14px; color: #24292E; font-family: inherit;
-      outline: none; transition: border-color 0.15s; background: #fff;
+    .form-section--option {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 20px;
     }
-    .form-input:focus, .form-select:focus { border-color: #58C65D; }
-    .form-row { display: flex; align-items: center; gap: 8px; }
-    .form-row .form-input { flex: 1; }
-    .form-row-sep { color: #9EA5AD; font-size: 14px; flex-shrink: 0; }
-    .form-suffix { font-size: 14px; color: #596066; flex-shrink: 0; }
-    .input-with-suffix { display: flex; align-items: center; gap: 8px; }
-    .input-with-suffix .form-input { flex: 1; }
-    .form-hint { font-size: 11px; color: #9EA5AD; margin-top: 2px; }
+    .form-section label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--shell-600); }
+    .form-section input[type="text"],
+    .form-section input[type="date"],
+    .form-section input[type="number"],
+    .form-section input[type="time"],
+    .form-section select {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      font-family: inherit;
+      outline: none;
+    }
+    .form-section input[type="text"]:focus,
+    .form-section input[type="date"]:focus { border-color: var(--green); }
+    .schedule-name { font-size: 15px; font-weight: 600; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .helper { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+    .muted { color: var(--muted); }
 
-    /* ── Badge ── */
-    .badge {
-      display: inline-flex; align-items: center;
-      padding: 3px 10px; border-radius: 12px;
-      font-size: 12px; font-weight: 600;
-    }
-    .badge-cond {
-      background: rgba(144,97,184,0.15); color: #9061B8;
-    }
+    .schedule-mapping-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .mapping-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .mapping-col__hd { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+    .mapping-col__hd > span:nth-child(2) { font-size: 12px; font-weight: 600; flex: 1; }
+    .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .schedule-drop-zone { min-height: 108px; display: grid; gap: 5px; align-content: center; justify-items: start; width: 100%; padding: 16px; border: 1px dashed var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); text-align: left; cursor: pointer; transition: var(--transition); font-size: 13px; }
+    .schedule-drop-zone:hover:not(:disabled) { border-color: var(--green); background: rgba(88,198,93,.04); }
+    .schedule-drop-zone:disabled { opacity: 0.5; cursor: not-allowed; }
+    .schedule-drop-zone__icon { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(88,198,93,0.16); color: var(--green); font-weight: 800; font-size: 16px; }
+    .schedule-drop-zone__title { font-weight: 700; }
+    .schedule-drop-zone__meta { font-size: 12px; color: var(--muted); }
+    .field-check { display: inline-flex !important; align-items: center; gap: 8px; cursor: pointer; font-weight: 400 !important; font-size: 13px; color: var(--text); }
 
-    /* ── Duration display ── */
-    .duration-display {
-      margin-top: 8px;
-      padding: 8px 14px;
-      background: #F0FFF1; border: 1px solid #C2EDBD;
-      border-radius: 6px; font-size: 13px; color: #2E9E34;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .duration-display.hidden { display: none; }
+    .schedule-summary { position: sticky; top: 120px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .schedule-summary h3 { margin: 0 0 12px; font-size: 15px; }
+    .schedule-summary dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 13px; }
+    .schedule-summary dt { color: var(--muted); white-space: nowrap; }
+    .schedule-summary dd { margin: 0; font-weight: 500; }
 
-    /* ── End date undecided toggle ── */
-    .undecided-wrap { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
-    .undecided-label { font-size: 13px; color: #596066; }
+    .bottom-actions { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--line); margin-top: 4px; }
+    .bottom-actions__right { display: flex; gap: 8px; }
+    .btn-link-cancel { font-size: 13px; color: var(--muted); cursor: pointer; padding: 6px 10px; border-radius: var(--radius); text-decoration: none; }
+    .btn-link-cancel:hover { color: var(--danger); }
 
-    /* ── Product card ── */
-    .product-search-bar {
-      display: flex; gap: 8px; margin-bottom: 10px;
-    }
-    .product-search-bar .form-input { flex: 1; }
-    .product-card {
-      background: #F6F7F9; border: 1px solid #E5E7EA;
-      border-radius: 8px; padding: 14px 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 8px;
-    }
-    .product-card-info { display: flex; flex-direction: column; gap: 2px; }
-    .product-card-name { font-size: 14px; font-weight: 700; color: #24292E; }
-    .product-card-meta { font-size: 12px; color: #9EA5AD; }
-    .product-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-    .product-tag {
-      font-size: 11px; padding: 3px 8px;
-      background: #fff; border: 1px solid #E5E7EA;
-      border-radius: 10px; color: #596066;
-    }
-    .btn-remove {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: none; border: 1px solid #CED2D6;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      color: #9EA5AD; font-size: 14px; transition: all 0.15s; flex-shrink: 0;
-    }
-    .btn-remove:hover { background: #FFE9E9; border-color: #E97474; color: #E97474; }
+    /* Condition builder */
+    .condition-builder h2 { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+    .section-title-row { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+    .section-title-row h2 { margin: 0; border: none; padding: 0; }
+    .condition-rule { display: grid; gap: 8px; margin-top: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg) !important; }
+    .condition-list { display: grid; gap: 10px; }
 
-    /* ── Condition chips ── */
-    .cond-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .cond-chip {
-      padding: 0 14px; height: 32px; border-radius: 16px;
-      border: 1px solid #CED2D6; background: #fff;
-      color: #596066; font-size: 13px; cursor: pointer;
-      transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .cond-chip.on { background: #58C65D; border-color: #58C65D; color: #fff; }
+    /* Modals */
+    .modal { display: none; position: fixed; inset: 0; z-index: 200; place-items: center; }
+    .modal__scrim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+    .modal__panel { position: relative; background: #fff; border-radius: 10px; width: min(94vw, 820px); display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; }
+    .modal__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+    .modal__header h2 { margin: 0; font-size: 16px; }
+    .modal__close { font-size: 22px; color: var(--muted); line-height: 1; cursor: pointer; }
+    .modal__close:hover { color: var(--text); }
+    .modal__search { padding: 10px 20px 12px; border-bottom: 1px solid var(--line); }
+    .modal-search-input { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; background: var(--bg); outline: none; font-family: inherit; }
+    .modal-search-input:focus { border-color: var(--main); }
+    .modal__body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .modal__actions { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--line); }
 
-    /* ── Condition panels ── */
-    .cond-panel {
-      margin-top: 12px; padding: 16px;
-      background: #F6F7F9; border-radius: 6px;
-      border: 1px solid #E5E7EA; display: none;
-    }
-    .cond-panel.visible { display: block; }
-    .cond-panel-title {
-      font-size: 12px; font-weight: 700; color: #596066; margin-bottom: 10px;
-    }
+    .schedule-select-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; }
+    .schedule-select-list button { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; text-align: left; cursor: pointer; width: 100%; transition: var(--transition); }
+    .schedule-select-list button:hover { border-color: var(--green); background: rgba(88,198,93,.05); }
+    .schedule-select-list button.is-selected { border-color: var(--green); background: rgba(88,198,93,.07); }
+    .product-list-item__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .product-list-item__head strong { font-size: 14px; font-weight: 600; flex: 1; }
+    .product-list-item__meta { font-size: 12px; color: var(--muted); }
+    .product-list-item__chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .status { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+    .status-ok { background: rgba(88,198,93,.12); color: #2E9E34; }
+    .status-check { background: rgba(243,190,74,.14); color: #a06e00; }
 
-    /* ── Weather checkboxes ── */
-    .weather-grid { display: flex; gap: 12px; flex-wrap: wrap; }
-    .weather-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #24292E; cursor: pointer; }
-    .weather-item input[type=checkbox] { accent-color: #58C65D; width: 15px; height: 15px; cursor: pointer; }
-
-    /* ── Temperature range ── */
-    .temp-range { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .temp-range .form-input { width: 90px; }
-    .temp-range-sep { font-size: 13px; color: #9EA5AD; }
-    .temp-range-unit { font-size: 13px; color: #596066; }
-
-    /* ── Time range ── */
-    .time-range { display: flex; align-items: center; gap: 10px; }
-    .time-range .form-input[type=time] { width: 120px; }
-    .time-range-sep { font-size: 13px; color: #9EA5AD; }
-
-    /* ── Day pills ── */
-    .day-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-    .day-pill-item { display: flex; flex-direction: column; align-items: center; }
-    .day-pill-item input[type=checkbox] { display: none; }
-    .day-pill-item label {
-      width: 36px; height: 36px;
-      border: 1px solid #CED2D6; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 600; color: #596066;
-      cursor: pointer; transition: all 0.15s;
-    }
-    .day-pill-item input:checked + label { background: #58C65D; border-color: #58C65D; color: #fff; }
-
-    /* ── Target gender/age chips ── */
-    .target-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .target-chip {
-      padding: 0 14px; height: 30px; border-radius: 15px;
-      border: 1px solid #CED2D6; background: #fff;
-      color: #596066; font-size: 13px; cursor: pointer;
-      transition: all 0.15s; display: inline-flex; align-items: center;
-    }
-    .target-chip.on { background: #58C65D; border-color: #58C65D; color: #fff; }
-
-    /* ── Media table ── */
-    .media-search-bar {
-      display: flex; gap: 8px; margin-bottom: 12px;
-    }
-    .media-search-bar .form-input { flex: 1; }
-    .media-table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid #E5E7EA; }
-    .media-table {
-      width: 100%; border-collapse: collapse;
-      font-size: 13px; background: #fff;
-    }
-    .media-table th {
-      padding: 10px 12px; background: #F6F7F9;
-      border-bottom: 1px solid #E5E7EA;
-      color: #596066; font-weight: 600;
-      text-align: left; white-space: nowrap;
-    }
-    .media-table td {
-      padding: 10px 12px; border-bottom: 1px solid #F0F1F3;
-      color: #24292E; white-space: nowrap;
-    }
-    .media-table tr:last-child td { border-bottom: none; }
-    .media-table tr:hover td { background: #F9FAFB; }
-    .media-table input[type=checkbox] { accent-color: #58C65D; width: 14px; height: 14px; cursor: pointer; }
-    .status-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
-    }
-    .status-on { background: #E8FAE9; color: #2E9E34; }
-    .status-off { background: #F5F5F5; color: #9EA5AD; }
-
-    /* ── Sync section ── */
-    .sync-detail {
-      margin-top: 14px; padding: 14px 16px;
-      background: #F6F7F9; border-radius: 6px;
-      border: 1px solid #E5E7EA; display: none;
-    }
-    .sync-detail.visible { display: block; }
-    .sync-desc { font-size: 12px; color: #9EA5AD; margin-top: 4px; }
-
-    /* ── Toggle ── */
-    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
-    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .toggle-slider {
-      position: absolute; inset: 0;
-      background: #CED2D6; border-radius: 12px;
-      cursor: pointer; transition: background 0.2s;
-    }
-    .toggle-slider::before {
-      content: ''; position: absolute;
-      width: 18px; height: 18px; left: 3px; top: 3px;
-      background: #fff; border-radius: 50%; transition: transform 0.2s;
-    }
-    .toggle input:checked + .toggle-slider { background: #58C65D; }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
-    .toggle-label { font-size: 14px; color: #24292E; }
-
-    /* ── Buttons ── */
-    .btn {
-      height: 38px; padding: 0 18px; border-radius: 6px;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-primary { background: #58C65D; color: #fff; }
-    .btn-primary:hover { background: #4ab34e; }
-    .btn-ghost { background: #fff; color: #596066; border: 1px solid #CED2D6; }
-    .btn-ghost:hover { background: #F6F7F9; }
-    .btn-sm { height: 32px; padding: 0 12px; font-size: 12px; }
-    .btn-outline-green { background: #fff; color: #58C65D; border: 1px solid #58C65D; }
-    .btn-outline-green:hover { background: #F0FFF1; }
-
-    /* ── Action bar ── */
-    .action-bar {
-      position: fixed; bottom: 0; left: 93px; right: 0;
-      height: 64px; background: #fff;
-      border-top: 1px solid #E5E7EA;
-      display: flex; align-items: center; justify-content: flex-end;
-      gap: 8px; padding: 0 32px; z-index: 100;
-    }
+    .content-list-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; text-align: left; cursor: pointer; width: 100%; transition: var(--transition); }
+    .content-list-item:hover { border-color: var(--green); }
+    .content-list-thumb { flex-shrink: 0; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 5px; background: linear-gradient(135deg, var(--shell-800), #52616b); color: #fff; font-weight: 700; font-size: 11px; }
+    .content-list-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .content-list-info strong { font-size: 13px; font-weight: 600; }
+    .content-chip-row { display: flex; flex-wrap: wrap; gap: 3px; }
+    .meta-chip { display: inline-flex; align-items: center; padding: 1px 7px; background: rgba(0,0,0,.06); border-radius: 999px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .meta-chip--format { background: rgba(45,132,237,.10); color: var(--main); }
   </style>
 </head>
 <body>
 
-<!-- ① GNB -->
+<!-- State inputs -->
+<input class="state" type="checkbox" id="nav-expanded">
+<input class="state" type="checkbox" id="schedule-product-modal">
+<input class="state" type="checkbox" id="schedule-content-modal">
+
+<!-- GNB -->
 <aside class="gnb">
-  <div class="gnb-logo">
-    <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-      <text x="3" y="23" font-size="16" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
-    </svg>
-  </div>
-  <ul class="gnb-nav">
-    <li>
-      <a href="dashboard">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <rect x="2" y="2" width="7" height="7" rx="1.5" stroke-width="1.5"/>
-          <rect x="11" y="2" width="7" height="7" rx="1.5" stroke-width="1.5"/>
-          <rect x="2" y="11" width="7" height="7" rx="1.5" stroke-width="1.5"/>
-          <rect x="11" y="11" width="7" height="7" rx="1.5" stroke-width="1.5"/>
-        </svg>
-        대시보드
-      </a>
-    </li>
-    <li>
-      <a href="media-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5"/>
-          <circle cx="10" cy="10" r="3" stroke-width="1.5"/>
-        </svg>
-        미디어
-      </a>
-    </li>
-    <li>
-      <a href="product-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <path d="M3 5h14M3 10h14M3 15h8" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="16" cy="15" r="2.5" fill="currentColor" stroke="none"/>
-        </svg>
-        프로덕트
-      </a>
-    </li>
-    <li>
-      <a href="contents">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5"/>
-          <path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor" stroke="none"/>
-        </svg>
-        콘텐츠
-      </a>
-    </li>
-    <li class="active">
-      <a href="schedule-list" class="active">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5"/>
-          <path d="M7 8V6a3 3 0 016 0v2" stroke-width="1.5"/>
-        </svg>
-        스케줄
-      </a>
-    </li>
-    <li>
-      <a href="schedule-main">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5"/>
-          <path d="M3 8h14" stroke-width="1.5"/>
-          <path d="M7 4V2M13 4V2" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        편성표
-      </a>
-    </li>
-    <li class="gnb-divider" style="list-style:none;width:40px;height:1px;background:rgba(255,255,255,0.1);margin:6px auto;"></li>
-    <li>
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
-          <circle cx="10" cy="10" r="7" stroke-width="1.5"/>
-          <path d="M10 5v5l3 3" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        모니터링
-      </a>
-    </li>
-  </ul>
+  <label class="gnb__toggle" for="nav-expanded"><span></span></label>
+  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
+  <nav class="gnb__nav">
+    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
+    <a class="gnb__item" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
+    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
+    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
+    <a class="gnb__item is-active" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
+    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
+    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
+  </nav>
 </aside>
 
-<!-- ② Topbar -->
+<!-- Topbar -->
 <header class="topbar">
-  <div class="topbar-search">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/>
-      <path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <input type="text" placeholder="전체 검색">
-  </div>
-  <div class="topbar-user">
-    <div class="topbar-icon-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4"/>
-        <path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      <span class="dot-badge"></span>
-    </div>
-    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
-      <div class="topbar-avatar">구</div>
-      <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
-        <div class="topbar-profile-org">엠앤엠네트웍스</div>
-      </div>
-      <span class="topbar-caret">▾</span>
-      <div class="profile-dropdown">
-        <a href="#">내 정보</a>
-        <a href="#" class="logout">로그아웃</a>
-      </div>
-    </div>
+  <div class="topbar__logo"></div>
+  <div class="topbar__user">
+    <div class="avatar">S</div>
+    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
+    <span class="caret">⌄</span>
   </div>
 </header>
 
-<!-- ③ Breadcrumb -->
-<div class="bcrumb">
-  <a href="schedule-list">스케줄</a>
-  <span class="bcrumb-sep">›</span>
-  <a href="schedule-register-general">스케줄 등록</a>
-  <span class="bcrumb-sep">›</span>
-  <span class="bcrumb-current">조건 스케줄</span>
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  스케줄
+  <span>›</span>
+  <a href="schedule-list" style="color:inherit;text-decoration:none;">스케줄 조회</a>
+  <span>›</span>
+  <strong style="display:inline;color:#fff;font-weight:500;">조건 스케줄 등록</strong>
 </div>
 
-<!-- ④ Main Content -->
+<!-- Content -->
 <main class="content">
-  <div class="content-inner">
+  <div class="page-card">
 
-    <!-- Page title -->
+    <!-- Page header -->
     <div class="page-header">
-      <div class="page-title">스케줄 등록</div>
-    </div>
-
-    <!-- Type tabs -->
-    <div class="type-tabs">
-      <a href="schedule-register-general">일반 스케줄</a>
-      <a href="schedule-register-condition" class="active">조건 스케줄</a>
-    </div>
-
-    <!-- Section 1: 기본 정보 -->
-    <div class="form-section">
-      <div class="form-section-title">1. 기본 정보</div>
-      <div class="form-grid">
-        <div class="form-group span2">
-          <label class="form-label">스케줄명 <span class="req">*</span></label>
-          <input type="text" class="form-input" placeholder="스케줄명을 입력하세요">
-        </div>
-        <div class="form-group">
-          <label class="form-label">스케줄 유형</label>
-          <div style="padding-top:6px;">
-            <span class="badge badge-cond">조건</span>
-          </div>
-        </div>
+      <div>
+        <p class="eyebrow">Create Conditional Schedule</p>
+        <h1>조건 스케줄 등록</h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-dark" href="schedule-list">목록으로</a>
       </div>
     </div>
 
-    <!-- Section 2: 광고 기간 -->
-    <div class="form-section">
-      <div class="form-section-title">2. 광고 기간</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">시작일 <span class="req">*</span></label>
-          <input type="date" class="form-input" id="startDate" oninput="calcDuration()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">종료일</label>
-          <input type="date" class="form-input" id="endDate" oninput="calcDuration()">
-          <div class="undecided-wrap">
-            <label class="toggle" title="미정으로 설정">
-              <input type="checkbox" id="endDateUndecided" onchange="toggleUndecided(this)">
-              <span class="toggle-slider"></span>
-            </label>
-            <span class="undecided-label">미정</span>
-          </div>
-        </div>
-        <div class="form-group span2">
-          <div class="duration-display hidden" id="durationDisplay">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="7" r="6" stroke="#2E9E34" stroke-width="1.3"/>
-              <path d="M7 4v3.5l2 2" stroke="#2E9E34" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-            <span id="durationText"></span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Type toggle tabs -->
+    <nav class="tabs" style="margin-bottom:20px">
+      <a href="schedule-register-general" style="padding:0 0 10px;color:var(--muted);border-bottom:2px solid transparent;text-decoration:none">일반 스케줄</a>
+      <a href="schedule-register-condition" style="padding:0 0 10px;color:var(--text);border-bottom:2px solid var(--green);text-decoration:none;font-weight:600">조건 스케줄</a>
+    </nav>
 
-    <!-- Section 3: 프로덕트 연결 -->
-    <div class="form-section">
-      <div class="form-section-title">3. 프로덕트 연결</div>
-      <div class="product-search-bar">
-        <input type="text" class="form-input" placeholder="프로덕트명 또는 코드 검색" id="productSearch">
-        <button class="btn btn-ghost btn-sm" onclick="searchProduct()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor">
-            <circle cx="6" cy="6" r="4.5" stroke-width="1.5"/>
-            <path d="M10 10l3 3" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          검색
-        </button>
-      </div>
-      <!-- Product result / selected -->
-      <div id="productCard" style="display:none;">
-        <div class="product-card">
-          <div class="product-card-info">
-            <div class="product-card-name">강남 프리미엄 패키지</div>
-            <div class="product-card-meta">PRD-20251001 · 3개 미디어</div>
-            <div class="product-card-tags">
-              <span class="product-tag">미디어 A · 강남역 1번출구</span>
-              <span class="product-tag">미디어 B · 강남역 2번출구</span>
-              <span class="product-tag">미디어 C · 강남역 출구광장</span>
+    <!-- Main 2-col grid -->
+    <div class="schedule-register-grid">
+
+      <!-- LEFT MAIN -->
+      <div class="schedule-register-main">
+
+        <!-- 기본 정보 -->
+        <section class="form-section">
+          <h2>기본 정보</h2>
+          <label>스케줄명<input type="text" value="신규 조건 스케줄" class="schedule-name" id="schedule-name-input"></label>
+        </section>
+
+        <!-- Product / 콘텐츠 선택 -->
+        <section class="form-section">
+          <h2>Product / 콘텐츠 선택</h2>
+          <div class="schedule-mapping-grid">
+
+            <!-- Product 열 -->
+            <div class="mapping-col">
+              <div class="mapping-col__hd">
+                <span class="step-badge">1</span>
+                <span>Product 선택</span>
+              </div>
+              <button class="schedule-drop-zone" type="button" data-open-schedule-product>
+                <span class="schedule-drop-zone__icon">+</span>
+                <span class="schedule-drop-zone__title">+ Product를 선택해 주세요.</span>
+                <span class="schedule-drop-zone__meta">스케줄에 사용할 프로덕트를 선택합니다</span>
+              </button>
+              <div id="product-card-normal" hidden style="border:1px solid var(--green);border-radius:var(--radius);padding:12px;background:rgba(88,198,93,.05);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+                  <div>
+                    <div style="font-weight:700;font-size:14px" id="selected-product-name">—</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px">운영 미디어 3개 · 일반 / 조건 지원</div>
+                    <div style="display:flex;gap:4px;margin-top:6px">
+                      <span class="meta-chip">일반 광고</span><span class="meta-chip">조건 광고</span><span class="meta-chip">타임</span>
+                    </div>
+                  </div>
+                  <button type="button" data-open-schedule-product style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:11px;color:var(--muted);cursor:pointer;min-height:auto">변경</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 콘텐츠 열 -->
+            <div class="mapping-col">
+              <div class="mapping-col__hd">
+                <span class="step-badge">2</span>
+                <span>콘텐츠 선택</span>
+                <label class="field-check" style="margin-left:auto">
+                  <input type="checkbox" disabled>미디어별 선택
+                </label>
+              </div>
+              <button class="schedule-drop-zone" type="button" data-open-schedule-content disabled id="content-drop-btn">
+                <span class="schedule-drop-zone__icon">+</span>
+                <span class="schedule-drop-zone__title">+ 콘텐츠를 선택해 주세요.</span>
+                <span class="schedule-drop-zone__meta">Product 선택 후 콘텐츠를 선택할 수 있습니다</span>
+              </button>
             </div>
           </div>
-          <button class="btn-remove" onclick="removeProduct()" title="선택 해제">✕</button>
-        </div>
-      </div>
-      <div id="productPlaceholder" style="padding:20px 0; text-align:center; color:#9EA5AD; font-size:13px;">
-        프로덕트를 검색하여 선택하세요
-      </div>
-    </div>
+          <p class="helper">Product에 포함된 모든 미디어에 동일 콘텐츠를 송출합니다.</p>
+        </section>
 
-    <!-- Section 4: 조건 설정 -->
-    <div class="form-section">
-      <div class="form-section-title">4. 조건 설정</div>
-      <div style="margin-bottom:14px;">
-        <div class="form-label" style="margin-bottom:8px;">조건 유형</div>
-        <div class="cond-chips">
-          <button class="cond-chip" data-cond="weather" onclick="toggleCond(this)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
-              <circle cx="7" cy="5" r="2.5"/>
-              <path d="M3 10c0-1.5 1.5-2.5 4-2.5s4 1 4 2.5" stroke-linecap="round"/>
-            </svg>
-            날씨
-          </button>
-          <button class="cond-chip" data-cond="temp" onclick="toggleCond(this)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
-              <path d="M7 2v6" stroke-linecap="round"/>
-              <circle cx="7" cy="10" r="2"/>
-            </svg>
-            기온
-          </button>
-          <button class="cond-chip" data-cond="timeband" onclick="toggleCond(this)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
-              <circle cx="7" cy="7" r="5.5"/>
-              <path d="M7 4v3.5l2 2" stroke-linecap="round"/>
-            </svg>
-            시간대
-          </button>
-          <button class="cond-chip" data-cond="dow" onclick="toggleCond(this)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
-              <rect x="1.5" y="2.5" width="11" height="9" rx="1.2"/>
-              <path d="M1.5 5.5h11" stroke-linecap="round"/>
-              <path d="M4.5 1v3M9.5 1v3" stroke-linecap="round"/>
-            </svg>
-            요일
-          </button>
-          <button class="cond-chip" data-cond="gender" onclick="toggleCond(this)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
-              <circle cx="7" cy="5" r="3"/>
-              <path d="M4 13c0-1.7 1.3-3 3-3s3 1.3 3 3" stroke-linecap="round"/>
-            </svg>
-            타겟 성별
-          </button>
-          <button class="cond-chip" data-cond="age" onclick="toggleCond(this)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
-              <circle cx="5.5" cy="5" r="2.5"/>
-              <path d="M2 13c0-1.7 1.1-2.8 3.5-2.8" stroke-linecap="round"/>
-              <path d="M9 7l3 3M12 7l-3 3" stroke-linecap="round"/>
-            </svg>
-            타겟 연령
-          </button>
-        </div>
-      </div>
-
-      <!-- 날씨 조건 패널 -->
-      <div class="cond-panel" id="panel-weather">
-        <div class="cond-panel-title">날씨 조건 설정</div>
-        <div class="weather-grid">
-          <label class="weather-item">
-            <input type="checkbox" value="sunny">
-            ☀️ 맑음
+        <!-- 싱크 송출 -->
+        <section class="form-section--option">
+          <label class="field-check">
+            <input type="checkbox" disabled>
+            싱크 송출 <small class="muted">— Product에 포함된 미디어에서 광고를 같은 시점에 송출합니다</small>
           </label>
-          <label class="weather-item">
-            <input type="checkbox" value="cloudy">
-            ☁️ 흐림
-          </label>
-          <label class="weather-item">
-            <input type="checkbox" value="rainy">
-            🌧️ 비
-          </label>
-          <label class="weather-item">
-            <input type="checkbox" value="snowy">
-            ❄️ 눈
-          </label>
+        </section>
+
+        <!-- 광고 기간 -->
+        <section class="form-section">
+          <h2>광고 기간</h2>
+          <div class="grid-2">
+            <label>시작일<input type="date" value="2026-06-10" id="date-start"></label>
+            <label>종료일<input type="date" value="2026-06-24" id="date-end"></label>
+          </div>
+          <p class="helper" id="date-duration"></p>
+        </section>
+
+        <!-- 조건 옵션 -->
+        <section class="form-section condition-builder">
+          <div class="section-title-row">
+            <h2>조건 옵션</h2>
+            <span class="helper muted" style="margin-right:auto;margin-left:8px;margin-top:0">최대 3개</span>
+            <button class="btn btn-ghost btn-sm" type="button" id="add-condition-btn">+ 조건 옵션 추가</button>
+          </div>
+          <div class="condition-list" id="condition-list">
+            <article class="condition-rule">
+              <header style="display:flex;justify-content:space-between;align-items:center">
+                <strong>조건 옵션 1</strong>
+                <button type="button" class="btn btn-ghost btn-sm">삭제</button>
+              </header>
+              <div style="display:grid;gap:12px;margin-top:12px">
+                <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end">
+                  <label style="display:grid;gap:6px">조건 유형
+                    <select id="condition-type-1" onchange="toggleConditionBody(this)">
+                      <option value="time">타임</option>
+                      <option value="env">환경</option>
+                      <option value="target">타겟</option>
+                    </select>
+                  </label>
+                  <!-- 타임 파라미터 -->
+                  <div id="body-time-1" class="condition-body">
+                    <label style="display:grid;gap:6px">송출 주기
+                      <select>
+                        <option>지정 시간 내 계속</option>
+                        <option>매 정각</option>
+                        <option>30분 마다</option>
+                        <option>사용자 정의</option>
+                      </select>
+                    </label>
+                  </div>
+                  <!-- 환경 파라미터 -->
+                  <div id="body-env-1" class="condition-body" hidden>
+                    <label style="display:grid;gap:6px">날씨 유형
+                      <select><option>전체</option><option>맑은 날</option><option>흐린 날</option><option>비오는 날</option><option>눈오는 날</option></select>
+                    </label>
+                  </div>
+                  <!-- 타겟 파라미터 -->
+                  <div id="body-target-1" class="condition-body" hidden>
+                    <div style="display:grid;gap:8px">
+                      <div>
+                        <span style="font-size:12px;color:var(--muted)">성별</span>
+                        <div style="display:flex;gap:8px;margin-top:4px">
+                          <label class="field-check"><input type="checkbox"><span>남성</span></label>
+                          <label class="field-check"><input type="checkbox"><span>여성</span></label>
+                        </div>
+                      </div>
+                      <div>
+                        <span style="font-size:12px;color:var(--muted)">연령대</span>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+                          <label class="field-check"><input type="checkbox"><span>20대</span></label>
+                          <label class="field-check"><input type="checkbox"><span>30대</span></label>
+                          <label class="field-check"><input type="checkbox"><span>40대</span></label>
+                          <label class="field-check"><input type="checkbox"><span>50대</span></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- 타임: 시간 범위 -->
+                <div id="time-range-1">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <label style="display:grid;gap:4px"><span style="font-size:12px;color:var(--muted)">시작</span><input type="time" value="09:00"></label>
+                    <span style="margin-top:18px">~</span>
+                    <label style="display:grid;gap:4px"><span style="font-size:12px;color:var(--muted)">종료</span><input type="time" value="18:00"></label>
+                    <span style="margin-top:18px">·</span>
+                    <label style="display:grid;gap:4px"><span style="font-size:12px;color:var(--muted)">희망 횟수</span><input type="number" value="1" min="1" style="width:80px"></label>
+                    <span style="font-size:12px;color:var(--muted);margin-top:18px">회</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Bottom actions -->
+        <div class="bottom-actions">
+          <a class="btn-link-cancel" href="schedule-list">취소</a>
+          <div class="bottom-actions__right">
+            <a class="btn btn-primary" href="schedule-detail">등록하기</a>
+          </div>
         </div>
+
       </div>
 
-      <!-- 기온 조건 패널 -->
-      <div class="cond-panel" id="panel-temp">
-        <div class="cond-panel-title">기온 조건 설정</div>
-        <div class="temp-range">
-          <span class="temp-range-unit" style="color:#596066; font-size:13px;">최저</span>
-          <input type="number" class="form-input" style="width:90px;" placeholder="-10" id="tempMin">
-          <span class="temp-range-unit">°C</span>
-          <span class="temp-range-sep">~</span>
-          <span class="temp-range-unit">최고</span>
-          <input type="number" class="form-input" style="width:90px;" placeholder="40" id="tempMax">
-          <span class="temp-range-unit">°C</span>
-        </div>
-      </div>
+      <!-- RIGHT SIDEBAR -->
+      <aside class="schedule-summary">
+        <h3>등록 요약</h3>
+        <dl>
+          <dt>스케줄명</dt><dd id="sum-name">신규 조건 스케줄</dd>
+          <dt>Product</dt><dd id="sum-product">미선택</dd>
+          <dt>콘텐츠</dt><dd>미선택</dd>
+          <dt>광고 기간</dt><dd id="sum-dates">미설정</dd>
+          <dt>조건</dt><dd>타임 1개</dd>
+        </dl>
+      </aside>
 
-      <!-- 시간대 조건 패널 -->
-      <div class="cond-panel" id="panel-timeband">
-        <div class="cond-panel-title">시간대 조건 설정</div>
-        <div class="time-range">
-          <input type="time" class="form-input" value="09:00" id="timeFrom">
-          <span class="time-range-sep">~</span>
-          <input type="time" class="form-input" value="22:00" id="timeTo">
-        </div>
-      </div>
-
-      <!-- 요일 조건 패널 -->
-      <div class="cond-panel" id="panel-dow">
-        <div class="cond-panel-title">요일 조건 설정</div>
-        <div class="day-pills">
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-mon">
-            <label for="cd-mon">월</label>
-          </div>
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-tue">
-            <label for="cd-tue">화</label>
-          </div>
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-wed">
-            <label for="cd-wed">수</label>
-          </div>
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-thu">
-            <label for="cd-thu">목</label>
-          </div>
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-fri">
-            <label for="cd-fri">금</label>
-          </div>
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-sat">
-            <label for="cd-sat">토</label>
-          </div>
-          <div class="day-pill-item">
-            <input type="checkbox" id="cd-sun">
-            <label for="cd-sun">일</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- 타겟 성별 조건 패널 -->
-      <div class="cond-panel" id="panel-gender">
-        <div class="cond-panel-title">타겟 성별 조건 설정</div>
-        <div class="target-chips">
-          <button class="target-chip" onclick="this.classList.toggle('on')">남성</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">여성</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">전체</button>
-        </div>
-      </div>
-
-      <!-- 타겟 연령 조건 패널 -->
-      <div class="cond-panel" id="panel-age">
-        <div class="cond-panel-title">타겟 연령 조건 설정</div>
-        <div class="target-chips">
-          <button class="target-chip" onclick="this.classList.toggle('on')">10대</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">20대</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">30대</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">40대</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">50대</button>
-          <button class="target-chip" onclick="this.classList.toggle('on')">60대 이상</button>
-        </div>
-      </div>
     </div>
-
-    <!-- Section 5: 미디어 선택 -->
-    <div class="form-section">
-      <div class="form-section-title">5. 미디어 선택</div>
-      <div class="media-search-bar">
-        <input type="text" class="form-input" placeholder="미디어명 또는 주소 검색">
-        <button class="btn btn-ghost btn-sm">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor">
-            <circle cx="6" cy="6" r="4.5" stroke-width="1.5"/>
-            <path d="M10 10l3 3" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          검색
-        </button>
-        <button class="btn btn-outline-green btn-sm" style="margin-left:auto;">
-          선택 완료 (<span id="selectedMediaCount">0</span>)
-        </button>
-      </div>
-      <div class="media-table-wrap">
-        <table class="media-table">
-          <thead>
-            <tr>
-              <th><input type="checkbox" id="checkAll" onchange="toggleAllMedia(this)"></th>
-              <th>미디어명</th>
-              <th>주소</th>
-              <th>디스플레이</th>
-              <th>운영시간</th>
-              <th>슬롯구성</th>
-              <th>상태</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><input type="checkbox" class="media-chk" onchange="updateMediaCount()"></td>
-              <td>미디어 A</td>
-              <td>서울 강남구 강남역 1번출구</td>
-              <td>55" 가로형</td>
-              <td>06:00–24:00</td>
-              <td>30초 × 12슬롯</td>
-              <td><span class="status-badge status-on">운영중</span></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" class="media-chk" onchange="updateMediaCount()"></td>
-              <td>미디어 B</td>
-              <td>서울 강남구 강남역 2번출구</td>
-              <td>55" 가로형</td>
-              <td>06:00–24:00</td>
-              <td>30초 × 12슬롯</td>
-              <td><span class="status-badge status-on">운영중</span></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" class="media-chk" onchange="updateMediaCount()"></td>
-              <td>미디어 C</td>
-              <td>서울 강남구 강남역 출구광장</td>
-              <td>65" 세로형</td>
-              <td>07:00–23:00</td>
-              <td>15초 × 24슬롯</td>
-              <td><span class="status-badge status-on">운영중</span></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" class="media-chk" onchange="updateMediaCount()"></td>
-              <td>미디어 D</td>
-              <td>서울 서초구 양재역 3번출구</td>
-              <td>46" 가로형</td>
-              <td>07:00–22:00</td>
-              <td>30초 × 8슬롯</td>
-              <td><span class="status-badge status-off">점검중</span></td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" class="media-chk" onchange="updateMediaCount()"></td>
-              <td>미디어 E</td>
-              <td>서울 마포구 홍대입구역 9번출구</td>
-              <td>55" 가로형</td>
-              <td>08:00–24:00</td>
-              <td>30초 × 12슬롯</td>
-              <td><span class="status-badge status-on">운영중</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Section 6: 싱크 송출 설정 -->
-    <div class="form-section">
-      <div class="form-section-title">6. 싱크 송출 설정</div>
-      <div class="toggle-wrap">
-        <label class="toggle">
-          <input type="checkbox" id="syncToggle" onchange="toggleSync(this)">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label">싱크 송출 사용</span>
-      </div>
-      <div class="sync-detail" id="syncDetail">
-        <div class="form-group">
-          <label class="form-label">싱크 그룹명</label>
-          <input type="text" class="form-input" placeholder="싱크 그룹명을 입력하세요" style="max-width:320px;">
-          <div class="sync-desc">같은 싱크 그룹에 속한 미디어들은 콘텐츠를 동시에 재생합니다. 그룹명은 편성표에서 구분자로 사용됩니다.</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content-inner -->
+  </div>
 </main>
 
-<!-- Footer action bar -->
-<div class="action-bar">
-  <button class="btn btn-ghost" onclick="history.back()">취소</button>
-  <button class="btn btn-ghost" onclick="tempSave()">임시저장</button>
-  <button class="btn btn-primary" onclick="registerSchedule()">등록</button>
+<!-- ===== Product Selection Modal ===== -->
+<div class="schedule-product-modal-view modal">
+  <label class="modal__scrim" for="schedule-product-modal"></label>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2>Product 선택</h2>
+      <label class="modal__close" for="schedule-product-modal">×</label>
+    </div>
+    <div class="modal__search">
+      <input class="modal-search-input" type="text" placeholder="프로덕트명을 검색하세요...">
+    </div>
+    <div class="modal__body">
+      <div class="schedule-select-list">
+        <button type="button" class="is-selected" data-product-btn onclick="selectProduct(this,'강남 프라임 패키지')">
+          <div class="product-list-item__head">
+            <strong>강남 프라임 패키지</strong>
+            <span class="status status-ok">사용 가능</span>
+          </div>
+          <span class="product-list-item__meta">운영 미디어 3개 · 일반 / 조건 지원</span>
+          <div class="product-list-item__chips">
+            <span class="meta-chip">일반 광고</span><span class="meta-chip">조건 광고</span><span class="meta-chip">타임</span><span class="meta-chip">환경</span>
+          </div>
+        </button>
+        <button type="button" data-product-btn onclick="selectProduct(this,'공항 프리미엄 네트워크')">
+          <div class="product-list-item__head">
+            <strong>공항 프리미엄 네트워크</strong>
+            <span class="status status-ok">사용 가능</span>
+          </div>
+          <span class="product-list-item__meta">운영 미디어 2개 · 일반 광고 지원</span>
+          <div class="product-list-item__chips">
+            <span class="meta-chip">일반 광고</span>
+          </div>
+        </button>
+        <button type="button" data-product-btn onclick="selectProduct(this,'홍대 타겟 테스트')">
+          <div class="product-list-item__head">
+            <strong>홍대 타겟 테스트</strong>
+            <span class="status status-check">확인 필요</span>
+          </div>
+          <span class="product-list-item__meta">운영 미디어 1개 · 조건 광고 지원</span>
+          <div class="product-list-item__chips">
+            <span class="meta-chip">조건 광고</span><span class="meta-chip">타겟</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="modal__actions">
+      <label class="btn btn-ghost" for="schedule-product-modal">취소</label>
+      <label class="btn btn-primary" for="schedule-product-modal" id="confirm-product-btn">선택</label>
+    </div>
+  </div>
 </div>
 
+<!-- ===== Content Selection Modal ===== -->
+<div class="schedule-content-modal-view modal">
+  <label class="modal__scrim" for="schedule-content-modal"></label>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2>콘텐츠 선택</h2>
+      <label class="modal__close" for="schedule-content-modal">×</label>
+    </div>
+    <div class="modal__search">
+      <input class="modal-search-input" type="text" placeholder="콘텐츠명을 검색하세요...">
+    </div>
+    <div class="modal__body">
+      <div class="schedule-select-list" style="gap:6px">
+        <button class="content-list-item" type="button" onclick="document.getElementById('schedule-content-modal').checked=false">
+          <div class="content-list-thumb">30s</div>
+          <div class="content-list-info">
+            <strong>여름 캠페인 30초</strong>
+            <div class="content-chip-row">
+              <span class="meta-chip meta-chip--format">MP4</span><span class="meta-chip">1920×1080</span><span class="meta-chip">30초</span>
+            </div>
+          </div>
+        </button>
+        <button class="content-list-item" type="button" onclick="document.getElementById('schedule-content-modal').checked=false">
+          <div class="content-list-thumb">15s</div>
+          <div class="content-list-info">
+            <strong>브랜드 티저 15초</strong>
+            <div class="content-chip-row">
+              <span class="meta-chip meta-chip--format">MP4</span><span class="meta-chip">1080×1920</span><span class="meta-chip">15초</span>
+            </div>
+          </div>
+        </button>
+        <button class="content-list-item" type="button" onclick="document.getElementById('schedule-content-modal').checked=false">
+          <div class="content-list-thumb">20s</div>
+          <div class="content-list-info">
+            <strong>타겟 반응형 소재 20초</strong>
+            <div class="content-chip-row">
+              <span class="meta-chip meta-chip--format">MP4</span><span class="meta-chip">1920×1080</span><span class="meta-chip">20초</span>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="modal__actions">
+      <label class="btn btn-ghost" for="schedule-content-modal">취소</label>
+      <label class="btn btn-primary" for="schedule-content-modal">선택</label>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
 <script>
-  /* ── Condition chip toggle ── */
-  function toggleCond(chip) {
-    const cond = chip.dataset.cond;
-    chip.classList.toggle('on');
-    const panel = document.getElementById('panel-' + cond);
-    if (panel) {
-      panel.classList.toggle('visible', chip.classList.contains('on'));
-    }
+  // Condition type toggle
+  function toggleConditionBody(sel) {
+    const idx = sel.id.split('-').pop();
+    ['time', 'env', 'target'].forEach(t => {
+      const el = document.getElementById('body-' + t + '-' + idx);
+      if(el) el.hidden = (t !== sel.value);
+    });
+    const timeRange = document.getElementById('time-range-' + idx);
+    if(timeRange) timeRange.hidden = (sel.value !== 'time');
   }
 
-  /* ── Duration calculation ── */
+  // Add condition button
+  let conditionCount = 1;
+  document.getElementById('add-condition-btn')?.addEventListener('click', () => {
+    if(conditionCount >= 3) return;
+    conditionCount++;
+    const list = document.getElementById('condition-list');
+    const div = document.createElement('article');
+    div.className = 'condition-rule';
+    div.innerHTML = `
+      <header style="display:flex;justify-content:space-between;align-items:center">
+        <strong>조건 옵션 ${conditionCount}</strong>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="this.closest('article').remove();conditionCount--;">삭제</button>
+      </header>
+      <div style="margin-top:12px;display:grid;gap:10px">
+        <label style="display:grid;gap:6px;max-width:180px">조건 유형
+          <select>
+            <option value="time">타임</option>
+            <option value="env">환경</option>
+            <option value="target">타겟</option>
+          </select>
+        </label>
+        <p style="font-size:12px;color:var(--muted);margin:0">조건 유형을 선택하면 상세 옵션이 표시됩니다.</p>
+      </div>`;
+    list.appendChild(div);
+  });
+
+  // Open product modal
+  document.querySelectorAll('[data-open-schedule-product]').forEach(btn => {
+    btn.addEventListener('click', () => document.getElementById('schedule-product-modal').checked = true);
+  });
+  // Open content modal
+  document.querySelectorAll('[data-open-schedule-content]').forEach(btn => {
+    btn.addEventListener('click', () => { if(!btn.disabled) document.getElementById('schedule-content-modal').checked = true; });
+  });
+
+  // Product selection
+  let pendingProduct = null;
+  function selectProduct(btn, name) {
+    document.querySelectorAll('[data-product-btn]').forEach(b => b.classList.remove('is-selected'));
+    btn.classList.add('is-selected');
+    pendingProduct = name;
+  }
+
+  document.getElementById('confirm-product-btn').addEventListener('click', () => {
+    if(pendingProduct) {
+      const nameEl = document.getElementById('selected-product-name');
+      if(nameEl) nameEl.textContent = pendingProduct;
+      document.getElementById('product-card-normal').hidden = false;
+      const contentBtn = document.getElementById('content-drop-btn');
+      if(contentBtn) contentBtn.disabled = false;
+      const sumProduct = document.getElementById('sum-product');
+      if(sumProduct) sumProduct.textContent = pendingProduct;
+    }
+  });
+
+  // Date duration calc
   function calcDuration() {
-    const s = document.getElementById('startDate').value;
-    const e = document.getElementById('endDate').value;
-    const disp = document.getElementById('durationDisplay');
-    const txt = document.getElementById('durationText');
-    if (s && e) {
-      const start = new Date(s);
-      const end = new Date(e);
-      const diff = Math.round((end - start) / 86400000);
-      if (diff >= 0) {
-        txt.textContent = '총 ' + (diff + 1) + '일 (' + s + ' ~ ' + e + ')';
-        disp.classList.remove('hidden');
-        return;
-      }
-    }
-    disp.classList.add('hidden');
-  }
-
-  /* ── End date undecided toggle ── */
-  function toggleUndecided(cb) {
-    const endInput = document.getElementById('endDate');
-    endInput.disabled = cb.checked;
-    endInput.style.opacity = cb.checked ? '0.4' : '1';
-    if (cb.checked) {
-      endInput.value = '';
-      document.getElementById('durationDisplay').classList.add('hidden');
+    const s = document.getElementById('date-start')?.value;
+    const e = document.getElementById('date-end')?.value;
+    const el = document.getElementById('date-duration');
+    const sumEl = document.getElementById('sum-dates');
+    if(s && e && el) {
+      const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+      el.textContent = days > 0 ? `${days}일간 진행` : '';
+      if(sumEl) sumEl.textContent = days > 0 ? `${s} ~ ${e}` : '미설정';
     }
   }
+  document.getElementById('date-start').addEventListener('change', calcDuration);
+  document.getElementById('date-end').addEventListener('change', calcDuration);
+  calcDuration();
 
-  /* ── Product search (demo) ── */
-  function searchProduct() {
-    const q = document.getElementById('productSearch').value.trim();
-    if (!q) { alert('검색어를 입력하세요.'); return; }
-    document.getElementById('productCard').style.display = 'block';
-    document.getElementById('productPlaceholder').style.display = 'none';
-  }
-  function removeProduct() {
-    document.getElementById('productCard').style.display = 'none';
-    document.getElementById('productPlaceholder').style.display = 'block';
-    document.getElementById('productSearch').value = '';
-  }
-
-  /* ── Media table selection ── */
-  function toggleAllMedia(cb) {
-    document.querySelectorAll('.media-chk').forEach(c => { c.checked = cb.checked; });
-    updateMediaCount();
-  }
-  function updateMediaCount() {
-    const n = document.querySelectorAll('.media-chk:checked').length;
-    document.getElementById('selectedMediaCount').textContent = n;
-    const total = document.querySelectorAll('.media-chk').length;
-    document.getElementById('checkAll').checked = n === total;
-    document.getElementById('checkAll').indeterminate = n > 0 && n < total;
-  }
-
-  /* ── Sync toggle ── */
-  function toggleSync(cb) {
-    const detail = document.getElementById('syncDetail');
-    detail.classList.toggle('visible', cb.checked);
-  }
-
-  /* ── Actions ── */
-  function tempSave() {
-    alert('임시저장되었습니다.');
-  }
-  function registerSchedule() {
-    alert('조건 스케줄이 등록되었습니다.');
-    history.back();
-  }
+  // Sync name to summary
+  document.getElementById('schedule-name-input').addEventListener('input', e => {
+    document.getElementById('sum-name').textContent = e.target.value || '—';
+  });
 </script>
 </body>
 </html>

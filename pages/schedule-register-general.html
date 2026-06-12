@@ -3,1338 +3,443 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>스케줄 등록 (일반) — D'ooh CMS</title>
-  <link rel="stylesheet" href="../assets/css/reset.css">
+  <title>일반 스케줄 등록 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* ── Design tokens ── */
-    :root {
-      --green: #58C65D;
-      --green-dark: #4ab34e;
-      --green-tint: rgba(88,198,93,0.1);
-      --main: #2D84ED;
-      --danger: #E97474;
-      --shell-900: #24292E;
-      --shell-800: #383F45;
-      --shell-700: #454C52;
-      --shell-600: #596066;
-      --shell-400: #9EA5AD;
-      --bg: #F6F7F9;
-      --card: #FFFFFF;
-      --line: #E5E7EA;
-      --border: #CED2D6;
-      --text: #24292E;
-      --muted: #9EA5AD;
-      --radius: 8px;
-    }
+    #nav-expanded:checked ~ .gnb { width: 200px; }
+    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
+    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
+    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
+    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
+    #nav-expanded:checked ~ .content { margin-left: 200px; }
+    #schedule-product-modal:checked ~ .schedule-product-modal-view { display: grid !important; }
+    #schedule-content-modal:checked ~ .schedule-content-modal-view { display: grid !important; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%; height: 100%;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-      font-size: 14px;
-      background: #24292E;
-      color: #24292E;
-    }
-    a { text-decoration: none; color: inherit; }
-    button { font-family: inherit; cursor: pointer; border: none; background: none; }
-    ul, ol { list-style: none; }
+    .schedule-register-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+    .schedule-register-main { display: grid; gap: 16px; }
 
-    /* ── GNB ── */
-    .gnb {
-      position: fixed;
-      top: 0; left: 0;
-      width: 93px; height: 100vh;
-      background: #454C52;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 0 24px;
-      z-index: 300;
-      overflow: visible;
-    }
-    .gnb-logo {
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 28px;
-      flex-shrink: 0;
-    }
-    .gnb-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      width: 100%;
-      overflow: visible;
-    }
-    .gnb-nav a {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 10px 6px;
-      color: #9EA5AD;
-      font-size: 10px;
-      line-height: 1.2;
-      transition: all 0.25s ease;
-      position: relative;
-      text-align: center;
-      width: 100%;
-    }
-    .gnb-nav a svg { flex-shrink: 0; }
-    .gnb-nav a:hover { color: #fff; background: #596066; }
-    .gnb-nav a.active { color: #fff; background: rgba(88,198,93,0.12); }
-    .gnb-nav a.active::before {
-      content: '';
-      position: absolute; left: 0; top: 50%;
-      transform: translateY(-50%);
-      width: 3px; height: 32px;
-      background: #58C65D;
-      border-radius: 0 2px 2px 0;
-    }
-    .gnb-divider {
-      width: 44px; height: 1px;
-      background: #596066;
-      margin: 6px auto;
-    }
-    .gnb-nav li.gnb-disabled > a {
-      opacity: 0.4;
-      pointer-events: none;
-      cursor: not-allowed;
-    }
-    .gnb-has-sub { position: relative; }
-    .gnb-sub {
-      display: none;
-      position: absolute;
-      left: 93px; top: 0;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.14);
-      padding: 6px;
-      min-width: 180px;
-      z-index: 400;
-    }
-    .gnb-has-sub:hover .gnb-sub { display: block; }
-    .gnb-sub-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #9EA5AD;
-      padding: 6px 10px 4px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .gnb-sub a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      white-space: nowrap;
-      flex-direction: row;
-      text-align: left;
-      width: 100%;
-    }
-    .gnb-sub a:hover { background: #F6F7F9; color: #24292E; }
-    .gnb-sub-icon {
-      width: 26px; height: 26px;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    /* ── Topbar ── */
-    .topbar {
-      position: fixed;
-      top: 0; left: 93px; right: 0;
-      height: 60px;
-      background: #383F45;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 200;
-    }
-    .topbar-search {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #454C52;
-      border-radius: 6px;
-      padding: 0 14px;
-      height: 36px;
-      width: 280px;
-    }
-    .topbar-search input {
-      background: none;
-      border: none;
-      outline: none;
-      color: #CED2D6;
-      font-size: 13px;
-      width: 100%;
-    }
-    .topbar-search input::placeholder { color: #596066; }
-    .topbar-user { display: flex; align-items: center; gap: 12px; }
-    .topbar-profile {
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer;
-    }
-    .topbar-avatar {
-      width: 32px; height: 32px;
-      background: #58C65D;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700; color: #fff;
-    }
-    .topbar-profile-name { font-size: 13px; font-weight: 600; color: #fff; }
-    .topbar-profile-org { font-size: 11px; color: #9EA5AD; }
-
-    /* ── Breadcrumb ── */
-    .bcrumb {
-      position: fixed;
-      top: 60px; left: 93px; right: 0;
-      height: 40px;
-      background: #383F45;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 24px;
-      font-size: 12px;
-      color: #9EA5AD;
-      z-index: 190;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-    .bcrumb a { color: #9EA5AD; }
-    .bcrumb a:hover { color: #fff; }
-    .bcrumb .sep { color: #596066; }
-    .bcrumb .cur { color: #CED2D6; }
-    .bcrumb-back {
-      color: #9EA5AD;
-      font-size: 16px;
-      margin-right: 4px;
-      transition: color 0.15s;
-    }
-    .bcrumb-back:hover { color: #fff; }
-
-    /* ── Main content ── */
-    .content {
-      margin-left: 93px;
-      padding-top: 100px;
-      background: #F6F7F9;
-      min-height: 100vh;
-      padding-bottom: 80px;
-    }
-    .content-inner {
-      padding: 24px 28px;
-      max-width: 1100px;
-    }
-
-    /* ── Page header ── */
-    .page-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .page-header h1 { margin: 4px 0 0; font-size: 22px; font-weight: 700; }
-    .eyebrow { margin: 0; font-size: 12px; color: #9EA5AD; }
-
-    /* ── Type tabs ── */
-    .type-tabs {
-      display: flex;
-      border-bottom: 2px solid #E5E7EA;
-      margin-bottom: 24px;
-    }
-    .type-tab {
-      padding: 10px 24px;
-      font-size: 14px;
-      font-weight: 600;
-      background: none;
-      border: none;
-      color: #9EA5AD;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .type-tab.active { color: #58C65D; border-bottom-color: #58C65D; }
-    .type-tab:hover:not(.active) { color: #596066; }
-
-    /* ── Buttons ── */
-    .btn {
-      height: 36px;
-      padding: 0 16px;
-      border-radius: 4px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: inherit;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-    .btn-primary {
-      background: #58C65D;
-      color: #fff;
-      border-color: #58C65D;
-    }
-    .btn-primary:hover { background: #4ab34e; border-color: #4ab34e; }
-    .btn-ghost {
-      background: #fff;
-      color: #596066;
-      border-color: #CED2D6;
-    }
-    .btn-ghost:hover { background: #F6F7F9; }
-    .btn-sm {
-      height: 30px;
-      padding: 0 12px;
-      font-size: 13px;
-      border-radius: 4px;
-    }
-    .btn-outline-green {
-      background: #fff;
-      color: #58C65D;
-      border: 1px solid #C1E9C3;
-    }
-    .btn-outline-green:hover { background: rgba(88,198,93,0.07); }
-
-    /* ── Form sections ── */
     .form-section {
       background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      padding: 20px 24px;
-      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
     }
-    .form-section-title {
+    .form-section h2 {
+      margin: 0 0 16px;
       font-size: 14px;
       font-weight: 700;
-      color: #24292E;
-      margin-bottom: 18px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #E5E7EA;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
     }
-    .form-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 14px;
+    .form-section--option {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 20px;
     }
-    .form-row:last-child { margin-bottom: 0; }
-    .form-label {
-      width: 140px;
-      flex-shrink: 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: #596066;
-    }
-    .form-label .req {
-      color: #E97474;
-      margin-left: 2px;
-    }
-    .form-control { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap; }
-    .inp {
-      height: 36px;
-      padding: 0 10px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
+    .form-section label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--shell-600); }
+    .form-section input[type="text"],
+    .form-section input[type="date"],
+    .form-section input[type="number"],
+    .form-section input[type="time"],
+    .form-section select {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       font-size: 14px;
-      color: #24292E;
+      color: var(--text);
+      background: #fff;
       font-family: inherit;
-    }
-    .inp:focus { outline: none; border-color: #58C65D; }
-    .inp::placeholder { color: #9EA5AD; }
-    .inp-full { width: 100%; }
-    .inp-date { width: 180px; }
-
-    /* Duration chip */
-    .duration-chip {
-      display: none;
-      align-items: center;
-      height: 28px;
-      padding: 0 12px;
-      background: rgba(88,198,93,0.1);
-      border: 1px solid #C1E9C3;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #58C65D;
-    }
-
-    /* ── Toggle switch ── */
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .toggle {
-      position: relative;
-      width: 42px; height: 24px;
-      flex-shrink: 0;
-    }
-    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .toggle-track {
-      position: absolute; inset: 0;
-      background: #CED2D6;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .toggle-track::after {
-      content: '';
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 18px; height: 18px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .toggle input:checked + .toggle-track { background: #58C65D; }
-    .toggle input:checked + .toggle-track::after { transform: translateX(18px); }
-    .toggle-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: #596066;
-    }
-    .toggle-state {
-      font-size: 12px;
-      font-weight: 700;
-      color: #9EA5AD;
-    }
-    .toggle-state.on { color: #58C65D; }
-
-    /* ── Badges ── */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 6px;
-      padding: 0 8px;
-      height: 22px;
-      font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .badge-ok {
-      background: rgba(88,198,93,0.1);
-      color: #58C65D;
-      border: 1px solid #C1E9C3;
-      border-radius: 6px;
-      padding: 0 8px;
-      height: 20px;
-      font-size: 12px;
-    }
-    .badge-plan {
-      background: rgba(45,132,237,0.1);
-      color: #2D84ED;
-      border: 1px solid #b3d3f5;
-      border-radius: 6px;
-      padding: 0 8px;
-      height: 20px;
-      font-size: 12px;
-    }
-    .badge-type-general {
-      background: #F6F7F9;
-      color: #596066;
-      border: 1px solid #CED2D6;
-    }
-
-    /* ── Search bar mini ── */
-    .searchbar-mini {
-      display: flex;
-      align-items: center;
-      height: 36px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      overflow: hidden;
-      width: 320px;
-    }
-    .searchbar-mini:focus-within { border-color: #58C65D; }
-    .searchbar-mini input {
-      flex: 1;
-      border: none;
       outline: none;
-      padding: 0 10px;
-      font-size: 13px;
-      color: #24292E;
-      background: transparent;
     }
-    .searchbar-mini input::placeholder { color: #9EA5AD; }
-    .searchbar-mini button {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #9EA5AD;
-      border-left: 1px solid #E5E7EA;
-      background: #F6F7F9;
-      flex-shrink: 0;
-    }
-    .searchbar-mini button:hover { background: #eee; }
+    .form-section input[type="text"]:focus,
+    .form-section input[type="date"]:focus { border-color: var(--green); }
+    .schedule-name { font-size: 15px; font-weight: 600; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .helper { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+    .muted { color: var(--muted); }
 
-    /* ── Product empty / selected ── */
-    .product-empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      padding: 40px 20px;
-      border: 2px dashed #E5E7EA;
-      border-radius: 8px;
-      margin-top: 14px;
-      color: #9EA5AD;
-      font-size: 13px;
-      text-align: center;
-    }
-    .product-selected-card {
-      display: none;
-      margin-top: 14px;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .product-selected-card.visible { display: block; }
-    .psc-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: #F6F7F9;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .psc-name { font-size: 14px; font-weight: 700; color: #24292E; }
-    .psc-body {
-      display: flex;
-      gap: 32px;
-      padding: 14px 16px;
-    }
-    .psc-item { display: flex; flex-direction: column; gap: 4px; }
-    .psc-item dt { font-size: 11px; color: #9EA5AD; font-weight: 500; }
-    .psc-item dd { font-size: 13px; color: #24292E; font-weight: 500; margin: 0; }
+    .schedule-mapping-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .mapping-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .mapping-col__hd { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+    .mapping-col__hd > span:nth-child(2) { font-size: 12px; font-weight: 600; flex: 1; }
+    .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .schedule-drop-zone { min-height: 108px; display: grid; gap: 5px; align-content: center; justify-items: start; width: 100%; padding: 16px; border: 1px dashed var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); text-align: left; cursor: pointer; transition: var(--transition); font-size: 13px; }
+    .schedule-drop-zone:hover:not(:disabled) { border-color: var(--green); background: rgba(88,198,93,.04); }
+    .schedule-drop-zone:disabled { opacity: 0.5; cursor: not-allowed; }
+    .schedule-drop-zone__icon { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(88,198,93,0.16); color: var(--green); font-weight: 800; font-size: 16px; }
+    .schedule-drop-zone__title { font-weight: 700; }
+    .schedule-drop-zone__meta { font-size: 12px; color: var(--muted); }
+    .field-check { display: inline-flex !important; align-items: center; gap: 8px; cursor: pointer; font-weight: 400 !important; font-size: 13px; color: var(--text); }
 
-    /* ── Product dropdown ── */
-    .product-dropdown-wrap {
-      position: relative;
-      margin-top: 4px;
-    }
-    .product-dropdown-panel {
-      display: none;
-      position: absolute;
-      left: 0; top: 0;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      width: 340px;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 50;
-    }
-    .product-dropdown-panel.open { display: block; }
-    .pd-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      cursor: pointer;
-      border-bottom: 1px solid #E5E7EA;
-      font-size: 13px;
-      gap: 10px;
-    }
-    .pd-item:last-child { border-bottom: none; }
-    .pd-item:hover { background: #F6F7F9; }
-    .pd-item-name { font-weight: 600; color: #24292E; margin-bottom: 2px; }
-    .pd-item-sub { font-size: 12px; color: #9EA5AD; }
+    .schedule-summary { position: sticky; top: 120px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .schedule-summary h3 { margin: 0 0 12px; font-size: 15px; }
+    .schedule-summary dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 13px; }
+    .schedule-summary dt { color: var(--muted); white-space: nowrap; }
+    .schedule-summary dd { margin: 0; font-weight: 500; }
 
-    /* ── Table ── */
-    .tbl-wrap {
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 14px;
-    }
-    .tbl {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .tbl th {
-      background: #F6F7F9;
-      color: #596066;
-      font-weight: 600;
-      padding: 10px 12px;
-      border: 1px solid #E5E7EA;
-      font-size: 13px;
-      text-align: left;
-      white-space: nowrap;
-    }
-    .tbl th:first-child { width: 44px; text-align: center; }
-    .tbl td {
-      padding: 10px 12px;
-      border: 1px solid #E5E7EA;
-      color: #24292E;
-      font-size: 13px;
-      vertical-align: middle;
-    }
-    .tbl td:first-child { text-align: center; }
-    .tbl tbody tr:hover { background: #FAFBFC; }
-    .tbl tbody tr.selected { background: rgba(88,198,93,0.04); }
+    .bottom-actions { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--line); margin-top: 4px; }
+    .bottom-actions__right { display: flex; gap: 8px; }
+    .btn-link-cancel { font-size: 13px; color: var(--muted); cursor: pointer; padding: 6px 10px; border-radius: var(--radius); text-decoration: none; }
+    .btn-link-cancel:hover { color: var(--danger); }
 
-    /* ── Selection bar ── */
-    .sel-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-    .sel-count {
-      display: inline-flex;
-      align-items: center;
-      height: 26px;
-      padding: 0 12px;
-      background: rgba(88,198,93,0.1);
-      border: 1px solid #C1E9C3;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #58C65D;
-    }
-    .sel-note {
-      font-size: 12px;
-      color: #9EA5AD;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+    /* Modals */
+    .modal { display: none; position: fixed; inset: 0; z-index: 200; place-items: center; }
+    .modal__scrim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+    .modal__panel { position: relative; background: #fff; border-radius: 10px; width: min(94vw, 820px); display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; }
+    .modal__header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+    .modal__header h2 { margin: 0; font-size: 16px; }
+    .modal__close { font-size: 22px; color: var(--muted); line-height: 1; cursor: pointer; }
+    .modal__close:hover { color: var(--text); }
+    .modal__search { padding: 10px 20px 12px; border-bottom: 1px solid var(--line); }
+    .modal-search-input { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; background: var(--bg); outline: none; font-family: inherit; }
+    .modal-search-input:focus { border-color: var(--main); }
+    .modal__body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .modal__actions { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--line); }
 
-    /* ── Sync extra panel ── */
-    .sync-extra {
-      display: none;
-      margin-top: 14px;
-      padding: 14px 16px;
-      background: #F6F7F9;
-      border-radius: 6px;
-      border: 1px solid #E5E7EA;
-    }
-    .sync-extra.visible { display: block; }
+    .schedule-select-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; }
+    .schedule-select-list button { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; text-align: left; cursor: pointer; width: 100%; transition: var(--transition); }
+    .schedule-select-list button:hover { border-color: var(--green); background: rgba(88,198,93,.05); }
+    .schedule-select-list button.is-selected { border-color: var(--green); background: rgba(88,198,93,.07); }
+    .product-list-item__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .product-list-item__head strong { font-size: 14px; font-weight: 600; flex: 1; }
+    .product-list-item__meta { font-size: 12px; color: var(--muted); }
+    .product-list-item__chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .status { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+    .status-ok { background: rgba(88,198,93,.12); color: #2E9E34; }
+    .status-check { background: rgba(243,190,74,.14); color: #a06e00; }
 
-    /* ── Footer action bar ── */
-    .footer-bar {
-      position: fixed;
-      bottom: 0; left: 93px; right: 0;
-      height: 64px;
-      background: #fff;
-      border-top: 1px solid #E5E7EA;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      z-index: 150;
-      box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
-    }
-    .footer-left { display: flex; gap: 8px; }
-    .footer-right { display: flex; gap: 8px; }
-
-    /* ── Inline checkbox ── */
-    .inline-check {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: #596066;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .inline-check input[type="checkbox"] {
-      width: 15px; height: 15px;
-      accent-color: #58C65D;
-      cursor: pointer;
-    }
+    .content-list-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; text-align: left; cursor: pointer; width: 100%; transition: var(--transition); }
+    .content-list-item:hover { border-color: var(--green); }
+    .content-list-thumb { flex-shrink: 0; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 5px; background: linear-gradient(135deg, var(--shell-800), #52616b); color: #fff; font-weight: 700; font-size: 11px; }
+    .content-list-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .content-list-info strong { font-size: 13px; font-weight: 600; }
+    .content-chip-row { display: flex; flex-wrap: wrap; gap: 3px; }
+    .meta-chip { display: inline-flex; align-items: center; padding: 1px 7px; background: rgba(0,0,0,.06); border-radius: 999px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .meta-chip--format { background: rgba(45,132,237,.10); color: var(--main); }
   </style>
 </head>
 <body>
 
-<!-- ① GNB -->
-<nav class="gnb">
-  <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32">
-      <rect width="32" height="32" rx="8" fill="#58C65D"/>
-      <text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text>
-    </svg>
-  </div>
-  <ul class="gnb-nav">
-    <li class="gnb-disabled">
-      <a href="dashboard">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#9EA5AD"/>
-          <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#9EA5AD"/>
-          <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#9EA5AD"/>
-          <rect x="11" y="11" width="7" height="7" rx="1.5" fill="#9EA5AD"/>
-        </svg>
-        대시보드
-      </a>
-    </li>
-    <li>
-      <a href="media-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="3" y="3" width="14" height="14" rx="2" stroke="#9EA5AD" stroke-width="1.5"/>
-          <circle cx="10" cy="10" r="3" stroke="#9EA5AD" stroke-width="1.5"/>
-        </svg>
-        미디어
-      </a>
-    </li>
-    <li>
-      <a href="product-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M3 5h14M3 10h14M3 15h8" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="16" cy="15" r="2.5" fill="#9EA5AD"/>
-        </svg>
-        프로덕트
-      </a>
-    </li>
-    <li>
-      <a href="content-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="3" y="3" width="14" height="14" rx="2" stroke="#9EA5AD" stroke-width="1.5"/>
-          <path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#9EA5AD"/>
-        </svg>
-        콘텐츠
-      </a>
-    </li>
-    <li class="gnb-has-sub">
-      <a href="javascript:void(0)">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="3" y="4" width="14" height="12" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/>
-          <path d="M3 8h14" stroke="#9EA5AD" stroke-width="1.5"/>
-          <path d="M7 4V2M13 4V2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        편성표
-      </a>
-      <div class="gnb-sub">
-        <div class="gnb-sub-title">편성표</div>
-        <a href="schedule-media-month">
-          <div class="gnb-sub-icon" style="background:#EFF6FF;">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg>
-          </div>
-          미디어 편성표
-        </a>
-        <a href="schedule-product-month">
-          <div class="gnb-sub-icon" style="background:#F0FDF4;">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-          프로덕트 편성표
-        </a>
-      </div>
-    </li>
-    <li>
-      <a href="schedule-list" class="active">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="3" y="3" width="14" height="14" rx="2" stroke="#fff" stroke-width="1.5"/>
-          <path d="M7 10h6M7 13h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M7 7h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        스케줄
-      </a>
-    </li>
-    <div class="gnb-divider"></div>
-    <li class="gnb-disabled">
-      <a href="monitoring">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/>
-          <path d="M10 5v5l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        모니터링
-      </a>
-    </li>
-  </ul>
-</nav>
+<!-- State inputs -->
+<input class="state" type="checkbox" id="nav-expanded">
+<input class="state" type="checkbox" id="schedule-product-modal">
+<input class="state" type="checkbox" id="schedule-content-modal">
 
-<!-- ② Topbar -->
+<!-- GNB -->
+<aside class="gnb">
+  <label class="gnb__toggle" for="nav-expanded"><span></span></label>
+  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
+  <nav class="gnb__nav">
+    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
+    <a class="gnb__item" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
+    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
+    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
+    <a class="gnb__item is-active" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
+    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
+    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
+  </nav>
+</aside>
+
+<!-- Topbar -->
 <header class="topbar">
-  <div class="topbar-search">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/>
-      <path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <input type="text" placeholder="전체 검색">
-  </div>
-  <div class="topbar-user">
-    <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
-      <div>
-        <div class="topbar-profile-name">구연경</div>
-        <div class="topbar-profile-org">엠앤엠네트웍스</div>
-      </div>
-    </div>
+  <div class="topbar__logo"></div>
+  <div class="topbar__user">
+    <div class="avatar">S</div>
+    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
+    <span class="caret">⌄</span>
   </div>
 </header>
 
-<!-- ③ Breadcrumb -->
-<div class="bcrumb">
-  <a class="bcrumb-back" href="javascript:history.back()">‹</a>
-  <a href="schedule-list">스케줄</a>
-  <span class="sep">›</span>
-  <span>스케줄 등록</span>
-  <span class="sep">›</span>
-  <span class="cur">일반 스케줄</span>
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  스케줄
+  <span>›</span>
+  <a href="schedule-list" style="color:inherit;text-decoration:none;">스케줄 조회</a>
+  <span>›</span>
+  <strong style="display:inline;color:#fff;font-weight:500;">일반 스케줄 등록</strong>
 </div>
 
-<!-- ④ Main content -->
+<!-- Content -->
 <main class="content">
-  <div class="content-inner">
+  <div class="page-card">
 
     <!-- Page header -->
     <div class="page-header">
       <div>
-        <p class="eyebrow">Schedule Management</p>
-        <h1>스케줄 등록</h1>
+        <p class="eyebrow">Create Schedule</p>
+        <h1>일반 스케줄 등록</h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-dark" href="schedule-list">목록으로</a>
       </div>
     </div>
 
-    <!-- Type selector tabs -->
-    <div class="type-tabs">
-      <button class="type-tab active" id="tab-general" onclick="switchTab('general')">일반 스케줄</button>
-      <button class="type-tab" id="tab-condition" onclick="switchTab('condition')">조건 스케줄</button>
-    </div>
+    <!-- Type toggle tabs -->
+    <nav class="tabs" style="margin-bottom:20px">
+      <a href="schedule-register-general" style="padding:0 0 10px;color:var(--text);border-bottom:2px solid var(--green);text-decoration:none;font-weight:600">일반 스케줄</a>
+      <a href="schedule-register-condition" style="padding:0 0 10px;color:var(--muted);border-bottom:2px solid transparent;text-decoration:none">조건 스케줄</a>
+    </nav>
 
-    <!-- ─────────────────────────────────────── -->
-    <!-- Section 1: 기본 정보                   -->
-    <!-- ─────────────────────────────────────── -->
-    <div class="form-section">
-      <div class="form-section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="6.5" stroke="#9EA5AD" stroke-width="1.3"/>
-          <path d="M8 7v4M8 5.2v.8" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-        기본 정보
-      </div>
+    <!-- Main 2-col grid -->
+    <div class="schedule-register-grid">
 
-      <div class="form-row">
-        <div class="form-label">스케줄명 <span class="req">*</span></div>
-        <div class="form-control">
-          <input type="text" class="inp inp-full" id="schedule-name"
-            placeholder="스케줄명을 입력해 주세요" maxlength="100"
-            style="max-width:480px;">
-        </div>
-      </div>
+      <!-- LEFT MAIN -->
+      <div class="schedule-register-main">
 
-      <div class="form-row">
-        <div class="form-label">스케줄 유형</div>
-        <div class="form-control">
-          <span class="badge badge-type-general" style="height:26px; font-size:13px; font-weight:700; display:inline-flex; align-items:center;">일반</span>
-          <span style="font-size:12px; color:#9EA5AD;">조건 없이 지정한 기간 동안 광고를 송출합니다.</span>
-        </div>
-      </div>
-    </div>
+        <!-- 기본 정보 -->
+        <section class="form-section">
+          <h2>기본 정보</h2>
+          <label>스케줄명<input type="text" value="신규 일반 스케줄" class="schedule-name" id="schedule-name-input"></label>
+        </section>
 
-    <!-- ─────────────────────────────────────── -->
-    <!-- Section 2: 광고 기간                   -->
-    <!-- ─────────────────────────────────────── -->
-    <div class="form-section">
-      <div class="form-section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="#9EA5AD" stroke-width="1.3"/>
-          <path d="M2 7h12" stroke="#9EA5AD" stroke-width="1.3"/>
-          <path d="M5 2v2M11 2v2" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-        광고 기간
-      </div>
+        <!-- Product / 콘텐츠 선택 -->
+        <section class="form-section">
+          <h2>Product / 콘텐츠 선택</h2>
+          <div class="schedule-mapping-grid">
 
-      <div class="form-row">
-        <div class="form-label">시작일 <span class="req">*</span></div>
-        <div class="form-control">
-          <input type="date" class="inp inp-date" id="start-date" onchange="calcDuration()">
-        </div>
-      </div>
+            <!-- Product 열 -->
+            <div class="mapping-col">
+              <div class="mapping-col__hd">
+                <span class="step-badge">1</span>
+                <span>Product 선택</span>
+              </div>
+              <button class="schedule-drop-zone" type="button" data-open-schedule-product>
+                <span class="schedule-drop-zone__icon">+</span>
+                <span class="schedule-drop-zone__title">+ Product를 선택해 주세요.</span>
+                <span class="schedule-drop-zone__meta">스케줄에 사용할 프로덕트를 선택합니다</span>
+              </button>
+              <div id="product-card-normal" hidden style="border:1px solid var(--green);border-radius:var(--radius);padding:12px;background:rgba(88,198,93,.05);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+                  <div>
+                    <div style="font-weight:700;font-size:14px" id="selected-product-name">—</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px">운영 미디어 3개 · 일반 / 조건 지원</div>
+                    <div style="display:flex;gap:4px;margin-top:6px">
+                      <span class="meta-chip">일반 광고</span><span class="meta-chip">조건 광고</span><span class="meta-chip">타임</span>
+                    </div>
+                  </div>
+                  <button type="button" data-open-schedule-product style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-size:11px;color:var(--muted);cursor:pointer;min-height:auto">변경</button>
+                </div>
+              </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-label">종료일 <span class="req">*</span></div>
-        <div class="form-control">
-          <input type="date" class="inp inp-date" id="end-date" onchange="calcDuration()">
-          <label class="inline-check">
-            <input type="checkbox" id="indefinite-toggle" onchange="toggleIndefinite(this)">
-            미정 (종료일 미확정)
+            <!-- 콘텐츠 열 -->
+            <div class="mapping-col">
+              <div class="mapping-col__hd">
+                <span class="step-badge">2</span>
+                <span>콘텐츠 선택</span>
+                <label class="field-check" style="margin-left:auto">
+                  <input type="checkbox" disabled>미디어별 선택
+                </label>
+              </div>
+              <button class="schedule-drop-zone" type="button" data-open-schedule-content disabled id="content-drop-btn">
+                <span class="schedule-drop-zone__icon">+</span>
+                <span class="schedule-drop-zone__title">+ 콘텐츠를 선택해 주세요.</span>
+                <span class="schedule-drop-zone__meta">Product 선택 후 콘텐츠를 선택할 수 있습니다</span>
+              </button>
+            </div>
+          </div>
+          <p class="helper">Product에 포함된 모든 미디어에 동일 콘텐츠를 송출합니다.</p>
+        </section>
+
+        <!-- 싱크 송출 -->
+        <section class="form-section--option">
+          <label class="field-check">
+            <input type="checkbox" disabled>
+            싱크 송출 <small class="muted">— Product에 포함된 미디어에서 광고를 같은 시점에 송출합니다</small>
           </label>
-          <span class="duration-chip" id="duration-chip"></span>
-        </div>
-      </div>
-    </div>
+        </section>
 
-    <!-- ─────────────────────────────────────── -->
-    <!-- Section 3: 프로덕트 연결               -->
-    <!-- ─────────────────────────────────────── -->
-    <div class="form-section">
-      <div class="form-section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M2 4h12M2 8h8M2 12h5" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/>
-          <circle cx="13" cy="12" r="2.5" stroke="#9EA5AD" stroke-width="1.3"/>
-        </svg>
-        프로덕트 연결
-      </div>
-
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div class="searchbar-mini" style="width:340px;">
-          <input type="text" id="product-search-inp"
-            placeholder="프로덕트명을 검색해 주세요"
-            oninput="filterProducts(this.value)"
-            autocomplete="off">
-          <button type="button">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="6" cy="6" r="4.5" stroke="#9EA5AD" stroke-width="1.3"/>
-              <path d="M9.5 9.5l2.5 2.5" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Dropdown search results -->
-      <div class="product-dropdown-wrap">
-        <div class="product-dropdown-panel" id="product-dropdown">
-          <div id="product-list-items"></div>
-        </div>
-      </div>
-
-      <!-- Empty state -->
-      <div class="product-empty" id="product-empty">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <rect x="5" y="8" width="30" height="24" rx="3" stroke="#CED2D6" stroke-width="1.8"/>
-          <path d="M5 16h30" stroke="#CED2D6" stroke-width="1.8"/>
-          <path d="M13 23h14M13 27h8" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <p>연결할 프로덕트를 검색하거나 선택해 주세요.</p>
-        <button class="btn btn-outline-green btn-sm" type="button" onclick="openProductSearch()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-            <path d="M6.5 1v11M1 6.5h11" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          프로덕트 선택
-        </button>
-      </div>
-
-      <!-- Selected product card -->
-      <div class="product-selected-card" id="product-selected-card">
-        <div class="psc-head">
-          <span class="psc-name" id="psc-name">—</span>
-          <button class="btn btn-ghost btn-sm" type="button" onclick="clearProduct()">변경</button>
-        </div>
-        <div class="psc-body">
-          <dl class="psc-item">
-            <dt>광고유형</dt>
-            <dd id="psc-type">—</dd>
-          </dl>
-          <dl class="psc-item">
-            <dt>기간</dt>
-            <dd id="psc-period">—</dd>
-          </dl>
-          <dl class="psc-item">
-            <dt>상태</dt>
-            <dd id="psc-status">—</dd>
-          </dl>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─────────────────────────────────────── -->
-    <!-- Section 4: 미디어 선택                 -->
-    <!-- ─────────────────────────────────────── -->
-    <div class="form-section">
-      <div class="form-section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="2" width="12" height="12" rx="2" stroke="#9EA5AD" stroke-width="1.3"/>
-          <circle cx="8" cy="8" r="2.5" stroke="#9EA5AD" stroke-width="1.3"/>
-        </svg>
-        미디어 선택
-      </div>
-
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div class="searchbar-mini">
-          <input type="text" id="media-search-inp"
-            placeholder="미디어명 또는 설치주소 검색"
-            oninput="filterMedia(this.value)">
-          <button type="button">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="6" cy="6" r="4.5" stroke="#9EA5AD" stroke-width="1.3"/>
-              <path d="M9.5 9.5l2.5 2.5" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="tbl-wrap">
-        <table class="tbl" id="media-table">
-          <thead>
-            <tr>
-              <th>
-                <input type="checkbox" id="chk-all" onchange="toggleAll(this)"
-                  style="accent-color:#58C65D; width:15px; height:15px; cursor:pointer;">
-              </th>
-              <th>미디어명</th>
-              <th>설치주소</th>
-              <th>디스플레이</th>
-              <th>운영시간</th>
-              <th>슬롯구성</th>
-              <th>상태</th>
-            </tr>
-          </thead>
-          <tbody id="media-tbody">
-            <tr data-id="m1">
-              <td>
-                <input type="checkbox" class="media-chk" onchange="updateSelCount()"
-                  style="accent-color:#58C65D; width:15px; height:15px; cursor:pointer;">
-              </td>
-              <td><span style="font-weight:600;">강남역 1번 출구 A</span></td>
-              <td style="color:#596066;">서울 강남구 강남대로 396</td>
-              <td>55" FHD 가로형</td>
-              <td>06:00 ~ 24:00</td>
-              <td>15초 × 8슬롯</td>
-              <td><span class="badge badge-ok">운영 중</span></td>
-            </tr>
-            <tr data-id="m2">
-              <td>
-                <input type="checkbox" class="media-chk" onchange="updateSelCount()"
-                  style="accent-color:#58C65D; width:15px; height:15px; cursor:pointer;">
-              </td>
-              <td><span style="font-weight:600;">강남역 1번 출구 B</span></td>
-              <td style="color:#596066;">서울 강남구 강남대로 396</td>
-              <td>55" FHD 세로형</td>
-              <td>06:00 ~ 24:00</td>
-              <td>15초 × 6슬롯</td>
-              <td><span class="badge badge-ok">운영 중</span></td>
-            </tr>
-            <tr data-id="m3">
-              <td>
-                <input type="checkbox" class="media-chk" onchange="updateSelCount()"
-                  style="accent-color:#58C65D; width:15px; height:15px; cursor:pointer;">
-              </td>
-              <td><span style="font-weight:600;">역삼역 2번 출구</span></td>
-              <td style="color:#596066;">서울 강남구 테헤란로 152</td>
-              <td>65" 4K 가로형</td>
-              <td>07:00 ~ 23:00</td>
-              <td>20초 × 6슬롯</td>
-              <td><span class="badge badge-plan">예정</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="sel-bar">
-        <span class="sel-count" id="sel-count">0개 선택됨</span>
-        <span class="sel-note">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <circle cx="7" cy="7" r="5.5" stroke="#9EA5AD" stroke-width="1.2"/>
-            <path d="M7 6v4M7 4.5v.5" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round"/>
-          </svg>
-          선택한 미디어에 스케줄이 등록됩니다.
-        </span>
-      </div>
-    </div>
-
-    <!-- ─────────────────────────────────────── -->
-    <!-- Section 5: 싱크 송출 설정              -->
-    <!-- ─────────────────────────────────────── -->
-    <div class="form-section">
-      <div class="form-section-title">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8a5 5 0 0110 0" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/>
-          <path d="M5.5 8a2.5 2.5 0 015 0" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"/>
-          <circle cx="8" cy="8" r="1.2" fill="#9EA5AD"/>
-        </svg>
-        싱크 송출 설정
-      </div>
-
-      <div class="form-row">
-        <div class="form-label">싱크 송출</div>
-        <div class="form-control">
-          <div class="toggle-wrap">
-            <label class="toggle">
-              <input type="checkbox" id="sync-toggle" onchange="toggleSync(this)">
-              <span class="toggle-track"></span>
-            </label>
-            <span class="toggle-label">싱크 송출</span>
-            <span class="toggle-state" id="sync-state-label">OFF</span>
+        <!-- 광고 기간 -->
+        <section class="form-section">
+          <h2>광고 기간</h2>
+          <div class="grid-2">
+            <label>시작일<input type="date" value="2026-06-10" id="date-start"></label>
+            <label>종료일<input type="date" value="2026-06-24" id="date-end"></label>
           </div>
-          <span style="font-size:12px; color:#9EA5AD; margin-left:8px;">여러 미디어가 동시에 동일한 광고를 송출합니다.</span>
-        </div>
-      </div>
+          <p class="helper" id="date-duration"></p>
+        </section>
 
-      <!-- Sync group (visible when ON) -->
-      <div class="sync-extra" id="sync-extra">
-        <div class="form-row" style="margin-bottom:0;">
-          <div class="form-label">싱크 그룹명</div>
-          <div class="form-control">
-            <input type="text" class="inp" style="width:280px;"
-              id="sync-group-name"
-              placeholder="싱크 그룹명을 입력해 주세요">
-            <span style="font-size:12px; color:#9EA5AD;">동일 그룹의 미디어가 함께 동기화 송출됩니다.</span>
+        <!-- Bottom actions -->
+        <div class="bottom-actions">
+          <a class="btn-link-cancel" href="schedule-list">취소</a>
+          <div class="bottom-actions__right">
+            <a class="btn btn-primary" href="schedule-detail">등록하기</a>
           </div>
         </div>
-      </div>
-    </div>
 
-  </div><!-- /content-inner -->
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="schedule-summary">
+        <h3>등록 요약</h3>
+        <dl>
+          <dt>스케줄명</dt><dd id="sum-name">신규 일반 스케줄</dd>
+          <dt>Product</dt><dd id="sum-product">미선택</dd>
+          <dt>콘텐츠</dt><dd>미선택</dd>
+          <dt>광고 기간</dt><dd id="sum-dates">미설정</dd>
+          <dt>매핑 방식</dt><dd>Product 1 : 콘텐츠 1</dd>
+        </dl>
+      </aside>
+
+    </div>
+  </div>
 </main>
 
-<!-- ⑤ Footer action bar -->
-<div class="footer-bar">
-  <div class="footer-left">
-    <button class="btn btn-ghost" type="button" onclick="history.back()">취소</button>
-    <button class="btn btn-ghost" type="button" onclick="saveDraft(this)">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M2 2h8l2 2v8a1 1 0 01-1 1H3a1 1 0 01-1-1V2z" stroke="#596066" stroke-width="1.2"/>
-        <path d="M5 2v4h4V2" stroke="#596066" stroke-width="1.2" stroke-linejoin="round"/>
-        <path d="M4 9h6" stroke="#596066" stroke-width="1.2" stroke-linecap="round"/>
-      </svg>
-      임시저장
-    </button>
-  </div>
-  <div class="footer-right">
-    <button class="btn btn-primary" type="button" onclick="submitForm(this)">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M2 7l4 4 6-7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      등록
-    </button>
+<!-- ===== Product Selection Modal ===== -->
+<div class="schedule-product-modal-view modal">
+  <label class="modal__scrim" for="schedule-product-modal"></label>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2>Product 선택</h2>
+      <label class="modal__close" for="schedule-product-modal">×</label>
+    </div>
+    <div class="modal__search">
+      <input class="modal-search-input" type="text" placeholder="프로덕트명을 검색하세요...">
+    </div>
+    <div class="modal__body">
+      <div class="schedule-select-list">
+        <button type="button" class="is-selected" data-product-btn onclick="selectProduct(this,'강남 프라임 패키지')">
+          <div class="product-list-item__head">
+            <strong>강남 프라임 패키지</strong>
+            <span class="status status-ok">사용 가능</span>
+          </div>
+          <span class="product-list-item__meta">운영 미디어 3개 · 일반 / 조건 지원</span>
+          <div class="product-list-item__chips">
+            <span class="meta-chip">일반 광고</span><span class="meta-chip">조건 광고</span><span class="meta-chip">타임</span><span class="meta-chip">환경</span>
+          </div>
+        </button>
+        <button type="button" data-product-btn onclick="selectProduct(this,'공항 프리미엄 네트워크')">
+          <div class="product-list-item__head">
+            <strong>공항 프리미엄 네트워크</strong>
+            <span class="status status-ok">사용 가능</span>
+          </div>
+          <span class="product-list-item__meta">운영 미디어 2개 · 일반 광고 지원</span>
+          <div class="product-list-item__chips">
+            <span class="meta-chip">일반 광고</span>
+          </div>
+        </button>
+        <button type="button" data-product-btn onclick="selectProduct(this,'홍대 타겟 테스트')">
+          <div class="product-list-item__head">
+            <strong>홍대 타겟 테스트</strong>
+            <span class="status status-check">확인 필요</span>
+          </div>
+          <span class="product-list-item__meta">운영 미디어 1개 · 조건 광고 지원</span>
+          <div class="product-list-item__chips">
+            <span class="meta-chip">조건 광고</span><span class="meta-chip">타겟</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="modal__actions">
+      <label class="btn btn-ghost" for="schedule-product-modal">취소</label>
+      <label class="btn btn-primary" for="schedule-product-modal" id="confirm-product-btn">선택</label>
+    </div>
   </div>
 </div>
 
+<!-- ===== Content Selection Modal ===== -->
+<div class="schedule-content-modal-view modal">
+  <label class="modal__scrim" for="schedule-content-modal"></label>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2>콘텐츠 선택</h2>
+      <label class="modal__close" for="schedule-content-modal">×</label>
+    </div>
+    <div class="modal__search">
+      <input class="modal-search-input" type="text" placeholder="콘텐츠명을 검색하세요...">
+    </div>
+    <div class="modal__body">
+      <div class="schedule-select-list" style="gap:6px">
+        <button class="content-list-item" type="button" onclick="document.getElementById('schedule-content-modal').checked=false">
+          <div class="content-list-thumb">30s</div>
+          <div class="content-list-info">
+            <strong>여름 캠페인 30초</strong>
+            <div class="content-chip-row">
+              <span class="meta-chip meta-chip--format">MP4</span><span class="meta-chip">1920×1080</span><span class="meta-chip">30초</span>
+            </div>
+          </div>
+        </button>
+        <button class="content-list-item" type="button" onclick="document.getElementById('schedule-content-modal').checked=false">
+          <div class="content-list-thumb">15s</div>
+          <div class="content-list-info">
+            <strong>브랜드 티저 15초</strong>
+            <div class="content-chip-row">
+              <span class="meta-chip meta-chip--format">MP4</span><span class="meta-chip">1080×1920</span><span class="meta-chip">15초</span>
+            </div>
+          </div>
+        </button>
+        <button class="content-list-item" type="button" onclick="document.getElementById('schedule-content-modal').checked=false">
+          <div class="content-list-thumb">20s</div>
+          <div class="content-list-info">
+            <strong>타겟 반응형 소재 20초</strong>
+            <div class="content-chip-row">
+              <span class="meta-chip meta-chip--format">MP4</span><span class="meta-chip">1920×1080</span><span class="meta-chip">20초</span>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="modal__actions">
+      <label class="btn btn-ghost" for="schedule-content-modal">취소</label>
+      <label class="btn btn-primary" for="schedule-content-modal">선택</label>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
 <script>
-/* ─── Product data ─── */
-const PRODUCTS = [
-  { id: 'p1', name: '강남 A지구 패키지',     type: '패키지형', period: '2026.06.01 ~ 06.30', status: '운영 중', cls: 'badge-ok'   },
-  { id: 'p2', name: '홍대 입구역 프리미엄',  type: '단독형',   period: '2026.06.10 ~ 07.10', status: '운영 중', cls: 'badge-ok'   },
-  { id: 'p3', name: '삼성역 COEX 프리미엄',  type: '패키지형', period: '2026.07.01 ~ 07.31', status: '예정',   cls: 'badge-plan' },
-  { id: 'p4', name: '여의도 IFC 스탠다드',   type: '단독형',   period: '2026.06.15 ~ 07.15', status: '운영 중', cls: 'badge-ok'   },
-];
+  // Open product modal
+  document.querySelectorAll('[data-open-schedule-product]').forEach(btn => {
+    btn.addEventListener('click', () => document.getElementById('schedule-product-modal').checked = true);
+  });
+  // Open content modal
+  document.querySelectorAll('[data-open-schedule-content]').forEach(btn => {
+    btn.addEventListener('click', () => { if(!btn.disabled) document.getElementById('schedule-content-modal').checked = true; });
+  });
 
-let selectedProduct = null;
-
-/* Product search */
-function filterProducts(val) {
-  const q = val.trim().toLowerCase();
-  const dropdown = document.getElementById('product-dropdown');
-  const list     = document.getElementById('product-list-items');
-
-  if (!q) { dropdown.classList.remove('open'); return; }
-
-  const hits = PRODUCTS.filter(p => p.name.toLowerCase().includes(q));
-  if (!hits.length) {
-    list.innerHTML = '<div style="padding:12px 14px; color:#9EA5AD; font-size:13px;">검색 결과가 없습니다.</div>';
-  } else {
-    list.innerHTML = hits.map(p =>
-      `<div class="pd-item" onclick="selectProduct('${p.id}')">
-        <div>
-          <div class="pd-item-name">${p.name}</div>
-          <div class="pd-item-sub">${p.type} · ${p.period}</div>
-        </div>
-        <span class="badge ${p.cls}" style="display:inline-flex;align-items:center;">${p.status}</span>
-      </div>`
-    ).join('');
+  // Product selection
+  let pendingProduct = null;
+  function selectProduct(btn, name) {
+    document.querySelectorAll('[data-product-btn]').forEach(b => b.classList.remove('is-selected'));
+    btn.classList.add('is-selected');
+    pendingProduct = name;
   }
-  dropdown.classList.add('open');
-}
 
-function selectProduct(id) {
-  const p = PRODUCTS.find(x => x.id === id);
-  if (!p) return;
-  selectedProduct = p;
-
-  document.getElementById('psc-name').textContent   = p.name;
-  document.getElementById('psc-type').textContent   = p.type;
-  document.getElementById('psc-period').textContent = p.period;
-  document.getElementById('psc-status').innerHTML   =
-    `<span class="badge ${p.cls}" style="display:inline-flex;align-items:center;">${p.status}</span>`;
-
-  document.getElementById('product-empty').style.display = 'none';
-  document.getElementById('product-selected-card').classList.add('visible');
-  document.getElementById('product-dropdown').classList.remove('open');
-  document.getElementById('product-search-inp').value = '';
-}
-
-function clearProduct() {
-  selectedProduct = null;
-  document.getElementById('product-empty').style.display = 'flex';
-  document.getElementById('product-selected-card').classList.remove('visible');
-}
-
-function openProductSearch() {
-  const inp = document.getElementById('product-search-inp');
-  inp.focus();
-  inp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-/* Close dropdown on outside click */
-document.addEventListener('click', function(e) {
-  const dd  = document.getElementById('product-dropdown');
-  const inp = document.getElementById('product-search-inp');
-  if (!dd.contains(e.target) && e.target !== inp) {
-    dd.classList.remove('open');
-  }
-});
-
-/* ─── Date / Duration ─── */
-function calcDuration() {
-  const s    = document.getElementById('start-date').value;
-  const e    = document.getElementById('end-date').value;
-  const chip = document.getElementById('duration-chip');
-  if (s && e) {
-    const ms = new Date(e) - new Date(s);
-    if (ms >= 0) {
-      const days = Math.round(ms / 86400000) + 1;
-      chip.textContent = `총 ${days}일`;
-      chip.style.display = 'inline-flex';
-    } else {
-      chip.style.display = 'none';
+  document.getElementById('confirm-product-btn').addEventListener('click', () => {
+    if(pendingProduct) {
+      const nameEl = document.getElementById('selected-product-name');
+      if(nameEl) nameEl.textContent = pendingProduct;
+      document.getElementById('product-card-normal').hidden = false;
+      const contentBtn = document.getElementById('content-drop-btn');
+      if(contentBtn) contentBtn.disabled = false;
+      const sumProduct = document.getElementById('sum-product');
+      if(sumProduct) sumProduct.textContent = pendingProduct;
     }
-  } else {
-    chip.style.display = 'none';
-  }
-}
-
-function toggleIndefinite(cb) {
-  const endInp = document.getElementById('end-date');
-  const chip   = document.getElementById('duration-chip');
-  if (cb.checked) {
-    endInp.disabled      = true;
-    endInp.style.opacity = '0.4';
-    endInp.value         = '';
-    chip.style.display   = 'none';
-  } else {
-    endInp.disabled      = false;
-    endInp.style.opacity = '1';
-    calcDuration();
-  }
-}
-
-/* ─── Media table ─── */
-function toggleAll(chk) {
-  document.querySelectorAll('.media-chk').forEach(c => {
-    c.checked = chk.checked;
-    c.closest('tr').classList.toggle('selected', chk.checked);
   });
-  updateSelCount();
-}
 
-function updateSelCount() {
-  const checked = document.querySelectorAll('.media-chk:checked').length;
-  const total   = document.querySelectorAll('.media-chk').length;
-  document.getElementById('sel-count').textContent = `${checked}개 선택됨`;
-
-  const allChk = document.getElementById('chk-all');
-  allChk.checked       = checked === total && total > 0;
-  allChk.indeterminate = checked > 0 && checked < total;
-
-  document.querySelectorAll('.media-chk').forEach(c => {
-    c.closest('tr').classList.toggle('selected', c.checked);
-  });
-}
-
-function filterMedia(val) {
-  const q = val.trim().toLowerCase();
-  document.querySelectorAll('#media-tbody tr').forEach(row => {
-    const name = row.cells[1]?.textContent.toLowerCase() || '';
-    const addr = row.cells[2]?.textContent.toLowerCase() || '';
-    row.style.display = (!q || name.includes(q) || addr.includes(q)) ? '' : 'none';
-  });
-}
-
-/* ─── Sync toggle ─── */
-function toggleSync(chk) {
-  const extra = document.getElementById('sync-extra');
-  const label = document.getElementById('sync-state-label');
-  if (chk.checked) {
-    extra.classList.add('visible');
-    label.textContent = 'ON';
-    label.classList.add('on');
-  } else {
-    extra.classList.remove('visible');
-    label.textContent = 'OFF';
-    label.classList.remove('on');
+  // Date duration calc
+  function calcDuration() {
+    const s = document.getElementById('date-start')?.value;
+    const e = document.getElementById('date-end')?.value;
+    const el = document.getElementById('date-duration');
+    const sumEl = document.getElementById('sum-dates');
+    if(s && e && el) {
+      const days = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+      el.textContent = days > 0 ? `${days}일간 진행` : '';
+      if(sumEl) sumEl.textContent = days > 0 ? `${s} ~ ${e}` : '미설정';
+    }
   }
-}
+  document.getElementById('date-start').addEventListener('change', calcDuration);
+  document.getElementById('date-end').addEventListener('change', calcDuration);
+  calcDuration();
 
-/* ─── Tab navigation ─── */
-function switchTab(tab) {
-  if (tab === 'condition') {
-    window.location.href = 'schedule-register-condition';
-  }
-  /* 'general' is current page — no-op */
-}
-
-/* ─── Form actions ─── */
-function saveDraft(btn) {
-  const name = document.getElementById('schedule-name').value.trim();
-  if (!name) {
-    showToast('스케줄명을 입력해 주세요.', false);
-    document.getElementById('schedule-name').focus();
-    return;
-  }
-  const orig = btn.innerHTML;
-  btn.innerHTML = '저장 중...';
-  btn.disabled  = true;
-  setTimeout(() => {
-    btn.innerHTML = orig;
-    btn.disabled  = false;
-    showToast('임시저장되었습니다.', false);
-  }, 800);
-}
-
-function submitForm(btn) {
-  const name       = document.getElementById('schedule-name').value.trim();
-  const startDate  = document.getElementById('start-date').value;
-  const endDate    = document.getElementById('end-date').value;
-  const indefinite = document.getElementById('indefinite-toggle').checked;
-  const selCount   = document.querySelectorAll('.media-chk:checked').length;
-
-  if (!name)                         { showToast('스케줄명을 입력해 주세요.', false); document.getElementById('schedule-name').focus(); return; }
-  if (!startDate)                    { showToast('시작일을 선택해 주세요.', false); document.getElementById('start-date').focus(); return; }
-  if (!indefinite && !endDate)       { showToast('종료일을 선택하거나 미정을 체크해 주세요.', false); document.getElementById('end-date').focus(); return; }
-  if (!selectedProduct)              { showToast('프로덕트를 선택해 주세요.', false); return; }
-  if (selCount === 0)                { showToast('미디어를 1개 이상 선택해 주세요.', false); return; }
-
-  const orig = btn.innerHTML;
-  btn.innerHTML = '등록 중...';
-  btn.disabled  = true;
-  setTimeout(() => {
-    btn.innerHTML = orig;
-    btn.disabled  = false;
-    showToast('스케줄이 등록되었습니다!', true);
-    setTimeout(() => { window.location.href = 'schedule-list'; }, 1200);
-  }, 900);
-}
-
-/* ─── Toast ─── */
-function showToast(msg, success) {
-  const el = document.createElement('div');
-  el.textContent = msg;
-  Object.assign(el.style, {
-    position:     'fixed',
-    bottom:       '80px',
-    left:         '50%',
-    transform:    'translateX(-50%)',
-    background:   success ? '#58C65D' : '#383F45',
-    color:        '#fff',
-    padding:      '10px 24px',
-    borderRadius: '6px',
-    fontSize:     '13px',
-    fontWeight:   '600',
-    zIndex:       '9999',
-    boxShadow:    '0 4px 16px rgba(0,0,0,0.18)',
-    opacity:      '1',
-    transition:   'opacity 0.3s',
-    whiteSpace:   'nowrap',
+  // Sync name to summary
+  document.getElementById('schedule-name-input').addEventListener('input', e => {
+    document.getElementById('sum-name').textContent = e.target.value || '—';
   });
-  document.body.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; }, 1800);
-  setTimeout(() => { el.remove(); }, 2200);
-}
 </script>
 </body>
 </html>
