@@ -1772,8 +1772,7 @@ function initCharts() {
 
   // ── 스케줄 차트 (송출 현황 탭이 활성화된 경우에만 생성) ──
   const _statusPanel = document.querySelector('[data-schedule-detail-panel="status"]');
-  const _statusVisible = _statusPanel && (_statusPanel.style.display === "block" || (!_statusPanel.hasAttribute("hidden") && _statusPanel.style.display !== "none"));
-  if (_statusVisible) {
+  if (_statusPanel && _statusPanel.style.display === "block") {
   makeChart("schedule-daily-chart", {
     type: "bar",
     data: { labels: ["5/1","5/5","5/10","5/15","5/20","5/25","5/30","6/1"], datasets: [
