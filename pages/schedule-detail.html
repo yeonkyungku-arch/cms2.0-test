@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>6월 강남 출퇴근 패키지 — Dooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* ── Nav-expanded state ── */
+    #nav-expanded:checked ~ .gnb { width: 200px; }
+    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
+    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
+    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
+    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
+    #nav-expanded:checked ~ .content { margin-left: 200px; }
+
+    /* ── Detail tabs ── */
+    .tabs button {
+      padding: 0 0 12px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tabs button.is-active { color: var(--text); border-bottom-color: var(--green); }
+
+    /* ── Detail layout ── */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      align-items: start;
+      margin-top: 20px;
+    }
+    .detail-sidebar { display: grid; gap: 12px; position: sticky; top: 120px; }
+    .detail-sidebar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── Info card ── */
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .info-card__title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0 0 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .info-list {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 9px 10px;
+      font-size: 13px;
+    }
+    .info-list dt { color: var(--muted); }
+    .info-list dd { margin: 0; font-weight: 500; }
+
+    /* ── Mapping grid ── */
+    .schedule-mapping-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .mapping-col-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .step-badge {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Product card ── */
+    .schedule-product-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    .schedule-product-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .schedule-product-card__header strong { font-size: 14px; display: block; }
+    .schedule-product-card__header span { font-size: 12px; color: var(--muted); display: block; margin-top: 2px; }
+    .schedule-media-brief-list {
+      margin: 0; padding: 0; list-style: none; display: grid; gap: 6px;
+    }
+    .schedule-media-brief-list li {
+      display: grid; gap: 2px; padding: 8px;
+      background: var(--bg); border-radius: 6px;
+    }
+    .schedule-media-brief-list__name { font-weight: 600; font-size: 13px; }
+    .schedule-media-brief-list__op { font-size: 12px; color: var(--muted); }
+
+    /* ── Content card ── */
+    .schedule-content-card {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    .schedule-content-card__thumb {
+      width: 60px; height: 60px;
+      display: grid; place-items: center;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--shell-800), #52616b);
+    }
+    .schedule-content-card__info { display: grid; gap: 4px; }
+    .schedule-content-card__info strong { font-size: 14px; }
+    .schedule-content-card__info span { font-size: 12px; color: var(--muted); }
+
+    /* ── Slot deduct ── */
+    .slot-deduct-list { display: grid; gap: 10px; margin-top: 12px; }
+    .slot-deduct-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 200px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .slot-deduct-row__media { color: var(--text); font-weight: 500; }
+    .slot-deduct-row__track {
+      height: 8px; background: var(--bg);
+      border: 1px solid var(--line); border-radius: 100px; overflow: hidden;
+    }
+    .slot-deduct-row__fill { height: 100%; background: var(--green); border-radius: inherit; }
+    .slot-deduct-row__meta { color: var(--muted); }
+    .slot-deduct-row__meta em { color: var(--green); font-style: normal; font-weight: 600; }
+
+    /* ── Period progress ── */
+    .period-progress { display: grid; gap: 8px; margin-top: 12px; }
+    .period-progress__dates {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--muted);
+    }
+    .period-progress__track {
+      height: 12px; background: var(--bg);
+      border: 1px solid var(--line); border-radius: 100px; overflow: hidden;
+    }
+    .period-progress__fill {
+      height: 100%; background: var(--green); border-radius: inherit;
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 6px;
+    }
+    .period-progress__pct { font-size: 10px; color: #fff; font-weight: 700; }
+    .period-progress__stats { display: flex; gap: 16px; font-size: 12px; color: var(--muted); }
+    .period-progress__stats strong { color: var(--text); }
+
+    /* ── KPI strip ── */
+    .schedule-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .kpi-card {
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .kpi-card__label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .kpi-card__value { font-size: 22px; font-weight: 700; color: var(--text); }
+    .kpi-card__sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Status filter bar ── */
+    .status-filter-bar {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      padding: 12px; background: var(--bg); border-radius: var(--radius); margin-bottom: 16px;
+    }
+    .status-filter-bar__group { display: flex; align-items: center; gap: 8px; }
+    .status-filter-bar__label { font-size: 12px; color: var(--muted); }
+    .status-filter-chips { display: flex; gap: 4px; }
+    .status-filter-chip {
+      min-height: 28px; padding: 0 10px;
+      border: 1px solid var(--border); border-radius: 100px;
+      background: #fff; font-size: 12px; cursor: pointer;
+    }
+    .status-filter-chip.is-active { background: var(--green); border-color: var(--green); color: #fff; }
+    .status-filter-date { height: 32px; font-size: 12px; }
+    .status-filter-sep { color: var(--muted); }
+
+    /* ── Guarantee bars ── */
+    .guarantee-bars { display: grid; gap: 10px; margin-top: 12px; }
+    .guarantee-bar-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 120px 140px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .guarantee-bar-row--total {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      font-weight: 600;
+    }
+    .guarantee-bar__track {
+      height: 10px; background: var(--bg);
+      border: 1px solid var(--line); border-radius: 100px; overflow: hidden;
+    }
+    .guarantee-bar__fill { height: 100%; background: var(--green); border-radius: inherit; }
+    .guarantee-bar__fill--warn { background: var(--near); }
+    .guarantee-bar__remain { color: var(--muted); font-size: 12px; }
+    .guarantee-bar__remain--warn { color: var(--near); }
+    .guarantee-bar__remain em { font-style: normal; }
+
+    /* ── Chart placeholder ── */
+    .chart-placeholder {
+      height: 180px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chart-placeholder::before {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 20px,
+        rgba(88,198,93,0.15) 20px,
+        rgba(88,198,93,0.15) 38px
+      );
+      border-radius: 4px 4px 0 0;
+    }
+
+    /* ── Btn danger ── */
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: rgba(233,116,116,.08); }
+
+    /* ── Detail info panel ── */
+    .detail-info-panel { display: grid; gap: 16px; }
+    .schedule-detail-status { display: none; }
+  </style>
+</head>
+<body>
+
+<input class="state" type="checkbox" id="nav-expanded">
+
+<!-- GNB -->
+<aside class="gnb">
+  <label class="gnb__toggle" for="nav-expanded" title="메뉴 접기/펼치기"><span></span></label>
+  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
+  <nav class="gnb__nav">
+    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
+    <a class="gnb__item" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
+    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
+    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
+    <a class="gnb__item is-active" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
+    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
+    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
+  </nav>
+</aside>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar__logo"></div>
+  <div class="topbar__user">
+    <div class="avatar">S</div>
+    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
+    <span class="caret">⌄</span>
+  </div>
+</header>
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb">
+  <a class="breadcrumb__back" href="schedule-list">‹</a>
+  <span>스케줄</span>
+  <span>›</span>
+  <a href="schedule-list" style="color:var(--shell-400);text-decoration:none">스케줄 조회</a>
+  <span>›</span>
+  <strong>스케줄 상세 정보</strong>
+</nav>
+
+<!-- Content -->
+<main class="content">
+  <div class="page-card">
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Schedule Detail</p>
+        <h1>6월 강남 출퇴근 패키지 <span class="status status-ok" style="font-size:14px;vertical-align:middle;margin-left:8px">운영 중</span></h1>
+        <p style="margin:4px 0 0;color:var(--muted);font-size:13px">강남 프라임 패키지 · 조건 광고 · 2026.06.01~06.30</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="schedule-register-general">복제 등록</a>
+        <a class="btn btn-dark" href="schedule-list">목록으로</a>
+      </div>
+    </header>
+
+    <!-- Detail Tabs -->
+    <nav class="tabs detail-tabs">
+      <button class="is-active" type="button" data-detail-tab="info">상세 정보</button>
+      <button type="button" data-detail-tab="status">송출 현황</button>
+    </nav>
+
+    <!-- Detail layout -->
+    <div class="detail-layout">
+
+      <!-- Sidebar -->
+      <aside class="detail-sidebar">
+        <div class="info-card">
+          <p class="info-card__title">기본 정보</p>
+          <dl class="info-list">
+            <dt>스케줄유형</dt><dd>조건</dd>
+            <dt>광고주</dt><dd>삼성전자</dd>
+            <dt>검증상태</dt><dd><span class="status status-ok">검증 완료</span></dd>
+            <dt>등록일</dt><dd>2026.05.28</dd>
+            <dt>수정일</dt><dd>2026.06.01</dd>
+          </dl>
+        </div>
+        <div class="info-card">
+          <p class="info-card__title">송출 옵션</p>
+          <dl class="info-list">
+            <dt>싱크송출</dt><dd>ON</dd>
+            <dt>광고기간</dt><dd>2026.06.01~06.30</dd>
+            <dt>운영시간</dt><dd>09:00~18:00</dd>
+            <dt>조건유형</dt><dd>타임</dd>
+            <dt>조건명</dt><dd>평일 출퇴근 집중</dd>
+          </dl>
+        </div>
+        <div class="detail-sidebar-actions">
+          <button class="btn btn-ghost btn-sm" style="flex:1">수정</button>
+          <button class="btn btn-ghost btn-sm" style="flex:1">일시정지</button>
+          <button class="btn btn-danger btn-sm" style="flex:1">삭제</button>
+        </div>
+      </aside>
+
+      <!-- Main panels -->
+      <div>
+
+        <!-- Info Panel -->
+        <div class="detail-info-panel">
+
+          <!-- 1. Product / 콘텐츠 매핑 -->
+          <div class="info-card">
+            <p class="info-card__title">Product / 콘텐츠 매핑</p>
+            <div class="schedule-mapping-grid">
+              <!-- Product -->
+              <div>
+                <div class="mapping-col-label">
+                  <span class="step-badge">1</span>
+                  Product
+                </div>
+                <div class="schedule-product-card">
+                  <div class="schedule-product-card__header">
+                    <div>
+                      <strong>강남 프라임 패키지</strong>
+                      <span>운영 미디어 3개 · 일반 / 조건 지원</span>
+                    </div>
+                    <a href="product-list" class="btn btn-ghost btn-sm">상세 보기</a>
+                  </div>
+                  <ul class="schedule-media-brief-list">
+                    <li>
+                      <span class="schedule-media-brief-list__name">강남대로 DID 01</span>
+                      <span class="schedule-media-brief-list__op">운영설정① · 평일 · 09:00~18:00 · 20초</span>
+                    </li>
+                    <li>
+                      <span class="schedule-media-brief-list__name">홍대입구 미디어보드</span>
+                      <span class="schedule-media-brief-list__op">운영설정② · 주말 · 08:00~22:00 · 15초</span>
+                    </li>
+                    <li>
+                      <span class="schedule-media-brief-list__name">잠실 롯데월드몰 2F</span>
+                      <span class="schedule-media-brief-list__op">운영설정③ · 월화수목 · 10:00~23:00 · 20초</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- 콘텐츠 -->
+              <div>
+                <div class="mapping-col-label">
+                  <span class="step-badge">2</span>
+                  콘텐츠
+                </div>
+                <div class="schedule-content-card">
+                  <div class="schedule-content-card__thumb">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+                      <path d="M9.5 8.5l7 3.5-7 3.5V8.5z" fill="#fff"/>
+                    </svg>
+                  </div>
+                  <div class="schedule-content-card__info">
+                    <strong>여름 캠페인 30초</strong>
+                    <span>30초 · 1920×1080 · MP4</span>
+                  </div>
+                  <a href="#" class="btn btn-ghost btn-sm">변경</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 슬롯 점유율 -->
+          <div class="info-card">
+            <p class="info-card__title">슬롯 점유율</p>
+            <div class="slot-deduct-list">
+              <div class="slot-deduct-row">
+                <span class="slot-deduct-row__media">강남대로 DID 01</span>
+                <div class="slot-deduct-row__track">
+                  <div class="slot-deduct-row__fill" style="width:62%"></div>
+                </div>
+                <span class="slot-deduct-row__meta">총 120슬롯 중 <em>74 점유</em> (62%)</span>
+              </div>
+              <div class="slot-deduct-row">
+                <span class="slot-deduct-row__media">홍대입구 미디어보드</span>
+                <div class="slot-deduct-row__track">
+                  <div class="slot-deduct-row__fill" style="width:45%"></div>
+                </div>
+                <span class="slot-deduct-row__meta">총 96슬롯 중 <em>43 점유</em> (45%)</span>
+              </div>
+              <div class="slot-deduct-row">
+                <span class="slot-deduct-row__media">잠실 롯데월드몰 2F</span>
+                <div class="slot-deduct-row__track">
+                  <div class="slot-deduct-row__fill" style="width:78%"></div>
+                </div>
+                <span class="slot-deduct-row__meta">총 144슬롯 중 <em>112 점유</em> (78%)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 광고 기간 현황 -->
+          <div class="info-card">
+            <p class="info-card__title">광고 기간 현황</p>
+            <div class="period-progress">
+              <div class="period-progress__dates">
+                <span>2026.06.01 시작</span>
+                <span>2026.06.30 종료</span>
+              </div>
+              <div class="period-progress__track">
+                <div class="period-progress__fill" style="width:40%">
+                  <span class="period-progress__pct">40%</span>
+                </div>
+              </div>
+              <div class="period-progress__stats">
+                <span>경과 <strong>12일</strong></span>
+                <span>남은 기간 <strong>18일</strong></span>
+                <span>총 기간 <strong>30일</strong></span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /detail-info-panel -->
+
+        <!-- Status Panel (hidden by default) -->
+        <div class="schedule-detail-status" style="display:none">
+
+          <!-- KPI strip -->
+          <div class="schedule-kpi-strip">
+            <div class="kpi-card">
+              <div class="kpi-card__label">기간내 총 송출</div>
+              <div class="kpi-card__value">5,190<span style="font-size:14px;color:var(--muted);font-weight:400">회</span></div>
+              <div class="kpi-card__sub">목표 5,700회</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-card__label">보장횟수 달성률</div>
+              <div class="kpi-card__value">91<span style="font-size:14px;color:var(--muted);font-weight:400">%</span></div>
+              <div class="kpi-card__sub">목표 대비 +91%</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-card__label">최근 송출</div>
+              <div class="kpi-card__value" style="font-size:18px">06.12 14:35</div>
+              <div class="kpi-card__sub">정상 송출 중</div>
+            </div>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="status-filter-bar">
+            <div class="status-filter-bar__group">
+              <span class="status-filter-bar__label">미디어</span>
+              <div class="status-filter-chips">
+                <button class="status-filter-chip is-active">전체</button>
+                <button class="status-filter-chip">강남대로 DID 01</button>
+                <button class="status-filter-chip">홍대입구 미디어보드</button>
+                <button class="status-filter-chip">잠실 롯데월드몰 2F</button>
+              </div>
+            </div>
+            <div class="status-filter-bar__group" style="margin-left:auto">
+              <span class="status-filter-bar__label">기간</span>
+              <input type="date" class="status-filter-date" value="2026-06-01">
+              <span class="status-filter-sep">~</span>
+              <input type="date" class="status-filter-date" value="2026-06-12">
+            </div>
+          </div>
+
+          <!-- Guarantee bars -->
+          <div class="info-card">
+            <p class="info-card__title">보장 달성률</p>
+            <div class="guarantee-bars">
+              <div class="guarantee-bar-row">
+                <span>강남대로 DID 01</span>
+                <div class="guarantee-bar__track">
+                  <div class="guarantee-bar__fill" style="width:95%"></div>
+                </div>
+                <span>1,900 / 2,000회</span>
+                <span class="guarantee-bar__remain">달성률 <em>95%</em> · 100회 남음</span>
+              </div>
+              <div class="guarantee-bar-row">
+                <span>홍대입구 미디어보드</span>
+                <div class="guarantee-bar__track">
+                  <div class="guarantee-bar__fill" style="width:88%"></div>
+                </div>
+                <span>1,540 / 1,750회</span>
+                <span class="guarantee-bar__remain">달성률 <em>88%</em> · 210회 남음</span>
+              </div>
+              <div class="guarantee-bar-row">
+                <span>잠실 롯데월드몰 2F</span>
+                <div class="guarantee-bar__track">
+                  <div class="guarantee-bar__fill guarantee-bar__fill--warn" style="width:79%"></div>
+                </div>
+                <span>1,750 / 1,950회</span>
+                <span class="guarantee-bar__remain guarantee-bar__remain--warn">달성률 <em>79%</em> · 200회 남음</span>
+              </div>
+              <div class="guarantee-bar-row guarantee-bar-row--total">
+                <span>전체 합계</span>
+                <div class="guarantee-bar__track">
+                  <div class="guarantee-bar__fill" style="width:91%"></div>
+                </div>
+                <span>5,190 / 5,700회</span>
+                <span class="guarantee-bar__remain">달성률 <em>91%</em> · 510회 남음</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily chart -->
+          <div class="info-card">
+            <p class="info-card__title">일일 송출량</p>
+            <div class="chart-placeholder">
+              <span style="position:relative;z-index:1;background:rgba(255,255,255,0.8);padding:6px 14px;border-radius:4px">일일 송출량 차트 (Chart.js 연동 예정)</span>
+            </div>
+          </div>
+
+        </div><!-- /schedule-detail-status -->
+
+      </div><!-- /main -->
+    </div><!-- /detail-layout -->
+
+  </div><!-- /page-card -->
+</main>
+
+<script src="../assets/js/app.js"></script>
+<script>
+// ── Tab switching ──
+const tabs = document.querySelectorAll('[data-detail-tab]');
+const panels = {
+  info: document.querySelector('.detail-info-panel'),
+  status: document.querySelector('.schedule-detail-status')
+};
+
+tabs.forEach(btn => {
+  btn.addEventListener('click', function() {
+    tabs.forEach(b => b.classList.remove('is-active'));
+    this.classList.add('is-active');
+    Object.values(panels).forEach(p => { if (p) p.style.display = 'none'; });
+    const p = panels[this.dataset.detailTab];
+    if (p) p.style.display = 'grid';
+  });
+});
+
+// ── Status filter chips ──
+document.querySelectorAll('.status-filter-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.status-filter-chip').forEach(c => c.classList.remove('is-active'));
+    this.classList.add('is-active');
+  });
+});
+</script>
+</body>
+</html>
