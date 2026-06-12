@@ -2617,6 +2617,8 @@ function showToast(msg) {
     }
 
     renderAll();
+    // Re-render after layout settles (handles cases where container has no width yet)
+    requestAnimationFrame(() => renderAll());
   });
 
   // ── 송출 현황 글로벌 필터 ──────────────────────────────────────

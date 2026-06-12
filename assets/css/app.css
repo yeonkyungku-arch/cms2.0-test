@@ -124,7 +124,7 @@ button { border: 0; }
   color: var(--shell-400);
   border-left: 1px solid var(--line);
 }
-input, select, textarea {
+input:not([type="hidden"]), select, textarea {
   height: 40px;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -133,6 +133,7 @@ input, select, textarea {
   padding: 0 12px;
   transition: var(--transition);
 }
+input[type="hidden"] { display: none; height: 0; padding: 0; border: 0; margin: 0; }
 input:focus, select:focus, textarea:focus {
   outline: 0;
   border-color: var(--green);
@@ -1752,13 +1753,17 @@ input[type="radio"], input[type="checkbox"] {
 .schedule-create-menu:hover .schedule-create-menu__panel,
 .schedule-create-menu:focus-within .schedule-create-menu__panel,
 .schedule-create-menu.is-open .schedule-create-menu__panel { display: grid; gap: 6px; }
-.schedule-create-menu__panel label {
+.schedule-create-menu__panel label,
+.schedule-create-menu__panel a {
   display: grid;
   gap: 4px;
   padding: 12px;
   border-radius: 6px;
+  text-decoration: none;
+  color: var(--text);
 }
-.schedule-create-menu__panel label:hover { background: var(--bg); }
+.schedule-create-menu__panel label:hover,
+.schedule-create-menu__panel a:hover { background: var(--bg); }
 .schedule-create-menu__panel span,
 .schedule-card p,
 .schedule-drop-zone__meta { color: var(--muted); font-size: 12px; line-height: 1.45; }
@@ -4578,6 +4583,7 @@ label.field-check {
 .drp-cal__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  min-height: 170px;
 }
 .drp-day {
   position: relative;
