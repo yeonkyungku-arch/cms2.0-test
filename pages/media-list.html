@@ -2,876 +2,681 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 조회 — Dooh CMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>미디어 조회 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* ── State machine overrides ── */
-    #operation-modal:checked ~ .operation-modal-view,
-    #operation-select-modal:checked ~ .operation-select-modal-view { display: grid !important; }
-
+    /* Override content padding: no breadcrumb, just topbar (60px) + margin (24px) */
+    .content { padding-top: 84px !important; padding-left: 24px !important; padding-right: 24px !important; }
+    /* Show this page's section */
+    .page { display: block; }
+    /* Tab state */
     #tab-media:checked ~ .content .media-panel,
     #tab-operation:checked ~ .content .operation-panel { display: block; }
-
     #tab-media:checked ~ .content .tabs label[for="tab-media"],
     #tab-operation:checked ~ .content .tabs label[for="tab-operation"] { color: var(--text); border-color: var(--green); }
-
+    /* View state */
     #view-list:checked ~ .content .media-view-list { display: block; }
     #view-card:checked ~ .content .media-view-card { display: grid; }
     #view-map:checked ~ .content .media-view-map { display: block; }
-
     #view-list:checked ~ .content label[for="view-list"],
     #view-card:checked ~ .content label[for="view-card"],
     #view-map:checked ~ .content label[for="view-map"] { background: var(--green); color: #fff; }
-
-    #nav-expanded:checked ~ .gnb { width: 200px; }
-    #nav-expanded:checked ~ .gnb .gnb__label { opacity: 1; transform: none; }
-    #nav-expanded:checked ~ .gnb .gnb__toggle span::before { content: "‹"; }
-    #nav-expanded:checked ~ .topbar { padding-left: 224px; }
-    #nav-expanded:checked ~ .breadcrumb { left: 200px; }
-    #nav-expanded:checked ~ .content { margin-left: 200px; }
-
-    /* ── Toolbar ── */
-    .toolbar { display: grid; gap: 10px; padding: 16px; background: var(--bg); border-radius: var(--radius); margin-bottom: 16px; }
-    .searchbar { display: flex; gap: 8px; }
-    .searchbar input { flex: 1; height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; background: #fff; }
-    .searchbar button { height: 36px; padding: 0 16px; background: var(--green); color: #fff; border: 0; border-radius: var(--radius); font-size: 13px; cursor: pointer; }
-    .filter-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-    .filter-grid select { height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; background: #fff; }
-
-    /* ── Viewbar ── */
-    .viewbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .summary-strip { display: flex; gap: 8px; }
-    .summary-btn { height: 32px; padding: 0 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; background: #fff; cursor: pointer; }
-    .summary-btn.is-active { background: var(--text); color: #fff; border-color: var(--text); }
-    .view-toggle { display: flex; gap: 4px; }
-    .view-toggle label { height: 32px; padding: 0 12px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--radius); font-size: 12px; cursor: pointer; }
-
-    /* ── Table ── */
-    .media-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
-    .media-table th, .media-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13px; white-space: nowrap; }
-    .media-table th { background: var(--bg); color: var(--muted); font-weight: 400; font-size: 12px; }
-    .media-table tr:last-child td { border-bottom: 0; }
-    .media-table a { color: var(--main); text-decoration: none; }
-    .media-table a:hover { text-decoration: underline; }
-    .media-table input[type="checkbox"] { cursor: pointer; }
-
-    /* ── Status badges ── */
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 11px; font-weight: 500; }
-    .status-ok { background: #E8F7E9; color: #2D8A33; }
-    .status-warn { background: #FFF4E0; color: #B87A00; }
-    .status-na { background: var(--bg); color: var(--muted); }
-
-    /* ── Card view ── */
-    .media-view-card { grid-template-columns: 1fr 1fr; gap: 16px; display: none; }
-    .media-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 10px; }
-    .media-card__name { font-weight: 600; font-size: 14px; color: var(--main); }
-    .media-card__meta { font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
-    .media-card__meta span { display: flex; gap: 6px; }
-    .media-card__footer { display: flex; justify-content: space-between; align-items: center; }
-
-    /* ── Map view ── */
-    .media-view-map { display: none; }
-    .map-shell { position: relative; height: 480px; background: #e8ecf0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
-    .map-grid { position: absolute; inset: 0; opacity: .2; }
-    .map-road-h { position: absolute; height: 2px; background: #fff; }
-    .map-road-v { position: absolute; width: 2px; background: #fff; }
-    .map-pin { position: absolute; transform: translate(-50%, -100%); cursor: pointer; }
-    .map-pin__dot { width: 12px; height: 12px; background: var(--green); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
-    .pin-card { position: absolute; bottom: 16px; left: 16px; width: 240px; background: #fff; border-radius: var(--radius); padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
-    .pin-card__name { font-weight: 600; margin-bottom: 6px; }
-    .pin-card__row { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-
-    /* ── Operation tab ── */
-    .operation-panel { display: none; }
-    .media-panel { display: none; }
-    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
-    .tabs label { padding: 10px 20px; cursor: pointer; font-size: 14px; border-bottom: 2px solid transparent; color: var(--muted); margin-bottom: -1px; }
-    .tabs label:hover { color: var(--text); }
-    .op-list-header { display: grid; grid-template-columns: 180px 80px 140px 120px 80px 80px 70px 100px 60px; gap: 10px; padding: 8px 18px; color: var(--muted); font-size: 12px; background: var(--bg); border-radius: var(--radius) var(--radius) 0 0; border: 1px solid var(--line); border-bottom: 0; }
-    .op-item { background: #fff; border: 1px solid var(--line); border-top: 0; }
-    .op-item:last-child { border-radius: 0 0 var(--radius) var(--radius); }
-    .op-item summary { list-style: none; cursor: pointer; padding: 14px 18px; }
-    .op-item summary::-webkit-details-marker { display: none; }
-    .op-item__summary { display: grid; grid-template-columns: 180px 80px 140px 120px 80px 80px 70px 100px 60px; gap: 10px; align-items: center; }
-    .op-item__body { padding: 0 18px 18px; border-top: 1px solid var(--line); margin-top: 2px; }
-    .op-media-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    .op-media-table th, .op-media-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13px; }
-    .op-media-table th { background: var(--bg); color: var(--muted); font-weight: 400; }
-    .op-add-media-btn { margin-top: 8px; }
-    .op-toolbar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 14px 16px; background: var(--bg); border-radius: var(--radius); margin-bottom: 16px; }
-    .op-toolbar select { height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; background: #fff; }
-
-    /* ── More menu ── */
-    .more-wrap { position: relative; display: inline-block; }
-    .btn-more { background: transparent; border: 0; cursor: pointer; padding: 4px 8px; color: var(--muted); font-size: 18px; line-height: 1; }
-    .more-menu { position: absolute; right: 0; top: 100%; z-index: 10; min-width: 120px; padding: 4px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 4px 10px rgba(0,0,0,.12); display: none; }
-    .more-menu button { display: block; width: 100%; text-align: left; padding: 8px 12px; background: transparent; border: 0; cursor: pointer; border-radius: 4px; font-size: 13px; }
-    .more-menu button:hover { background: var(--bg); }
-    .more-menu button.danger { color: var(--danger); }
-
-    /* ── Bulk action bar ── */
-    .bulk-action-bar { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 16px; padding: 12px 20px; background: var(--shell-800); color: #fff; border-radius: 100px; box-shadow: 0 4px 16px rgba(0,0,0,.3); }
-    .bulk-action-bar__actions { display: flex; gap: 8px; }
-
-    /* ── Modal ── */
-    .modal { position: fixed; inset: 0; z-index: 100; display: none; place-items: center; }
-    .modal__scrim { position: absolute; inset: 0; background: rgba(0,0,0,.5); cursor: pointer; }
-    .modal__panel { position: relative; background: #fff; border-radius: var(--radius); width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
-    .modal__header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid var(--line); }
-    .modal__header h2 { font-size: 16px; font-weight: 600; }
-    .modal__close { cursor: pointer; font-size: 22px; color: var(--muted); line-height: 1; }
-    .modal__body { padding: 20px 24px; display: grid; gap: 18px; }
-    .modal__actions { padding: 16px 24px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; }
-    .modal-field-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
-    .modal-input { width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; }
-
-    /* ── Weekday chips ── */
-    .weekday-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .weekday-chips label { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 13px; }
-    .weekday-chips input { display: none; }
-    .weekday-chips input:checked + label { background: var(--green); border-color: var(--green); color: #fff; }
-
-    /* ── Toggle line ── */
-    .toggle-line { display: flex; align-items: center; gap: 8px; min-height: 40px; }
-    .toggle-sw { appearance: none; width: 40px; height: 22px; background: var(--border); border-radius: 100px; position: relative; cursor: pointer; transition: background .2s; }
-    .toggle-sw:checked { background: var(--green); }
-    .toggle-sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: left .2s; }
-    .toggle-sw:checked::after { left: 21px; }
-
-    /* ── Slot radio ── */
-    .slot-radios { display: flex; gap: 8px; }
-    .slot-radios label { padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: 13px; }
-    .slot-radios input { display: none; }
-    .slot-radios input:checked + label { background: var(--green); border-color: var(--green); color: #fff; }
-
-    /* ── Time range ── */
-    .time-range { display: flex; align-items: center; gap: 8px; }
-    .time-range input[type="time"] { height: 36px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; }
-
-    /* ── Op select modal list ── */
-    .op-select-list { display: grid; gap: 8px; }
-    .op-select-list label { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
-    .op-select-list label:hover { border-color: var(--green); }
-    .op-select-list input { accent-color: var(--green); }
+    /* Modal state */
+    #operation-modal:checked ~ .operation-modal-view,
+    #operation-select-modal:checked ~ .operation-select-modal-view { display: grid; }
+    /* Weekday chips */
+    #weekday-sun:checked ~ .content .weekday-chips label[for="weekday-sun"],
+    #weekday-mon:checked ~ .content .weekday-chips label[for="weekday-mon"],
+    #weekday-tue:checked ~ .content .weekday-chips label[for="weekday-tue"],
+    #weekday-wed:checked ~ .content .weekday-chips label[for="weekday-wed"],
+    #weekday-thu:checked ~ .content .weekday-chips label[for="weekday-thu"],
+    #weekday-fri:checked ~ .content .weekday-chips label[for="weekday-fri"],
+    #weekday-sat:checked ~ .content .weekday-chips label[for="weekday-sat"] {
+      background: var(--green); border-color: var(--green); color: #fff;
+    }
+    /* Weekday chips in modal (not inside .content) */
+    #weekday-sun:checked ~ .operation-modal-view .weekday-chips label[for="weekday-sun"],
+    #weekday-mon:checked ~ .operation-modal-view .weekday-chips label[for="weekday-mon"],
+    #weekday-tue:checked ~ .operation-modal-view .weekday-chips label[for="weekday-tue"],
+    #weekday-wed:checked ~ .operation-modal-view .weekday-chips label[for="weekday-wed"],
+    #weekday-thu:checked ~ .operation-modal-view .weekday-chips label[for="weekday-thu"],
+    #weekday-fri:checked ~ .operation-modal-view .weekday-chips label[for="weekday-fri"],
+    #weekday-sat:checked ~ .operation-modal-view .weekday-chips label[for="weekday-sat"] {
+      background: var(--green); border-color: var(--green); color: #fff;
+    }
   </style>
 </head>
 <body>
+  <!-- State inputs for this page's CSS state machine -->
+  <input class="state" type="radio" name="media-tab" id="tab-media" checked>
+  <input class="state" type="radio" name="media-tab" id="tab-operation">
+  <input class="state" type="radio" name="media-view" id="view-list" checked>
+  <input class="state" type="radio" name="media-view" id="view-card">
+  <input class="state" type="radio" name="media-view" id="view-map">
+  <input class="state" type="checkbox" id="dupe-checked">
+  <input class="state" type="checkbox" id="weekday-sun">
+  <input class="state" type="checkbox" id="weekday-mon" checked>
+  <input class="state" type="checkbox" id="weekday-tue" checked>
+  <input class="state" type="checkbox" id="weekday-wed" checked>
+  <input class="state" type="checkbox" id="weekday-thu" checked>
+  <input class="state" type="checkbox" id="weekday-fri" checked>
+  <input class="state" type="checkbox" id="weekday-sat">
+  <input class="state" type="checkbox" id="operation-modal">
+  <input class="state" type="checkbox" id="operation-select-modal">
+  <input class="state" type="checkbox" id="fab-open">
 
-<!-- ── State inputs ── -->
-<input class="state" type="checkbox" id="nav-expanded">
-<input class="state" type="radio" name="media-tab" id="tab-media" checked>
-<input class="state" type="radio" name="media-tab" id="tab-operation">
-<input class="state" type="radio" name="media-view" id="view-list" checked>
-<input class="state" type="radio" name="media-view" id="view-card">
-<input class="state" type="radio" name="media-view" id="view-map">
-<input class="state" type="checkbox" id="operation-modal">
-<input class="state" type="checkbox" id="operation-select-modal">
-
-<!-- ── GNB ── -->
-<aside class="gnb">
-  <label class="gnb__toggle" for="nav-expanded" title="메뉴 접기/펼치기"><span></span></label>
-  <div class="gnb__brand"><span class="gnb__brand-text">Dooh Service</span></div>
-  <nav class="gnb__nav">
-    <a class="gnb__item" href="/dashboard"><span class="gnb__icon">🏠</span><span class="gnb__label">대시보드</span></a>
-    <a class="gnb__item is-active" href="/media-list"><span class="gnb__icon">🖥️</span><span class="gnb__label">미디어</span></a>
-    <a class="gnb__item" href="/product-list"><span class="gnb__icon">📦</span><span class="gnb__label">프로덕트</span></a>
-    <a class="gnb__item" href="/contents"><span class="gnb__icon">🎬</span><span class="gnb__label">콘텐츠</span></a>
-    <a class="gnb__item" href="/schedule-list"><span class="gnb__icon">🗓️</span><span class="gnb__label">스케줄</span></a>
-    <a class="gnb__item" href="/schedule-media-month"><span class="gnb__icon">📅</span><span class="gnb__label">편성표</span></a>
-    <a class="gnb__item" href="/monitoring"><span class="gnb__icon">📊</span><span class="gnb__label">모니터링</span></a>
+  <!-- Product GNB -->
+  <nav class="gnb">
+    <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+    <ul class="gnb-nav">
+      <li class="gnb-disabled"><a href="#">대시보드 <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+      <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+      <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+      <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+      <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+      <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+      <div class="gnb-sub">
+      <div class="gnb-sub-title">편성표</div>
+      <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+      <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+      <div class="gnb-divider"></div>
+      <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    </ul>
   </nav>
-</aside>
 
-<!-- ── Topbar ── -->
-<header class="topbar">
-  <div class="topbar__logo"></div>
-  <div class="topbar__user">
-    <div class="avatar">S</div>
-    <div><strong>seungrok</strong><span>Dooh Service Admin</span></div>
-    <span class="caret">⌄</span>
-  </div>
-</header>
-
-<!-- ── Breadcrumb ── -->
-<div class="breadcrumb">
-  <a class="breadcrumb__back" href="/media-list">‹</a>
-  <span>미디어</span>
-  <span>›</span>
-  <strong>미디어 조회</strong>
-</div>
-
-<!-- ── Main content ── -->
-<main class="content">
-
-  <!-- Page header -->
-  <div class="page-header">
-    <div class="page-header__text">
-      <p class="page-header__eyebrow">Media Management</p>
-      <h1 class="page-header__title">미디어 조회</h1>
+  <!-- Product Topbar -->
+  <header class="topbar">
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="전체 검색">
     </div>
-    <div class="page-header__actions">
-      <label class="btn btn-ghost" for="operation-modal">운영 설정 추가</label>
-      <a class="btn btn-primary" href="media-register">미디어 등록</a>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <label for="tab-media">미디어</label>
-    <label for="tab-operation">운영 설정</label>
-  </div>
-
-  <!-- ── Media tab panel ── -->
-  <div class="tab-panel media-panel">
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="searchbar">
-        <input type="text" placeholder="미디어명, 설치주소, 셋탑코드로 검색">
-        <button type="button">검색</button>
+    <div class="topbar-user">
+      <div class="topbar-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span class="dot-badge"></span>
       </div>
-      <div class="filter-grid">
-        <select><option>전체 상태</option><option>운영중</option><option>설정필요</option><option>중지</option></select>
-        <select><option>전체 지역</option><option>서울</option><option>부산</option><option>인천</option><option>대전</option></select>
-        <select><option>Display 유형</option><option>LCD</option><option>LED</option></select>
-        <select><option>운영설정</option><option>운영설정①</option><option>운영설정②</option><option>운영설정③</option><option>운영설정④</option><option>미적용</option></select>
-        <select><option>프로덕트</option><option>1개 이상</option><option>없음</option></select>
-        <select><option>스케줄</option><option>1개 이상</option><option>없음</option></select>
-      </div>
-    </div>
-
-    <!-- Viewbar -->
-    <div class="viewbar">
-      <div class="summary-strip">
-        <button class="summary-btn is-active" type="button">8 전체</button>
-        <button class="summary-btn" type="button">6 운영가능</button>
-        <button class="summary-btn" type="button">2 설정필요</button>
-      </div>
-      <div class="view-toggle">
-        <label for="view-list">리스트</label>
-        <label for="view-card">카드</label>
-        <label for="view-map">지도</label>
-      </div>
-    </div>
-
-    <!-- ── List view ── -->
-    <div class="media-view media-view-list">
-      <table class="media-table">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="check-all"></th>
-            <th>미디어명</th>
-            <th>설치주소</th>
-            <th>Display</th>
-            <th>셋탑코드</th>
-            <th>운영설정</th>
-            <th>운영시간</th>
-            <th>슬롯구성</th>
-            <th>보장횟수</th>
-            <th>프로덕트</th>
-            <th>스케줄</th>
-            <th>상태</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">강남대로 DID 01</a></td>
-            <td>서울 강남구 강남대로 396</td>
-            <td>LCD 55" FHD</td>
-            <td>STB001</td>
-            <td>운영설정①</td>
-            <td>09:00~18:00(9H)</td>
-            <td>20초|30슬롯</td>
-            <td>54회</td>
-            <td>12개</td>
-            <td>7개</td>
-            <td><span class="badge status-ok">운영중</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">코엑스몰 LED Wall</a></td>
-            <td>서울 강남구 영동대로 513</td>
-            <td>LED 6144×1728</td>
-            <td>STB002</td>
-            <td>미적용</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td><span class="badge status-warn">설정필요</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">부산역 게이트 03</a></td>
-            <td>부산 동구 중앙대로 206</td>
-            <td>LCD 43" UHD</td>
-            <td>STB003</td>
-            <td>운영설정②</td>
-            <td>08:00~22:00(14H)</td>
-            <td>15초|30슬롯</td>
-            <td>112회</td>
-            <td>6개</td>
-            <td>3개</td>
-            <td><span class="badge status-ok">운영중</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">을지로 패널 12</a></td>
-            <td>서울 중구 을지로 100</td>
-            <td>LCD 43" UHD</td>
-            <td>STB004</td>
-            <td>운영설정①</td>
-            <td>09:00~18:00(9H)</td>
-            <td>20초|30슬롯</td>
-            <td>54회</td>
-            <td>3개</td>
-            <td>2개</td>
-            <td><span class="badge status-ok">운영중</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">홍대입구 미디어보드</a></td>
-            <td>서울 마포구 양화로 160</td>
-            <td>LED 4096×1536</td>
-            <td>STB005</td>
-            <td>운영설정③</td>
-            <td>10:00~23:00(13H)</td>
-            <td>20초|36슬롯</td>
-            <td>65회</td>
-            <td>9개</td>
-            <td>5개</td>
-            <td><span class="badge status-ok">운영중</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">잠실 롯데월드몰 2F</a></td>
-            <td>서울 송파구 올림픽로 300</td>
-            <td>LCD 65" UHD</td>
-            <td>STB006</td>
-            <td>운영설정②</td>
-            <td>08:00~22:00(14H)</td>
-            <td>15초|30슬롯</td>
-            <td>112회</td>
-            <td>14개</td>
-            <td>8개</td>
-            <td><span class="badge status-ok">운영중</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">대전 둔산 스퀘어</a></td>
-            <td>대전 서구 둔산로 123</td>
-            <td>LCD 49" FHD</td>
-            <td>STB007</td>
-            <td>미적용</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td><span class="badge status-warn">설정필요</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="media-row-check" type="checkbox"></td>
-            <td><a href="media-detail">인천공항 T1 Gate A</a></td>
-            <td>인천 중구 공항로 272</td>
-            <td>LED 7680×2160</td>
-            <td>STB008</td>
-            <td>운영설정④</td>
-            <td>00:00~24:00(24H)</td>
-            <td>30초|30슬롯</td>
-            <td>96회</td>
-            <td>22개</td>
-            <td>11개</td>
-            <td><span class="badge status-ok">운영중</span></td>
-            <td>
-              <div class="more-wrap">
-                <button class="btn-more" type="button">···</button>
-                <div class="more-menu">
-                  <button type="button">편성표 이동</button>
-                  <button type="button">수정</button>
-                  <button type="button" class="danger">삭제</button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ── Card view ── -->
-    <div class="media-view media-view-card">
-      <div class="media-card">
-        <div class="media-card__name"><a href="media-detail">강남대로 DID 01</a></div>
-        <div class="media-card__meta">
-          <span>📍 서울 강남구 강남대로 396</span>
-          <span>🖥️ LCD 55" FHD &nbsp;|&nbsp; STB001</span>
-          <span>⚙️ 운영설정① &nbsp;|&nbsp; 09:00~18:00</span>
-          <span>🎬 20초|30슬롯 &nbsp;|&nbsp; 보장 54회</span>
-        </div>
-        <div class="media-card__footer">
-          <span class="badge status-ok">운영중</span>
-          <div class="more-wrap">
-            <button class="btn-more" type="button">···</button>
-            <div class="more-menu">
-              <button type="button">편성표 이동</button>
-              <button type="button">수정</button>
-              <button type="button" class="danger">삭제</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="media-card">
-        <div class="media-card__name"><a href="media-detail">코엑스몰 LED Wall</a></div>
-        <div class="media-card__meta">
-          <span>📍 서울 강남구 영동대로 513</span>
-          <span>🖥️ LED 6144×1728 &nbsp;|&nbsp; STB002</span>
-          <span>⚙️ 미적용</span>
-          <span>—</span>
-        </div>
-        <div class="media-card__footer">
-          <span class="badge status-warn">설정필요</span>
-          <div class="more-wrap">
-            <button class="btn-more" type="button">···</button>
-            <div class="more-menu">
-              <button type="button">편성표 이동</button>
-              <button type="button">수정</button>
-              <button type="button" class="danger">삭제</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="media-card">
-        <div class="media-card__name"><a href="media-detail">홍대입구 미디어보드</a></div>
-        <div class="media-card__meta">
-          <span>📍 서울 마포구 양화로 160</span>
-          <span>🖥️ LED 4096×1536 &nbsp;|&nbsp; STB005</span>
-          <span>⚙️ 운영설정③ &nbsp;|&nbsp; 10:00~23:00</span>
-          <span>🎬 20초|36슬롯 &nbsp;|&nbsp; 보장 65회</span>
-        </div>
-        <div class="media-card__footer">
-          <span class="badge status-ok">운영중</span>
-          <div class="more-wrap">
-            <button class="btn-more" type="button">···</button>
-            <div class="more-menu">
-              <button type="button">편성표 이동</button>
-              <button type="button">수정</button>
-              <button type="button" class="danger">삭제</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="media-card">
-        <div class="media-card__name"><a href="media-detail">인천공항 T1 Gate A</a></div>
-        <div class="media-card__meta">
-          <span>📍 인천 중구 공항로 272</span>
-          <span>🖥️ LED 7680×2160 &nbsp;|&nbsp; STB008</span>
-          <span>⚙️ 운영설정④ &nbsp;|&nbsp; 00:00~24:00</span>
-          <span>🎬 30초|30슬롯 &nbsp;|&nbsp; 보장 96회</span>
-        </div>
-        <div class="media-card__footer">
-          <span class="badge status-ok">운영중</span>
-          <div class="more-wrap">
-            <button class="btn-more" type="button">···</button>
-            <div class="more-menu">
-              <button type="button">편성표 이동</button>
-              <button type="button">수정</button>
-              <button type="button" class="danger">삭제</button>
-            </div>
-          </div>
+      <div class="topbar-profile">
+        <div class="topbar-avatar">구</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name">구연경</div>
+          <div class="topbar-profile-org">엠앤엠네트웍스</div>
         </div>
       </div>
     </div>
+  </header>
 
-    <!-- ── Map view ── -->
-    <div class="media-view media-view-map">
-      <div class="map-shell">
-        <!-- Road grid decoration -->
-        <div class="map-road-h" style="top:30%; left:0; right:0;"></div>
-        <div class="map-road-h" style="top:55%; left:0; right:0;"></div>
-        <div class="map-road-h" style="top:78%; left:0; right:0;"></div>
-        <div class="map-road-v" style="left:25%; top:0; bottom:0;"></div>
-        <div class="map-road-v" style="left:50%; top:0; bottom:0;"></div>
-        <div class="map-road-v" style="left:75%; top:0; bottom:0;"></div>
-
-        <!-- Pins -->
-        <div class="map-pin" style="top:32%; left:28%;" title="강남대로 DID 01">
-          <div class="map-pin__dot" style="background: var(--green);"></div>
-        </div>
-        <div class="map-pin" style="top:45%; left:52%;" title="코엑스몰 LED Wall">
-          <div class="map-pin__dot" style="background: var(--warn);"></div>
-        </div>
-        <div class="map-pin" style="top:60%; left:72%;" title="부산역 게이트 03">
-          <div class="map-pin__dot" style="background: var(--green);"></div>
-        </div>
-        <div class="map-pin" style="top:38%; left:40%;" title="을지로 패널 12">
-          <div class="map-pin__dot" style="background: var(--green);"></div>
-        </div>
-        <div class="map-pin" style="top:22%; left:20%;" title="홍대입구 미디어보드">
-          <div class="map-pin__dot" style="background: var(--green);"></div>
-        </div>
-        <div class="map-pin" style="top:48%; left:65%;" title="잠실 롯데월드몰 2F">
-          <div class="map-pin__dot" style="background: var(--green);"></div>
-        </div>
-
-        <!-- Info card -->
-        <div class="pin-card">
-          <div class="pin-card__name">강남대로 DID 01</div>
-          <div class="pin-card__row">📍 서울 강남구 강남대로 396</div>
-          <div class="pin-card__row">🖥️ LCD 55" FHD &nbsp;|&nbsp; STB001</div>
-          <div class="pin-card__row">⚙️ 운영설정① &nbsp;|&nbsp; 09:00~18:00</div>
-          <div style="margin-top:8px;"><span class="badge status-ok">운영중</span></div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /media-panel -->
-
-  <!-- ── Operation tab panel ── -->
-  <div class="tab-panel operation-panel">
-
-    <div class="op-toolbar">
-      <select><option>전체 상태</option><option>사용중</option><option>미사용</option></select>
-      <select><option>요일 유형</option><option>평일</option><option>주말</option><option>매일</option></select>
-      <select><option>슬롯 시간</option><option>15초</option><option>20초</option><option>30초</option></select>
-      <select><option>미디어 수</option><option>1개 이상</option><option>없음</option></select>
-      <select><option>운영 시간대</option><option>주간(06~22시)</option><option>야간(22~06시)</option></select>
-    </div>
-
-    <div class="op-list-header">
-      <span>운영 설정명</span>
-      <span>요일</span>
-      <span>운영 시간</span>
-      <span>슬롯 구성</span>
-      <span>사이클</span>
-      <span>보장</span>
-      <span>미디어</span>
-      <span>상태</span>
-      <span></span>
-    </div>
-
-    <div class="op-list">
-
-      <!-- 운영설정① -->
-      <details class="op-item">
-        <summary>
-          <div class="op-item__summary">
-            <strong>운영설정①</strong>
-            <span>평일</span>
-            <span>09:00~18:00(9H)</span>
-            <span>20초|30슬롯</span>
-            <span>600초</span>
-            <span>54회</span>
-            <span>18개</span>
-            <span><span class="badge status-ok">사용중</span></span>
-            <div class="more-wrap">
-              <button class="btn-more" type="button">···</button>
-              <div class="more-menu">
-                <button type="button">수정</button>
-                <button type="button" class="danger">삭제</button>
-              </div>
-            </div>
-          </div>
-        </summary>
-        <div class="op-item__body">
-          <table class="op-media-table">
-            <thead><tr><th>미디어명</th><th>설치주소</th><th>Display</th><th>셋탑코드</th><th>상태</th></tr></thead>
-            <tbody>
-              <tr><td><a href="media-detail">강남대로 DID 01</a></td><td>서울 강남구 강남대로 396</td><td>LCD 55" FHD</td><td>STB001</td><td><span class="badge status-ok">운영중</span></td></tr>
-              <tr><td><a href="media-detail">을지로 패널 12</a></td><td>서울 중구 을지로 100</td><td>LCD 43" UHD</td><td>STB004</td><td><span class="badge status-ok">운영중</span></td></tr>
-            </tbody>
-          </table>
-          <button class="btn btn-ghost btn-sm op-add-media-btn" onclick="location.href='operation-media-add'">+ 미디어 추가</button>
-        </div>
-      </details>
-
-      <!-- 운영설정② -->
-      <details class="op-item">
-        <summary>
-          <div class="op-item__summary">
-            <strong>운영설정②</strong>
-            <span>주말</span>
-            <span>08:00~22:00(14H)</span>
-            <span>15초|30슬롯</span>
-            <span>450초</span>
-            <span>112회</span>
-            <span>2개</span>
-            <span><span class="badge status-ok">사용중</span></span>
-            <div class="more-wrap">
-              <button class="btn-more" type="button">···</button>
-              <div class="more-menu">
-                <button type="button">수정</button>
-                <button type="button" class="danger">삭제</button>
-              </div>
-            </div>
-          </div>
-        </summary>
-        <div class="op-item__body">
-          <table class="op-media-table">
-            <thead><tr><th>미디어명</th><th>설치주소</th><th>Display</th><th>셋탑코드</th><th>상태</th></tr></thead>
-            <tbody>
-              <tr><td><a href="media-detail">부산역 게이트 03</a></td><td>부산 동구 중앙대로 206</td><td>LCD 43" UHD</td><td>STB003</td><td><span class="badge status-ok">운영중</span></td></tr>
-              <tr><td><a href="media-detail">잠실 롯데월드몰 2F</a></td><td>서울 송파구 올림픽로 300</td><td>LCD 65" UHD</td><td>STB006</td><td><span class="badge status-ok">운영중</span></td></tr>
-            </tbody>
-          </table>
-          <button class="btn btn-ghost btn-sm op-add-media-btn" onclick="location.href='operation-media-add'">+ 미디어 추가</button>
-        </div>
-      </details>
-
-      <!-- 운영설정③ -->
-      <details class="op-item">
-        <summary>
-          <div class="op-item__summary">
-            <strong>운영설정③</strong>
-            <span>월·화·수·목</span>
-            <span>10:00~23:00(13H)</span>
-            <span>20초|36슬롯</span>
-            <span>720초</span>
-            <span>65회</span>
-            <span>1개</span>
-            <span><span class="badge status-ok">사용중</span></span>
-            <div class="more-wrap">
-              <button class="btn-more" type="button">···</button>
-              <div class="more-menu">
-                <button type="button">수정</button>
-                <button type="button" class="danger">삭제</button>
-              </div>
-            </div>
-          </div>
-        </summary>
-        <div class="op-item__body">
-          <table class="op-media-table">
-            <thead><tr><th>미디어명</th><th>설치주소</th><th>Display</th><th>셋탑코드</th><th>상태</th></tr></thead>
-            <tbody>
-              <tr><td><a href="media-detail">홍대입구 미디어보드</a></td><td>서울 마포구 양화로 160</td><td>LED 4096×1536</td><td>STB005</td><td><span class="badge status-ok">운영중</span></td></tr>
-            </tbody>
-          </table>
-          <button class="btn btn-ghost btn-sm op-add-media-btn" onclick="location.href='operation-media-add'">+ 미디어 추가</button>
-        </div>
-      </details>
-
-    </div><!-- /op-list -->
-  </div><!-- /operation-panel -->
-
-</main>
-
-<!-- ── Bulk action bar ── -->
-<div class="bulk-action-bar" id="bulk-action-bar" hidden>
-  <span class="bulk-action-bar__count"><strong id="bulk-count">0</strong>개 선택됨</span>
-  <div class="bulk-action-bar__actions">
-    <button class="btn btn-ghost btn-sm" type="button">운영설정 적용 ▾</button>
-    <button class="btn btn-ghost btn-sm" id="bulk-clear">선택 해제</button>
-  </div>
-</div>
-
-<!-- ── Operation modal (운영 설정 추가) ── -->
-<div class="operation-modal-view modal" style="display:none">
-  <label class="modal__scrim" for="operation-modal"></label>
-  <div class="modal__panel">
-    <div class="modal__header">
-      <h2>운영 설정 추가</h2>
-      <label class="modal__close" for="operation-modal">×</label>
-    </div>
-    <div class="modal__body">
-      <div>
-        <div class="modal-field-label">운영 설정명</div>
-        <input class="modal-input" type="text" placeholder="예: 운영설정⑤">
-      </div>
-      <div>
-        <div class="modal-field-label">운영 요일</div>
-        <div class="weekday-chips">
-          <span><input type="checkbox" id="wd-sun" name="weekday"><label for="wd-sun">일</label></span>
-          <span><input type="checkbox" id="wd-mon" name="weekday"><label for="wd-mon">월</label></span>
-          <span><input type="checkbox" id="wd-tue" name="weekday"><label for="wd-tue">화</label></span>
-          <span><input type="checkbox" id="wd-wed" name="weekday"><label for="wd-wed">수</label></span>
-          <span><input type="checkbox" id="wd-thu" name="weekday"><label for="wd-thu">목</label></span>
-          <span><input type="checkbox" id="wd-fri" name="weekday"><label for="wd-fri">금</label></span>
-          <span><input type="checkbox" id="wd-sat" name="weekday"><label for="wd-sat">토</label></span>
-        </div>
-      </div>
-      <div>
-        <div class="modal-field-label">운영 시간</div>
-        <div class="time-range">
-          <input type="time" value="09:00">
-          <span>~</span>
-          <input type="time" value="18:00">
-        </div>
-      </div>
-      <div>
-        <div class="modal-field-label">공휴일 제외</div>
-        <div class="toggle-line">
-          <input class="toggle-sw" type="checkbox" id="holiday-toggle">
-          <label for="holiday-toggle" style="font-size:13px; color: var(--muted);">공휴일에는 운영하지 않음</label>
-        </div>
-      </div>
-      <div>
-        <div class="modal-field-label">기준 슬롯 재생 시간</div>
-        <div class="slot-radios">
-          <span><input type="radio" name="slot-time" id="slot-15"><label for="slot-15">15초</label></span>
-          <span><input type="radio" name="slot-time" id="slot-20" checked><label for="slot-20">20초</label></span>
-          <span><input type="radio" name="slot-time" id="slot-30"><label for="slot-30">30초</label></span>
-        </div>
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div>
-          <div class="modal-field-label">슬롯 구성 (자동 계산)</div>
-          <input class="modal-input" type="text" value="30슬롯" readonly style="background:var(--bg); color:var(--muted);">
-        </div>
-        <div>
-          <div class="modal-field-label">최소 보장 횟수 (자동 계산)</div>
-          <input class="modal-input" type="text" value="54회" readonly style="background:var(--bg); color:var(--muted);">
-        </div>
-      </div>
-    </div>
-    <div class="modal__actions">
-      <label class="btn btn-ghost" for="operation-modal">취소</label>
-      <label class="btn btn-primary" for="operation-modal">저장</label>
-    </div>
-  </div>
-</div>
-
-<!-- ── Operation select modal ── -->
-<div class="operation-select-modal-view modal" style="display:none">
-  <label class="modal__scrim" for="operation-select-modal"></label>
-  <div class="modal__panel">
-    <div class="modal__header">
-      <h2>운영 설정 선택</h2>
-      <label class="modal__close" for="operation-select-modal">×</label>
-    </div>
-    <div class="modal__body">
-      <div class="op-select-list">
-        <label>
-          <input type="radio" name="op-select">
+  <!-- Page content -->
+  <main class="content">
+    <section class="page page-list" style="display:block">
+      <div class="page-card">
+        <header class="page-header">
           <div>
-            <strong>운영설정①</strong>
-            <div style="font-size:12px; color:var(--muted); margin-top:2px;">평일 09:00~18:00 | 20초|30슬롯 | 보장 54회</div>
+            <p class="eyebrow">Media Management</p>
+            <h1>미디어 조회</h1>
           </div>
-        </label>
-        <label>
-          <input type="radio" name="op-select">
-          <div>
-            <strong>운영설정②</strong>
-            <div style="font-size:12px; color:var(--muted); margin-top:2px;">주말 08:00~22:00 | 15초|30슬롯 | 보장 112회</div>
+          <div class="header-actions">
+            <label class="btn btn-ghost" for="operation-modal">운영 설정 추가</label>
+            <a class="btn btn-primary" href="media-register">미디어 등록</a>
           </div>
-        </label>
-        <label>
-          <input type="radio" name="op-select">
-          <div>
-            <strong>운영설정③</strong>
-            <div style="font-size:12px; color:var(--muted); margin-top:2px;">월·화·수·목 10:00~23:00 | 20초|36슬롯 | 보장 65회</div>
+        </header>
+
+        <nav class="tabs">
+          <label for="tab-media">미디어</label>
+          <label for="tab-operation">운영 설정</label>
+        </nav>
+
+        <section class="tab-panel media-panel">
+          <div class="toolbar">
+            <form class="searchbar">
+              <select aria-label="검색 범위">
+                <option>전체</option>
+                <option>미디어명</option>
+                <option>주소</option>
+                <option>Player</option>
+              </select>
+              <input type="search" placeholder="미디어명, 주소, Player 정보를 검색해 주세요.">
+              <button type="reset" title="검색어 지우기">×</button>
+            </form>
+            <div class="filter-grid">
+              <select><option>운영 설정 적용 여부</option><option>적용</option><option>미적용</option></select>
+              <select><option>운영 미디어 여부</option><option>운영 미디어</option><option>일반 미디어</option></select>
+              <select><option>상태 전체</option><option>운영 가능</option><option>운영 설정 필요</option></select>
+              <select><option>위치 전체</option><option>서울</option><option>부산</option><option>대전</option></select>
+              <select><option>프로덕트 연결</option><option>연결 있음</option><option>없음</option></select>
+              <select><option>스케줄 연결</option><option>연결 있음</option><option>없음</option></select>
+            </div>
           </div>
-        </label>
+
+          <div class="viewbar">
+            <div class="summary-strip">
+              <button class="is-active" type="button" data-status-filter="all"><span>8</span> 전체 미디어</button>
+              <button type="button" data-status-filter="ok"><span>6</span> 운영 가능</button>
+              <button type="button" data-status-filter="warn"><span>2</span> 운영 설정 필요</button>
+            </div>
+            <div class="segmented" aria-label="미디어 보기 방식">
+              <label for="view-list">리스트</label>
+              <label for="view-card">카드</label>
+              <label for="view-map">지도</label>
+            </div>
+          </div>
+
+          <div class="media-view media-view-list">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="col-check"><input type="checkbox" id="check-all" data-check-all></th>
+                    <th>미디어명</th>
+                    <th>설치 주소</th>
+                    <th>Display</th>
+                    <th>셋탑 코드</th>
+                    <th>운영 설정</th>
+                    <th>운영 시간</th>
+                    <th>슬롯 구성</th>
+                    <th>보장 횟수</th>
+                    <th>프로덕트</th>
+                    <th>스케줄</th>
+                    <th>상태</th>
+                    <th class="col-more"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-media-status="ok">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="gangnam"></td>
+                    <td><a class="link" href="media-detail">강남대로 DID 01</a></td>
+                    <td>서울 강남구 강남대로 396</td>
+                    <td>LCD 55" FHD</td>
+                    <td>STB001</td>
+                    <td>운영설정①</td>
+                    <td>09:00~18:00<span class="op-hours">(9H)</span></td>
+                    <td>20초 | 30슬롯</td>
+                    <td>54회</td>
+                    <td class="has-tooltip" data-tooltip="스타벅스 오후 광고&#10;삼성전자 브랜드 캠페인&#10;현대자동차 이벤트">12개</td>
+                    <td class="has-tooltip" data-tooltip="평일 오전 기본 스케줄&#10;평일 오후 스케줄&#10;주말 전일 스케줄">7개</td>
+                    <td><span class="status status-ok">운영 중</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="warn">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="coex"></td>
+                    <td><a class="link" href="media-detail">코엑스몰 LED Wall</a></td>
+                    <td>서울 강남구 영동대로 513</td>
+                    <td>LED 6144×1728</td>
+                    <td>STB002</td>
+                    <td><span class="muted">미적용</span></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td><span class="status status-warn">설정 필요</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="ok">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="busan"></td>
+                    <td><a class="link" href="media-detail">부산역 게이트 03</a></td>
+                    <td>부산 동구 중앙대로 206</td>
+                    <td>LCD 43" UHD</td>
+                    <td>STB003</td>
+                    <td>운영설정②</td>
+                    <td>08:00~22:00<span class="op-hours">(14H)</span></td>
+                    <td>15초 | 30슬롯</td>
+                    <td>112회</td>
+                    <td class="has-tooltip" data-tooltip="롯데마트 행사 광고&#10;신세계 시즌 캠페인&#10;국민은행 이벤트">6개</td>
+                    <td class="has-tooltip" data-tooltip="주말 오전 스케줄&#10;주말 오후 스케줄&#10;평일 야간 스케줄">3개</td>
+                    <td><span class="status status-ok">운영 중</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="ok">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="euljiro"></td>
+                    <td><a class="link" href="media-detail">을지로 패널 12</a></td>
+                    <td>서울 중구 을지로 100</td>
+                    <td>LCD 43" UHD</td>
+                    <td>STB004</td>
+                    <td>운영설정①</td>
+                    <td>09:00~18:00<span class="op-hours">(9H)</span></td>
+                    <td>20초 | 30슬롯</td>
+                    <td>54회</td>
+                    <td class="has-tooltip" data-tooltip="삼성전자 브랜드 캠페인&#10;LG전자 제품 광고&#10;SKT 이벤트">3개</td>
+                    <td class="has-tooltip" data-tooltip="평일 기본 스케줄&#10;주말 스케줄">2개</td>
+                    <td><span class="status status-ok">운영 중</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="ok">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="hongdae"></td>
+                    <td><a class="link" href="media-detail">홍대입구 미디어보드</a></td>
+                    <td>서울 마포구 양화로 160</td>
+                    <td>LED 4096×1536</td>
+                    <td>STB005</td>
+                    <td>운영설정③</td>
+                    <td>10:00~23:00<span class="op-hours">(13H)</span></td>
+                    <td>20초 | 36슬롯</td>
+                    <td>65회</td>
+                    <td class="has-tooltip" data-tooltip="현대카드 브랜드&#10;카카오 이벤트&#10;네이버 광고&#10;배달의민족 캠페인&#10;쿠팡 할인 행사">9개</td>
+                    <td class="has-tooltip" data-tooltip="평일 저녁 스케줄&#10;주말 전일 스케줄&#10;야간 집중 스케줄">5개</td>
+                    <td><span class="status status-ok">운영 중</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="ok">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="jamsil"></td>
+                    <td><a class="link" href="media-detail">잠실 롯데월드몰 2F</a></td>
+                    <td>서울 송파구 올림픽로 300</td>
+                    <td>LCD 65" UHD</td>
+                    <td>STB006</td>
+                    <td>운영설정②</td>
+                    <td>08:00~22:00<span class="op-hours">(14H)</span></td>
+                    <td>15초 | 30슬롯</td>
+                    <td>112회</td>
+                    <td class="has-tooltip" data-tooltip="롯데백화점 세일&#10;빈폴 시즌 광고&#10;나이키 신상 캠페인&#10;기타 프로모션">14개</td>
+                    <td class="has-tooltip" data-tooltip="평일 오전 스케줄&#10;평일 오후 스케줄&#10;주말 전일 스케줄&#10;야간 타임 스케줄">8개</td>
+                    <td><span class="status status-ok">운영 중</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="warn">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="daejeon"></td>
+                    <td><a class="link" href="media-detail">대전 둔산 스퀘어</a></td>
+                    <td>대전 서구 둔산로 123</td>
+                    <td>LCD 49" FHD</td>
+                    <td>STB007</td>
+                    <td><span class="muted">미적용</span></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td><span class="status status-warn">설정 필요</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                  <tr data-media-status="ok">
+                    <td class="col-check"><input type="checkbox" class="media-row-check" data-media-id="incheon"></td>
+                    <td><a class="link" href="media-detail">인천공항 T1 Gate A</a></td>
+                    <td>인천 중구 공항로 272</td>
+                    <td>LED 7680×2160</td>
+                    <td>STB008</td>
+                    <td>운영설정④</td>
+                    <td>00:00~24:00<span class="op-hours">(24H)</span></td>
+                    <td>30초 | 30슬롯</td>
+                    <td>96회</td>
+                    <td class="has-tooltip" data-tooltip="대한항공 브랜드&#10;아시아나항공 광고&#10;면세점 캠페인&#10;외국인 타겟 이벤트">22개</td>
+                    <td class="has-tooltip" data-tooltip="출국 시간대 스케줄&#10;입국 시간대 스케줄&#10;심야 스케줄">11개</td>
+                    <td><span class="status status-ok">운영 중</span></td>
+                    <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 플로팅 액션 바 (다중 선택 시 출현) -->
+          <div class="bulk-action-bar" id="bulk-action-bar" hidden>
+            <span class="bulk-action-bar__count"><strong id="bulk-count">0</strong>개 선택됨</span>
+            <div class="bulk-action-bar__actions">
+              <div class="bulk-op-wrap">
+                <button class="btn btn-ghost btn-sm bulk-op-trigger" type="button" data-bulk-op-toggle>운영설정 적용 ▾</button>
+                <div class="bulk-op-dropdown" id="bulk-op-dropdown" hidden>
+                  <button type="button" data-op-id="op1" data-op-name="운영설정①">운영설정① <span>평일 · 09:00~18:00(9H) · 20초 | 30슬롯</span></button>
+                  <button type="button" data-op-id="op2" data-op-name="운영설정②">운영설정② <span>주말 · 08:00~22:00(14H) · 15초 | 30슬롯</span></button>
+                  <button type="button" data-op-id="op3" data-op-name="운영설정③">운영설정③ <span>월·화·수·목 · 10:00~23:00(13H) · 20초 | 36슬롯</span></button>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" type="button" id="bulk-clear">선택 해제</button>
+            </div>
+          </div>
+
+          <div class="media-view media-view-card">
+            <article class="media-card">
+              <div class="media-card__head"><h3>강남대로 DID 01</h3><span class="status status-ok">운영 중</span></div>
+              <p>서울 강남구 강남대로 396</p>
+              <dl><dt>Display</dt><dd>LCD 55" FHD</dd><dt>Player</dt><dd>Quber Settop</dd><dt>운영 설정</dt><dd>평일 09:00~18:00</dd><dt>사이클/보장</dt><dd>600초 · 54회</dd></dl>
+              <div class="mini-stats"><span>프로덕트 12</span><span>스케줄 7</span><span class="status status-good">여유</span></div>
+              <div class="card-actions">
+                <a class="btn btn-dark btn-sm" href="media-detail">상세 보기</a>
+                <label class="btn btn-ghost btn-sm" for="operation-select-modal">운영 설정 변경</label>
+                <a class="btn btn-ghost btn-sm" href="product-list">프로덕트 보기</a>
+                <button class="btn btn-ghost btn-sm" type="button" data-toast="편성표 화면은 추후 제공됩니다.">편성표 보기</button>
+              </div>
+            </article>
+            <article class="media-card media-card--no-operation">
+              <div class="media-card__head"><h3>코엑스몰 LED Wall</h3><span class="status status-warn">설정 필요</span></div>
+              <p>서울 강남구 영동대로 513</p>
+              <dl><dt>Display</dt><dd>LED 6144×1728</dd><dt>Player</dt><dd>BrightSign Settop</dd><dt>운영 설정</dt><dd>미적용</dd></dl>
+              <div class="card-actions">
+                <a class="btn btn-dark btn-sm" href="media-detail">상세 보기</a>
+                <label class="btn btn-ghost btn-sm" for="operation-select-modal">운영 설정 적용</label>
+              </div>
+            </article>
+            <article class="media-card">
+              <div class="media-card__head"><h3>홍대입구 미디어보드</h3><span class="status status-ok">운영 중</span></div>
+              <p>서울 마포구 양화로 160</p>
+              <dl><dt>Display</dt><dd>LED 4096×1536</dd><dt>Player</dt><dd>BrightSign Settop</dd><dt>운영 설정</dt><dd>운영설정③ · 10:00~23:00</dd><dt>사이클/보장</dt><dd>720초 · 65회</dd></dl>
+              <div class="mini-stats"><span>프로덕트 9</span><span>스케줄 5</span><span class="status status-near">임박</span></div>
+              <div class="card-actions">
+                <a class="btn btn-dark btn-sm" href="media-detail">상세 보기</a>
+                <label class="btn btn-ghost btn-sm" for="operation-select-modal">운영 설정 변경</label>
+                <a class="btn btn-ghost btn-sm" href="product-list">프로덕트 보기</a>
+                <button class="btn btn-ghost btn-sm" type="button" data-toast="편성표 화면은 추후 제공됩니다.">편성표 보기</button>
+              </div>
+            </article>
+            <article class="media-card">
+              <div class="media-card__head"><h3>인천공항 T1 Gate A</h3><span class="status status-ok">운영 중</span></div>
+              <p>인천 중구 공항로 272</p>
+              <dl><dt>Display</dt><dd>LED 7680×2160</dd><dt>Player</dt><dd>BrightSign Settop</dd><dt>운영 설정</dt><dd>운영설정④ · 00:00~24:00</dd><dt>사이클/보장</dt><dd>900초 · 96회</dd></dl>
+              <div class="mini-stats"><span>프로덕트 22</span><span>스케줄 11</span><span class="status status-good">여유</span></div>
+              <div class="card-actions">
+                <a class="btn btn-dark btn-sm" href="media-detail">상세 보기</a>
+                <label class="btn btn-ghost btn-sm" for="operation-select-modal">운영 설정 변경</label>
+                <a class="btn btn-ghost btn-sm" href="product-list">프로덕트 보기</a>
+                <button class="btn btn-ghost btn-sm" type="button" data-toast="편성표 화면은 추후 제공됩니다.">편성표 보기</button>
+              </div>
+            </article>
+          </div>
+
+          <div class="media-view media-view-map">
+            <div class="map-shell">
+              <div class="map-grid"></div>
+              <label class="btn btn-ghost btn-sm map-reset" for="view-map">초기화</label>
+              <button class="pin pin-good is-selected" type="button" data-media-id="gangnam" style="left:54%;top:42%" aria-label="강남대로 DID 01"></button>
+              <button class="pin pin-warn" type="button" data-media-id="coex" style="left:58%;top:45%" aria-label="코엑스몰 LED Wall"></button>
+              <button class="pin pin-danger" type="button" data-media-id="busan" style="left:41%;top:66%" aria-label="부산역 게이트 03"></button>
+              <button class="pin pin-near" type="button" data-media-id="hongdae" style="left:50%;top:37%" aria-label="홍대입구 미디어보드"></button>
+              <button class="pin pin-good" type="button" data-media-id="jamsil" style="left:63%;top:52%" aria-label="잠실 롯데월드몰 2F"></button>
+              <button class="pin pin-good" type="button" data-media-id="incheon" style="left:29%;top:58%" aria-label="인천공항 T1 Gate A"></button>
+              <aside class="pin-card">
+                <h3 data-pin-field="name">강남대로 DID 01</h3>
+                <p data-pin-field="address">서울 강남구 강남대로 396</p>
+                <dl><dt>운영 설정</dt><dd data-pin-field="setting">운영설정① · 평일 09:00~18:00</dd><dt>사이클 최대</dt><dd data-pin-field="cycle">600초</dd><dt>최소 보장</dt><dd data-pin-field="guarantee">54회</dd><dt>금일 잔여</dt><dd data-pin-field="status"><span class="status status-good">여유</span></dd><dt>연결 정보</dt><dd data-pin-field="links">프로덕트 12 · 스케줄 7</dd></dl>
+                <a class="btn btn-primary btn-sm" href="media-detail">상세 보기</a>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel operation-panel">
+          <div class="toolbar toolbar-compact">
+            <select><option>운영 요일 전체</option><option>매일</option><option>평일</option><option>주말</option></select>
+            <select><option>운영 시간 전체</option><option>09:00~18:00</option><option>08:00~22:00</option></select>
+            <select><option>기준 슬롯 재생 시간</option><option>15초</option><option>20초</option><option>30초</option></select>
+            <select><option>적용 미디어 여부</option><option>적용 있음</option><option>적용 없음</option></select>
+            <select><option>상태 전체</option><option>사용 중</option><option>미사용</option></select>
+          </div>
+          <div class="operation-list">
+            <div class="op-list-header">
+              <span>운영 설정명</span>
+              <span>요일</span>
+              <span>운영 시간</span>
+              <span>슬롯 구성</span>
+              <span>사이클</span>
+              <span>보장</span>
+              <span>미디어</span>
+              <span>상태</span>
+              <span></span>
+            </div>
+            <details class="op-item" open>
+              <summary class="op-item__summary">
+                <span class="op-item__name"><strong>운영설정①</strong></span>
+                <span>평일</span>
+                <span>09:00~18:00<span class="op-hours">(9H)</span></span>
+                <span>20초 | 30슬롯</span>
+                <span>600초</span>
+                <span>54회</span>
+                <span>18개</span>
+                <span class="status status-ok">사용 중</span>
+                <div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div>
+              </summary>
+              <div class="op-item__body">
+                <table class="op-media-table">
+                  <thead>
+                    <tr>
+                      <th>미디어명</th>
+                      <th>설치 주소</th>
+                      <th>Display</th>
+                      <th>셋탑 코드</th>
+                      <th>프로덕트</th>
+                      <th>스케줄</th>
+                      <th>상태</th>
+                      <th class="col-more"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><a class="link" href="media-detail">강남대로 DID 01</a></td>
+                      <td>서울 강남구 강남대로 396</td>
+                      <td>LCD 55" FHD</td>
+                      <td>STB001</td>
+                      <td>12개</td>
+                      <td>7개</td>
+                      <td><span class="status status-ok">운영 중</span></td>
+                      <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                    </tr>
+                    <tr>
+                      <td><a class="link" href="media-detail">을지로 패널 12</a></td>
+                      <td>서울 중구 을지로 100</td>
+                      <td>LCD 43" UHD</td>
+                      <td>STB004</td>
+                      <td>3개</td>
+                      <td>2개</td>
+                      <td><span class="status status-ok">운영 중</span></td>
+                      <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button class="btn btn-ghost btn-sm op-add-media-btn" type="button" data-open-panel="op1" data-op-name="운영설정①">+ 미디어 추가</button>
+              </div>
+            </details>
+            <details class="op-item">
+              <summary class="op-item__summary">
+                <span class="op-item__name"><strong>운영설정②</strong></span>
+                <span>주말</span>
+                <span>08:00~22:00<span class="op-hours">(14H)</span></span>
+                <span>15초 | 30슬롯</span>
+                <span>450초</span>
+                <span>112회</span>
+                <span>2개</span>
+                <span class="status status-ok">사용 중</span>
+                <div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div>
+              </summary>
+              <div class="op-item__body">
+                <table class="op-media-table">
+                  <thead>
+                    <tr>
+                      <th>미디어명</th>
+                      <th>설치 주소</th>
+                      <th>Display</th>
+                      <th>셋탑 코드</th>
+                      <th>프로덕트</th>
+                      <th>스케줄</th>
+                      <th>상태</th>
+                      <th class="col-more"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><a class="link" href="media-detail">부산역 게이트 03</a></td>
+                      <td>부산 동구 중앙대로 206</td>
+                      <td>LCD 43" UHD</td>
+                      <td>STB003</td>
+                      <td>6개</td>
+                      <td>3개</td>
+                      <td><span class="status status-ok">운영 중</span></td>
+                      <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                    </tr>
+                    <tr>
+                      <td><a class="link" href="media-detail">잠실 롯데월드몰 2F</a></td>
+                      <td>서울 송파구 올림픽로 300</td>
+                      <td>LCD 65" UHD</td>
+                      <td>STB006</td>
+                      <td>14개</td>
+                      <td>8개</td>
+                      <td><span class="status status-ok">운영 중</span></td>
+                      <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button class="btn btn-ghost btn-sm op-add-media-btn" type="button" data-open-panel="op2" data-op-name="운영설정②">+ 미디어 추가</button>
+              </div>
+            </details>
+            <details class="op-item">
+              <summary class="op-item__summary">
+                <span class="op-item__name"><strong>운영설정③</strong></span>
+                <span class="op-days-custom">월·화·수·목</span>
+                <span>10:00~23:00<span class="op-hours">(13H)</span></span>
+                <span>20초 | 36슬롯</span>
+                <span>720초</span>
+                <span>65회</span>
+                <span>1개</span>
+                <span class="status status-ok">사용 중</span>
+                <div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div>
+              </summary>
+              <div class="op-item__body">
+                <table class="op-media-table">
+                  <thead>
+                    <tr>
+                      <th>미디어명</th>
+                      <th>설치 주소</th>
+                      <th>Display</th>
+                      <th>셋탑 코드</th>
+                      <th>프로덕트</th>
+                      <th>스케줄</th>
+                      <th>상태</th>
+                      <th class="col-more"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><a class="link" href="media-detail">홍대입구 미디어보드</a></td>
+                      <td>서울 마포구 양화로 160</td>
+                      <td>LED 4096×1536</td>
+                      <td>STB005</td>
+                      <td>9개</td>
+                      <td>5개</td>
+                      <td><span class="status status-ok">운영 중</span></td>
+                      <td class="col-more"><div class="more-wrap"><button class="btn-more" type="button">···</button><div class="more-menu"><button type="button">편성표 이동</button><button type="button">수정</button><button type="button" class="danger">삭제</button></div></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button class="btn btn-ghost btn-sm op-add-media-btn" type="button" data-open-panel="op3" data-op-name="운영설정③">+ 미디어 추가</button>
+              </div>
+            </details>
+          </div>
+        </section>
       </div>
-    </div>
-    <div class="modal__actions">
-      <label class="btn btn-ghost" for="operation-select-modal">취소</label>
-      <label class="btn btn-primary" for="operation-select-modal">선택</label>
-    </div>
+    </section>
+  </main>
+
+  <!-- Modals -->
+  <div class="modal operation-modal-view" role="dialog" aria-modal="true" aria-labelledby="operation-title">
+    <label class="modal__scrim" for="operation-modal"></label>
+    <section class="modal__panel operation-setting-modal">
+      <header class="modal__header">
+        <h2 id="operation-title">운영 설정 추가</h2>
+        <label class="modal__close" for="operation-modal">×</label>
+      </header>
+      <div class="modal__body">
+        <div class="form-section modal-section operation-name-field">
+          <label>운영 설정명 <span class="muted" style="font-size:12px">(필수)</span><input id="op-name" type="text" placeholder="예: 강남 평일 09-18 기본 운영" maxlength="40"></label>
+          <p class="helper op-name-error" id="op-name-error" hidden>이미 사용 중인 운영 설정명입니다. 다른 운영 설정명을 입력해 주세요.</p>
+          <p class="helper op-name-ok" id="op-name-ok" hidden>사용 가능한 운영 설정명입니다.</p>
+        </div>
+        <div class="form-section modal-section">
+          <h3>운영 요일</h3>
+          <div class="choice-row">
+            <label><input type="radio" name="weekday-preset" value="매일"> 매일</label>
+            <label><input type="radio" name="weekday-preset" value="평일" checked> 평일</label>
+            <label><input type="radio" name="weekday-preset" value="주말"> 주말</label>
+            <label><input type="radio" name="weekday-preset" value="사용자 정의"> 사용자 정의</label>
+          </div>
+          <div class="weekday-chips"><label for="weekday-sun">일</label><label for="weekday-mon">월</label><label for="weekday-tue">화</label><label for="weekday-wed">수</label><label for="weekday-thu">목</label><label for="weekday-fri">금</label><label for="weekday-sat">토</label></div>
+        </div>
+        <div class="grid-2">
+          <label>시작 시간<input id="op-start-time" type="time" value="09:00"></label>
+          <label>종료 시간<input id="op-end-time" type="time" value="18:00"></label>
+          <label>기준 슬롯 재생 시간<span class="input-unit"><input id="op-slot-duration" type="number" value="20" min="1"><span>초</span></span></label>
+          <label>기준 슬롯 수<span class="input-unit"><input id="op-slot-count" type="number" value="30" min="1"><span>슬롯</span></span></label>
+        </div>
+        <div class="calc-box">
+          <dl><dt>운영 설정 표시명</dt><dd id="op-summary-name">운영설정⑤ · 평일 · 09:00~18:00 · 20초 × 30슬롯</dd><dt>사이클 최대 시간</dt><dd id="op-summary-cycle">600초</dd><dt>최소 보장 횟수</dt><dd id="op-summary-guarantee">54회</dd></dl>
+        </div>
+      </div>
+      <footer class="modal__actions">
+        <label class="btn btn-ghost" for="operation-modal">취소</label>
+        <label class="btn btn-primary" for="operation-modal">추가하기</label>
+      </footer>
+    </section>
   </div>
-</div>
 
-<script src="../assets/js/app.js"></script>
-<script>
-  // Bulk action bar
-  document.querySelectorAll('.media-row-check').forEach(cb => {
-    cb.addEventListener('change', updateBulkBar);
-  });
-  document.getElementById('check-all')?.addEventListener('change', function() {
-    document.querySelectorAll('.media-row-check').forEach(cb => cb.checked = this.checked);
-    updateBulkBar();
-  });
-  function updateBulkBar() {
-    const checked = document.querySelectorAll('.media-row-check:checked').length;
-    document.getElementById('bulk-count').textContent = checked;
-    document.getElementById('bulk-action-bar').hidden = checked === 0;
-  }
-  document.getElementById('bulk-clear')?.addEventListener('click', () => {
-    document.querySelectorAll('.media-row-check, #check-all').forEach(cb => cb.checked = false);
-    updateBulkBar();
-  });
+  <div class="modal operation-select-modal-view" role="dialog" aria-modal="true" aria-labelledby="operation-select-title">
+    <label class="modal__scrim" for="operation-select-modal"></label>
+    <section class="modal__panel operation-select-modal">
+      <header class="modal__header">
+        <h2 id="operation-select-title">운영 설정 선택</h2>
+        <label class="modal__close" for="operation-select-modal">×</label>
+      </header>
+      <div class="modal__body">
+        <p class="modal-copy">등록된 운영 설정 중 하나를 선택하여 현재 미디어에 적용하거나 변경합니다.</p>
+        <div class="operation-choice-list">
+          <label>
+            <input type="radio" name="operation-choice" checked>
+            <span class="op-name-label"><strong>강남 평일 09-18 기본 운영</strong><em>평일 · 09:00~18:00 · 20초 × 30슬롯 · 사이클 600초 · 최소 54회</em></span>
+            <span class="status status-ok">18개 미디어</span>
+          </label>
+          <label>
+            <input type="radio" name="operation-choice">
+            <span class="op-name-label"><strong>코엑스 매일 08-22 운영</strong><em>매일 · 08:00~22:00 · 15초 × 30슬롯 · 사이클 450초 · 최소 112회</em></span>
+            <span class="status status-ok">24개 미디어</span>
+          </label>
+          <label>
+            <input type="radio" name="operation-choice">
+            <span class="op-name-label"><strong>홍대 저녁 10-23 운영</strong><em>매일 · 10:00~23:00 · 20초 × 36슬롯 · 사이클 720초 · 최소 65회</em></span>
+            <span class="status status-ok">9개 미디어</span>
+          </label>
+          <label>
+            <input type="radio" name="operation-choice">
+            <span class="op-name-label"><strong>공항 24시간 전일 운영</strong><em>매일 · 00:00~24:00 · 30초 × 30슬롯 · 사이클 900초 · 최소 96회</em></span>
+            <span class="status status-ok">6개 미디어</span>
+          </label>
+        </div>
+        <div class="select-modal-footer-note">
+          <label class="btn btn-ghost btn-sm" for="operation-modal">새 운영 설정 추가</label>
+        </div>
+      </div>
+      <footer class="modal__actions">
+        <label class="btn btn-ghost" for="operation-select-modal">취소</label>
+        <label class="btn btn-primary" for="operation-select-modal">적용하기</label>
+      </footer>
+    </section>
+  </div>
 
-  // More menu
-  document.addEventListener('click', e => {
-    if (e.target.classList.contains('btn-more')) {
-      const menu = e.target.nextElementSibling;
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    } else {
-      document.querySelectorAll('.more-menu').forEach(m => m.style.display = '');
-    }
-  });
-</script>
+  <!-- Slide-over panel: 미디어 추가 -->
+  <div class="slide-panel-backdrop" id="slide-panel-backdrop" hidden>
+    <aside class="slide-panel" id="slide-panel" aria-label="미디어 추가">
+      <div class="slide-panel__inner">
+        <div class="slide-panel__head">
+          <div>
+            <p class="slide-panel__eyebrow">운영설정 적용</p>
+            <h2 class="slide-panel__title" id="slide-panel-title">운영설정①에 미디어 추가</h2>
+          </div>
+          <button class="slide-panel__close" type="button" id="slide-panel-close" aria-label="닫기">×</button>
+        </div>
+        <div class="slide-panel__filters">
+          <input class="slide-panel__search" type="search" placeholder="미디어명 또는 주소 검색" id="panel-search">
+        </div>
+        <div class="slide-panel__body">
+          <ul class="panel-media-list" id="panel-media-list"></ul>
+        </div>
+        <div class="slide-panel__foot">
+          <span class="slide-panel__sel-count"><strong id="panel-sel-count">0</strong>개 선택</span>
+          <div class="slide-panel__foot-actions">
+            <button class="btn btn-ghost btn-sm" type="button" id="slide-panel-cancel">취소</button>
+            <button class="btn btn-primary btn-sm" type="button" id="slide-panel-apply">적용하기</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../assets/js/app.js"></script>
 </body>
 </html>
