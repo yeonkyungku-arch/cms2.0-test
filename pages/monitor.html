@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모니터링 — CMS 2.0</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <style>
+    .content { padding-top: 0; }
+
+    /* Monitor grid cards */
+    .monitor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .mon-card {
+      border: 1px solid #EBEEF5;
+      border-radius: 4px;
+      overflow: hidden;
+      transition: box-shadow 0.25s ease;
+    }
+    .mon-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    .mon-card.status-error { border-color: #EB6A4E; }
+    .mon-card.status-offline { border-color: #D3D4D6; }
+
+    .mon-card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid #EBEEF5;
+      background: #FAFAFA;
+    }
+    .mon-card-name { font-size: 14px; font-weight: 500; color: #000; }
+    .mon-card-body { padding: 12px 14px; }
+
+    /* Screen preview */
+    .screen-preview {
+      width: 100%; height: 100px;
+      background: #1a1a2e; border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px; overflow: hidden; position: relative;
+    }
+    .screen-preview.offline { background: #2a2a2a; }
+    .screen-preview.error   { background: #2a1010; }
+    .screen-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .screen-preview-label {
+      position: absolute; font-size: 12px; color: rgba(255,255,255,0.5);
+    }
+
+    /* Spec rows */
+    .spec-row {
+      display: flex; justify-content: space-between;
+      font-size: 12px; margin-bottom: 5px;
+    }
+    .spec-label { color: #909399; }
+    .spec-value { color: #000; font-weight: 400; }
+    .spec-value.good  { color: #52B65C; }
+    .spec-value.warn  { color: #FFA940; }
+    .spec-value.error { color: #EB6A4E; }
+
+    /* Progress bar */
+    .prog-bar { height: 4px; background: #EBEEF5; border-radius: 2px; margin: 3px 0 8px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 2px; background: #52B65C; }
+    .prog-fill.warn  { background: #FFA940; }
+    .prog-fill.error { background: #EB6A4E; }
+
+    /* Log section */
+    .log-list { margin-top: 6px; }
+    .log-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 11px; color: #909399; padding: 4px 0;
+      border-top: 1px solid #F5F7FA;
+    }
+    .log-item:first-child { border-top: none; }
+    .log-time { white-space: nowrap; flex-shrink: 0; }
+    .log-msg.error { color: #EB6A4E; }
+    .log-msg.warn  { color: #FFA940; }
+
+    /* Refresh btn */
+    .refresh-badge {
+      font-size: 11px; color: #909399;
+      display: flex; align-items: center; gap: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GNB -->
+  <aside class="gnb">
+    <div class="gnb-logo">
+      <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+        <rect width="50" height="50" rx="8" fill="rgba(0,0,0,0.08)"/>
+        <text x="25" y="32" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="15" font-weight="700" fill="#fff">DL</text>
+      </svg>
+    </div>
+    <nav class="gnb-nav">
+      <a href="dashboard.html"><svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="12" y="2" width="8" height="8" rx="1"/><rect x="2" y="12" width="8" height="8" rx="1"/><rect x="12" y="12" width="8" height="8" rx="1"/></svg>대시보드</a>
+      <a href="media.html"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="18" height="12" rx="2"/><path d="M8 18h6M11 16v2" stroke-linecap="round"/></svg>미디어</a>
+      <a href="media-group.html"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="16" height="11" rx="1.5"/><path d="M6 7V5a1 1 0 011-1h8a1 1 0 011 1v2"/></svg>미디어그룹</a>
+      <a href="contents.html"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a1 1 0 00-1 1v16a1 1 0 001 1h10a1 1 0 001-1V7l-4-5z"/><path d="M13 2v5h4"/><line x1="8" y1="11" x2="14" y2="11" stroke-linecap="round"/><line x1="8" y1="14" x2="12" y2="14" stroke-linecap="round"/></svg>콘텐츠</a>
+      <a href="schedule.html"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="16" height="15" rx="2"/><path d="M3 9h16M8 2v3M14 2v3" stroke-linecap="round"/><rect x="6" y="13" width="2" height="2" rx=".5" fill="currentColor" stroke="none"/><rect x="10" y="13" width="2" height="2" rx=".5" fill="currentColor" stroke="none"/><rect x="14" y="13" width="2" height="2" rx=".5" fill="currentColor" stroke="none"/></svg>스케줄</a>
+      <a href="monitor.html" class="active">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="2,16 6,10 10,13 14,7 20,11"/>
+        </svg>모니터링
+      </a>
+      <div class="gnb-divider"></div>
+      <a href="admin.html"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="8" r="3.5"/><path d="M3 19c0-4 3.6-7 8-7s8 3 8 7" stroke-linecap="round"/></svg>사용자관리</a>
+    </nav>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar" id="topbar">
+    <div class="topbar-top">
+      <div class="topbar-search">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="#9EA5AD" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="13" y2="13" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="text" placeholder="검색">
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-icon-btn"><div class="dot-badge"></div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5.5 5.5 0 00-5.5 5.5V11l-1.5 2h14L14.5 11V7.5A5.5 5.5 0 009 2z" stroke="#9EA5AD" stroke-width="1.3"/><path d="M7 14a2 2 0 004 0" stroke="#9EA5AD" stroke-width="1.3"/></svg>
+        </div>
+        <div class="topbar-profile" id="profileTrigger" onclick="toggleProfile(event)">
+          <div class="topbar-profile-info">
+            <div class="topbar-profile-name">관리자</div>
+            <div class="topbar-profile-org">DOOH Service</div>
+          </div>
+          <span class="topbar-caret">▾</span>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="#">내 정보</a><a href="#">비밀번호 변경</a>
+            <a href="login.html" class="logout">로그아웃</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-bottom">
+      <span class="header-title">모니터링</span>
+      <ul class="header-nav">
+        <li class="active"><a href="monitor.html">실시간 현황</a></li>
+        <li><a href="#">이력 조회</a></li>
+      </ul>
+    </div>
+    <ul class="header-subnav">
+      <li class="active"><a href="#">전체</a></li>
+      <li><a href="#">온라인</a></li>
+      <li><a href="#">오프라인</a></li>
+      <li><a href="#">오류</a></li>
+    </ul>
+  </header>
+
+  <!-- Content -->
+  <main class="content" id="mainContent">
+
+    <!-- State Panel -->
+    <div class="state-wrap">
+      <ul>
+        <li class="active"><span>전체</span><h1>128</h1></li>
+        <li><span><em class="stat-dot dot-online"></em>온라인</span><h1>115</h1></li>
+        <li><span><em class="stat-dot dot-offline"></em>오프라인</span><h1>8</h1></li>
+        <li><span><em class="stat-dot dot-error"></em>오류</span><h1>5</h1></li>
+      </ul>
+    </div>
+
+    <div class="article">
+      <div class="article-header">
+        <span class="article-title">기기 실시간 현황</span>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="refresh-badge">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#9EA5AD" stroke-width="1.3" stroke-linecap="round"><path d="M10.5 2A5 5 0 102 9.5"/><polyline points="10.5,2 10.5,5 7.5,5"/></svg>
+            마지막 갱신 09:14:32
+          </span>
+          <button class="btn btn-plain btn-sm">새로고침</button>
+          <select class="sel" style="width:120px;"><option value="">전체 지역</option><option>서울</option><option>경기</option><option>부산</option></select>
+        </div>
+      </div>
+      <div class="article-inner">
+        <div class="monitor-grid" id="monitorGrid"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    var devices = [
+      { name:'서울 강남 A', status:'online', cpu:34, mem:52, disk:68, temp:41, playing:'브랜드 광고 캠페인', ip:'192.168.1.101',
+        logs:[{t:'09:10',m:'콘텐츠 재생 시작',c:''},{t:'08:00',m:'시스템 부팅',c:''}] },
+      { name:'서울 강남 B', status:'online', cpu:21, mem:44, disk:55, temp:38, playing:'에너지 절약 포스터', ip:'192.168.1.102',
+        logs:[{t:'09:12',m:'콘텐츠 재생 시작',c:''},{t:'08:01',m:'시스템 부팅',c:''}] },
+      { name:'서울 홍대 A', status:'online', cpu:58, mem:71, disk:42, temp:47, playing:'브랜드 광고 캠페인', ip:'192.168.1.103',
+        logs:[{t:'09:08',m:'콘텐츠 재생 시작',c:''},{t:'08:00',m:'시스템 부팅',c:''}] },
+      { name:'경기 수원 A', status:'error', cpu:95, mem:89, disk:91, temp:78, playing:'—', ip:'192.168.2.101',
+        logs:[{t:'08:55',m:'디스플레이 연결 오류',c:'error'},{t:'08:30',m:'CPU 과부하 경고',c:'warn'},{t:'08:00',m:'시스템 부팅',c:''}] },
+      { name:'경기 분당 A', status:'offline', cpu:0, mem:0, disk:0, temp:0, playing:'—', ip:'192.168.2.102',
+        logs:[{t:'2024.12.20',m:'마지막 접속',c:''},{t:'2024.12.20',m:'네트워크 연결 끊김',c:'error'}] },
+      { name:'부산 서면 A', status:'online', cpu:29, mem:48, disk:33, temp:39, playing:'신제품 출시 프로모션', ip:'192.168.3.101',
+        logs:[{t:'09:11',m:'콘텐츠 재생 시작',c:''},{t:'08:00',m:'시스템 부팅',c:''}] },
+      { name:'서울 여의도 A', status:'check', cpu:0, mem:0, disk:0, temp:0, playing:'점검 중', ip:'192.168.1.104',
+        logs:[{t:'08:00',m:'정기 점검 시작',c:'warn'},{t:'07:58',m:'시스템 종료',c:''}] },
+      { name:'대구 동성로 A', status:'online', cpu:44, mem:60, disk:50, temp:43, playing:'에너지 절약 포스터', ip:'192.168.4.101',
+        logs:[{t:'09:09',m:'콘텐츠 재생 시작',c:''},{t:'08:01',m:'시스템 부팅',c:''}] },
+    ];
+
+    var statusBadge = {
+      online:  '<span class="badge badge-online">온라인</span>',
+      offline: '<span class="badge badge-offline">오프라인</span>',
+      error:   '<span class="badge badge-error">오류</span>',
+      check:   '<span class="badge badge-offline">점검 중</span>',
+    };
+
+    function progCls(v) { return v >= 80 ? 'error' : v >= 60 ? 'warn' : ''; }
+    function valCls(v)  { return v >= 80 ? 'error' : v >= 60 ? 'warn' : 'good'; }
+
+    function renderCards() {
+      var html = '';
+      devices.forEach(function(d) {
+        var isOff = d.status === 'offline' || d.status === 'check';
+        var prevCls = isOff ? (d.status === 'offline' ? 'offline' : 'error') : '';
+        html += '<div class="mon-card status-' + d.status + '">'
+          + '<div class="mon-card-head">'
+          + '<span class="mon-card-name">' + d.name + '</span>'
+          + statusBadge[d.status]
+          + '</div>'
+          + '<div class="mon-card-body">'
+          // Screen preview
+          + '<div class="screen-preview ' + prevCls + '">'
+          + (isOff
+              ? '<span class="screen-preview-label">' + (d.status === 'offline' ? '오프라인' : '점검 중') + '</span>'
+              : '<svg width="48" height="30" viewBox="0 0 48 30" fill="none"><rect width="48" height="30" rx="2" fill="rgba(255,255,255,0.05)"/><text x="24" y="19" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.3)">LIVE</text></svg>')
+          + '</div>';
+
+        if (!isOff) {
+          html += '<div class="spec-row"><span class="spec-label">재생 중</span><span class="spec-value" style="font-size:11px; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + d.playing + '</span></div>';
+
+          ['cpu','mem','disk'].forEach(function(k) {
+            var v = d[k];
+            var label = {cpu:'CPU',mem:'메모리',disk:'디스크'}[k];
+            html += '<div class="spec-row"><span class="spec-label">' + label + '</span><span class="spec-value ' + valCls(v) + '">' + v + '%</span></div>'
+              + '<div class="prog-bar"><div class="prog-fill ' + progCls(v) + '" style="width:' + v + '%;"></div></div>';
+          });
+
+          html += '<div class="spec-row"><span class="spec-label">온도</span><span class="spec-value ' + valCls(d.temp - 20) + '">' + d.temp + '°C</span></div>';
+          html += '<div class="spec-row"><span class="spec-label">IP</span><span class="spec-value text-muted">' + d.ip + '</span></div>';
+        }
+
+        // Logs
+        html += '<div class="log-list">';
+        d.logs.forEach(function(l) {
+          html += '<div class="log-item"><span class="log-time">' + l.t + '</span><span class="log-msg ' + l.c + '">' + l.m + '</span></div>';
+        });
+        html += '</div></div></div>';
+      });
+      document.getElementById('monitorGrid').innerHTML = html;
+    }
+
+    renderCards();
+
+    function toggleProfile(e) { e.stopPropagation(); document.getElementById('profileDropdown').classList.toggle('open'); }
+    document.addEventListener('click', function() { document.getElementById('profileDropdown').classList.remove('open'); });
+    function updatePadding() {
+      var h = document.getElementById('topbar').offsetHeight;
+      document.getElementById('mainContent').style.paddingTop = (h + 24) + 'px';
+    }
+    updatePadding();
+    window.addEventListener('resize', updatePadding);
+  </script>
+</body>
+</html>
