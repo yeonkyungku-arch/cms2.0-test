@@ -23,7 +23,8 @@
     #view-map:checked ~ .content label[for="view-map"] { background: var(--green); color: #fff; }
     /* Modal state */
     #operation-modal:checked ~ .operation-modal-view,
-    #operation-select-modal:checked ~ .operation-select-modal-view { display: grid; }
+    #operation-select-modal:checked ~ .operation-select-modal-view,
+    #add-media-modal:checked ~ .add-media-modal-view { display: grid; }
     /* Weekday chips */
     #weekday-sun:checked ~ .content .weekday-chips label[for="weekday-sun"],
     #weekday-mon:checked ~ .content .weekday-chips label[for="weekday-mon"],
@@ -63,6 +64,7 @@
   <input class="state" type="checkbox" id="weekday-sat">
   <input class="state" type="checkbox" id="operation-modal">
   <input class="state" type="checkbox" id="operation-select-modal">
+  <input class="state" type="checkbox" id="add-media-modal">
   <input class="state" type="checkbox" id="fab-open">
 
   <!-- Product GNB -->

@@ -2166,6 +2166,7 @@ document.getElementById("bulk-clear")?.addEventListener("click", () => {
 const bulkOpDropdown = document.getElementById("bulk-op-dropdown");
 
 document.addEventListener("click", (e) => {
+  if (!bulkOpDropdown) return;
   if (e.target.closest("[data-bulk-op-toggle]")) {
     bulkOpDropdown.hidden = !bulkOpDropdown.hidden;
     return;
