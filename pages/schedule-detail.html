@@ -420,7 +420,12 @@
         this.classList.add('is-active');
         document.querySelectorAll('[data-schedule-detail-panel]').forEach(p => p.style.display = 'none');
         const panel = document.querySelector(`[data-schedule-detail-panel="${this.dataset.scheduleDetailTab}"]`);
-        if (panel) panel.style.display = 'block';
+        if (panel) {
+          panel.style.display = 'block';
+          if (this.dataset.scheduleDetailTab === 'status') {
+            setTimeout(() => { if (typeof initCharts === 'function') initCharts(); }, 50);
+          }
+        }
       });
     });
   </script>

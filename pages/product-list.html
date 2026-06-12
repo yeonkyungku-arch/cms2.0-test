@@ -380,11 +380,9 @@
     </select>
     <select class="filter-select" id="mediaFilter" onchange="filterTable()">
       <option value="">미디어 전체</option>
-      <option value="강남역">강남역</option>
-      <option value="홍대입구역">홍대입구역</option>
-      <option value="신촌역">신촌역</option>
-      <option value="여의도역">여의도역</option>
-      <option value="삼성역">삼성역</option>
+      <option value="강남대로">강남대로 DID 01</option>
+      <option value="인천공항">인천공항</option>
+      <option value="홍대입구">홍대입구 미디어보드</option>
     </select>
     <button class="btn-primary" onclick="location.href='product-register'">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
@@ -414,13 +412,13 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <tr data-status="active" data-media="강남역" data-has-schedule="true">
+        <tr data-status="active" data-media="강남대로" data-has-schedule="true">
           <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">강남 A지구 패키지</a></td>
+          <td><a class="product-name-link" href="product-detail">강남 프라임 패키지</a> <span style="font-size:11px;color:#9EA5AD;">PRD001</span></td>
           <td>
             <div class="tooltip-wrap">
-              강남역 1번출구 A <span style="color:#9EA5AD;">외 2개</span>
-              <div class="tooltip-box">강남역 1번출구 A<br>강남역 1번출구 B<br>강남역 2번출구</div>
+              강남대로 DID 01 <span style="color:#9EA5AD;">외 2개</span>
+              <div class="tooltip-box">강남대로 DID 01<br>홍대입구 미디어보드<br>잠실 롯데월드몰 2F</div>
             </div>
           </td>
           <td class="center">
@@ -432,13 +430,13 @@
           <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
-        <tr data-status="active" data-media="홍대입구역" data-has-schedule="true">
+        <tr data-status="active" data-media="인천공항" data-has-schedule="true">
           <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">홍대 입구역 프리미엄</a></td>
+          <td><a class="product-name-link" href="product-detail">공항 프리미엄 네트워크</a> <span style="font-size:11px;color:#9EA5AD;">PRD002</span></td>
           <td>
             <div class="tooltip-wrap">
-              홍대입구역 A <span style="color:#9EA5AD;">외 1개</span>
-              <div class="tooltip-box">홍대입구역 A<br>홍대입구역 B</div>
+              인천공항 T1 Gate A <span style="color:#9EA5AD;">외 1개</span>
+              <div class="tooltip-box">인천공항 T1 Gate A<br>인천공항 T2 디지털 보드</div>
             </div>
           </td>
           <td class="center">
@@ -450,10 +448,10 @@
           <td class="center"><span class="badge-no-adex">미연동</span></td>
           <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
         </tr>
-        <tr data-status="draft" data-media="신촌역" data-has-schedule="false">
+        <tr data-status="draft" data-media="홍대입구" data-has-schedule="false">
           <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-register">신촌 역세권 디스플레이</a></td>
-          <td>신촌역 메인</td>
+          <td><a class="product-name-link" href="product-detail">홍대 타겟 테스트</a> <span style="font-size:11px;color:#9EA5AD;">PRD003</span></td>
+          <td>홍대입구 미디어보드</td>
           <td class="center">
             <div class="tooltip-wrap">
               1개
@@ -461,43 +459,7 @@
             </div>
           </td>
           <td class="center"><span class="badge-no-adex">미연동</span></td>
-          <td class="center"><span class="badge badge-draft"><span class="badge-dot"></span>임시저장</span></td>
-        </tr>
-        <tr data-status="inactive" data-media="여의도역" data-has-schedule="false">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">여의도 금융가 패키지</a></td>
-          <td>
-            <div class="tooltip-wrap">
-              여의도역 A <span style="color:#9EA5AD;">외 3개</span>
-              <div class="tooltip-box">여의도역 A<br>여의도역 B<br>여의도역 C<br>여의도역 D</div>
-            </div>
-          </td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              4개
-              <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건<br>15초 일반</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-no-adex">미연동</span></td>
-          <td class="center"><span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span></td>
-        </tr>
-        <tr data-status="active" data-media="삼성역" data-has-schedule="true">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">삼성역 COEX 프리미엄</a></td>
-          <td>
-            <div class="tooltip-wrap">
-              삼성역 코엑스 광장 <span style="color:#9EA5AD;"></span>
-              <div class="tooltip-box">삼성역 코엑스 광장<br>삼성역 코엑스 B1</div>
-            </div>
-          </td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              2개
-              <div class="tooltip-box">30초 일반<br>20초 조건</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
-          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
+          <td class="center"><span class="badge badge-draft"><span class="badge-dot"></span>테스트</span></td>
         </tr>
       </tbody>
     </table>
