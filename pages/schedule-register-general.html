@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스케줄 등록 (일반) — CMS 2.0</title>
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      background: #24292E;
+      color: #24292E;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    ul, ol { list-style: none; }
+
+    /* ── GNB ─────────────────────────────────── */
+    .gnb {
+      position: fixed; top: 0; left: 0;
+      width: 93px; height: 100vh;
+      background: #454C52;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 0 24px; z-index: 300;
+    }
+    .gnb-logo {
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+    }
+    .gnb-nav { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .gnb-nav a {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 10px 0; color: #9EA5AD; font-size: 10px;
+      transition: all 0.25s ease; position: relative;
+    }
+    .gnb-nav a svg { fill: #9EA5AD; transition: fill 0.25s ease; }
+    .gnb-nav a:hover { color: #fff; background: #596066; }
+    .gnb-nav a:hover svg { fill: #fff; }
+    .gnb-nav a.active { color: #fff; background: rgba(88,198,93,0.12); }
+    .gnb-nav a.active svg { fill: #fff; }
+    .gnb-nav a.active::before {
+      content: ''; position: absolute; left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 3px; height: 32px; background: #58C65D;
+      border-radius: 0 2px 2px 0;
+    }
+    .gnb-divider { width: 40px; height: 1px; background: #596066; margin: 8px auto; }
+
+    /* ── Topbar ──────────────────────────────── */
+    .topbar {
+      position: fixed; top: 0; left: 93px; right: 0;
+      height: 60px; background: #383F45;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; z-index: 200;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .topbar-search {
+      display: flex; align-items: center; gap: 8px;
+      background: #454C52; border-radius: 6px;
+      padding: 0 12px; height: 36px; width: 280px;
+    }
+    .topbar-search input {
+      background: none; border: none; outline: none;
+      color: #fff; font-size: 13px; width: 100%;
+    }
+    .topbar-search input::placeholder { color: #9EA5AD; }
+    .topbar-user { display: flex; align-items: center; gap: 16px; }
+    .topbar-profile {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .topbar-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #58C65D; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+    }
+    .topbar-profile-name { font-size: 13px; color: #fff; font-weight: 500; }
+    .topbar-profile-org { font-size: 11px; color: #9EA5AD; }
+
+    /* ── Bcrumb ──────────────────────────────── */
+    .bcrumb {
+      position: fixed; top: 60px; left: 93px; right: 0;
+      height: 40px; background: #383F45;
+      border-top: 1px solid #454C52;
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 6px;
+      font-size: 12px; color: #9EA5AD;
+      z-index: 200;
+    }
+    .bcrumb a { color: #9EA5AD; }
+    .bcrumb a:hover { color: #fff; }
+    .bcrumb .sep { color: #596066; }
+    .bcrumb .cur { color: #CED2D6; }
+    .bcrumb-back {
+      margin-right: 4px; font-size: 18px; color: #9EA5AD;
+      cursor: pointer; line-height: 1;
+    }
+    .bcrumb-back:hover { color: #fff; }
+
+    /* ── Content ─────────────────────────────── */
+    .content {
+      margin-left: 93px;
+      padding-top: 100px;
+      background: #F6F7F9;
+      min-height: 100vh;
+    }
+    .content-inner {
+      padding: 24px 28px;
+      max-width: 900px;
+    }
+
+    /* ── Type Tabs ───────────────────────────── */
+    .type-tabs {
+      display: flex; border-bottom: 2px solid #E5E7EA;
+      margin-bottom: 24px;
+    }
+    .type-tab {
+      padding: 10px 24px; font-size: 14px; font-weight: 600;
+      background: none; border: none; color: #9EA5AD;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .type-tab.active { color: #58C65D; border-bottom-color: #58C65D; }
+
+    /* ── Form sections ───────────────────────── */
+    .form-section {
+      background: #fff; border: 1px solid #E5E7EA;
+      border-radius: 8px; padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .form-section-title {
+      font-size: 14px; font-weight: 700; color: #24292E;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .form-row {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 14px;
+    }
+    .form-row:last-child { margin-bottom: 0; }
+    .form-label {
+      width: 130px; flex-shrink: 0;
+      font-size: 13px; font-weight: 600; color: #596066;
+    }
+    .req { color: #E97474; margin-left: 2px; }
+    .form-control { display: flex; align-items: center; gap: 8px; flex: 1; }
+
+    /* ── Inputs ──────────────────────────────── */
+    .inp {
+      height: 36px; padding: 0 10px;
+      background: #fff; border: 1px solid #CED2D6;
+      border-radius: 4px; font-size: 14px; color: #24292E;
+      transition: border-color 0.25s ease;
+    }
+    .inp:focus { outline: none; border-color: #58C65D; }
+    .inp::placeholder { color: #CED2D6; }
+    .inp-full { width: 100%; }
+    .inp-date { width: 160px; }
+    .sel {
+      height: 36px; padding: 0 28px 0 10px;
+      background: #fff; border: 1px solid #CED2D6;
+      border-radius: 4px; appearance: none; font-size: 14px;
+      cursor: pointer;
+    }
+    .sel:focus { outline: none; border-color: #58C65D; }
+
+    /* ── Buttons ─────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      height: 36px; padding: 0 16px; border-radius: 4px;
+      font-size: 14px; font-family: inherit;
+      border: 1px solid transparent; cursor: pointer;
+      transition: all 0.25s ease; white-space: nowrap;
+    }
+    .btn-primary { background: #58C65D; color: #fff; border-color: #58C65D; }
+    .btn-primary:hover { background: #fff; color: #58C65D; }
+    .btn-ghost { background: #fff; color: #596066; border-color: #CED2D6; }
+    .btn-ghost:hover { background: #F6F7F9; }
+    .btn-outline { background: #fff; color: #58C65D; border-color: #C1E9C3; }
+    .btn-outline:hover { background: rgba(88,198,93,0.08); }
+    .btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+
+    /* ── Toggle ──────────────────────────────── */
+    .toggle-wrap { display: flex; align-items: center; gap: 8px; }
+    .toggle-track {
+      width: 36px; height: 20px; border-radius: 10px;
+      background: #E5E7EA; position: relative;
+      cursor: pointer; transition: background 0.25s ease;
+    }
+    .toggle-track.on { background: #58C65D; }
+    .toggle-thumb {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; position: absolute; top: 2px; left: 2px;
+      transition: left 0.25s ease;
+    }
+    .toggle-track.on .toggle-thumb { left: 18px; }
+    .toggle-label { font-size: 13px; color: #596066; }
+
+    /* ── Type badge ──────────────────────────── */
+    .badge-type-general {
+      display: inline-flex; align-items: center;
+      height: 20px; padding: 0 8px; border-radius: 6px;
+      font-size: 12px; font-weight: 500;
+      background: rgba(45,132,237,0.1); color: #2D84ED;
+      border: 1px solid #b3d3f5;
+    }
+
+    /* ── Duration display ────────────────────── */
+    .duration-display {
+      font-size: 12px; color: #9EA5AD; margin-left: 8px;
+    }
+    .duration-display strong { color: #58C65D; }
+
+    /* ── Product select card ─────────────────── */
+    .product-select-area {
+      border: 1px dashed #CED2D6; border-radius: 6px;
+      padding: 20px; text-align: center; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .product-select-area:hover { border-color: #58C65D; background: rgba(88,198,93,0.04); }
+    .product-select-area .empty-icon { font-size: 32px; margin-bottom: 8px; color: #CED2D6; }
+    .product-select-area p { font-size: 13px; color: #9EA5AD; margin-bottom: 12px; }
+    .product-card-selected {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 16px; background: #F6F7F9;
+      border: 1px solid #E5E7EA; border-radius: 6px;
+    }
+    .product-card-info { flex: 1; }
+    .product-card-name { font-size: 14px; font-weight: 600; color: #24292E; margin-bottom: 4px; }
+    .product-card-meta { font-size: 12px; color: #9EA5AD; }
+
+    /* ── Table ───────────────────────────────── */
+    .tbl-wrap { border-radius: 6px; overflow: hidden; border: 1px solid #E5E7EA; }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th {
+      background: #F6F7F9; color: #596066; font-weight: 600;
+      padding: 10px 12px; border-bottom: 1px solid #E5E7EA;
+      text-align: center; white-space: nowrap;
+    }
+    .tbl td {
+      padding: 10px 12px; border-bottom: 1px solid #E5E7EA;
+      color: #24292E; text-align: center; vertical-align: middle;
+    }
+    .tbl tbody tr:last-child td { border-bottom: none; }
+    .tbl tbody tr:hover { background: #FAFAFA; }
+    .tbl input[type="checkbox"] { accent-color: #58C65D; width: 14px; height: 14px; }
+
+    .badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+    .badge-ok { background: rgba(88,198,93,0.1); color: #58C65D; border: 1px solid #C1E9C3; }
+    .badge-muted { background: #F6F7F9; color: #9EA5AD; border: 1px solid #CED2D6; }
+    .badge-warn { background: rgba(233,116,116,0.1); color: #E97474; border: 1px solid #f5c0c0; }
+
+    /* ── Selected count ──────────────────────── */
+    .select-count {
+      font-size: 12px; color: #58C65D; font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* ── Sync section ────────────────────────── */
+    .sync-detail {
+      margin-top: 12px; padding: 12px 16px;
+      background: #F6F7F9; border-radius: 6px;
+      border: 1px solid #E5E7EA; display: none;
+    }
+    .sync-detail.visible { display: block; }
+
+    /* ── Footer action bar ───────────────────── */
+    .action-bar {
+      position: sticky; bottom: 0; left: 0; right: 0;
+      background: #fff; border-top: 1px solid #E5E7EA;
+      padding: 14px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 24px;
+    }
+    .action-bar-left { display: flex; gap: 8px; }
+    .action-bar-right { display: flex; gap: 8px; }
+
+    /* ── Search bar ──────────────────────────── */
+    .search-row {
+      display: flex; gap: 8px; margin-bottom: 12px; align-items: center;
+    }
+    .search-inp {
+      height: 36px; padding: 0 10px 0 36px;
+      background: #fff; border: 1px solid #CED2D6;
+      border-radius: 4px; font-size: 14px; flex: 1;
+    }
+    .search-inp:focus { outline: none; border-color: #58C65D; }
+    .search-wrap { position: relative; flex: 1; }
+    .search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<aside class="gnb">
+  <div class="gnb-logo">
+    <svg width="44" height="44" viewBox="0 0 44 44">
+      <rect width="44" height="44" rx="10" fill="rgba(255,255,255,0.12)"/>
+      <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle"
+            fill="#58C65D" font-size="14" font-weight="700" font-family="sans-serif">DL</text>
+    </svg>
+  </div>
+  <nav class="gnb-nav">
+    <a href="dashboard" title="대시보드">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>
+      <span>대시보드</span>
+    </a>
+    <a href="media-list" title="미디어">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/></svg>
+      <span>미디어</span>
+    </a>
+    <a href="product-list" title="프로덕트">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z" fill="currentColor"/><circle cx="20" cy="18" r="2.5" fill="currentColor"/></svg>
+      <span>프로덕트</span>
+    </a>
+    <a href="contents" title="콘텐츠">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/></svg>
+      <span>콘텐츠</span>
+    </a>
+    <a href="schedule-list" title="스케줄" class="active">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/></svg>
+      <span>스케줄</span>
+    </a>
+    <a href="schedule-media-month" title="편성표">
+      <svg width="22" height="22" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M3 9h18M8 2v3M16 2v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span>편성표</span>
+    </a>
+    <a href="#" title="모니터링">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 3h18v14H3V3zm2 2v10h14V5H5zm-2 12h18v2H3v-2zm5-8h2v5H8v-5zm3-2h2v7h-2V7zm3 3h2v4h-2v-4z"/></svg>
+      <span>모니터링</span>
+    </a>
+    <div class="gnb-divider"></div>
+  </nav>
+</aside>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <circle cx="11" cy="11" r="7" stroke="#9EA5AD" stroke-width="2"/>
+      <path d="M16.5 16.5L21 21" stroke="#9EA5AD" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div>
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Breadcrumb -->
+<div class="bcrumb">
+  <span class="bcrumb-back" onclick="history.back()">‹</span>
+  <a href="schedule-list">스케줄</a>
+  <span class="sep">›</span>
+  <span>스케줄 등록</span>
+  <span class="sep">›</span>
+  <span class="cur">일반 스케줄</span>
+</div>
+
+<!-- Content -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Type tabs -->
+    <div class="type-tabs">
+      <button class="type-tab active">일반 스케줄</button>
+      <button class="type-tab" onclick="location.href='schedule-register-condition'">조건 스케줄</button>
+    </div>
+
+    <!-- 1. 기본 정보 -->
+    <div class="form-section">
+      <div class="form-section-title">기본 정보</div>
+      <div class="form-row">
+        <div class="form-label">스케줄명<span class="req">*</span></div>
+        <div class="form-control">
+          <input type="text" class="inp inp-full" placeholder="스케줄 이름을 입력하세요" style="max-width:400px;">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">스케줄 유형</div>
+        <div class="form-control">
+          <span class="badge-type-general">일반</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 광고 기간 -->
+    <div class="form-section">
+      <div class="form-section-title">광고 기간</div>
+      <div class="form-row">
+        <div class="form-label">시작일<span class="req">*</span></div>
+        <div class="form-control">
+          <input type="date" class="inp inp-date" id="startDate" onchange="calcDuration()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">종료일</div>
+        <div class="form-control" style="flex-wrap:wrap; gap:8px;">
+          <input type="date" class="inp inp-date" id="endDate" onchange="calcDuration()">
+          <div class="toggle-wrap">
+            <div class="toggle-track" id="indefiniteToggle" onclick="toggleIndefinite()">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label">미정</span>
+          </div>
+          <span class="duration-display" id="durationDisplay"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 프로덕트 연결 -->
+    <div class="form-section">
+      <div class="form-section-title">프로덕트 연결<span class="req">*</span></div>
+      <div id="productEmpty" class="product-select-area" onclick="selectProduct()">
+        <div class="empty-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="3" width="20" height="18" rx="2" stroke="#CED2D6" stroke-width="1.5"/>
+            <path d="M8 9h8M8 13h5" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p>연결할 프로덕트를 선택하세요</p>
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); selectProduct()">
+          + 프로덕트 선택
+        </button>
+      </div>
+      <div id="productSelected" class="product-card-selected" style="display:none;">
+        <div style="width:40px; height:40px; background:#F6F7F9; border-radius:6px; display:flex; align-items:center; justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#9EA5AD"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
+        </div>
+        <div class="product-card-info">
+          <div class="product-card-name">강남 디지털 광고 패키지 A</div>
+          <div class="product-card-meta">일반광고 · 2026.06.01 ~ 2026.08.31 · <span style="color:#58C65D;">운영 중</span></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearProduct()">변경</button>
+      </div>
+    </div>
+
+    <!-- 4. 미디어 선택 -->
+    <div class="form-section">
+      <div class="form-section-title">미디어 선택<span class="req">*</span></div>
+      <div class="search-row">
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="#9EA5AD" stroke-width="2"/>
+            <path d="M16.5 16.5L21 21" stroke="#9EA5AD" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" class="search-inp" placeholder="미디어명, 주소 검색" oninput="filterMedia(this.value)">
+        </div>
+        <select class="sel" style="width:120px;">
+          <option>전체 지역</option>
+          <option>강남구</option>
+          <option>마포구</option>
+          <option>영등포구</option>
+        </select>
+      </div>
+      <div class="select-count" id="selectCount">0개 선택됨</div>
+      <div class="tbl-wrap">
+        <table class="tbl" id="mediaTable">
+          <thead>
+            <tr>
+              <th style="width:40px;"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+              <th>미디어명</th>
+              <th>설치주소</th>
+              <th>디스플레이</th>
+              <th>운영시간</th>
+              <th>슬롯구성</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" class="media-chk" onchange="updateCount()"></td>
+              <td style="text-align:left;">강남 스타필드 A01</td>
+              <td style="text-align:left; color:#9EA5AD; font-size:12px;">강남구 테헤란로 507</td>
+              <td>1920×1080 가로</td>
+              <td>09:00~22:00</td>
+              <td>6슬롯/120초</td>
+              <td><span class="badge badge-ok">운영중</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="media-chk" onchange="updateCount()"></td>
+              <td style="text-align:left;">홍대 메가박스 B03</td>
+              <td style="text-align:left; color:#9EA5AD; font-size:12px;">마포구 양화로 45</td>
+              <td>1080×1920 세로</td>
+              <td>10:00~23:00</td>
+              <td>4슬롯/90초</td>
+              <td><span class="badge badge-ok">운영중</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="media-chk" onchange="updateCount()"></td>
+              <td style="text-align:left;">여의도 IFC C02</td>
+              <td style="text-align:left; color:#9EA5AD; font-size:12px;">영등포구 국제금융로 10</td>
+              <td>1920×1080 가로</td>
+              <td>08:00~22:00</td>
+              <td>6슬롯/120초</td>
+              <td><span class="badge badge-ok">운영중</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="media-chk" onchange="updateCount()"></td>
+              <td style="text-align:left;">신촌 현대백화점 D01</td>
+              <td style="text-align:left; color:#9EA5AD; font-size:12px;">서대문구 신촌로 83</td>
+              <td>1920×1080 가로</td>
+              <td>10:00~21:00</td>
+              <td>5슬롯/100초</td>
+              <td><span class="badge badge-warn">점검중</span></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="media-chk" onchange="updateCount()"></td>
+              <td style="text-align:left;">코엑스 E05</td>
+              <td style="text-align:left; color:#9EA5AD; font-size:12px;">강남구 봉은사로 524</td>
+              <td>1920×1080 가로</td>
+              <td>09:00~22:00</td>
+              <td>8슬롯/160초</td>
+              <td><span class="badge badge-ok">운영중</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. 싱크 송출 설정 -->
+    <div class="form-section">
+      <div class="form-section-title">싱크 송출 설정</div>
+      <div class="form-row">
+        <div class="form-label">싱크 송출</div>
+        <div class="form-control">
+          <div class="toggle-wrap">
+            <div class="toggle-track" id="syncToggle" onclick="toggleSync()">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label" id="syncLabel">사용 안 함</span>
+          </div>
+        </div>
+      </div>
+      <div class="sync-detail" id="syncDetail">
+        <div class="form-row" style="margin-bottom:0;">
+          <div class="form-label" style="font-size:13px;">싱크 그룹명</div>
+          <div class="form-control">
+            <input type="text" class="inp" placeholder="싱크 그룹 이름 입력" style="width:280px;">
+          </div>
+        </div>
+        <p style="font-size:12px; color:#9EA5AD; margin-top:8px;">동일 싱크 그룹으로 설정된 미디어에 동시에 송출됩니다.</p>
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div class="action-bar">
+      <div class="action-bar-left">
+        <button class="btn btn-ghost" onclick="history.back()">취소</button>
+        <button class="btn btn-ghost">임시저장</button>
+      </div>
+      <div class="action-bar-right">
+        <button class="btn btn-primary">등록</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // Duration calc
+  function calcDuration() {
+    const s = document.getElementById('startDate').value;
+    const e = document.getElementById('endDate').value;
+    const display = document.getElementById('durationDisplay');
+    if (s && e) {
+      const days = Math.ceil((new Date(e) - new Date(s)) / 86400000) + 1;
+      display.innerHTML = days > 0 ? `<strong>${days}일</strong>간 운영` : '';
+    } else {
+      display.innerHTML = '';
+    }
+  }
+
+  // Indefinite toggle
+  function toggleIndefinite() {
+    const t = document.getElementById('indefiniteToggle');
+    const endDate = document.getElementById('endDate');
+    t.classList.toggle('on');
+    if (t.classList.contains('on')) {
+      endDate.disabled = true;
+      endDate.style.opacity = '0.4';
+      document.getElementById('durationDisplay').innerHTML = '<strong>미정</strong>';
+    } else {
+      endDate.disabled = false;
+      endDate.style.opacity = '1';
+      calcDuration();
+    }
+  }
+
+  // Sync toggle
+  function toggleSync() {
+    const t = document.getElementById('syncToggle');
+    const d = document.getElementById('syncDetail');
+    const lbl = document.getElementById('syncLabel');
+    t.classList.toggle('on');
+    if (t.classList.contains('on')) {
+      d.classList.add('visible');
+      lbl.textContent = '사용';
+    } else {
+      d.classList.remove('visible');
+      lbl.textContent = '사용 안 함';
+    }
+  }
+
+  // Checkbox
+  function toggleAll(el) {
+    document.querySelectorAll('.media-chk').forEach(c => c.checked = el.checked);
+    updateCount();
+  }
+  function updateCount() {
+    const cnt = document.querySelectorAll('.media-chk:checked').length;
+    document.getElementById('selectCount').textContent = `${cnt}개 선택됨`;
+    document.getElementById('checkAll').checked =
+      document.querySelectorAll('.media-chk').length === cnt && cnt > 0;
+  }
+
+  // Filter
+  function filterMedia(q) {
+    const rows = document.querySelectorAll('#mediaTable tbody tr');
+    rows.forEach(r => {
+      const text = r.textContent.toLowerCase();
+      r.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  // Product select demo
+  function selectProduct() {
+    document.getElementById('productEmpty').style.display = 'none';
+    document.getElementById('productSelected').style.display = 'flex';
+  }
+  function clearProduct() {
+    document.getElementById('productEmpty').style.display = 'block';
+    document.getElementById('productSelected').style.display = 'none';
+  }
+</script>
+</body>
+</html>
