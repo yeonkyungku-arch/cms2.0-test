@@ -850,15 +850,15 @@ document.querySelectorAll("[data-open-schedule-product]").forEach((button) => {
   });
 });
 
-document.querySelectorAll("[data-open-schedule-content]").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (button.disabled) {
-      showGlobalToast("Product를 먼저 선택해 주세요.");
-      return;
-    }
-    const modal = document.getElementById("schedule-content-modal");
-    if (modal) modal.checked = true;
-  });
+document.addEventListener("click", (e) => {
+  const button = e.target.closest("[data-open-schedule-content]");
+  if (!button) return;
+  if (button.disabled) {
+    showGlobalToast("Product를 먼저 선택해 주세요.");
+    return;
+  }
+  const modal = document.getElementById("schedule-content-modal");
+  if (modal) modal.checked = true;
 });
 
 document.querySelectorAll("[data-pick-product]").forEach((button) => {
@@ -932,6 +932,23 @@ document.querySelectorAll("[data-pick-product]").forEach((button) => {
     register.querySelectorAll("[data-schedule-content-meta]").forEach((el) => {
       el.textContent = "콘텐츠를 선택해 주세요.";
     });
+
+    // 미디어-콘텐츠 맵 재생성 (선택된 Product의 미디어 목록으로 업데이트)
+    const contentMap = register.querySelector(".media-content-map");
+    if (contentMap && option?.mediaDetails) {
+      contentMap.innerHTML = option.mediaDetails.map(m => `
+        <article>
+          <div class="media-content-map__header">
+            <span class="media-content-map__name">${m.name}</span>
+            <span class="media-content-map__op">${m.op}</span>
+          </div>
+          <button class="schedule-drop-zone schedule-drop-zone--empty" type="button" data-open-schedule-content>
+            <span class="schedule-drop-zone__icon">+</span>
+            <span class="schedule-drop-zone__title">콘텐츠를 선택해 주세요.</span>
+          </button>
+        </article>
+      `).join("");
+    }
 
     document.getElementById("schedule-product-modal").checked = false;
   });
