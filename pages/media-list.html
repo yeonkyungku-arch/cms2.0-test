@@ -432,21 +432,31 @@
 
 <!-- ② Topbar -->
 <header class="topbar">
-  <div class="topbar-search"></div>
-  <div class="topbar-right">
-    <div class="user-info">
-      <div class="user-avatar">A</div>
-      <div class="user-meta">
-        <strong>Admin</strong>
-        <span>D'ooh CMS</span>
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
   </div>
 </header>
 
+<div class="bcrumb">
+  <a class="bcrumb-back" href="javascript:history.back()">‹</a>
+  <span>미디어</span>
+  <span class="sep">›</span>
+  <span class="cur">미디어 조회</span>
+</div>
+
 <!-- ③ Content -->
-<main class="content-area">
-  <div class="page-wrap">
+<main class="content">
+  <div class="content-inner">
 
     <!-- Page header -->
     <div class="page-header">
@@ -1026,7 +1036,7 @@
       </div>
     </div><!-- /panel-operation -->
 
-  </div><!-- /page-wrap -->
+  </div><!-- /content-inner -->
 </main>
 
 <script>
