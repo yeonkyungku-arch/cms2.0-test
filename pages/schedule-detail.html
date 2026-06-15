@@ -7,10 +7,17 @@
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    .detail-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
-    .detail-sidebar { position: sticky; top: 96px; display: grid; gap: 12px; }
+    .detail-layout { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
+    .detail-sidebar { position: sticky; top: 96px; display: grid; gap: 16px; }
+    .detail-main { display: grid; gap: 20px; }
     [data-schedule-detail-panel] { display: none; }
     [data-schedule-detail-panel="info"] { display: block; }
+    .info-card { padding: 24px; }
+    .info-card + .info-card { margin-top: 0; }
+    .schedule-mapping-grid { gap: 24px; }
+    .mapping-col { gap: 16px; }
+    .mapping-col__hd { margin-bottom: 4px; }
+    .detail-info-panel { display: grid; gap: 20px; }
   </style>
 </head>
 <body>
