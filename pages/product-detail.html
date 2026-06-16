@@ -855,6 +855,30 @@
     .btn-bk-submit { height:36px; padding:0 18px; border:none; border-radius:8px; background:#58C65D; font-size:13px; font-weight:700; color:#fff; cursor:pointer; transition:background .12s; }
     .btn-bk-submit:hover { background:#4AB050; }
     .btn-bk-submit:disabled { background:#CED2D6; cursor:not-allowed; }
+    /* 검증 결과 */
+    .booking-modal-step { font-size:11px; color:#9EA5AD; margin-top:2px; }
+    .verify-banner { display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:10px; border:1px solid; }
+    .verify-banner.pass { background:#F0FBF0; border-color:#58C65D; }
+    .verify-banner.warn { background:#FFF8ED; border-color:#F5A623; }
+    .verify-banner.fail { background:#FEF2F2; border-color:#C83434; }
+    .verify-banner-icon { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+    .pass .verify-banner-icon { background:#58C65D; color:#fff; }
+    .warn .verify-banner-icon { background:#F5A623; color:#fff; }
+    .fail .verify-banner-icon { background:#C83434; color:#fff; }
+    .verify-banner-title { font-size:13px; font-weight:700; color:#24292E; }
+    .verify-banner-desc { font-size:11px; color:#596066; margin-top:2px; }
+    .verify-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .verify-cell { background:#F6F7F9; border-radius:8px; padding:10px 14px; }
+    .verify-cell-label { font-size:10px; font-weight:700; color:#9EA5AD; text-transform:uppercase; letter-spacing:.04em; }
+    .verify-cell-value { font-size:14px; font-weight:700; color:#24292E; margin-top:3px; }
+    .verify-cell-value.c-pass { color:#2D8A32; }
+    .verify-cell-value.c-warn { color:#C87C00; }
+    .verify-cell-value.c-fail { color:#C83434; }
+    .verify-conflicts { display:flex; flex-direction:column; gap:5px; }
+    .verify-conflict-title { font-size:11px; font-weight:700; color:#596066; margin-bottom:2px; }
+    .verify-conflict-item { display:flex; align-items:center; gap:8px; padding:7px 10px; background:#FEF2F2; border:1px solid #FBCECE; border-radius:6px; font-size:11px; color:#7A1A1A; }
+    .verify-conflict-dot { width:5px; height:5px; border-radius:50%; background:#C83434; flex-shrink:0; }
+    .verify-preempt { padding:10px 14px; background:#EEF4FF; border:1px solid #BFCFEE; border-radius:8px; font-size:11px; color:#2D4A8A; line-height:1.7; }
   </style>
 </head>
 <body>
@@ -2223,6 +2247,10 @@ function openSchedModal() {
   document.getElementById('schedDateEnd').value   = today;
   document.getElementById('schedDateInfo').style.display = 'none';
   document.getElementById('schedFootHint').textContent   = '';
+  document.getElementById('schedFootHint').style.color   = '';
+  document.getElementById('schedFormWrap').style.display   = 'block';
+  document.getElementById('schedVerifyWrap').style.display = 'none';
+  document.getElementById('schedModalStep').textContent    = '1단계 · 예약 정보 입력';
   schedSwitchPlanTab('select');
   document.getElementById('schedModal').classList.remove('hidden');
 }
@@ -2245,12 +2273,85 @@ function schedSetType(type) {
   document.getElementById('schedTypeBtnCond').classList.toggle('active', type === 'condition');
   document.getElementById('schedCondFields').style.display = type === 'condition' ? '' : 'none';
 }
-function submitSchedBooking() {
-  var btn = document.getElementById('schedSubmitBtn');
-  btn.textContent = '등록됨 ✓';
-  btn.style.background = '#5DCAA5';
-  setTimeout(function() { closeSchedModal(); btn.textContent = '예약 등록'; btn.style.background = ''; }, 1200);
+function runSchedVerify() {
+  var dateStart = document.getElementById('schedDateStart').value;
+  var dateEnd   = document.getElementById('schedDateEnd').value;
+  if (!dateStart || !dateEnd || dateStart > dateEnd) {
+    document.getElementById('schedFootHint').textContent = '기간을 올바르게 입력해주세요.';
+    document.getElementById('schedFootHint').style.color = '#C83434';
+    return;
+  }
+
+  // 선택된 플레이 플랜 이름
+  var planName = '기본 편성 플랜 A';
+  var selected = document.querySelector('#schedPanePlanSelect .playplan-item.selected .playplan-item-name');
+  if (selected) planName = selected.textContent;
+
+  var fmt = function(d) { var p = d.split('-'); return parseInt(p[1]) + '/' + parseInt(p[2]); };
+  document.getElementById('vPeriod').textContent = fmt(dateStart) + ' ~ ' + fmt(dateEnd);
+  document.getElementById('vPlan').textContent   = planName;
+
+  // 더미 검증 로직
+  var remain = 408;
+  var days = Math.round((new Date(dateEnd) - new Date(dateStart)) / 86400000) + 1;
+  var needed = days * 6;
+  var afterRemain = remain - needed;
+  var hasConflict = days > 14;
+
+  document.getElementById('vRemain').textContent = remain + '회';
+  document.getElementById('vAfter').textContent  = afterRemain + '회';
+
+  var banner   = document.getElementById('schedVerifyBanner');
+  var icon     = document.getElementById('schedVerifyIcon');
+  var title    = document.getElementById('schedVerifyTitle');
+  var desc     = document.getElementById('schedVerifyDesc');
+  var afterEl  = document.getElementById('vAfter');
+  var conflicts= document.getElementById('schedConflicts');
+  var confirmBtn = document.getElementById('schedConfirmBtn');
+
+  banner.className = 'verify-banner';
+  conflicts.style.display = 'none';
+  confirmBtn.disabled = false;
+  confirmBtn.style.opacity = '1';
+
+  if (afterRemain < 0) {
+    banner.classList.add('fail');
+    icon.textContent = '✕';
+    title.textContent = '슬롯 부족';
+    desc.textContent  = '보장 횟수가 잔여 슬롯을 초과합니다. 기간을 줄여주세요.';
+    afterEl.className = 'verify-cell-value c-fail';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.4';
+  } else if (hasConflict) {
+    banner.classList.add('warn');
+    icon.textContent = '!';
+    title.textContent = '충돌 구간 존재';
+    desc.textContent  = '일부 구간에 기존 예약과 충돌이 있습니다. 확인 후 진행하세요.';
+    afterEl.className = 'verify-cell-value c-warn';
+    conflicts.style.display = 'flex';
+  } else {
+    banner.classList.add('pass');
+    icon.textContent = '✓';
+    title.textContent = '검증 통과';
+    desc.textContent  = '선택한 기간에 예약 가능한 슬롯이 충분합니다.';
+    afterEl.className = 'verify-cell-value c-pass';
+  }
+
+  document.getElementById('schedModalStep').textContent = '2단계 · 검증 결과 확인';
+  document.getElementById('schedFormWrap').style.display   = 'none';
+  document.getElementById('schedVerifyWrap').style.display = 'block';
 }
+function goBackSchedForm() {
+  document.getElementById('schedVerifyWrap').style.display = 'none';
+  document.getElementById('schedFormWrap').style.display   = 'block';
+  document.getElementById('schedModalStep').textContent    = '1단계 · 예약 정보 입력';
+  document.getElementById('schedFootHint').textContent     = '';
+}
+function confirmSchedBooking() {
+  alert('예약이 확정되었습니다. 슬롯이 임시 선점되었습니다.');
+  closeSchedModal();
+}
+function submitSchedBooking() { runSchedVerify(); }
 </script>
 
 <!-- ─── 스케줄 예약 모달 ─── -->
@@ -2260,9 +2361,12 @@ function submitSchedBooking() {
       <div>
         <h3>스케줄 예약</h3>
         <p id="schedModalDate"></p>
+        <p class="booking-modal-step" id="schedModalStep">1단계 · 예약 정보 입력</p>
       </div>
       <button class="booking-modal-close" onclick="closeSchedModal()">✕</button>
     </div>
+    <!-- 입력 폼 -->
+    <div id="schedFormWrap">
     <div class="booking-modal-body">
 
       <!-- ① 광고 기간 -->
@@ -2333,9 +2437,42 @@ function submitSchedBooking() {
       <span class="booking-foot-hint" id="schedFootHint"></span>
       <div class="booking-foot-btns">
         <button class="btn-bk-cancel" onclick="closeSchedModal()">취소</button>
-        <button class="btn-bk-submit" id="schedSubmitBtn" onclick="submitSchedBooking()">예약 등록</button>
+        <button class="btn-bk-submit" id="schedSubmitBtn" onclick="runSchedVerify()">검증 및 확인</button>
       </div>
     </div>
+    </div><!-- /schedFormWrap -->
+
+    <!-- 검증 결과 -->
+    <div id="schedVerifyWrap" style="display:none;">
+      <div class="booking-modal-body">
+        <div class="verify-banner pass" id="schedVerifyBanner">
+          <div class="verify-banner-icon" id="schedVerifyIcon">✓</div>
+          <div>
+            <div class="verify-banner-title" id="schedVerifyTitle">검증 통과</div>
+            <div class="verify-banner-desc" id="schedVerifyDesc">선택한 기간에 예약 가능한 슬롯이 충분합니다.</div>
+          </div>
+        </div>
+        <div class="verify-grid">
+          <div class="verify-cell"><div class="verify-cell-label">예약 기간</div><div class="verify-cell-value" id="vPeriod">-</div></div>
+          <div class="verify-cell"><div class="verify-cell-label">플레이 플랜</div><div class="verify-cell-value" id="vPlan">-</div></div>
+          <div class="verify-cell"><div class="verify-cell-label">잔여 슬롯</div><div class="verify-cell-value c-pass" id="vRemain">-</div></div>
+          <div class="verify-cell"><div class="verify-cell-label">선점 후 잔여</div><div class="verify-cell-value c-pass" id="vAfter">-</div></div>
+        </div>
+        <div class="verify-conflicts" id="schedConflicts" style="display:none;">
+          <div class="verify-conflict-title">충돌 구간</div>
+          <div class="verify-conflict-item"><span class="verify-conflict-dot"></span>10/20 ~ 10/22 · 기존 예약 #B-0041 (48회 중복)</div>
+          <div class="verify-conflict-item"><span class="verify-conflict-dot"></span>10/28 · 전체 슬롯 선점됨 (잔여 0회)</div>
+        </div>
+        <div class="verify-preempt">저장 시 슬롯이 임시 선점됩니다. 임시 선점은 <strong>확정 전까지 72시간</strong> 유지되며 이후 자동 해제됩니다.</div>
+      </div>
+      <div class="booking-modal-foot">
+        <span class="booking-foot-hint"></span>
+        <div class="booking-foot-btns">
+          <button class="btn-bk-cancel" onclick="goBackSchedForm()">이전으로</button>
+          <button class="btn-bk-submit" id="schedConfirmBtn" onclick="confirmSchedBooking()">예약 확정</button>
+        </div>
+      </div>
+    </div><!-- /schedVerifyWrap -->
   </div>
 </div>
 <script src="../assets/js/cms.js"></script>
