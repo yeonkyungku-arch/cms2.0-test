@@ -137,6 +137,12 @@
     .btn-bk-submit:disabled { background: #C1E9C3; cursor: not-allowed; }
     .btn-bk-submit:not(:disabled):hover { background: #4ab54f; }
 
+    /* 날짜 셀 최소 잔여 슬롯 뱃지 */
+    .slot-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: auto; flex-shrink: 0; }
+    .slot-badge-ok   { background: #D1FAE5; color: #065F46; }
+    .slot-badge-warn { background: #FEF3C7; color: #78350F; }
+    .slot-badge-full { background: #FEE2E2; color: #991B1B; }
+
     /* 잔여 슬롯 현황 카드 */
     .slot-card { background:#F6F7F9; border-radius:8px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
     .slot-card-header { display:flex; align-items:center; justify-content:space-between; }
@@ -391,15 +397,6 @@
         </span>
         <a href="product-detail" style="font-size:12px;color:#2D84ED;text-decoration:none;display:flex;align-items:center;gap:3px;">상세 보기 <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 2l4 3.5-4 3.5" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
       </div>
-    </div>
-
-    <!-- 잔여 슬롯 현황 -->
-    <div id="slotStatusBar" style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:14px 20px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-size:12px;font-weight:700;color:#24292E;">잔여 슬롯 현황</div>
-        <div style="font-size:11px;color:#9EA5AD;" id="slotStatusDate">기준: 전체 운영 기간</div>
-      </div>
-      <div id="slotStatusGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
     </div>
 
     <div class="page-grid">
@@ -879,7 +876,20 @@ function dateKey(y, m, d) {
   return y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
 }
 
-/* (더 이상 scheds에서 계산하지 않음 — capacity 필드 직접 사용) */
+/* capacity 문자열 → 미디어별 최소 잔여 슬롯 수 매핑 (더미) */
+var CAP_SLOT_MAP = { green: 2, amber: 1, orange: 0, red: -1 };
+
+/* 날짜별 최소 잔여 슬롯 계산 (미디어 중 가장 적은 값) */
+function getMinSlotForDay(key) {
+  var day = DAY_SCHEDULES[key];
+  if (!day || !day.capacity) return null;
+  /* 더미: capacity → 슬롯 수. 실제 구현에서는 미디어별 일별 슬롯 데이터로 교체 */
+  var base = CAP_SLOT_MAP[day.capacity];
+  if (base === undefined) return null;
+  /* 미디어마다 ±1 편차를 주어 "최솟값" 시뮬레이션 */
+  var minSlot = base; /* 실제론 Math.min(...mediaSlotsByDay[key]) */
+  return minSlot;
+}
 
 function renderCalendar() {
   var body = document.getElementById('calBody');
@@ -923,6 +933,15 @@ function renderCalendar() {
       ? '<div class="cap-dot cap-' + capacity + '"></div>'
       : '';
 
+    /* 최소 잔여 슬롯 뱃지 */
+    var minSlot = getMinSlotForDay(key);
+    var slotBadge = '';
+    if (minSlot !== null) {
+      var sbCls = minSlot <= 0 ? 'slot-badge-full' : minSlot === 1 ? 'slot-badge-warn' : 'slot-badge-ok';
+      var sbText = minSlot <= 0 ? '마감' : minSlot + '슬롯';
+      slotBadge = '<span class="slot-badge ' + sbCls + '">' + sbText + '</span>';
+    }
+
     /* 스케줄 칩 (상태별 색상) */
     var chips = '';
     var show = Math.min(scheds.length, MAX_CHIPS);
@@ -941,6 +960,7 @@ function renderCalendar() {
         ' onmouseleave="hideTooltip()">' +
         '<div class="cal-cell-head">' +
           '<span class="' + dateNumCls + '">' + d + '</span>' +
+          slotBadge +
         '</div>' +
         '<div class="cal-cell-body" onclick="selectCalDate(\'' + key + '\')">' +
           chips +
