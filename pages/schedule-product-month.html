@@ -137,6 +137,26 @@
     .btn-bk-submit:disabled { background: #C1E9C3; cursor: not-allowed; }
     .btn-bk-submit:not(:disabled):hover { background: #4ab54f; }
 
+    /* 잔여 슬롯 현황 카드 */
+    .slot-card { background:#F6F7F9; border-radius:8px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+    .slot-card-header { display:flex; align-items:center; justify-content:space-between; }
+    .slot-card-name { font-size:12px; font-weight:700; color:#24292E; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px; }
+    .slot-card-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; flex-shrink:0; }
+    .badge-pass  { background:#D1FAE5; color:#065F46; }
+    .badge-warn  { background:#FEF3C7; color:#78350F; }
+    .badge-full  { background:#FEE2E2; color:#991B1B; }
+    .slot-card-bar { height:5px; background:#E5E7EA; border-radius:3px; overflow:hidden; }
+    .slot-card-fill { height:100%; border-radius:3px; transition:width .4s; }
+    .fill-pass  { background:#10B981; }
+    .fill-warn  { background:#F59E0B; }
+    .fill-full  { background:#EF4444; }
+    .slot-card-nums { display:flex; align-items:center; justify-content:space-between; font-size:11px; }
+    .slot-card-used { color:#596066; }
+    .slot-card-remain { font-weight:700; }
+    .remain-pass { color:#065F46; }
+    .remain-warn { color:#B45309; }
+    .remain-full { color:#991B1B; }
+
     /* Legend */
     .cal-legend { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-top: 1px solid #F0F1F3; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #9EA5AD; }
@@ -371,6 +391,15 @@
         </span>
         <a href="product-detail" style="font-size:12px;color:#2D84ED;text-decoration:none;display:flex;align-items:center;gap:3px;">상세 보기 <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 2l4 3.5-4 3.5" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
       </div>
+    </div>
+
+    <!-- 잔여 슬롯 현황 -->
+    <div id="slotStatusBar" style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:14px 20px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#24292E;">잔여 슬롯 현황</div>
+        <div style="font-size:11px;color:#9EA5AD;" id="slotStatusDate">기준: 전체 운영 기간</div>
+      </div>
+      <div id="slotStatusGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
     </div>
 
     <div class="page-grid">
@@ -936,6 +965,10 @@ function selectCalDate(key) {
   selectedDate = (selectedDate === key) ? null : key; // 재클릭 시 해제
   renderCalendar();
   renderScheduleList(selectedDate);
+  var label = selectedDate
+    ? (function() { var p = selectedDate.split('-'); return parseInt(p[1]) + '월 ' + parseInt(p[2]) + '일 기준'; })()
+    : '전체 운영 기간';
+  renderSlotStatus(label);
 }
 
 /* ── 패널 예약 버튼 ── */
@@ -1169,6 +1202,40 @@ document.getElementById('bookingOverlay').addEventListener('click', function(e) 
   if (e.target === this) closeBookingModal();
 });
 
+/* ── 잔여 슬롯 현황 카드 렌더링 ── */
+function renderSlotStatus(dateLabel) {
+  var grid = document.getElementById('slotStatusGrid');
+  if (!grid) return;
+  document.getElementById('slotStatusDate').textContent = '기준: ' + (dateLabel || '전체 운영 기간');
+
+  var html = '';
+  MEDIA_SLOTS.forEach(function(m) {
+    var usedPct = Math.round(m.used / m.cycleMax * 100);
+    var remain  = m.cycleMax - m.used;
+    var cls, badgeCls, fillCls, remainCls, badgeText;
+    if (usedPct >= 100) {
+      cls = ''; badgeCls = 'badge-full'; fillCls = 'fill-full'; remainCls = 'remain-full'; badgeText = '등록불가';
+    } else if (usedPct >= 70) {
+      cls = ''; badgeCls = 'badge-warn'; fillCls = 'fill-warn'; remainCls = 'remain-warn'; badgeText = '위험';
+    } else {
+      cls = ''; badgeCls = 'badge-pass'; fillCls = 'fill-pass'; remainCls = 'remain-pass'; badgeText = '여유';
+    }
+    html += '<div class="slot-card">';
+    html += '<div class="slot-card-header">';
+    html += '<span class="slot-card-name" title="' + m.name + '">' + m.name + '</span>';
+    html += '<span class="slot-card-badge ' + badgeCls + '">' + badgeText + '</span>';
+    html += '</div>';
+    html += '<div class="slot-card-bar"><div class="slot-card-fill ' + fillCls + '" style="width:' + Math.min(usedPct, 100) + '%"></div></div>';
+    html += '<div class="slot-card-nums">';
+    html += '<span class="slot-card-used">사용 ' + m.used + 's / 전체 ' + m.cycleMax + 's</span>';
+    html += '<span class="slot-card-remain ' + remainCls + '">잔여 ' + remain + 's</span>';
+    html += '</div>';
+    html += '<div style="font-size:10px;color:#9EA5AD;">슬롯 ' + (m.slots - m.usedSlots) + '개 빈 슬롯 / 전체 ' + m.slots + '개</div>';
+    html += '</div>';
+  });
+  grid.innerHTML = html;
+}
+
 /* ── 초기화: 마지막 선택 프로덕트 복원 또는 선택 요청 ── */
 (function() {
   var lastId = parseInt(localStorage.getItem(LAST_PRODUCT_KEY), 10);
@@ -1180,6 +1247,7 @@ document.getElementById('bookingOverlay').addEventListener('click', function(e) 
   }
 })();
 renderCalendar();
+renderSlotStatus();
 // 오늘 날짜 자동 선택
 (function() {
   var t = new Date();
