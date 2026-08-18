@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인천공항 브랜드 스팟 — D'ooh CMS</title>
+  <title>갤럭시 S25 런칭 30초 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
@@ -22,11 +22,8 @@
       margin-bottom: 12px;
     }
     .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: #9EA5AD;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: #9EA5AD;
     }
     .breadcrumb a { color: #9EA5AD; text-decoration: none; }
     .breadcrumb a:hover { color: #24292E; }
@@ -34,112 +31,62 @@
     .breadcrumb-current { color: #596066; font-weight: 500; }
     .header-actions { display: flex; gap: 8px; align-items: center; }
     .btn-outline {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      cursor: pointer;
-      font-weight: 500;
+      height: 34px; padding: 0 14px;
+      background: #fff; border: 1px solid #CED2D6; border-radius: 6px;
+      font-size: 13px; color: #24292E; cursor: pointer; font-weight: 500;
     }
     .btn-outline:hover { background: #F6F7F9; }
     .btn-amber-outline {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #B45309;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #B45309;
-      cursor: pointer;
-      font-weight: 500;
+      height: 34px; padding: 0 14px;
+      background: #fff; border: 1px solid #B45309; border-radius: 6px;
+      font-size: 13px; color: #B45309; cursor: pointer; font-weight: 500;
     }
     .btn-amber-outline:hover { background: #FFF8E6; }
     .btn-blue {
-      height: 34px;
-      padding: 0 14px;
-      background: #2D84ED;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
+      height: 34px; padding: 0 14px;
+      background: #2D84ED; border: none; border-radius: 6px;
+      font-size: 13px; color: #fff; cursor: pointer; font-weight: 600;
     }
     .btn-blue:hover { background: #2272d0; }
     .detail-title-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px; flex-wrap: wrap;
     }
-    .detail-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #24292E;
-      margin: 0;
-    }
+    .detail-title { font-size: 20px; font-weight: 700; color: #24292E; margin: 0; }
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
     }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .lc-approved  { background: #E8F8E9; color: #2E9E34; }
+    .lc-draft      { background: #F0F1F3; color: #596066; }
+    .lc-validating { background: #EAF3FF; color: #2D84ED; }
+    .lc-review     { background: #F3EEFF; color: #7C5CBF; }
+    .lc-approved   { background: #E8F8E9; color: #2E9E34; }
     .lc-approved .badge-dot { background: #58C65D; }
-    .pde-restricted { background: #FFF8E6; color: #B45309; }
+    .lc-inactive   { background: #FFF8E6; color: #B45309; }
+    .lc-archived   { background: #F0F1F3; color: #383F45; }
+    .ret-normal    { background: #F0F1F3; color: #596066; border: 1px solid #CED2D6; }
+    .ret-soon      { background: #FFF8E6; color: #B45309; }
+    .ret-expired   { background: #FEE2E2; color: #C83434; }
     .chip-type {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      background: #EAF3FF;
-      color: #2D84ED;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1px solid #BDD9FF;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; background: #EAF3FF; color: #2D84ED;
+      border-radius: 5px; font-size: 12px; font-weight: 600; border: 1px solid #BDD9FF;
     }
-    .detail-header-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .lifecycle-action-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-    }
+    .lifecycle-action-group { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
-    /* Tabs */
+    /* Tabs — 7 tabs */
     .tabs-wrap { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; overflow: hidden; }
     .tab-inputs { display: none; }
     .tab-nav {
-      display: flex;
-      border-bottom: 1px solid #E5E7EA;
-      background: #F6F7F9;
-      overflow-x: auto;
+      display: flex; border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9; overflow-x: auto;
     }
     .tab-label {
-      padding: 12px 20px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #9EA5AD;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-      transition: color 0.1s;
-      background: #F6F7F9;
-      user-select: none;
+      padding: 12px 20px; font-size: 13px; font-weight: 500; color: #9EA5AD;
+      cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color 0.1s; background: #F6F7F9; user-select: none;
     }
     .tab-label:hover { color: #596066; }
     #tab1:checked ~ .tab-nav label[for="tab1"],
@@ -147,11 +94,9 @@
     #tab3:checked ~ .tab-nav label[for="tab3"],
     #tab4:checked ~ .tab-nav label[for="tab4"],
     #tab5:checked ~ .tab-nav label[for="tab5"],
-    #tab6:checked ~ .tab-nav label[for="tab6"] {
-      color: #24292E;
-      border-bottom-color: #24292E;
-      font-weight: 600;
-      background: #fff;
+    #tab6:checked ~ .tab-nav label[for="tab6"],
+    #tab7:checked ~ .tab-nav label[for="tab7"] {
+      color: #24292E; border-bottom-color: #24292E; font-weight: 600; background: #fff;
     }
     .tab-content { display: none; padding: 24px; }
     #tab1:checked ~ .tab-body > #content1,
@@ -159,249 +104,176 @@
     #tab3:checked ~ .tab-body > #content3,
     #tab4:checked ~ .tab-body > #content4,
     #tab5:checked ~ .tab-body > #content5,
-    #tab6:checked ~ .tab-body > #content6 { display: block; }
+    #tab6:checked ~ .tab-body > #content6,
+    #tab7:checked ~ .tab-body > #content7 { display: block; }
 
     /* Info layout */
-    .detail-layout {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
+    .detail-layout { display: flex; gap: 20px; align-items: flex-start; }
     .detail-main { flex: 1; min-width: 0; }
     .detail-side { width: 280px; flex-shrink: 0; }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
+    @media (max-width: 900px) {
+      .detail-layout { flex-direction: column; }
+      .detail-side { width: 100%; }
     }
+
+    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
     .info-grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .info-item {}
     .info-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #9EA5AD;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 4px;
+      font-size: 11px; font-weight: 600; color: #9EA5AD;
+      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px;
     }
     .info-value { font-size: 14px; color: #24292E; font-weight: 500; }
     .info-value a { color: #2D84ED; text-decoration: none; }
     .info-value a:hover { text-decoration: underline; }
+    .info-value-sm { font-size: 13px; color: #24292E; }
+    .info-value-mono { font-size: 13px; color: #24292E; font-family: monospace; background: #F6F7F9; border-radius: 4px; padding: 2px 8px; display: inline-block; }
 
     .tag-list { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag { background: #F0F1F3; color: #596066; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
 
-    /* PDE side card */
-    .pde-card {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-left: 4px solid #B45309;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .pde-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: #FFF8E6;
-      border-bottom: 1px solid #FDE68A;
-    }
-    .pde-card-title { font-size: 13px; font-weight: 700; color: #92400E; }
-    .pde-card-body { padding: 14px 16px; }
-    .pde-field { margin-bottom: 12px; }
-    .pde-field:last-child { margin-bottom: 0; }
-    .pde-field-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
-    .pde-field-value { font-size: 13px; color: #24292E; }
-    .pde-condition-text {
-      font-size: 12px;
-      color: #92400E;
-      background: #FFF8E6;
+    /* PDE amber left-border panel */
+    .pde-panel {
+      background: #FFFBF0;
       border: 1px solid #FDE68A;
-      border-radius: 6px;
-      padding: 8px 12px;
-      line-height: 1.5;
-    }
-
-    /* Section */
-    .tab-section {
-      margin-bottom: 24px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .tab-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .tab-section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #24292E;
-      margin-bottom: 16px;
-    }
-
-    /* Validation panel */
-    .validation-panel {
-      background: #F0FDF4;
-      border: 1px solid #B2DFB3;
+      border-left: 4px solid #F3BE4A;
       border-radius: 8px;
       padding: 14px 16px;
     }
+    .pde-panel-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .pde-panel-title { font-size: 13px; font-weight: 700; color: #92400E; }
+    .pde-panel-body { display: flex; flex-direction: column; gap: 10px; }
+    .pde-row { display: flex; flex-direction: column; gap: 3px; }
+    .pde-row-label { font-size: 11px; font-weight: 600; color: #B45309; text-transform: uppercase; letter-spacing: 0.3px; }
+    .pde-row-value { font-size: 12px; color: #92400E; }
+    .pde-cond-text {
+      font-size: 12px; color: #92400E; background: #FEF3C7;
+      border: 1px solid #FDE68A; border-radius: 5px; padding: 7px 10px; line-height: 1.5;
+    }
+    .badge-pde-approved  { background: #E8F8E9; color: #2E9E34; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .badge-pde-restricted { background: #FFF8E6; color: #B45309; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+    /* Tab section */
+    .tab-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #E5E7EA; }
+    .tab-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .tab-section-title { font-size: 14px; font-weight: 700; color: #24292E; margin-bottom: 16px; }
+
+    /* Validation panel */
+    .validation-panel {
+      background: #F0FDF4; border: 1px solid #B2DFB3; border-radius: 8px; padding: 14px 16px;
+    }
     .validation-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
     }
     .validation-status { font-size: 14px; font-weight: 700; color: #2E9E34; }
     .validation-date { font-size: 12px; color: #596066; margin-left: auto; }
     .check-items { display: flex; flex-direction: column; gap: 6px; }
     .check-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: #24292E;
-      padding: 8px 12px;
-      background: #fff;
-      border-radius: 6px;
+      display: flex; align-items: center; gap: 8px; font-size: 13px; color: #24292E;
+      padding: 8px 12px; background: #fff; border-radius: 6px;
     }
-    .check-item .check-ok { color: #2E9E34; font-weight: 700; }
+    .check-ok  { color: #2E9E34; font-weight: 700; font-size: 14px; }
+    .check-warn { color: #B45309; font-weight: 700; font-size: 14px; }
+    .check-fail { color: #C83434; font-weight: 700; font-size: 14px; }
+    .check-label { flex: 1; }
+    .check-detail { font-size: 11px; color: #9EA5AD; }
 
-    /* Preview box */
+    /* Preview */
     .preview-box {
-      background: #E5E7EA;
-      border-radius: 8px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 12px;
-      color: #9EA5AD;
-      font-size: 13px;
-      margin-bottom: 12px;
+      background: #E5E7EA; border-radius: 8px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 12px; color: #9EA5AD; font-size: 13px; margin-bottom: 12px;
     }
     .btn-sm {
-      height: 30px;
-      padding: 0 12px;
-      border: 1px solid #CED2D6;
-      background: #fff;
-      border-radius: 6px;
-      font-size: 12px;
-      color: #24292E;
-      cursor: pointer;
+      height: 30px; padding: 0 12px; border: 1px solid #CED2D6;
+      background: #fff; border-radius: 6px; font-size: 12px; color: #24292E; cursor: pointer;
     }
     .btn-sm:hover { background: #F6F7F9; }
     .thumb-sm {
-      width: 120px;
-      height: 68px;
-      background: #E5E7EA;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #9EA5AD;
-      font-size: 11px;
+      width: 120px; height: 68px; background: #E5E7EA; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; color: #9EA5AD; font-size: 11px;
     }
 
     /* Revision table */
     .revision-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
     .revision-table th {
-      background: #F6F7F9;
-      padding: 9px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #596066;
-      text-align: left;
-      border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9; padding: 9px 12px; font-size: 12px;
+      font-weight: 600; color: #596066; text-align: left; border-bottom: 1px solid #E5E7EA;
     }
     .revision-table td {
-      padding: 11px 12px;
-      font-size: 13px;
-      color: #24292E;
-      border-bottom: 1px solid #F0F1F3;
+      padding: 11px 12px; font-size: 13px; color: #24292E; border-bottom: 1px solid #F0F1F3;
     }
     .revision-table tr:last-child td { border-bottom: none; }
     .current-rev-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      background: #E8F8E9;
-      color: #2E9E34;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
+      display: inline-flex; align-items: center; padding: 2px 8px;
+      background: #E8F8E9; color: #2E9E34; border-radius: 4px; font-size: 11px; font-weight: 700;
     }
     .info-note {
-      background: #FFF8E6;
-      border: 1px solid #FDE68A;
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #92400E;
-      line-height: 1.5;
+      background: #FFF8E6; border: 1px solid #FDE68A; border-left: 3px solid #F3BE4A;
+      border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #92400E; line-height: 1.5;
     }
     .info-box {
-      background: #F6F7F9;
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #596066;
-      line-height: 1.5;
+      background: #F6F7F9; border-radius: 6px; padding: 10px 14px;
+      font-size: 12px; color: #596066; line-height: 1.5;
     }
 
     /* Retention */
     .retention-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 14px; margin-bottom: 20px;
     }
     .ret-item-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
     .ret-item-value { font-size: 14px; color: #24292E; font-weight: 500; }
-    .badge-ret-normal { background: #F0F1F3; color: #596066; border: 1px solid #CED2D6; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     .dday { font-size: 12px; color: #596066; font-weight: 500; margin-top: 2px; }
     .btn-extend {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      cursor: pointer;
-      font-weight: 500;
+      height: 34px; padding: 0 14px; background: #fff;
+      border: 1px solid #CED2D6; border-radius: 6px;
+      font-size: 13px; color: #24292E; cursor: pointer; font-weight: 500;
     }
     .btn-extend:hover { background: #F6F7F9; }
+    .retention-timeline {
+      background: #F6F7F9; border-radius: 8px; padding: 16px;
+      display: flex; align-items: center; gap: 0; margin-top: 16px;
+    }
+    .ret-tl-start, .ret-tl-end { font-size: 11px; color: #596066; white-space: nowrap; }
+    .ret-tl-bar {
+      flex: 1; height: 8px; background: #E5E7EA; border-radius: 4px;
+      margin: 0 12px; position: relative;
+    }
+    .ret-tl-fill {
+      height: 100%; background: #58C65D; border-radius: 4px;
+      width: 70%;
+    }
+    .ret-tl-now {
+      position: absolute; top: -4px; left: 70%;
+      width: 2px; height: 16px; background: #24292E;
+    }
+    .ret-tl-now::after {
+      content: '오늘'; position: absolute; top: 18px; left: 50%;
+      transform: translateX(-50%); font-size: 10px; color: #596066; white-space: nowrap;
+    }
 
-    /* Audit timeline */
+    /* Audit */
     .audit-timeline { display: flex; flex-direction: column; gap: 0; }
     .audit-item {
-      display: flex;
-      gap: 14px;
-      padding: 12px 0;
+      display: flex; gap: 14px; padding: 12px 0;
       border-bottom: 1px solid #F0F1F3;
-      position: relative;
     }
     .audit-item:last-child { border-bottom: none; }
     .audit-time-col { width: 130px; flex-shrink: 0; }
     .audit-time { font-size: 12px; color: #9EA5AD; white-space: nowrap; }
     .audit-dot {
-      width: 8px;
-      height: 8px;
-      background: #CED2D6;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 4px;
+      width: 8px; height: 8px; background: #CED2D6; border-radius: 50%;
+      flex-shrink: 0; margin-top: 4px;
     }
-    .audit-dot.sys { background: #2D84ED; }
+    .audit-dot.sys  { background: #2D84ED; }
     .audit-dot.user { background: #58C65D; }
-    .audit-dot.pde { background: #B45309; }
+    .audit-dot.pde  { background: #F3BE4A; }
     .audit-body { flex: 1; }
     .audit-actor { font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 2px; }
     .audit-desc { font-size: 13px; color: #24292E; }
 
-    /* Delta badge */
     .delta-ok { background: #E8F8E9; color: #2E9E34; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
   </style>
 </head>
@@ -460,23 +332,24 @@
         <div class="breadcrumb">
           <a href="contents">콘텐츠</a>
           <span class="breadcrumb-sep">›</span>
-          <span class="breadcrumb-current">CNT-002</span>
+          <span class="breadcrumb-current">CNT-001</span>
         </div>
         <div class="header-actions">
-          <button class="btn-outline" onclick="alert('수정 모드')">수정</button>
           <button class="btn-outline" onclick="alert('미리보기')">미리보기</button>
           <button class="btn-outline" onclick="alert('다운로드')">다운로드</button>
         </div>
       </div>
       <div class="detail-title-row">
-        <h1 class="detail-title">인천공항 브랜드 스팟</h1>
+        <h1 class="detail-title">갤럭시 S25 런칭 30초</h1>
         <span class="badge lc-approved"><span class="badge-dot"></span>승인</span>
         <span class="chip-type">파일(동영상)</span>
         <div class="lifecycle-action-group">
-          <button class="btn-amber-outline" onclick="alert('비활성화 처리')">비활성화</button>
-          <button class="btn-blue" onclick="alert('새 Revision 생성')">새 Revision</button>
+          <!-- State Transition Actions — 승인(Approved) 상태 -->
+          <button class="btn-amber-outline" onclick="alert('비활성화 처리 — Approved → Inactive')">비활성화</button>
+          <button class="btn-blue" onclick="alert('새 Revision 생성 — 핵심값 변경 시')">새 Revision</button>
         </div>
       </div>
+      <div style="font-size:12px;color:#9EA5AD;">content.id: CNT-001 &nbsp;·&nbsp; Revision: <strong style="color:#596066;">R1</strong> (Immutable) &nbsp;·&nbsp; Retention: <span class="badge ret-normal" style="font-size:11px;padding:1px 8px;">정상</span></div>
     </div>
 
     <!-- Tabs -->
@@ -487,66 +360,71 @@
       <input class="tab-inputs" type="radio" name="tabs" id="tab4">
       <input class="tab-inputs" type="radio" name="tabs" id="tab5">
       <input class="tab-inputs" type="radio" name="tabs" id="tab6">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab7">
 
       <div class="tab-nav">
         <label class="tab-label" for="tab1">기본 정보</label>
         <label class="tab-label" for="tab2">소재 정보</label>
         <label class="tab-label" for="tab3">재생 시간</label>
-        <label class="tab-label" for="tab4">Revision 관리</label>
-        <label class="tab-label" for="tab5">보관 정책</label>
-        <label class="tab-label" for="tab6">Audit / 이력</label>
+        <label class="tab-label" for="tab4">광고 정보</label>
+        <label class="tab-label" for="tab5">Revision</label>
+        <label class="tab-label" for="tab6">보관 정책</label>
+        <label class="tab-label" for="tab7">Audit / 이력</label>
       </div>
 
       <div class="tab-body">
 
-        <!-- Tab 1: 기본 정보 -->
+        <!-- ─── Tab 1: 기본 정보 ─── -->
         <div id="content1" class="tab-content">
           <div class="detail-layout">
             <div class="detail-main">
               <div class="info-grid">
                 <div class="info-item">
                   <div class="info-label">콘텐츠 ID</div>
-                  <div class="info-value" style="font-family:monospace;">CNT-002</div>
+                  <div class="info-value"><span class="info-value-mono">CNT-001</span></div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">콘텐츠명</div>
-                  <div class="info-value">인천공항 브랜드 스팟</div>
+                  <div class="info-value">갤럭시 S25 런칭 30초</div>
                 </div>
                 <div class="info-item">
-                  <div class="info-label">생애주기 상태</div>
-                  <div class="info-value"><span class="badge lc-approved"><span class="badge-dot"></span>승인</span></div>
+                  <div class="info-label">Lifecycle 상태</div>
+                  <div class="info-value">
+                    <span class="badge lc-approved"><span class="badge-dot"></span>승인</span>
+                  </div>
                 </div>
                 <div class="info-item">
-                  <div class="info-label">콘텐츠 유형</div>
-                  <div class="info-value">파일(동영상)</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">광고 유형</div>
-                  <div class="info-value">일반광고</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">광고주</div>
-                  <div class="info-value"><a href="#">현대자동차</a> <span style="font-size:11px;color:#9EA5AD;">외부 Master</span></div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">업종</div>
-                  <div class="info-value">자동차</div>
+                  <div class="info-label">Revision (자동생성, 불변)</div>
+                  <div class="info-value"><span class="info-value-mono">R1</span> <span style="font-size:11px;color:#9EA5AD;">생성 후 변경 불가</span></div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">태그</div>
                   <div class="info-value">
                     <div class="tag-list">
-                      <span class="tag">브랜드</span>
-                      <span class="tag">공항</span>
-                      <span class="tag">프리미엄</span>
+                      <span class="tag">갤럭시</span>
+                      <span class="tag">런칭</span>
+                      <span class="tag">삼성</span>
+                      <span class="tag">30초</span>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- State Transition 섹션 -->
+              <div style="background:#F6F7F9;border-radius:8px;padding:16px;margin-bottom:20px;">
+                <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:12px;">상태 전환 (State Transition)</div>
+                <div style="font-size:12px;color:#596066;margin-bottom:10px;">현재 상태: <span class="badge lc-approved" style="font-size:11px;"><span class="badge-dot"></span>승인</span> &nbsp;→&nbsp; 가능한 전환:</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="btn-amber-outline" onclick="alert('비활성화 — Approved → Inactive')">비활성화 (Inactive)</button>
+                  <button class="btn-outline" onclick="alert('새 Revision 생성 후 검증 요청')" style="border-color:#2D84ED;color:#2D84ED;">새 Revision → 검증중</button>
+                </div>
+                <div style="font-size:11px;color:#9EA5AD;margin-top:8px;">Lifecycle: 초안 → 검증중 → 검토대기 → 승인 ↔ 비활성 → 보관</div>
+              </div>
+
               <div class="info-grid" style="margin-bottom:0;">
                 <div class="info-item">
                   <div class="info-label">생성일</div>
-                  <div class="info-value">2025-05-22</div>
+                  <div class="info-value">2025-07-15</div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">생성자</div>
@@ -554,7 +432,7 @@
                 </div>
                 <div class="info-item">
                   <div class="info-label">마지막 수정</div>
-                  <div class="info-value">2025-06-01</div>
+                  <div class="info-value">2025-08-01</div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">수정자</div>
@@ -563,25 +441,29 @@
               </div>
             </div>
 
-            <!-- PDE Side Card -->
+            <!-- PDE amber left-border panel -->
             <div class="detail-side">
-              <div class="pde-card">
-                <div class="pde-card-header">
-                  <span class="pde-card-title">PDE 검토 결과</span>
-                  <span class="badge pde-restricted">제한</span>
+              <div class="pde-panel">
+                <div class="pde-panel-header">
+                  <span class="pde-panel-title">⚠ PDE 검토 결과</span>
+                  <span class="badge-pde-approved">승인</span>
                 </div>
-                <div class="pde-card-body">
-                  <div class="pde-field">
-                    <div class="pde-field-label">제한 조건</div>
-                    <div class="pde-condition-text">야간 시간대(22:00~06:00) 운항 정보 관련 콘텐츠 특별 정책 적용</div>
+                <div class="pde-panel-body">
+                  <div class="pde-row">
+                    <div class="pde-row-label">Decision</div>
+                    <div class="pde-row-value"><strong>승인(Approved)</strong></div>
                   </div>
-                  <div class="pde-field">
-                    <div class="pde-field-label">Policy Version</div>
-                    <div class="pde-field-value">v2.1.1</div>
+                  <div class="pde-row">
+                    <div class="pde-row-label">적용 정책</div>
+                    <div class="pde-cond-text">일반 상업광고 — 전 시간대 송출 허용. 특별 제한 조건 없음.</div>
                   </div>
-                  <div class="pde-field">
-                    <div class="pde-field-label">평가일시</div>
-                    <div class="pde-field-value">2025-06-01 09:15</div>
+                  <div class="pde-row">
+                    <div class="pde-row-label">Policy Version</div>
+                    <div class="pde-row-value">v2.1.3</div>
+                  </div>
+                  <div class="pde-row">
+                    <div class="pde-row-label">평가일시</div>
+                    <div class="pde-row-value">2025-08-01 10:30</div>
                   </div>
                 </div>
               </div>
@@ -589,18 +471,26 @@
           </div>
         </div>
 
-        <!-- Tab 2: 소재 정보 -->
+        <!-- ─── Tab 2: 소재 정보 ─── -->
         <div id="content2" class="tab-content">
           <div class="tab-section">
-            <div class="tab-section-title">원본 파일 정보</div>
+            <div class="tab-section-title">원본 소스 유형</div>
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:#EAF3FF;border:1px solid #BDD9FF;border-radius:6px;font-size:13px;font-weight:600;color:#2D84ED;">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3z" rx="2" stroke="#2D84ED" stroke-width="1.4" fill="none"/><path d="M5.5 8h5M8 5.5v5" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg>
+              파일 (File)
+            </div>
+          </div>
+
+          <div class="tab-section">
+            <div class="tab-section-title">원본 파일 정보 (content.source.file)</div>
             <div class="info-grid info-grid-3">
               <div class="info-item">
-                <div class="info-label">원본 파일명</div>
-                <div class="info-value" style="font-size:13px;word-break:break-all;">HMC_airport_brand_v3_final.mp4</div>
+                <div class="info-label">파일명</div>
+                <div class="info-value-sm" style="word-break:break-all;">galaxy_s25_launch_30s_v1.mp4</div>
               </div>
               <div class="info-item">
                 <div class="info-label">파일 크기</div>
-                <div class="info-value">128.4 MB</div>
+                <div class="info-value">245.8 MB</div>
               </div>
               <div class="info-item">
                 <div class="info-label">파일 형식</div>
@@ -612,11 +502,11 @@
               </div>
               <div class="info-item">
                 <div class="info-label">비트레이트</div>
-                <div class="info-value">8,500 kbps</div>
+                <div class="info-value">12,000 kbps</div>
               </div>
               <div class="info-item">
                 <div class="info-label">해상도</div>
-                <div class="info-value">1920×1080 (16:9)</div>
+                <div class="info-value">3840×2160 (4K)</div>
               </div>
             </div>
           </div>
@@ -640,33 +530,53 @@
               <div class="validation-header">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="#E8F8E9"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="#2E9E34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span class="validation-status">통과</span>
-                <span class="validation-date">검증일시: 2025-05-22 11:40</span>
+                <span class="validation-date">검증일시: 2025-07-15 14:22</span>
               </div>
               <div class="check-items">
-                <div class="check-item"><span class="check-ok">✓</span> 파일 형식</div>
-                <div class="check-item"><span class="check-ok">✓</span> 해상도</div>
-                <div class="check-item"><span class="check-ok">✓</span> 코덱</div>
-                <div class="check-item"><span class="check-ok">✓</span> 파일 크기</div>
-                <div class="check-item"><span class="check-ok">✓</span> 재생 가능</div>
+                <div class="check-item">
+                  <span class="check-ok">✓</span>
+                  <span class="check-label">파일 형식</span>
+                  <span class="check-detail">MP4 — 지원 형식</span>
+                </div>
+                <div class="check-item">
+                  <span class="check-ok">✓</span>
+                  <span class="check-label">해상도</span>
+                  <span class="check-detail">3840×2160 — 요구 해상도 충족</span>
+                </div>
+                <div class="check-item">
+                  <span class="check-ok">✓</span>
+                  <span class="check-label">코덱</span>
+                  <span class="check-detail">H.264 / AAC — 지원 코덱</span>
+                </div>
+                <div class="check-item">
+                  <span class="check-ok">✓</span>
+                  <span class="check-label">재생시간</span>
+                  <span class="check-detail">30.000초 — 설정값과 일치</span>
+                </div>
+                <div class="check-item">
+                  <span class="check-ok">✓</span>
+                  <span class="check-label">파일 크기</span>
+                  <span class="check-detail">245.8 MB — 500 MB 이하</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tab 3: 재생 시간 -->
+        <!-- ─── Tab 3: 재생 시간 ─── -->
         <div id="content3" class="tab-content">
           <div class="tab-section">
-            <div class="tab-section-title">재생 시간 정보</div>
+            <div class="tab-section-title">재생시간 정보 (content.playbackDuration)</div>
             <div class="info-grid info-grid-3">
               <div class="info-item">
                 <div class="info-label">원본 재생시간 (Source)</div>
-                <div class="info-value">15.000초</div>
+                <div class="info-value">30.000초</div>
                 <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">파일에서 자동 추출 (Read-only)</div>
               </div>
               <div class="info-item">
                 <div class="info-label">설정 재생시간 (Playback Duration)</div>
-                <div class="info-value">15초</div>
-                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">운영 SSOT</div>
+                <div class="info-value">30초</div>
+                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">스케줄 SSOT</div>
               </div>
               <div class="info-item">
                 <div class="info-label">Delta</div>
@@ -682,111 +592,189 @@
               </div>
             </div>
           </div>
+          <div class="tab-section">
+            <div class="tab-section-title">참조 원칙 (content.masterReferencePolicy)</div>
+            <div style="background:#F6F7F9;border-radius:6px;padding:12px 16px;font-size:13px;color:#596066;display:flex;align-items:center;gap:8px;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9EA5AD" stroke-width="1.4"/><path d="M8 7v4M8 5v1" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <span>스케줄에서 최신 Revision 자동 참조 (Read-only 시스템 규칙)</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Tab 4: Revision 관리 -->
+        <!-- ─── Tab 4: 광고 정보 ─── -->
         <div id="content4" class="tab-content">
           <div class="tab-section">
+            <div class="tab-section-title">광고 분류 (content.advertisingType)</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">광고 유형</div>
+                <div class="info-value">일반광고 (Commercial)</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">업종 카테고리 (content.industryCategoryCode)</div>
+                <div class="info-value">전자/IT</div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-section">
+            <div class="tab-section-title">콘텐츠 주체</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">광고주 (content.advertiserId)</div>
+                <div class="info-value"><a href="#">삼성전자</a> <span style="font-size:11px;color:#9EA5AD;">ADV-001</span></div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">대행사 (content.agencyId)</div>
+                <div class="info-value"><a href="#">제일기획</a> <span style="font-size:11px;color:#9EA5AD;">AGC-003</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── Tab 5: Revision ─── -->
+        <div id="content5" class="tab-content">
+          <div class="tab-section">
+            <div class="info-note" style="margin-bottom:16px;">
+              ⚠ Revision 생성 후 소재 정보 변경 불가 — 핵심 소재(파일·URL) 변경이 필요한 경우 새 Revision을 생성하세요.
+            </div>
             <div class="tab-section-title">Revision 목록</div>
             <table class="revision-table">
               <thead>
                 <tr>
-                  <th>Revision</th>
+                  <th>Revision 번호</th>
+                  <th>변경내역</th>
                   <th>상태</th>
                   <th>생성일</th>
                   <th>생성자</th>
-                  <th>주요 변경</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="font-weight:700;">v1</td>
+                  <td style="font-weight:700;font-family:monospace;">R1</td>
+                  <td style="font-size:12px;color:#596066;">최초 등록 — galaxy_s25_launch_30s_v1.mp4</td>
                   <td><span class="badge lc-approved">승인</span></td>
-                  <td style="font-size:12px;color:#596066;">2025-05-22</td>
+                  <td style="font-size:12px;color:#596066;">2025-07-15</td>
                   <td style="font-size:12px;">홍길동</td>
-                  <td style="font-size:12px;color:#596066;">최초 등록</td>
                   <td><span class="current-rev-chip">현재</span></td>
                 </tr>
               </tbody>
             </table>
             <div style="margin-bottom:16px;">
-              <div style="font-size:12px;color:#596066;margin-bottom:8px;">현재 적용 Revision: <strong>v1</strong> (Immutable)</div>
-              <button class="btn-blue" onclick="alert('새 Revision 생성 — 승인된 Revision의 핵심값 변경이 필요한 경우 새 Revision을 생성합니다.')">+ 새 Revision 생성</button>
+              <div style="font-size:12px;color:#596066;margin-bottom:8px;">현재 적용 Revision: <strong>R1</strong> (Immutable — 생성 후 소재 정보 불변)</div>
+              <button class="btn-blue" onclick="alert('새 Revision 생성 — 소재 파일/URL 변경 시 사용')">+ 새 Revision 생성</button>
             </div>
-            <div class="info-note">승인된 Revision은 수정 불가. 변경이 필요한 경우 새 Revision을 생성하세요.</div>
           </div>
         </div>
 
-        <!-- Tab 5: 보관 정책 -->
-        <div id="content5" class="tab-content">
+        <!-- ─── Tab 6: 보관 정책 ─── -->
+        <div id="content6" class="tab-content">
           <div class="tab-section">
-            <div class="tab-section-title">보관 정책</div>
+            <div class="tab-section-title">보관 정책 (content.retentionPolicy)</div>
             <div class="retention-grid">
               <div>
                 <div class="ret-item-label">보관 유형</div>
                 <div class="ret-item-value">Commercial (자동 정책)</div>
               </div>
               <div>
-                <div class="ret-item-label">Retention 만료일</div>
-                <div class="ret-item-value">2026-05-22</div>
-                <div class="dday">D-277</div>
+                <div class="ret-item-label">만료일 (content.retentionPolicy.expireAt)</div>
+                <div class="ret-item-value">2026-07-15</div>
+                <div class="dday">D-331</div>
               </div>
               <div>
                 <div class="ret-item-label">Retention 상태</div>
-                <div class="ret-item-value"><span class="badge-ret-normal">정상</span></div>
+                <div class="ret-item-value"><span class="badge ret-normal">정상</span></div>
+              </div>
+              <div>
+                <div class="ret-item-label">자동 보관 (content.retentionPolicy.autoArchive)</div>
+                <div class="ret-item-value" style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:13px;">활성화</span>
+                  <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">ON</span>
+                </div>
               </div>
               <div style="display:flex;align-items:flex-end;">
                 <button class="btn-extend" onclick="alert('보관 기간 연장 — Admin 이상 권한 필요')">보관 기간 연장</button>
               </div>
             </div>
-            <div class="info-box">만료 후 Asset 파일은 삭제 가능하나, 논리적 레코드 및 Audit 이력은 영구 보존됩니다.</div>
+
+            <!-- Retention Timeline -->
+            <div class="retention-timeline">
+              <span class="ret-tl-start">2025-07-15 (등록)</span>
+              <div class="ret-tl-bar">
+                <div class="ret-tl-fill"></div>
+                <div class="ret-tl-now"></div>
+              </div>
+              <span class="ret-tl-end">2026-07-15 (만료)</span>
+            </div>
+
+            <div class="info-box" style="margin-top:16px;">만료 후 Asset 파일은 삭제 가능하나, 논리적 레코드 및 Audit 이력은 영구 보존됩니다.</div>
           </div>
         </div>
 
-        <!-- Tab 6: Audit / 이력 -->
-        <div id="content6" class="tab-content">
+        <!-- ─── Tab 7: Audit / 이력 ─── -->
+        <div id="content7" class="tab-content">
+          <div class="tab-section">
+            <div class="tab-section-title">담당자 / 생성·수정 정보</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">등록자</div>
+                <div class="info-value">홍길동</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">등록일</div>
+                <div class="info-value">2025-07-15 13:40</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">최종 수정자</div>
+                <div class="info-value">홍길동</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">최종 수정일</div>
+                <div class="info-value">2025-08-01 10:30</div>
+              </div>
+            </div>
+          </div>
           <div class="tab-section">
             <div class="tab-section-title">변경 이력</div>
             <div class="audit-timeline">
               <div class="audit-item">
-                <div class="audit-time-col">
-                  <div class="audit-time">2025-06-01 09:15</div>
-                </div>
+                <div class="audit-time-col"><div class="audit-time">2025-08-01 10:30</div></div>
                 <div class="audit-dot pde"></div>
                 <div class="audit-body">
                   <div class="audit-actor">시스템(PDE)</div>
-                  <div class="audit-desc">PDE 결과 업데이트 — <span style="color:#B45309;font-weight:600;">제한</span></div>
+                  <div class="audit-desc">PDE 결과 업데이트 — <span style="color:#2E9E34;font-weight:600;">승인</span></div>
                 </div>
               </div>
               <div class="audit-item">
-                <div class="audit-time-col">
-                  <div class="audit-time">2025-05-22 11:40</div>
+                <div class="audit-time-col"><div class="audit-time">2025-07-16 09:00</div></div>
+                <div class="audit-dot user"></div>
+                <div class="audit-body">
+                  <div class="audit-actor">김검토</div>
+                  <div class="audit-desc">콘텐츠 승인 처리 (검토대기 → 승인)</div>
                 </div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-time-col"><div class="audit-time">2025-07-15 14:22</div></div>
                 <div class="audit-dot sys"></div>
                 <div class="audit-body">
                   <div class="audit-actor">시스템</div>
-                  <div class="audit-desc">Technical Validation 완료 — <span style="color:#2E9E34;font-weight:600;">통과</span></div>
+                  <div class="audit-desc">Technical Validation 완료 — <span style="color:#2E9E34;font-weight:600;">통과</span> (Draft → 검토대기)</div>
                 </div>
               </div>
               <div class="audit-item">
-                <div class="audit-time-col">
-                  <div class="audit-time">2025-05-22 11:38</div>
-                </div>
-                <div class="audit-dot user"></div>
+                <div class="audit-time-col"><div class="audit-time">2025-07-15 13:45</div></div>
+                <div class="audit-dot sys"></div>
                 <div class="audit-body">
-                  <div class="audit-actor">홍길동</div>
-                  <div class="audit-desc">검증 요청 (Draft → Validating)</div>
+                  <div class="audit-actor">시스템</div>
+                  <div class="audit-desc">Technical Validation 시작 (Draft → 검증중)</div>
                 </div>
               </div>
               <div class="audit-item">
-                <div class="audit-time-col">
-                  <div class="audit-time">2025-05-22 10:12</div>
-                </div>
+                <div class="audit-time-col"><div class="audit-time">2025-07-15 13:40</div></div>
                 <div class="audit-dot user"></div>
                 <div class="audit-body">
                   <div class="audit-actor">홍길동</div>
-                  <div class="audit-desc">콘텐츠 등록 (Draft 생성)</div>
+                  <div class="audit-desc">콘텐츠 등록 — R1 생성 (Draft)</div>
                 </div>
               </div>
             </div>
