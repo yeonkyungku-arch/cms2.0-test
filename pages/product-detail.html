@@ -917,9 +917,9 @@
       <span class="dot-badge"></span>
     </div>
     <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
+      <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-name">홍길동</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
@@ -956,6 +956,191 @@
         <span class="status-toggle-label" id="statusLabel">활성</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ─── IA_02: Lifecycle State + Actions ─── -->
+  <div class="section-card" style="margin-bottom:16px;">
+    <div class="section-header" style="background:#F6F7F9;">
+      <h2 class="section-title">생애주기 상태 (Lifecycle)</h2>
+    </div>
+    <div style="padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <!-- Current state badge -->
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;background:#E8F8E9;color:#2E9E34;font-size:13px;font-weight:700;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#58C65D;flex-shrink:0;display:inline-block;"></span>
+        활성 (Active)
+      </span>
+      <span style="color:#9EA5AD;font-size:12px;">현재 Revision: v1.0 · 2024-03-01 적용</span>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+        <!-- Transition action buttons (no direct select) -->
+        <button style="height:32px;padding:0 14px;background:#FFFBE6;border:1px solid #F3BE4A;border-radius:6px;font-size:12px;font-weight:600;color:#B45309;cursor:pointer;" onclick="alert('중지(Suspended) 상태로 전환합니다. (Admin 권한 필요)')">중지 전환</button>
+        <button style="height:32px;padding:0 14px;background:#FFF0F0;border:1px solid #E97474;border-radius:6px;font-size:12px;font-weight:600;color:#B03030;cursor:pointer;" onclick="alert('종료(Terminated) 전환은 되돌릴 수 없습니다. (Admin 권한 필요)')">운영 종료</button>
+      </div>
+    </div>
+    <div style="padding:0 24px 16px;font-size:12px;color:#9EA5AD;">
+      Draft → <strong style="color:#2D84ED;">구성완료</strong> → [검증 요청] → <strong style="color:#7C5CBF;">승인됨</strong> → [활성화] → <strong style="color:#2E9E34;">활성</strong> ↔ <span style="color:#B45309;">중지</span> → <span style="color:#B03030;">종료</span> &nbsp;|&nbsp; 직접 상태 선택 불가 — 허용된 Action 버튼으로만 전환
+    </div>
+  </div>
+
+  <!-- ─── IA_02: PDE 패널 ─── -->
+  <div class="section-card" style="margin-bottom:16px;border-left:4px solid #F3BE4A;">
+    <div class="section-header" style="background:#FFFBE6;">
+      <h2 class="section-title" style="display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M8 5v4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.5" r="0.8" fill="#F3BE4A"/></svg>
+        PDE 검토 결과
+      </h2>
+      <span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:4px;background:#FFF3CD;color:#8A6400;font-size:12px;font-weight:700;border:1px solid #F3BE4A;">⚠ 제한 (Restricted)</span>
+    </div>
+    <div style="padding:16px 24px;">
+      <div style="font-size:13px;color:#24292E;font-weight:600;margin-bottom:6px;">제한 조건</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:#596066;line-height:1.8;">
+        <li>공항 인근 미디어 포함 — 광고 카테고리 제한 적용 (주류·도박·성인 불가)</li>
+        <li>운영 시간 22:00 이후 일부 슬롯 운영 제한 (시설 정책)</li>
+        <li>캠페인 집행 시 PDE 재검토 요청 필요</li>
+      </ul>
+      <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+        PDE Decision: <strong>제한(Restricted)</strong> — Lifecycle Approved 유지, 제한 조건 내 운영 가능 &nbsp;|&nbsp; 최종 검토: 2024-03-01 · 홍길동
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#9EA5AD;background:#F6F7F9;padding:8px 12px;border-radius:6px;">
+        💡 Lifecycle 승인(Approved)과 PDE Decision 승인(Approved)은 별개 개념입니다. PDE 결과가 상태전환 조건이 됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── IA_02: 기준 루프·보장 정보 KPI ─── -->
+  <div class="section-card" style="margin-bottom:16px;">
+    <div class="section-header">
+      <h2 class="section-title">기준 루프 / 보장 정보</h2>
+      <span style="font-size:12px;color:#9EA5AD;">시스템 자동 계산 · Read-only</span>
+    </div>
+    <div style="padding:18px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div style="background:#F6F7F9;border-radius:8px;padding:16px;">
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Reference Slot Duration</div>
+        <div style="font-size:24px;font-weight:700;color:#24292E;line-height:1;">30초</div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">MAX(Slot Durations) 자동 계산</div>
+      </div>
+      <div style="background:#F6F7F9;border-radius:8px;padding:16px;position:relative;">
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;display:flex;align-items:center;gap:4px;">
+          Reference Loop Duration
+          <span title="Reference Slot Duration × Total Slot Count. 다중 Slot 상품에서도 동일 Reference Loop를 보장횟수 기준으로 사용합니다." style="cursor:help;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#CED2D6;color:#fff;font-size:9px;font-weight:800;">?</span>
+        </div>
+        <div style="font-size:24px;font-weight:700;color:#2D84ED;line-height:1;">24분</div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">30초 × 48슬롯 = 1,440초</div>
+      </div>
+      <div style="background:#E8F8E9;border-radius:8px;padding:16px;">
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Expected Minimum Plays</div>
+        <div style="font-size:24px;font-weight:700;color:#2E9E34;line-height:1;">60회/일</div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">FLOOR(유효운영시간 ÷ Reference Loop)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── IA_02: 운영 정보 ─── -->
+  <div class="section-card" style="margin-bottom:16px;">
+    <div class="section-header">
+      <h2 class="section-title">운영 정보</h2>
+    </div>
+    <div style="padding:18px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">운영 요일</div>
+        <div style="font-size:14px;color:#24292E;font-weight:500;">월~일 (매일)</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">운영 시간</div>
+        <div style="font-size:14px;color:#24292E;font-weight:500;">07:00 – 22:00</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">공휴일 운영</div>
+        <div style="font-size:14px;color:#24292E;font-weight:500;">운영</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Max Content Duration</div>
+        <div style="font-size:14px;color:#24292E;font-weight:500;">30초</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Slot Durations</div>
+        <div style="font-size:14px;color:#24292E;font-weight:500;">30초, 15초, 10초</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Total Slot Count</div>
+        <div style="font-size:14px;color:#24292E;font-weight:500;">48</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── IA_02: 상품 옵션 (Product Option = Catalog Rule) ─── -->
+  <div class="section-card" style="margin-bottom:16px;">
+    <div class="section-header">
+      <h2 class="section-title">상품 옵션 (Product Option)</h2>
+      <button style="height:30px;padding:0 12px;background:#fff;border:1px solid #CED2D6;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;" onclick="alert('옵션 추가 (목업)')">+ 옵션 추가</button>
+    </div>
+    <div style="padding:12px 24px;background:#FFFBE6;border-bottom:1px solid #E5E7EA;font-size:12px;color:#8A6400;display:flex;align-items:center;gap:6px;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#F3BE4A" stroke-width="1.2"/><path d="M7 4v4" stroke="#F3BE4A" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="10" r=".7" fill="#F3BE4A"/></svg>
+      Product Option은 <strong>판매 가능한 조건을 정의하는 Catalog Rule</strong>입니다. 실제 조건 판단·실행은 관련 시스템(CMS/운영 서비스)이 담당하며, 프로덕트가 실행 책임을 소유하지 않습니다.
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#F6F7F9;">
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">옵션명</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">유형</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">가격 방식</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:right;border-bottom:1px solid #E5E7EA;">옵션 가격</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:center;border-bottom:1px solid #E5E7EA;">상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F0F1F3;">
+            <td style="padding:12px 16px;font-size:13px;font-weight:500;">프라임타임 운영 (18–22시)</td>
+            <td style="padding:12px 16px;font-size:12px;"><span style="display:inline-flex;padding:2px 8px;background:#EAF3FF;color:#2D84ED;border-radius:4px;font-weight:600;">운영시간</span></td>
+            <td style="padding:12px 16px;font-size:13px;color:#596066;">정액 (Fixed)</td>
+            <td style="padding:12px 16px;font-size:13px;text-align:right;font-weight:600;">₩2,000,000</td>
+            <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;padding:2px 8px;background:#E8F8E9;color:#2E9E34;border-radius:4px;font-size:12px;font-weight:600;">사용</span></td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;font-size:13px;font-weight:500;">타깃 노출 보장</td>
+            <td style="padding:12px 16px;font-size:12px;"><span style="display:inline-flex;padding:2px 8px;background:#F0EAFA;color:#7C5CBF;border-radius:4px;font-weight:600;">타깃</span></td>
+            <td style="padding:12px 16px;font-size:13px;color:#596066;">별도 견적 (Custom Quote)</td>
+            <td style="padding:12px 16px;font-size:13px;text-align:right;color:#9EA5AD;">견적 요청</td>
+            <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;padding:2px 8px;background:#F0F1F3;color:#9EA5AD;border-radius:4px;font-size:12px;font-weight:600;">미사용</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── IA_02: Revision 이력 ─── -->
+  <div class="section-card" style="margin-bottom:20px;">
+    <div class="section-header">
+      <h2 class="section-title">Revision 이력</h2>
+      <button style="height:30px;padding:0 12px;background:#fff;border:1px solid #CED2D6;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;" onclick="alert('새 Revision 생성: Active/Suspended 이후 핵심조건 변경 시 기존 필드 직접 덮어쓰기가 차단되고 새 Revision이 생성됩니다. (Admin 권한 필요)')">+ 새 Revision</button>
+    </div>
+    <div style="padding:10px 24px;background:#EAF3FF;border-bottom:1px solid #E5E7EA;font-size:12px;color:#2D84ED;">
+      현재 계약·캠페인·스케줄은 적용 당시 Revision을 참조합니다. 과거 Revision은 조회만 가능하며 수정·삭제할 수 없습니다.
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#F6F7F9;">
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">버전</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">상태</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">적용일</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">작성자</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">변경 내용</th>
+            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:center;border-bottom:1px solid #E5E7EA;">비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:12px 16px;font-size:13px;font-weight:700;font-family:monospace;">v1.0</td>
+            <td style="padding:12px 16px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#E8F8E9;color:#2E9E34;border-radius:4px;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:#58C65D;"></span>적용 중</span></td>
+            <td style="padding:12px 16px;font-size:13px;">2024-03-01</td>
+            <td style="padding:12px 16px;font-size:13px;">홍길동</td>
+            <td style="padding:12px 16px;font-size:13px;color:#596066;">최초 등록</td>
+            <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;padding:2px 8px;background:#EAF3FF;color:#2D84ED;border-radius:4px;font-size:11px;font-weight:600;">현재</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
