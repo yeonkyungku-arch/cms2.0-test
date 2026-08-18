@@ -98,12 +98,11 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .chip-all     { background: #596066; }
-    .chip-active  { background: #58C65D; }
-    .chip-config  { background: #2D84ED; }
-    .chip-draft   { background: #9EA5AD; }
-    .chip-approved{ background: #7C5CBF; }
-    .chip-suspend { background: #F3BE4A; }
+    .chip-all      { background: #596066; }
+    .chip-ready    { background: #2D84ED; }
+    .chip-approved { background: #7C5CBF; }
+    .chip-active   { background: #58C65D; }
+    .chip-paused   { background: #F3BE4A; }
 
     /* ── Table ── */
     .table-card {
@@ -112,7 +111,8 @@
       border-radius: 10px;
       overflow: hidden;
     }
-    table { width: 100%; border-collapse: collapse; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
     thead th {
       background: #F6F7F9;
       padding: 10px 14px;
@@ -123,8 +123,8 @@
       border-bottom: 1px solid #E5E7EA;
       white-space: nowrap;
     }
+    thead th.right { text-align: right; }
     thead th.center { text-align: center; }
-    thead th.right  { text-align: right; }
     tbody tr {
       border-bottom: 1px solid #E5E7EA;
       transition: background 0.12s;
@@ -137,20 +137,14 @@
       color: #24292E;
       vertical-align: middle;
     }
-    tbody td.center { text-align: center; }
     tbody td.right  { text-align: right; }
+    tbody td.center { text-align: center; }
     .product-name-link {
       color: #24292E;
       text-decoration: none;
       font-weight: 600;
     }
     .product-name-link:hover { color: #2D84ED; text-decoration: underline; }
-    .product-id {
-      font-size: 11px;
-      color: #9EA5AD;
-      font-weight: 400;
-      margin-left: 4px;
-    }
 
     /* ── Lifecycle badges ── */
     .badge {
@@ -163,74 +157,49 @@
       font-weight: 600;
     }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    /* Draft */
     .lc-draft    { background: #F0F1F3; color: #596066; }
-    .lc-draft .badge-dot { background: #9EA5AD; }
-    /* Configured */
-    .lc-configured { background: #EAF3FF; color: #2D84ED; }
-    .lc-configured .badge-dot { background: #2D84ED; }
-    /* Approved */
+    .lc-draft    .badge-dot { background: #9EA5AD; }
+    .lc-ready    { background: #EAF3FF; color: #2D84ED; }
+    .lc-ready    .badge-dot { background: #2D84ED; }
     .lc-approved { background: #F0EAFA; color: #7C5CBF; }
     .lc-approved .badge-dot { background: #7C5CBF; }
-    /* Active */
     .lc-active   { background: #E8F8E9; color: #2E9E34; }
-    .lc-active .badge-dot { background: #58C65D; }
-    /* Suspended */
-    .lc-suspended { background: #FFFBE6; color: #B45309; }
-    .lc-suspended .badge-dot { background: #F3BE4A; }
-    /* Terminated */
-    .lc-terminated { background: #FFF0F0; color: #B03030; }
-    .lc-terminated .badge-dot { background: #E97474; }
+    .lc-active   .badge-dot { background: #58C65D; }
+    .lc-paused   { background: #FFFBE6; color: #B45309; }
+    .lc-paused   .badge-dot { background: #F3BE4A; }
+    .lc-ended    { background: #FFF0F0; color: #B03030; }
+    .lc-ended    .badge-dot { background: #E97474; }
 
-    /* ── PDE badge ── */
-    .pde-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .pde-approved  { background: #E8F8E9; color: #2E9E34; }
-    .pde-restricted{ background: #FFF3CD; color: #8A6400; }
-    .pde-deferred  { background: #EAF3FF; color: #2D84ED; }
-    .pde-rejected  { background: #FFF0F0; color: #B03030; }
-    .pde-none      { background: #F0F1F3; color: #9EA5AD; }
-
-    /* ── Type badge ── */
-    .type-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .type-single  { background: #F6F7F9; color: #596066; border: 1px solid #E5E7EA; }
-    .type-package { background: #F0FDF4; color: #2E9E34; border: 1px solid #B2DFB3; }
-
-    /* ── Loop info tooltip ── */
-    .tooltip-wrap {
-      position: relative;
+    /* ── Slot chips ── */
+    .slot-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+    .slot-chip {
       display: inline-block;
-      cursor: default;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #F6F7F9;
+      border: 1px solid #E5E7EA;
+      color: #596066;
+      font-variant-numeric: tabular-nums;
     }
-    .tooltip-wrap .tooltip-box {
-      display: none;
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #24292E;
-      color: #fff;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-      z-index: 100;
-      pointer-events: none;
+
+    /* ── Numeric cells ── */
+    .num { font-variant-numeric: tabular-nums; }
+
+    /* ── Media type tag ── */
+    .media-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #EAF3FF;
+      color: #2D84ED;
     }
-    .tooltip-wrap:hover .tooltip-box { display: block; }
+
+    /* ── Muted text ── */
+    .muted { color: #9EA5AD; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -291,20 +260,17 @@
       <button class="status-chip selected" id="chip-all" onclick="chipFilter('')">
         <span class="chip-dot chip-all"></span>전체 <strong>18</strong>
       </button>
-      <button class="status-chip" id="chip-active" onclick="chipFilter('active')">
-        <span class="chip-dot chip-active"></span>활성 <strong>10</strong>
-      </button>
-      <button class="status-chip" id="chip-configured" onclick="chipFilter('configured')">
-        <span class="chip-dot chip-config"></span>구성완료 <strong>3</strong>
-      </button>
-      <button class="status-chip" id="chip-draft" onclick="chipFilter('draft')">
-        <span class="chip-dot chip-draft"></span>초안 <strong>2</strong>
+      <button class="status-chip" id="chip-ready" onclick="chipFilter('ready')">
+        <span class="chip-dot chip-ready"></span>구성완료 <strong>4</strong>
       </button>
       <button class="status-chip" id="chip-approved" onclick="chipFilter('approved')">
-        <span class="chip-dot chip-approved"></span>승인됨 <strong>2</strong>
+        <span class="chip-dot chip-approved"></span>승인됨 <strong>3</strong>
       </button>
-      <button class="status-chip" id="chip-suspended" onclick="chipFilter('suspended')">
-        <span class="chip-dot chip-suspend"></span>중지 <strong>1</strong>
+      <button class="status-chip" id="chip-active" onclick="chipFilter('active')">
+        <span class="chip-dot chip-active"></span>활성 <strong>8</strong>
+      </button>
+      <button class="status-chip" id="chip-paused" onclick="chipFilter('paused')">
+        <span class="chip-dot chip-paused"></span>중지 <strong>3</strong>
       </button>
     </div>
 
@@ -312,28 +278,36 @@
     <div class="toolbar-row">
       <div class="toolbar-search">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <input type="text" id="searchInput" placeholder="프로덕트명, 프로덕트 ID, 미디어 검색" oninput="filterTable()">
+        <input type="text" id="searchInput" placeholder="프로덕트명 검색" oninput="filterTable()">
       </div>
       <select class="filter-select" id="lcFilter" onchange="filterTable()">
         <option value="">Lifecycle 전체</option>
         <option value="draft">초안</option>
-        <option value="configured">구성완료</option>
+        <option value="ready">구성완료</option>
         <option value="approved">승인됨</option>
         <option value="active">활성</option>
-        <option value="suspended">중지</option>
-        <option value="terminated">종료</option>
+        <option value="paused">중지</option>
+        <option value="ended">종료</option>
       </select>
-      <select class="filter-select" id="typeFilter" onchange="filterTable()">
-        <option value="">프로덕트 유형 전체</option>
-        <option value="single">단일</option>
-        <option value="package">패키지</option>
+      <select class="filter-select" id="mediaTypeFilter" onchange="filterTable()">
+        <option value="">미디어유형 전체</option>
+        <option value="옥외">옥외</option>
+        <option value="디지털">디지털</option>
+        <option value="실내">실내</option>
+        <option value="교통">교통</option>
       </select>
-      <select class="filter-select" id="pdeFilter" onchange="filterTable()">
-        <option value="">PDE 전체</option>
-        <option value="approved">승인</option>
-        <option value="restricted">제한</option>
-        <option value="deferred">보류</option>
-        <option value="rejected">거부</option>
+      <select class="filter-select" id="priceFilter" onchange="filterTable()">
+        <option value="">Price Range 전체</option>
+        <option value="low">~500만원</option>
+        <option value="mid">500~1,000만원</option>
+        <option value="high">1,000만원~</option>
+      </select>
+      <select class="filter-select" id="tagFilter" onchange="filterTable()">
+        <option value="">태그 전체</option>
+        <option value="강남">강남</option>
+        <option value="서울">서울</option>
+        <option value="부산">부산</option>
+        <option value="프리미엄">프리미엄</option>
       </select>
       <button class="btn-primary" onclick="location.href='product-register'">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
@@ -343,138 +317,148 @@
 
     <!-- Table -->
     <div class="table-card">
+      <div class="table-scroll">
       <table id="productTable">
         <thead>
           <tr>
             <th>프로덕트명</th>
-            <th>프로덕트 ID</th>
-            <th>유형</th>
-            <th>구성 미디어</th>
-            <th>Lifecycle</th>
-            <th>Reference Loop</th>
-            <th class="right">Expected Min Plays/일</th>
-            <th class="right">List Price</th>
-            <th>PDE</th>
-            <th>등록일</th>
+            <th class="center">미디어 구성(수)</th>
+            <th>슬롯시간</th>
+            <th class="right">기준루프(RLD)</th>
+            <th class="right">예상최소집행횟수/일</th>
+            <th class="right">기준가격</th>
+            <th class="center">Lifecycle</th>
+            <th>수정일</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr data-lc="active" data-type="package" data-pde="approved">
-            <td><a class="product-name-link" href="product-detail">강남 프라임 패키지</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-001</td>
-            <td><span class="type-chip type-package">패키지</span></td>
-            <td>3개 미디어</td>
-            <td><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+
+          <!-- Row 1: 활성 -->
+          <tr data-lc="active" data-mediatype="옥외" data-price="high" data-tags="강남,프리미엄">
+            <td><a class="product-name-link" href="product-detail">강남 프리미엄 패키지</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-001</span></td>
+            <td class="center">3</td>
             <td>
-              <div class="tooltip-wrap">
-                <span style="font-size:12px;">30초 × 48슬롯 = 24분</span>
-                <div class="tooltip-box">Reference Slot Duration: 30초<br>Total Slot Count: 48<br>Reference Loop: 1,440초 (24분)</div>
+              <div class="slot-chips">
+                <span class="slot-chip">15초</span>
+                <span class="slot-chip">30초</span>
               </div>
             </td>
-            <td class="right" style="font-weight:600;">60회</td>
-            <td class="right">₩15,000,000</td>
-            <td><span class="pde-badge pde-approved">승인</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2024-03-01</td>
+            <td class="right num">180초</td>
+            <td class="right num">480회</td>
+            <td class="right num">₩3,000,000/월</td>
+            <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+            <td class="muted">2026-08-10</td>
           </tr>
-          <tr data-lc="active" data-type="package" data-pde="restricted">
-            <td><a class="product-name-link" href="product-detail">공항 프리미엄 네트워크</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-002</td>
-            <td><span class="type-chip type-package">패키지</span></td>
-            <td>5개 미디어</td>
-            <td><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+
+          <!-- Row 2: 활성 -->
+          <tr data-lc="active" data-mediatype="교통" data-price="high" data-tags="서울,프리미엄">
+            <td><a class="product-name-link" href="product-detail">공항 프리미엄 네트워크</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-002</span></td>
+            <td class="center">5</td>
             <td>
-              <div class="tooltip-wrap">
-                <span style="font-size:12px;">15초 × 96슬롯 = 24분</span>
-                <div class="tooltip-box">Reference Slot Duration: 15초<br>Total Slot Count: 96<br>Reference Loop: 1,440초 (24분)</div>
+              <div class="slot-chips">
+                <span class="slot-chip">15초</span>
               </div>
             </td>
-            <td class="right" style="font-weight:600;">96회</td>
-            <td class="right">₩32,000,000</td>
-            <td><span class="pde-badge pde-restricted">제한</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2024-02-10</td>
+            <td class="right num">300초</td>
+            <td class="right num">576회</td>
+            <td class="right num">₩5,200,000/월</td>
+            <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+            <td class="muted">2026-08-07</td>
           </tr>
-          <tr data-lc="configured" data-type="single" data-pde="deferred">
-            <td><a class="product-name-link" href="product-detail">홍대·신촌 네트워크</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-003</td>
-            <td><span class="type-chip type-single">단일</span></td>
-            <td>2개 미디어</td>
-            <td><span class="badge lc-configured"><span class="badge-dot"></span>구성완료</span></td>
+
+          <!-- Row 3: 구성완료 -->
+          <tr data-lc="ready" data-mediatype="디지털" data-price="mid" data-tags="서울">
+            <td><a class="product-name-link" href="product-detail">홍대·신촌 청년 네트워크</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-003</span></td>
+            <td class="center">2</td>
             <td>
-              <div class="tooltip-wrap">
-                <span style="font-size:12px;">30초 × 24슬롯 = 12분</span>
-                <div class="tooltip-box">Reference Slot Duration: 30초<br>Total Slot Count: 24<br>Reference Loop: 720초 (12분)</div>
+              <div class="slot-chips">
+                <span class="slot-chip">10초</span>
+                <span class="slot-chip">15초</span>
+                <span class="slot-chip">30초</span>
               </div>
             </td>
-            <td class="right" style="font-weight:600;">48회</td>
-            <td class="right">₩8,000,000</td>
-            <td><span class="pde-badge pde-deferred">보류</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2025-04-15</td>
+            <td class="right num">600초</td>
+            <td class="right num">144회</td>
+            <td class="right num">₩800,000/월</td>
+            <td class="center"><span class="badge lc-ready"><span class="badge-dot"></span>구성완료</span></td>
+            <td class="muted">2026-08-12</td>
           </tr>
-          <tr data-lc="active" data-type="package" data-pde="approved">
-            <td><a class="product-name-link" href="product-detail">부산 센텀 네트워크</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-004</td>
-            <td><span class="type-chip type-package">패키지</span></td>
-            <td>4개 미디어</td>
-            <td><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+
+          <!-- Row 4: 승인됨 -->
+          <tr data-lc="approved" data-mediatype="실내" data-price="high" data-tags="부산,프리미엄">
+            <td><a class="product-name-link" href="product-detail">부산 센텀 프리미엄</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-004</span></td>
+            <td class="center">4</td>
             <td>
-              <div class="tooltip-wrap">
-                <span style="font-size:12px;">30초 × 48슬롯 = 24분</span>
-                <div class="tooltip-box">Reference Slot Duration: 30초<br>Total Slot Count: 48<br>Reference Loop: 1,440초 (24분)</div>
+              <div class="slot-chips">
+                <span class="slot-chip">30초</span>
               </div>
             </td>
-            <td class="right" style="font-weight:600;">60회</td>
-            <td class="right">₩18,000,000</td>
-            <td><span class="pde-badge pde-approved">승인</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2024-06-20</td>
+            <td class="right num">1,440초</td>
+            <td class="right num">60회</td>
+            <td class="right num">₩4,500,000/월</td>
+            <td class="center"><span class="badge lc-approved"><span class="badge-dot"></span>승인됨</span></td>
+            <td class="muted">2026-08-05</td>
           </tr>
-          <tr data-lc="active" data-type="single" data-pde="approved">
-            <td><a class="product-name-link" href="product-detail">코엑스몰 스탠다드</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-005</td>
-            <td><span class="type-chip type-single">단일</span></td>
-            <td>1개 미디어</td>
-            <td><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+
+          <!-- Row 5: 활성 -->
+          <tr data-lc="active" data-mediatype="실내" data-price="mid" data-tags="서울">
+            <td><a class="product-name-link" href="product-detail">코엑스몰 스탠다드</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-005</span></td>
+            <td class="center">1</td>
             <td>
-              <div class="tooltip-wrap">
-                <span style="font-size:12px;">10초 × 144슬롯 = 24분</span>
-                <div class="tooltip-box">Reference Slot Duration: 10초<br>Total Slot Count: 144<br>Reference Loop: 1,440초 (24분)</div>
+              <div class="slot-chips">
+                <span class="slot-chip">10초</span>
               </div>
             </td>
-            <td class="right" style="font-weight:600;">144회</td>
-            <td class="right">₩5,500,000</td>
-            <td><span class="pde-badge pde-approved">승인</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2024-08-01</td>
+            <td class="right num">1,440초</td>
+            <td class="right num">144회</td>
+            <td class="right num">₩550,000/월</td>
+            <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+            <td class="muted">2026-07-28</td>
           </tr>
-          <tr data-lc="approved" data-type="single" data-pde="approved">
-            <td><a class="product-name-link" href="product-detail">판교 IT 특화</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-006</td>
-            <td><span class="type-chip type-single">단일</span></td>
-            <td>1개 미디어</td>
-            <td><span class="badge lc-approved"><span class="badge-dot"></span>승인됨</span></td>
+
+          <!-- Row 6: 중지 -->
+          <tr data-lc="paused" data-mediatype="옥외" data-price="mid" data-tags="강남">
+            <td><a class="product-name-link" href="product-detail">판교 IT 특화 스팟</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-006</span></td>
+            <td class="center">2</td>
             <td>
-              <div class="tooltip-wrap">
-                <span style="font-size:12px;">30초 × 48슬롯 = 24분</span>
-                <div class="tooltip-box">Reference Slot Duration: 30초<br>Total Slot Count: 48<br>Reference Loop: 1,440초 (24분)</div>
+              <div class="slot-chips">
+                <span class="slot-chip">15초</span>
+                <span class="slot-chip">30초</span>
               </div>
             </td>
-            <td class="right" style="font-weight:600;">48회</td>
-            <td class="right">₩6,000,000</td>
-            <td><span class="pde-badge pde-approved">승인</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2025-05-10</td>
+            <td class="right num">720초</td>
+            <td class="right num">120회</td>
+            <td class="right num">₩1,200,000/월</td>
+            <td class="center"><span class="badge lc-paused"><span class="badge-dot"></span>중지</span></td>
+            <td class="muted">2026-07-15</td>
           </tr>
-          <tr data-lc="draft" data-type="package" data-pde="">
-            <td><a class="product-name-link" href="product-detail">서울역 허브</a></td>
-            <td style="color:#9EA5AD;font-size:12px;font-family:monospace;">PRD-007</td>
-            <td><span class="type-chip type-package">패키지</span></td>
-            <td>2개 미디어</td>
-            <td><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
-            <td style="color:#9EA5AD;">—</td>
-            <td class="right" style="color:#9EA5AD;">—</td>
-            <td class="right">₩12,000,000</td>
-            <td><span class="pde-badge pde-none">—</span></td>
-            <td style="color:#9EA5AD;font-size:12px;">2025-07-01</td>
+
+          <!-- Row 7: 초안 -->
+          <tr data-lc="draft" data-mediatype="교통" data-price="high" data-tags="서울">
+            <td><a class="product-name-link" href="product-detail">서울역 환승 허브</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-007</span></td>
+            <td class="center">3</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip" style="color:#9EA5AD;border-color:#E5E7EA;">—</span>
+              </div>
+            </td>
+            <td class="right muted">—</td>
+            <td class="right muted">—</td>
+            <td class="right num">₩2,800,000/월</td>
+            <td class="center"><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
+            <td class="muted">2026-08-18</td>
           </tr>
+
         </tbody>
       </table>
+      </div>
     </div>
 
   </div><!-- /content-inner -->
@@ -482,8 +466,7 @@
 
 <script>
 var chipActive = '';
-
-var chipIds = ['all','active','configured','draft','approved','suspended'];
+var chipIds = ['all','ready','approved','active','paused'];
 
 function chipFilter(val) {
   chipActive = val;
@@ -498,26 +481,29 @@ function chipFilter(val) {
 }
 
 function filterTable() {
-  var search = document.getElementById('searchInput').value.toLowerCase();
-  var lc     = document.getElementById('lcFilter').value;
-  var type   = document.getElementById('typeFilter').value;
-  var pde    = document.getElementById('pdeFilter').value;
-  var rows   = document.querySelectorAll('#tableBody tr');
+  var search    = document.getElementById('searchInput').value.toLowerCase();
+  var lc        = document.getElementById('lcFilter').value;
+  var mediaType = document.getElementById('mediaTypeFilter').value;
+  var price     = document.getElementById('priceFilter').value;
+  var tag       = document.getElementById('tagFilter').value;
+  var rows      = document.querySelectorAll('#tableBody tr');
+
   rows.forEach(function(row) {
     var text     = row.textContent.toLowerCase();
-    var rowLc    = row.dataset.lc;
-    var rowType  = row.dataset.type;
-    var rowPde   = row.dataset.pde;
+    var rowLc    = row.dataset.lc || '';
+    var rowMtype = row.dataset.mediatype || '';
+    var rowPrice = row.dataset.price || '';
+    var rowTags  = row.dataset.tags || '';
     var ok = true;
-    if (search && !text.includes(search)) ok = false;
-    if (lc   && rowLc   !== lc)   ok = false;
-    if (type && rowType !== type)  ok = false;
-    if (pde  && rowPde  !== pde)   ok = false;
+    if (search    && !text.includes(search))   ok = false;
+    if (lc        && rowLc    !== lc)          ok = false;
+    if (mediaType && rowMtype !== mediaType)   ok = false;
+    if (price     && rowPrice !== price)       ok = false;
+    if (tag       && !rowTags.includes(tag))   ok = false;
     row.style.display = ok ? '' : 'none';
   });
 }
 
-/* sync chip when dropdown changes */
 document.getElementById('lcFilter').addEventListener('change', function() {
   chipActive = this.value;
   chipIds.forEach(function(id) {

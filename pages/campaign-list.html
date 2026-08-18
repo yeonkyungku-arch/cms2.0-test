@@ -7,11 +7,12 @@
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
+    /* ── Toolbar ── */
     .toolbar {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
     }
     .toolbar-search {
@@ -51,6 +52,16 @@
       cursor: pointer;
       white-space: nowrap;
     }
+    .filter-date {
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      background: #fff;
+      cursor: pointer;
+    }
     .btn-primary {
       height: 36px;
       padding: 0 16px;
@@ -68,7 +79,7 @@
     }
     .btn-primary:hover { background: #4ab34f; }
 
-    /* Status summary chips */
+    /* ── Status summary chips ── */
     .status-chips {
       display: flex;
       gap: 8px;
@@ -100,14 +111,15 @@
       color: #24292E;
     }
 
-    /* Table */
+    /* ── Table ── */
     .table-card {
       background: #fff;
       border: 1px solid #E5E7EA;
       border-radius: 10px;
       overflow: hidden;
     }
-    table { width: 100%; border-collapse: collapse; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 860px; }
     thead th {
       background: #F6F7F9;
       padding: 10px 14px;
@@ -135,9 +147,10 @@
       font-weight: 500;
     }
     .campaign-name-link:hover { color: #2D84ED; text-decoration: underline; }
-    .id-text { font-size: 11px; color: #9EA5AD; }
+    .id-text { font-size: 11px; color: #9EA5AD; margin-top: 2px; }
+    .period-text { font-size: 12px; color: #596066; white-space: nowrap; }
 
-    /* Badges */
+    /* ── Badges ── */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -146,35 +159,32 @@
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
+      white-space: nowrap;
     }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
 
-    /* Lifecycle badges */
-    .lc-draft        { background: #F0F1F3; color: #596066; }
+    /* Lifecycle — SSOT: 초안 → 검토 → 승인 → 집행중 → 완료 / 취소 */
+    .lc-draft       { background: #F0F1F3; color: #596066; }
     .lc-draft .badge-dot { background: #9EA5AD; }
-    .lc-reviewing    { background: #EAF3FF; color: #2D84ED; }
-    .lc-reviewing .badge-dot { background: #2D84ED; }
-    .lc-recommended  { background: #F3EEFF; color: #7C5CBF; }
-    .lc-recommended .badge-dot { background: #7C5CBF; }
-    .lc-selected     { background: #E8F8E9; color: #2E9E34; }
-    .lc-selected .badge-dot { background: #58C65D; }
-    .lc-transferred  { background: #E0F4F4; color: #0E7C7B; }
-    .lc-transferred .badge-dot { background: #0E9E9D; }
-    .lc-completed    { background: #EAEAEA; color: #3A4349; }
+    .lc-review      { background: #EAF3FF; color: #2D84ED; }
+    .lc-review .badge-dot { background: #2D84ED; }
+    .lc-approved    { background: #F0FDF4; color: #16A34A; }
+    .lc-approved .badge-dot { background: #58C65D; }
+    .lc-active      { background: #E0F2FE; color: #0369A1; }
+    .lc-active .badge-dot { background: #0EA5E9; }
+    .lc-completed   { background: #EAEAEA; color: #3A4349; }
     .lc-completed .badge-dot { background: #596066; }
-    .lc-cancelled    { background: #FEE2E2; color: #991B1B; }
+    .lc-cancelled   { background: #FEE2E2; color: #991B1B; }
     .lc-cancelled .badge-dot { background: #E97474; }
 
-    /* Recommendation badges */
-    .rec-done    { background: #E8F8E9; color: #2E9E34; }
-    .rec-running { background: #EAF3FF; color: #2D84ED; }
-    .rec-error   { background: #FEE2E2; color: #991B1B; }
-    .rec-na      { background: #F0F1F3; color: #9EA5AD; }
+    /* Recommendation mode badges: 자동추천 blue / 직접선택 gray */
+    .rec-auto   { background: #EAF3FF; color: #2D84ED; }
+    .rec-manual { background: #F0F1F3; color: #596066; }
 
     /* PDE badges */
     .pde-approved { background: #E8F8E9; color: #2E9E34; }
     .pde-limited  { background: #FFF8E6; color: #B45309; }
-    .pde-pending  { background: #F0F1F3; color: #596066; }
+    .pde-deferred { background: #FFF4E0; color: #C2620D; }
     .pde-rejected { background: #FEE2E2; color: #991B1B; }
 
     /* Action button */
@@ -190,6 +200,14 @@
       white-space: nowrap;
     }
     .btn-action:hover { background: #F6F7F9; }
+
+    /* Section title */
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #24292E;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -228,9 +246,9 @@
       <span class="dot-badge"></span>
     </div>
     <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
+      <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-name">홍길동</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
@@ -240,14 +258,17 @@
 <!-- Main -->
 <main class="content">
   <div class="content-inner">
-    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">캠페인</div>
+    <div class="section-title">캠페인</div>
 
-    <!-- Status Summary Chips -->
+    <!-- Lifecycle Status Chips (SSOT: 초안→검토→승인→집행중→완료/취소) -->
     <div class="status-chips">
-      <div class="status-chip active" onclick="filterChip('')">전체 <span class="chip-count" id="cnt-all">6</span></div>
-      <div class="status-chip" onclick="filterChip('active')">진행중 <span class="chip-count" id="cnt-active">3</span></div>
-      <div class="status-chip" onclick="filterChip('completed')">완료 <span class="chip-count" id="cnt-completed">2</span></div>
-      <div class="status-chip" onclick="filterChip('cancelled')">취소 <span class="chip-count" id="cnt-cancelled">1</span></div>
+      <div class="status-chip active" data-lc="" onclick="filterChip(this)">전체 <span class="chip-count">6</span></div>
+      <div class="status-chip" data-lc="draft" onclick="filterChip(this)">초안 <span class="chip-count">1</span></div>
+      <div class="status-chip" data-lc="review" onclick="filterChip(this)">검토 <span class="chip-count">1</span></div>
+      <div class="status-chip" data-lc="approved" onclick="filterChip(this)">승인 <span class="chip-count">1</span></div>
+      <div class="status-chip" data-lc="active" onclick="filterChip(this)">집행중 <span class="chip-count">1</span></div>
+      <div class="status-chip" data-lc="completed" onclick="filterChip(this)">완료 <span class="chip-count">1</span></div>
+      <div class="status-chip" data-lc="cancelled" onclick="filterChip(this)">취소 <span class="chip-count">1</span></div>
     </div>
 
     <!-- Toolbar -->
@@ -259,18 +280,11 @@
       <select class="filter-select" id="lcFilter" onchange="filterTable()">
         <option value="">Lifecycle 전체</option>
         <option value="draft">초안</option>
-        <option value="reviewing">검토중</option>
-        <option value="recommended">추천완료</option>
-        <option value="selected">선택완료</option>
-        <option value="transferred">스케줄이관</option>
+        <option value="review">검토</option>
+        <option value="approved">승인</option>
+        <option value="active">집행중</option>
         <option value="completed">완료</option>
         <option value="cancelled">취소</option>
-      </select>
-      <select class="filter-select" id="sourceFilter" onchange="filterTable()">
-        <option value="">유입경로 전체</option>
-        <option value="direct">Direct</option>
-        <option value="agency">Agency</option>
-        <option value="campaign">Campaign</option>
       </select>
       <select class="filter-select" id="advertiserFilter" onchange="filterTable()">
         <option value="">광고주 전체</option>
@@ -280,6 +294,17 @@
         <option value="카카오">카카오</option>
         <option value="네이버">네이버</option>
       </select>
+      <select class="filter-select" id="periodFilter" onchange="filterTable()">
+        <option value="">기간 전체</option>
+        <option value="2026">2026년</option>
+        <option value="2025">2025년</option>
+      </select>
+      <select class="filter-select" id="sourceFilter" onchange="filterTable()">
+        <option value="">소스유형 전체</option>
+        <option value="direct">직접문의</option>
+        <option value="agency">대행사</option>
+        <option value="inbound">인바운드</option>
+      </select>
       <button class="btn-primary" onclick="location.href='campaign-register'">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
         캠페인 등록
@@ -288,145 +313,158 @@
 
     <!-- Table -->
     <div class="table-card">
-      <table id="campaignTable">
-        <thead>
-          <tr>
-            <th style="width:110px;">캠페인 ID</th>
-            <th>캠페인명</th>
-            <th style="width:110px;">광고주</th>
-            <th class="center" style="width:90px;">유입경로</th>
-            <th style="width:150px;">기간</th>
-            <th class="center" style="width:110px;">Lifecycle</th>
-            <th class="center" style="width:100px;">추천 상태</th>
-            <th class="center" style="width:80px;">PDE</th>
-            <th style="width:100px;">등록일</th>
-            <th class="center" style="width:70px;">액션</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <tr data-lc="reviewing" data-source="direct" data-advertiser="삼성전자" data-group="active" onclick="location.href='campaign-detail'">
-            <td><span class="id-text">CMP-2026-001</span></td>
-            <td>
-              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">삼성전자 갤럭시 S26 론칭</a>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">강남 프라임 패키지</div>
-            </td>
-            <td>삼성전자</td>
-            <td class="center"><span style="font-size:12px;color:#596066;">Direct</span></td>
-            <td><span style="font-size:12px;">2026.02.01 – 02.28</span></td>
-            <td class="center"><span class="badge lc-reviewing"><span class="badge-dot"></span>검토중</span></td>
-            <td class="center"><span class="badge rec-running">분석중</span></td>
-            <td class="center"><span class="badge pde-pending">보류</span></td>
-            <td style="font-size:12px;color:#9EA5AD;">2026.01.20</td>
-            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
-          </tr>
-          <tr data-lc="recommended" data-source="agency" data-advertiser="LG생활건강" data-group="active" onclick="location.href='campaign-detail'">
-            <td><span class="id-text">CMP-2026-002</span></td>
-            <td>
-              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">LG 생활건강 봄 시즌 프로모션</a>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">공항 프리미엄 네트워크</div>
-            </td>
-            <td>LG생활건강</td>
-            <td class="center"><span style="font-size:12px;color:#596066;">Agency</span></td>
-            <td><span style="font-size:12px;">2026.03.01 – 03.31</span></td>
-            <td class="center"><span class="badge lc-recommended"><span class="badge-dot"></span>추천완료</span></td>
-            <td class="center"><span class="badge rec-done">추천 완료</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
-            <td style="font-size:12px;color:#9EA5AD;">2026.01.25</td>
-            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
-          </tr>
-          <tr data-lc="selected" data-source="direct" data-advertiser="현대자동차" data-group="active" onclick="location.href='campaign-detail'">
-            <td><span class="id-text">CMP-2026-003</span></td>
-            <td>
-              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">현대자동차 아이오닉9 브랜드 캠페인</a>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">강남 프라임 패키지 외 1</div>
-            </td>
-            <td>현대자동차</td>
-            <td class="center"><span style="font-size:12px;color:#596066;">Direct</span></td>
-            <td><span style="font-size:12px;">2026.02.15 – 03.15</span></td>
-            <td class="center"><span class="badge lc-selected"><span class="badge-dot"></span>선택완료</span></td>
-            <td class="center"><span class="badge rec-done">추천 완료</span></td>
-            <td class="center"><span class="badge pde-limited">제한</span></td>
-            <td style="font-size:12px;color:#9EA5AD;">2026.02.01</td>
-            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
-          </tr>
-          <tr data-lc="transferred" data-source="agency" data-advertiser="카카오" data-group="active" onclick="location.href='campaign-detail'">
-            <td><span class="id-text">CMP-2025-089</span></td>
-            <td>
-              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">카카오페이 연말 결산 캠페인</a>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">홍대 타겟 테스트</div>
-            </td>
-            <td>카카오</td>
-            <td class="center"><span style="font-size:12px;color:#596066;">Agency</span></td>
-            <td><span style="font-size:12px;">2025.12.01 – 12.31</span></td>
-            <td class="center"><span class="badge lc-transferred"><span class="badge-dot"></span>스케줄이관</span></td>
-            <td class="center"><span class="badge rec-done">추천 완료</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
-            <td style="font-size:12px;color:#9EA5AD;">2025.11.15</td>
-            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
-          </tr>
-          <tr data-lc="completed" data-source="direct" data-advertiser="네이버" data-group="completed" onclick="location.href='campaign-detail'">
-            <td><span class="id-text">CMP-2025-074</span></td>
-            <td>
-              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">네이버 클라우드 B2B 어웨어니스</a>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">공항 프리미엄 네트워크</div>
-            </td>
-            <td>네이버</td>
-            <td class="center"><span style="font-size:12px;color:#596066;">Direct</span></td>
-            <td><span style="font-size:12px;">2025.10.01 – 10.31</span></td>
-            <td class="center"><span class="badge lc-completed"><span class="badge-dot"></span>완료</span></td>
-            <td class="center"><span class="badge rec-done">추천 완료</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
-            <td style="font-size:12px;color:#9EA5AD;">2025.09.20</td>
-            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
-          </tr>
-          <tr data-lc="cancelled" data-source="agency" data-advertiser="삼성전자" data-group="cancelled" onclick="location.href='campaign-detail'">
-            <td><span class="id-text">CMP-2025-061</span></td>
-            <td>
-              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">삼성전자 비스포크 가을 이벤트</a>
-              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">강남 프라임 패키지</div>
-            </td>
-            <td>삼성전자</td>
-            <td class="center"><span style="font-size:12px;color:#596066;">Agency</span></td>
-            <td><span style="font-size:12px;">2025.09.01 – 09.30</span></td>
-            <td class="center"><span class="badge lc-cancelled"><span class="badge-dot"></span>취소</span></td>
-            <td class="center"><span class="badge rec-na">해당없음</span></td>
-            <td class="center"><span class="badge pde-rejected">거부</span></td>
-            <td style="font-size:12px;color:#9EA5AD;">2025.08.10</td>
-            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table id="campaignTable">
+          <thead>
+            <tr>
+              <th style="min-width:200px;">캠페인명</th>
+              <th style="width:100px;">광고주</th>
+              <th style="width:160px;">요청기간</th>
+              <th class="center" style="width:100px;">Lifecycle</th>
+              <th class="center" style="width:110px;">추천방식</th>
+              <th class="center" style="width:80px;">PDE</th>
+              <th style="width:90px;">담당자</th>
+              <th style="width:100px;">생성일</th>
+              <th class="center" style="width:70px;"></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Row 1: 집행중 / 자동추천 / 승인 -->
+            <tr data-lc="active" data-advertiser="삼성전자" data-period="2026" data-source="direct" onclick="location.href='campaign-detail'">
+              <td>
+                <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">삼성전자 갤럭시 S25 런칭</a>
+                <div class="id-text">CMP-2026-001</div>
+              </td>
+              <td>삼성전자</td>
+              <td><span class="period-text">2026.01.15 – 02.28</span></td>
+              <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></td>
+              <td class="center"><span class="badge rec-auto">자동추천</span></td>
+              <td class="center"><span class="badge pde-approved">승인</span></td>
+              <td style="font-size:13px;">홍길동</td>
+              <td style="font-size:12px;color:#9EA5AD;">2025.12.20</td>
+              <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+            </tr>
+            <!-- Row 2: 승인 / 자동추천 / 제한 -->
+            <tr data-lc="approved" data-advertiser="LG생활건강" data-period="2026" data-source="agency" onclick="location.href='campaign-detail'">
+              <td>
+                <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">LG 생활건강 봄 시즌 프로모션</a>
+                <div class="id-text">CMP-2026-002</div>
+              </td>
+              <td>LG생활건강</td>
+              <td><span class="period-text">2026.03.01 – 03.31</span></td>
+              <td class="center"><span class="badge lc-approved"><span class="badge-dot"></span>승인</span></td>
+              <td class="center"><span class="badge rec-auto">자동추천</span></td>
+              <td class="center"><span class="badge pde-limited">제한</span></td>
+              <td style="font-size:13px;">김영수</td>
+              <td style="font-size:12px;color:#9EA5AD;">2026.01.25</td>
+              <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+            </tr>
+            <!-- Row 3: 검토 / 직접선택 / 보류 -->
+            <tr data-lc="review" data-advertiser="현대자동차" data-period="2026" data-source="direct" onclick="location.href='campaign-detail'">
+              <td>
+                <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">현대자동차 아이오닉9 브랜드 캠페인</a>
+                <div class="id-text">CMP-2026-003</div>
+              </td>
+              <td>현대자동차</td>
+              <td><span class="period-text">2026.02.15 – 03.15</span></td>
+              <td class="center"><span class="badge lc-review"><span class="badge-dot"></span>검토</span></td>
+              <td class="center"><span class="badge rec-manual">직접선택</span></td>
+              <td class="center"><span class="badge pde-deferred">보류</span></td>
+              <td style="font-size:13px;">이지은</td>
+              <td style="font-size:12px;color:#9EA5AD;">2026.02.01</td>
+              <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+            </tr>
+            <!-- Row 4: 초안 / 자동추천 / — -->
+            <tr data-lc="draft" data-advertiser="카카오" data-period="2026" data-source="inbound" onclick="location.href='campaign-detail'">
+              <td>
+                <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">카카오페이 2026 브랜드 어웨어니스</a>
+                <div class="id-text">CMP-2026-004</div>
+              </td>
+              <td>카카오</td>
+              <td><span class="period-text">2026.04.01 – 04.30</span></td>
+              <td class="center"><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
+              <td class="center"><span class="badge rec-auto">자동추천</span></td>
+              <td class="center"><span style="font-size:12px;color:#9EA5AD;">—</span></td>
+              <td style="font-size:13px;">박민서</td>
+              <td style="font-size:12px;color:#9EA5AD;">2026.02.10</td>
+              <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+            </tr>
+            <!-- Row 5: 완료 / 직접선택 / 승인 -->
+            <tr data-lc="completed" data-advertiser="네이버" data-period="2025" data-source="direct" onclick="location.href='campaign-detail'">
+              <td>
+                <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">네이버 클라우드 B2B 어웨어니스</a>
+                <div class="id-text">CMP-2025-089</div>
+              </td>
+              <td>네이버</td>
+              <td><span class="period-text">2025.10.01 – 10.31</span></td>
+              <td class="center"><span class="badge lc-completed"><span class="badge-dot"></span>완료</span></td>
+              <td class="center"><span class="badge rec-manual">직접선택</span></td>
+              <td class="center"><span class="badge pde-approved">승인</span></td>
+              <td style="font-size:13px;">홍길동</td>
+              <td style="font-size:12px;color:#9EA5AD;">2025.09.20</td>
+              <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+            </tr>
+            <!-- Row 6: 취소 / 자동추천 / 거부 -->
+            <tr data-lc="cancelled" data-advertiser="삼성전자" data-period="2025" data-source="agency" onclick="location.href='campaign-detail'">
+              <td>
+                <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">삼성전자 비스포크 가을 이벤트</a>
+                <div class="id-text">CMP-2025-061</div>
+              </td>
+              <td>삼성전자</td>
+              <td><span class="period-text">2025.09.01 – 09.30</span></td>
+              <td class="center"><span class="badge lc-cancelled"><span class="badge-dot"></span>취소</span></td>
+              <td class="center"><span class="badge rec-auto">자동추천</span></td>
+              <td class="center"><span class="badge pde-rejected">거부</span></td>
+              <td style="font-size:13px;">김영수</td>
+              <td style="font-size:12px;color:#9EA5AD;">2025.08.10</td>
+              <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </main>
 
 <script>
-var chipFilter = '';
+var chipLcFilter = '';
 
-function filterChip(group) {
-  chipFilter = group;
+function filterChip(el) {
+  chipLcFilter = el.dataset.lc;
   document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  el.classList.add('active');
+  // Sync dropdown
+  document.getElementById('lcFilter').value = chipLcFilter;
   filterTable();
 }
 
 function filterTable() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const lc = document.getElementById('lcFilter').value;
-  const src = document.getElementById('sourceFilter').value;
-  const adv = document.getElementById('advertiserFilter').value;
+  var search = document.getElementById('searchInput').value.toLowerCase();
+  var lc     = document.getElementById('lcFilter').value;
+  var adv    = document.getElementById('advertiserFilter').value;
+  var period = document.getElementById('periodFilter').value;
+  var src    = document.getElementById('sourceFilter').value;
+
+  // Sync chips if dropdown changed
+  if (lc !== chipLcFilter) {
+    chipLcFilter = lc;
+    document.querySelectorAll('.status-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.lc === lc);
+    });
+  }
+
   document.querySelectorAll('#tableBody tr').forEach(row => {
-    const name = row.querySelector('.campaign-name-link').textContent.toLowerCase();
-    const rowLc  = row.dataset.lc;
-    const rowSrc = row.dataset.source;
-    const rowAdv = row.dataset.advertiser;
-    const rowGrp = row.dataset.group;
-    const matchSearch = !search || name.includes(search);
-    const matchLc  = !lc  || rowLc  === lc;
-    const matchSrc = !src || rowSrc === src;
-    const matchAdv = !adv || rowAdv === adv;
-    const matchChip = !chipFilter || rowGrp === chipFilter || (chipFilter === 'active' && ['reviewing','recommended','selected','transferred'].includes(rowLc));
-    row.style.display = (matchSearch && matchLc && matchSrc && matchAdv && matchChip) ? '' : 'none';
+    var name    = row.querySelector('.campaign-name-link').textContent.toLowerCase();
+    var rowLc   = row.dataset.lc;
+    var rowAdv  = row.dataset.advertiser;
+    var rowPer  = row.dataset.period;
+    var rowSrc  = row.dataset.source;
+    var ok = (!search || name.includes(search))
+          && (!lc     || rowLc  === lc)
+          && (!adv    || rowAdv === adv)
+          && (!period || rowPer === period)
+          && (!src    || rowSrc === src);
+    row.style.display = ok ? '' : 'none';
   });
 }
 </script>

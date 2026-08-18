@@ -83,6 +83,14 @@
     .chip.chip-draft .chip-count { color: #596066; }
     .chip.chip-done .chip-count { color: #9EA5AD; }
 
+    /* pulse dot inside chip */
+    .chip-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #58C65D;
+      animation: pulse-dot 1.6s ease infinite;
+      flex-shrink: 0;
+    }
+
     /* ── Table ── */
     .table-card {
       background: #fff;
@@ -93,7 +101,7 @@
     .table-wrap { overflow-x: auto; }
     table {
       width: 100%;
-      min-width: 1100px;
+      min-width: 1000px;
       border-collapse: collapse;
     }
     thead th {
@@ -141,8 +149,6 @@
     /* Lifecycle badges */
     .lc-draft      { background: #F0F1F3; color: #596066; }
     .lc-draft .badge-dot { background: #9EA5AD; }
-    .lc-validated  { background: #EAF3FF; color: #2D84ED; }
-    .lc-validated .badge-dot { background: #2D84ED; }
     .lc-pending    { background: #FFF8E6; color: #B45309; }
     .lc-pending .badge-dot { background: #F3BE4A; }
     .lc-approved   { background: #F3EEFF; color: #7C5CBF; }
@@ -156,11 +162,11 @@
     .lc-cancelled  { background: #FEE2E2; color: #991B1B; }
     .lc-cancelled .badge-dot { background: #E97474; }
 
-    /* PDE badges */
-    .pde-approved { background: #E8F8E9; color: #2E9E34; }
-    .pde-restricted { background: #FFF8E6; color: #B45309; }
-    .pde-deferred { background: #F0F1F3; color: #596066; }
-    .pde-rejected { background: #FEE2E2; color: #991B1B; }
+    /* Approval badges */
+    .appr-none      { background: #F0F1F3; color: #596066; }
+    .appr-pending   { background: #FFF8E6; color: #B45309; }
+    .appr-approved  { background: #E8F8E9; color: #2E9E34; }
+    .appr-rejected  { background: #FEE2E2; color: #991B1B; }
 
     /* Source chip */
     .source-campaign { background: #EAF3FF; color: #2D84ED; }
@@ -168,7 +174,7 @@
 
     @keyframes pulse-dot {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.75); }
+      50% { opacity: 0.45; transform: scale(0.72); }
     }
 
     /* ── Viewbar ── */
@@ -191,6 +197,7 @@
       font-size: 13px;
       font-weight: 600;
       white-space: nowrap;
+      text-decoration: none;
     }
     .btn-primary:hover { background: #4ab34f; }
   </style>
@@ -217,7 +224,6 @@
     <div class="gnb-divider"></div>
     <li><a href="monitoring"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
   </ul>
-</nav>
 </nav>
 
 <!-- ── Topbar ── -->
@@ -258,7 +264,7 @@
       <h1 style="font-size:20px; font-weight:700; color:#24292E; margin:0 0 2px;">스케줄</h1>
       <p style="font-size:13px; color:#9EA5AD; margin:0;">Campaign 또는 직접 등록한 편성 단위를 검증·승인·운영합니다.</p>
     </div>
-    <a href="schedule-register-general.html" class="btn-primary">
+    <a href="schedule-register-form.html" class="btn-primary">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       스케줄 등록
     </a>
@@ -276,9 +282,8 @@
     <select class="filter-select">
       <option>Lifecycle: 전체</option>
       <option>초안</option>
-      <option>검증완료</option>
       <option>승인대기</option>
-      <option>승인</option>
+      <option>승인됨</option>
       <option>예약</option>
       <option>집행중</option>
       <option>완료</option>
@@ -286,14 +291,15 @@
     </select>
     <select class="filter-select">
       <option>Approval: 전체</option>
+      <option>미요청</option>
       <option>승인대기</option>
       <option>승인</option>
       <option>반려</option>
     </select>
     <select class="filter-select">
-      <option>Source: 전체</option>
-      <option>캠페인경유</option>
-      <option>직접등록</option>
+      <option>출처: 전체</option>
+      <option>캠페인</option>
+      <option>직접</option>
     </select>
     <select class="filter-select">
       <option>광고주: 전체</option>
@@ -314,6 +320,7 @@
       <span style="color:#596066">전체</span>
     </button>
     <button class="chip chip-active">
+      <span class="chip-pulse-dot"></span>
       <span class="chip-count">8</span>
       <span style="color:#596066">집행중</span>
     </button>
@@ -335,6 +342,11 @@
     </button>
   </div>
 
+  <!-- Viewbar -->
+  <div class="viewbar">
+    <span class="viewbar-count">총 34건</span>
+  </div>
+
   <!-- Table -->
   <div class="table-card">
     <div class="table-wrap">
@@ -342,115 +354,127 @@
         <thead>
           <tr>
             <th>스케줄명</th>
-            <th>스케줄 ID</th>
             <th>광고주</th>
-            <th>Source</th>
-            <th>집행기간</th>
+            <th>운영기간</th>
             <th>Lifecycle</th>
             <th>Approval</th>
-            <th>PDE</th>
-            <th>Schedule Item 수</th>
-            <th>등록일</th>
+            <th>출처</th>
+            <th>담당자</th>
+            <th>수정일</th>
           </tr>
         </thead>
         <tbody>
+          <!-- Row 1: 집행중 -->
+          <tr onclick="location.href='schedule-detail.html'">
+            <td>
+              <div class="sch-name">강남역 갤럭시 S25 광고 25Q4</div>
+              <div class="sch-id">SCH-2025-0041</div>
+            </td>
+            <td>삼성전자</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-10-15 ~ 12-31</td>
+            <td><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></td>
+            <td><span class="badge appr-approved">승인</span></td>
+            <td><span class="badge source-campaign">캠페인</span></td>
+            <td style="color:#596066;">홍길동</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-14</td>
+          </tr>
+          <!-- Row 2: 집행중 -->
           <tr onclick="location.href='schedule-detail.html'">
             <td>
               <div class="sch-name">강남 여름 시즌 캠페인</div>
+              <div class="sch-id">SCH-2025-0037</div>
             </td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-001</span></td>
             <td>삼성전자</td>
-            <td><span class="badge source-campaign">캠페인경유</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-07-01 ~ 07-31</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-07-01 ~ 08-31</td>
             <td><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></td>
-            <td><span class="badge lc-approved">승인</span></td>
-            <td><span class="badge pde-approved">승인</span></td>
-            <td style="text-align:center; font-weight:600;">3개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-06-20</td>
+            <td><span class="badge appr-approved">승인</span></td>
+            <td><span class="badge source-campaign">캠페인</span></td>
+            <td style="color:#596066;">홍길동</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-07-01</td>
           </tr>
+          <!-- Row 3: 예약 -->
           <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">공항 브랜드 패키지</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-002</span></td>
+            <td>
+              <div class="sch-name">공항 브랜드 패키지 Q4</div>
+              <div class="sch-id">SCH-2025-0039</div>
+            </td>
             <td>현대자동차</td>
-            <td><span class="badge source-direct">직접등록</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-08-01 ~ 08-31</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-11-01 ~ 11-30</td>
             <td><span class="badge lc-scheduled"><span class="badge-dot"></span>예약</span></td>
-            <td><span class="badge lc-approved">승인</span></td>
-            <td><span class="badge pde-restricted">제한</span></td>
-            <td style="text-align:center; font-weight:600;">5개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-07-15</td>
+            <td><span class="badge appr-approved">승인</span></td>
+            <td><span class="badge source-direct">직접</span></td>
+            <td style="color:#596066;">김민준</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-10</td>
           </tr>
+          <!-- Row 4: 예약 -->
           <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">홍대 팝업 스팟</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-003</span></td>
-            <td>나이키코리아</td>
-            <td><span class="badge source-campaign">캠페인경유</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-08-10 ~ 08-17</td>
-            <td><span class="badge lc-pending"><span class="badge-dot"></span>승인대기</span></td>
-            <td><span class="badge lc-pending">승인대기</span></td>
-            <td><span class="badge pde-deferred">보류</span></td>
-            <td style="text-align:center; font-weight:600;">2개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-07-28</td>
-          </tr>
-          <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">코엑스 신제품 런칭</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-004</span></td>
+            <td>
+              <div class="sch-name">코엑스 신제품 런칭 스팟</div>
+              <div class="sch-id">SCH-2025-0040</div>
+            </td>
             <td>LG전자</td>
-            <td><span class="badge source-direct">직접등록</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-09-01 ~ 09-14</td>
-            <td><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
-            <td style="color:#9EA5AD;">—</td>
-            <td style="color:#9EA5AD;">—</td>
-            <td style="text-align:center; font-weight:600;">4개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-07-30</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-11-15 ~ 12-15</td>
+            <td><span class="badge lc-scheduled"><span class="badge-dot"></span>예약</span></td>
+            <td><span class="badge appr-approved">승인</span></td>
+            <td><span class="badge source-campaign">캠페인</span></td>
+            <td style="color:#596066;">이수아</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-12</td>
           </tr>
+          <!-- Row 5: 승인대기 -->
           <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">부산 센텀 가을 시즌</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-005</span></td>
+            <td>
+              <div class="sch-name">홍대 팝업 스팟 조건광고</div>
+              <div class="sch-id">SCH-2025-0042</div>
+            </td>
+            <td>나이키코리아</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-11-01 ~ 11-17</td>
+            <td><span class="badge lc-pending"><span class="badge-dot"></span>승인대기</span></td>
+            <td><span class="badge appr-pending">승인대기</span></td>
+            <td><span class="badge source-campaign">캠페인</span></td>
+            <td style="color:#596066;">홍길동</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-13</td>
+          </tr>
+          <!-- Row 6: 승인대기 -->
+          <tr onclick="location.href='schedule-detail.html'">
+            <td>
+              <div class="sch-name">롯데타운 연말 프로모션</div>
+              <div class="sch-id">SCH-2025-0043</div>
+            </td>
             <td>롯데백화점</td>
-            <td><span class="badge source-campaign">캠페인경유</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-10-01 ~ 10-31</td>
-            <td><span class="badge lc-validated"><span class="badge-dot"></span>검증완료</span></td>
-            <td style="color:#9EA5AD;">—</td>
-            <td><span class="badge pde-approved">승인</span></td>
-            <td style="text-align:center; font-weight:600;">3개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-07-25</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-12-01 ~ 12-31</td>
+            <td><span class="badge lc-pending"><span class="badge-dot"></span>승인대기</span></td>
+            <td><span class="badge appr-pending">승인대기</span></td>
+            <td><span class="badge source-direct">직접</span></td>
+            <td style="color:#596066;">박지은</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-15</td>
           </tr>
+          <!-- Row 7: 초안 -->
           <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">서울역 교통 광고</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-006</span></td>
+            <td>
+              <div class="sch-name">카카오 브랜드 디스플레이</div>
+              <div class="sch-id">SCH-2025-0044</div>
+            </td>
             <td>카카오</td>
-            <td><span class="badge source-direct">직접등록</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-07-15 ~ 07-31</td>
-            <td><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></td>
-            <td><span class="badge lc-approved">승인</span></td>
-            <td><span class="badge pde-approved">승인</span></td>
-            <td style="text-align:center; font-weight:600;">2개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-07-10</td>
-          </tr>
-          <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">판교 IT 박람회</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-007</span></td>
-            <td>SK하이닉스</td>
-            <td><span class="badge source-direct">직접등록</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-09-20 ~ 09-22</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-12-01 ~ 12-31</td>
             <td><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
-            <td style="color:#9EA5AD;">—</td>
-            <td style="color:#9EA5AD;">—</td>
-            <td style="text-align:center; font-weight:600;">1개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-08-01</td>
+            <td><span class="badge appr-none">미요청</span></td>
+            <td><span class="badge source-direct">직접</span></td>
+            <td style="color:#596066;">홍길동</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-15</td>
           </tr>
+          <!-- Row 8: 완료 -->
           <tr onclick="location.href='schedule-detail.html'">
-            <td><div class="sch-name">강남 봄 시즌 완료</div></td>
-            <td><span style="font-variant-numeric:tabular-nums; color:#596066; font-size:12px;">SCH-008</span></td>
-            <td>삼성전자</td>
-            <td><span class="badge source-campaign">캠페인경유</span></td>
-            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-04-01 ~ 04-30</td>
+            <td>
+              <div class="sch-name">SK하이닉스 AI 칩 캠페인</div>
+              <div class="sch-id">SCH-2025-0022</div>
+            </td>
+            <td>SK하이닉스</td>
+            <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-06-01 ~ 07-31</td>
             <td><span class="badge lc-done"><span class="badge-dot"></span>완료</span></td>
-            <td><span class="badge lc-approved">승인</span></td>
-            <td><span class="badge pde-approved">승인</span></td>
-            <td style="text-align:center; font-weight:600;">3개</td>
-            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-03-20</td>
+            <td><span class="badge appr-approved">승인</span></td>
+            <td><span class="badge source-campaign">캠페인</span></td>
+            <td style="color:#596066;">이수아</td>
+            <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-08-01</td>
           </tr>
         </tbody>
       </table>

@@ -3,282 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인천공항 T1 광고판 — D'ooh CMS</title>
+  <title>미디어 상세 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* ── Detail header ── */
-    .detail-header {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-    }
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #9EA5AD;
-      font-size: 12px;
-      text-decoration: none;
-      margin-bottom: 12px;
-    }
-    .back-link:hover { color: #58C65D; }
-    .detail-title-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .detail-title-left h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #24292E;
-      margin: 0 0 8px;
-    }
-    .detail-meta-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .lc-active   { background: #E8F8E9; color: #2E9E34; }
-    .lc-inactive { background: #FFF8E6; color: #B45309; }
-    .lc-registered { background: #F0F1F3; color: #9EA5AD; }
-    .lc-retired  { background: #FEE2E2; color: #C83434; }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-    .lc-active .badge-dot { background: #58C65D; }
-
-    .op-warn-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; color: #A67000;
-    }
-    .op-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-    .op-dot-warn { background: #F3BE4A; }
-    .op-dot-ok   { background: #58C65D; }
-    .op-dot-crit { background: #E97474; }
-    .op-dot-off  { background: #9EA5AD; }
-    .op-note { font-size: 11px; color: #9EA5AD; }
-
-    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn-outline {
-      height: 34px; padding: 0 14px;
-      background: #fff; border: 1px solid #CED2D6;
-      border-radius: 6px; font-size: 13px; color: #24292E;
-      cursor: pointer; font-weight: 500;
-    }
-    .btn-outline:hover { background: #F6F7F9; }
-    .btn-warn-outline {
-      height: 34px; padding: 0 14px;
-      background: #fff; border: 1px solid #F3BE4A;
-      border-radius: 6px; font-size: 13px; color: #B45309;
-      cursor: pointer; font-weight: 500;
-    }
-    .btn-warn-outline:hover { background: #FFFBF0; }
-    .btn-danger-outline {
-      height: 34px; padding: 0 14px;
-      background: #fff; border: 1px solid #E97474;
-      border-radius: 6px; font-size: 13px; color: #E97474;
-      cursor: pointer; font-weight: 500;
-    }
-    .btn-danger-outline:hover { background: #FFF5F5; }
-    .btn-primary-sm {
-      height: 34px; padding: 0 14px;
-      background: #58C65D; border: none;
-      border-radius: 6px; font-size: 13px; color: #fff;
-      cursor: pointer; font-weight: 600;
-    }
-    .btn-primary-sm:hover { background: #4ab34f; }
-
-    /* ── Tabs (hidden radio input pattern) ── */
-    .tab-radio { display: none; }
-
-    .tab-bar {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid #E5E7EA;
-      margin-bottom: 20px;
-      overflow-x: auto;
-    }
-    .tab-bar label {
-      padding: 10px 18px;
-      font-size: 13px;
-      color: #9EA5AD;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s;
-      margin-bottom: -1px;
-    }
-    .tab-bar label:hover { color: #24292E; }
-
-    .tab-panel { display: none; }
-
-    /* Radio → tab activation */
-    #tab1:checked ~ .tab-bar label[for="tab1"],
-    #tab2:checked ~ .tab-bar label[for="tab2"],
-    #tab3:checked ~ .tab-bar label[for="tab3"],
-    #tab4:checked ~ .tab-bar label[for="tab4"],
-    #tab5:checked ~ .tab-bar label[for="tab5"],
-    #tab6:checked ~ .tab-bar label[for="tab6"],
-    #tab7:checked ~ .tab-bar label[for="tab7"] {
-      color: #24292E;
-      border-bottom-color: #58C65D;
-      font-weight: 600;
-    }
-    #tab1:checked ~ .tab-content .panel-1,
-    #tab2:checked ~ .tab-content .panel-2,
-    #tab3:checked ~ .tab-content .panel-3,
-    #tab4:checked ~ .tab-content .panel-4,
-    #tab5:checked ~ .tab-content .panel-5,
-    #tab6:checked ~ .tab-content .panel-6,
-    #tab7:checked ~ .tab-content .panel-7 { display: block; }
-
-    /* ── Page card area ── */
-    .tab-area {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      padding: 0 24px 24px;
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
     }
 
-    /* ── Info grid (dl) ── */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 14px 16px;
-      margin-bottom: 20px;
-    }
-    .info-grid dt { color: #596066; font-size: 13px; align-self: center; }
-    .info-grid dd { margin: 0; font-size: 13px; color: #24292E; }
-    .ro-value {
-      background: #F6F7F9; color: #9EA5AD;
-      padding: 6px 10px; border-radius: 4px;
-      font-size: 13px; display: inline-block;
-    }
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #596066;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      margin: 20px 0 12px;
-      padding-top: 16px;
-      border-top: 1px solid #F0F1F3;
-    }
-    .section-title:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+    /* ── Breadcrumb ── */
+    .breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:#9EA5AD; margin-bottom:16px; }
+    .breadcrumb a { color:#9EA5AD; text-decoration:none; }
+    .breadcrumb a:hover { color:#24292E; }
+    .breadcrumb .sep { font-size:11px; }
+    .breadcrumb .current { color:#24292E; font-weight:500; }
 
-    /* ── PDE Panel ── */
+    /* ── State header card ── */
+    .state-header {
+      background:#fff; border:1px solid #E5E7EA; border-radius:10px;
+      padding:20px 24px; margin-bottom:20px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap;
+    }
+    .state-header-left { display:flex; flex-direction:column; gap:10px; }
+    .media-title { font-size:20px; font-weight:700; color:#24292E; }
+    .media-subtitle { font-size:13px; color:#9EA5AD; }
+    .state-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+    /* State badge — large */
+    .state-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 14px; border-radius:20px; font-size:13px; font-weight:700;
+    }
+    .state-badge.lc-registered { background:#F0F1F3; color:#9EA5AD; }
+    .state-badge.lc-active     { background:#E8F8E9; color:#2E9E34; }
+    .state-badge.lc-inactive   { background:#FFF8E6; color:#B45309; }
+    .state-badge.lc-retired    { background:#FEE2E2; color:#C83434; }
+    .state-dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+
+    /* Operational Status */
+    .op-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;
+    }
+    .op-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+    .op-normal  { background:rgba(88,198,93,.12);  color:#319236; }
+    .op-warn    { background:rgba(243,190,74,.15); color:#A67000; }
+    .op-critical { background:rgba(233,116,116,.14); color:#C83434; }
+    .op-offline { background:#F0F1F3; color:#9EA5AD; }
+    .op-normal  .op-dot { background:#58C65D; }
+    .op-warn    .op-dot { background:#F3BE4A; }
+    .op-critical .op-dot { background:#E97474; }
+    .op-offline .op-dot { background:#9EA5AD; }
+    .op-label { font-size:11px; color:#9EA5AD; }
+
+    /* Transition action buttons */
+    .action-btn {
+      height:32px; padding:0 14px; border-radius:6px; font-size:12px;
+      font-weight:600; cursor:pointer; border:1px solid; white-space:nowrap;
+    }
+    .action-btn-deactivate { background:#FFF8E6; color:#B45309; border-color:#F3BE4A; }
+    .action-btn-deactivate:hover { background:#FEEFB3; }
+    .action-btn-retire { background:#FEE2E2; color:#C83434; border-color:#E97474; }
+    .action-btn-retire:hover { background:#FDD; }
+    .action-btn-activate { background:#E8F8E9; color:#2E9E34; border-color:#58C65D; }
+    .action-btn-activate:hover { background:#D0F5D1; }
+
+    /* PDE decision panel */
     .pde-panel {
-      border: 1px solid #E5E7EA;
-      border-left: 4px solid #F3BE4A;
-      border-radius: 8px;
-      padding: 14px 16px;
-      background: #FFFBF0;
-      margin-bottom: 20px;
+      background:#FFFBEB; border-left:4px solid #F3BE4A;
+      border-radius:0 8px 8px 0; padding:12px 16px;
+      font-size:13px;
     }
-    .pde-panel.approved  { border-left-color: #58C65D; background: #F0FDF4; }
-    .pde-panel.restricted { border-left-color: #F3BE4A; background: #FFFBF0; }
-    .pde-panel.deferred  { border-left-color: #9EA5AD; background: #F6F7F9; }
-    .pde-panel.rejected  { border-left-color: #E97474; background: #FEF2F2; }
-    .pde-panel-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
+    .pde-panel-title { font-size:11px; font-weight:700; color:#A67000; text-transform:uppercase; margin-bottom:6px; letter-spacing:.05em; }
+    .pde-panel-row { display:flex; align-items:center; gap:8px; }
+    .pde-badge {
+      display:inline-flex; padding:2px 9px; border-radius:20px;
+      font-size:12px; font-weight:600;
     }
-    .pde-panel-head strong { font-size: 13px; font-weight: 700; }
-    .pde-label { font-size: 11px; color: #9EA5AD; margin-bottom: 4px; }
-    .pde-dl {
-      display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 6px;
-      font-size: 12px;
-    }
-    .pde-dl dt { color: #9EA5AD; }
-    .pde-dl dd { margin: 0; }
+    .pde-approved  { background:#E8F8E9; color:#2E9E34; }
+    .pde-restricted { background:#FFF8E6; color:#B45309; }
+    .pde-deferred  { background:#F0F1F3; color:#9EA5AD; }
+    .pde-rejected  { background:#FEE2E2; color:#C83434; }
+    .pde-note { font-size:12px; color:#9EA5AD; }
 
-    /* ── Two-column layout for tabs with sidebar PDE ── */
-    .two-col { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
-    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+    /* ── Tabs ── */
+    .tabs { display:flex; gap:0; border-bottom:2px solid #E5E7EA; margin-bottom:20px; overflow-x:auto; }
+    .tab-btn {
+      padding:10px 18px; font-size:13px; font-weight:500; color:#9EA5AD;
+      background:none; border:none; cursor:pointer; white-space:nowrap;
+      border-bottom:2px solid transparent; margin-bottom:-2px;
+    }
+    .tab-btn:hover { color:#24292E; }
+    .tab-btn.active { color:#2D84ED; font-weight:700; border-bottom-color:#2D84ED; }
 
-    /* ── Tags ── */
-    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tag {
-      display: inline-flex; align-items: center;
-      height: 26px; padding: 0 10px;
-      border: 1px solid #58C65D; border-radius: 20px;
-      color: #58C65D; font-size: 12px;
+    /* ── Tab panel ── */
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* ── Section cards ── */
+    .detail-card {
+      background:#fff; border:1px solid #E5E7EA; border-radius:10px;
+      padding:20px 24px; margin-bottom:16px;
+    }
+    .detail-card-title {
+      font-size:13px; font-weight:700; color:#596066; text-transform:uppercase;
+      letter-spacing:.05em; margin-bottom:16px; padding-bottom:10px;
+      border-bottom:1px solid #E5E7EA;
     }
 
-    /* ── Map placeholder ── */
+    /* ── Form fields (view mode) ── */
+    .field-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+    .field-group { display:flex; flex-direction:column; gap:4px; }
+    .field-label { font-size:11px; font-weight:600; color:#9EA5AD; text-transform:uppercase; letter-spacing:.04em; }
+    .field-value { font-size:13px; color:#24292E; font-weight:500; }
+    .field-value.readonly { color:#596066; }
+    .field-value.empty { color:#CED2D6; }
+
+    /* Tag chips */
+    .tag-list { display:flex; flex-wrap:wrap; gap:6px; }
+    .tag-chip {
+      padding:2px 10px; background:#F0F1F3; border-radius:20px;
+      font-size:12px; color:#596066; font-weight:500;
+    }
+
+    /* capability tags */
+    .cap-chip {
+      padding:2px 10px; background:#EFF6FF; border-radius:20px;
+      font-size:12px; color:#1D4ED8; font-weight:500;
+    }
+
+    /* Map placeholder */
     .map-placeholder {
-      height: 200px;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      background: #F6F7F9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #9EA5AD;
-      font-size: 13px;
+      height:200px; background:#F6F7F9; border:1px dashed #CED2D6;
+      border-radius:8px; display:flex; align-items:center; justify-content:center;
+      color:#9EA5AD; font-size:13px; flex-direction:column; gap:8px;
     }
 
-    /* ── Timeline ── */
-    .timeline-list { display: grid; gap: 0; }
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 20px 1fr;
-      gap: 0 14px;
-      padding-bottom: 20px;
-      position: relative;
+    /* photo strip */
+    .photo-strip { display:flex; gap:10px; flex-wrap:wrap; }
+    .photo-thumb {
+      width:88px; height:66px; background:#F6F7F9; border:1px solid #E5E7EA;
+      border-radius:6px; display:flex; align-items:center; justify-content:center;
+      color:#CED2D6; font-size:20px;
     }
-    .timeline-item:last-child { padding-bottom: 0; }
-    .timeline-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: #58C65D;
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 2px #58C65D;
-      margin-top: 3px;
-      justify-self: center;
-    }
-    .timeline-line {
-      position: absolute;
-      left: 9px;
-      top: 16px;
-      bottom: 0;
-      width: 2px;
-      background: #E5E7EA;
-    }
-    .timeline-item:last-child .timeline-line { display: none; }
-    .timeline-content { min-width: 0; }
-    .timeline-time { font-size: 11px; color: #9EA5AD; margin-bottom: 3px; }
-    .timeline-desc { font-size: 13px; color: #24292E; }
-    .timeline-actor { font-size: 12px; color: #596066; margin-top: 2px; }
 
-    .audit-row {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 8px 12px;
-      font-size: 12px;
-      color: #9EA5AD;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #F0F1F3;
+    /* MCU/sensor rows */
+    .sensor-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F1F3; }
+    .sensor-row:last-child { border-bottom:none; }
+    .sensor-name { font-size:13px; color:#24292E; font-weight:500; }
+    .sensor-loc { font-size:12px; color:#9EA5AD; }
+
+    /* Audit table */
+    .audit-row { display:flex; gap:20px; padding:8px 0; border-bottom:1px solid #F0F1F3; font-size:13px; }
+    .audit-row:last-child { border-bottom:none; }
+    .audit-key { width:120px; color:#9EA5AD; flex-shrink:0; }
+    .audit-val { color:#24292E; }
+
+    /* Action bar */
+    .action-bar {
+      display:flex; align-items:center; justify-content:flex-end; gap:10px;
+      padding:16px 24px; background:#fff; border:1px solid #E5E7EA;
+      border-radius:10px; margin-top:20px;
     }
-    .audit-row dd { margin: 0; color: #596066; }
+    .btn-secondary {
+      height:36px; padding:0 16px; background:#fff; border:1px solid #CED2D6;
+      border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; color:#24292E;
+    }
+    .btn-secondary:hover { background:#F6F7F9; }
+    .btn-save {
+      height:36px; padding:0 16px; background:#2D84ED; color:#fff;
+      border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;
+    }
+    .btn-save:hover { background:#2472d4; }
+
+    .divider-label {
+      font-size:11px; font-weight:700; color:#9EA5AD; text-transform:uppercase;
+      letter-spacing:.05em; margin:16px 0 8px;
+    }
   </style>
 </head>
 <body>
@@ -326,283 +228,455 @@
   </div>
 </header>
 
-<!-- Main -->
+<!-- Main content -->
 <main class="content">
   <div class="content-inner">
 
-    <!-- Detail header card -->
-    <div class="detail-header">
-      <a class="back-link" href="media-list">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        미디어 &rsaquo; MED-002
-      </a>
-      <div class="detail-title-row">
-        <div class="detail-title-left">
-          <h1>인천공항 T1 광고판</h1>
-          <div class="detail-meta-row">
-            <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
-            <!-- Transition actions -->
-            <button class="btn-warn-outline">비활성화</button>
-            <button class="btn-danger-outline">폐기</button>
-            <span style="width:1px;height:20px;background:#E5E7EA;display:inline-block;"></span>
-            <span class="op-warn-badge">
-              <span class="op-dot op-dot-warn"></span>
-              운영 상태: 경고
-            </span>
-            <span class="op-note">모니터링에서 산출</span>
-          </div>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="media-list">미디어</a>
+      <span class="sep">›</span>
+      <span class="current">강남역 1번출구 A</span>
+    </div>
+
+    <!-- ── State Header Card ── -->
+    <div class="state-header">
+      <div class="state-header-left">
+        <div>
+          <div class="media-title">강남역 1번출구 A</div>
+          <div class="media-subtitle">MED-001 · 자산코드: AST-GN-001 · Rev. 14</div>
         </div>
-        <div class="header-actions">
-          <button class="btn-outline">수정</button>
-          <button class="btn-outline">모니터링 보기</button>
+
+        <!-- Lifecycle State Badge + Transition Actions -->
+        <div class="state-row">
+          <span class="state-badge lc-active"><span class="state-dot"></span>활성</span>
+          <!-- 활성(Active) → 비활성화, 폐기 액션 -->
+          <button class="action-btn action-btn-deactivate" onclick="confirm('비활성화 하시겠습니까?')">비활성화</button>
+          <button class="action-btn action-btn-retire" onclick="confirm('폐기 처리 하시겠습니까? (Admin 전용)')">폐기</button>
+        </div>
+
+        <!-- Operational Status (read-only, computed by Monitoring) -->
+        <div class="state-row" style="gap:8px;">
+          <span class="op-label">운영상태 (모니터링에서 산출, 읽기 전용):</span>
+          <span class="op-badge op-normal"><span class="op-dot"></span>정상</span>
+        </div>
+      </div>
+
+      <!-- PDE Decision panel -->
+      <div class="pde-panel" style="min-width:200px;">
+        <div class="pde-panel-title">PDE 결정</div>
+        <div class="pde-panel-row">
+          <span class="pde-badge pde-approved">승인</span>
+          <span class="pde-note">2025-08-10 · 정책 검토 완료</span>
+        </div>
+        <div style="font-size:12px; color:#A67000; margin-top:8px;">
+          결정 유형: 승인(Approved) / 제한(Restricted) / 보류(Deferred) / 거부(Rejected)
         </div>
       </div>
     </div>
 
-    <!-- Tabs area -->
-    <div class="tab-area">
+    <!-- ── Tabs ── -->
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" onclick="switchTab('basic')">기본정보</button>
+      <button class="tab-btn" onclick="switchTab('ad')">광고물정보</button>
+      <button class="tab-btn" onclick="switchTab('location')">위치</button>
+      <button class="tab-btn" onclick="switchTab('display')">디스플레이</button>
+      <button class="tab-btn" onclick="switchTab('player')">플레이어</button>
+      <button class="tab-btn" onclick="switchTab('sensor')">센서·MCU</button>
+      <button class="tab-btn" onclick="switchTab('audit')">Audit</button>
+    </div>
 
-      <!-- Hidden radio inputs -->
-      <input type="radio" class="tab-radio" name="media-tab" id="tab1" checked>
-      <input type="radio" class="tab-radio" name="media-tab" id="tab2">
-      <input type="radio" class="tab-radio" name="media-tab" id="tab3">
-      <input type="radio" class="tab-radio" name="media-tab" id="tab4">
-      <input type="radio" class="tab-radio" name="media-tab" id="tab5">
-      <input type="radio" class="tab-radio" name="media-tab" id="tab6">
-      <input type="radio" class="tab-radio" name="media-tab" id="tab7">
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 1: 기본정보 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel active" id="panel-basic">
 
-      <!-- Tab bar -->
-      <div class="tab-bar">
-        <label for="tab1">기본 정보</label>
-        <label for="tab2">광고물 정보</label>
-        <label for="tab3">위치</label>
-        <label for="tab4">기기 — 디스플레이</label>
-        <label for="tab5">기기 — 플레이어</label>
-        <label for="tab6">기기 — 센서/MCU</label>
-        <label for="tab7">Audit / 이력</label>
+      <div class="detail-card">
+        <div class="detail-card-title">식별정보</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <div class="field-label">미디어명 (media.name)</div>
+            <div class="field-value">강남역 1번출구 A</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">자산코드 (media.assetCode)</div>
+            <div class="field-value">AST-GN-001</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">리비전 (media.revision)</div>
+            <div class="field-value readonly">14 <span style="font-size:11px;color:#9EA5AD;">(자동, 읽기 전용)</span></div>
+          </div>
+        </div>
       </div>
 
-      <div class="tab-content">
+      <div class="detail-card">
+        <div class="detail-card-title">태그 (media.tags)</div>
+        <div class="tag-list">
+          <span class="tag-chip">강남</span>
+          <span class="tag-chip">역세권</span>
+          <span class="tag-chip">프리미엄</span>
+          <span class="tag-chip">대용량</span>
+          <span class="tag-chip">야외노출</span>
+        </div>
+      </div>
 
-        <!-- Panel 1: 기본 정보 -->
-        <div class="tab-panel panel-1">
-          <div class="two-col">
-            <div>
-              <p class="section-title">식별 정보</p>
-              <dl class="info-grid">
-                <dt>미디어 ID</dt>
-                <dd><span class="ro-value">MED-002</span></dd>
-                <dt>미디어명</dt>
-                <dd>인천공항 T1 광고판</dd>
-                <dt>미디어사</dt>
-                <dd><a href="#" style="color:#58C65D;text-decoration:none;font-size:13px;">인천공항공사 ↗</a> <span style="font-size:11px;color:#9EA5AD;">외부 Master 참조</span></dd>
-                <dt>미디어 유형</dt>
-                <dd>실외대형</dd>
-                <dt>태그</dt>
-                <dd>
-                  <div class="tag-row">
-                    <span class="tag">공항</span>
-                    <span class="tag">프리미엄</span>
-                    <span class="tag">T1</span>
-                  </div>
-                </dd>
-                <dt>생애주기 상태</dt>
-                <dd><span class="badge lc-active"><span class="badge-dot"></span>활성</span></dd>
-              </dl>
+      <div class="action-bar">
+        <button class="btn-secondary">취소</button>
+        <button class="btn-save">저장</button>
+      </div>
+    </div>
 
-              <p class="section-title">Audit 정보</p>
-              <dl class="audit-row">
-                <dt>생성일</dt><dd>2024-02-10</dd>
-                <dt>생성자</dt><dd>홍길동</dd>
-                <dt>마지막 수정</dt><dd>2025-03-01</dd>
-              </dl>
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 2: 광고물정보 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-ad">
+
+      <div class="detail-card">
+        <div class="detail-card-title">미디어 분류 (media.classification)</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <div class="field-label">설치 위치 (installationLocation)</div>
+            <div class="field-value">옥외 (Outdoor, O)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">움직임 (mobility)</div>
+            <div class="field-value">고정 (Fixed, F)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">시야거리 (viewingDistance)</div>
+            <div class="field-value">먼 거리 (Long, L)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">수용자 (audienceType)</div>
+            <div class="field-value">보행자 (Pedestrian, PD)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">미디어 종류 코드 (mediaTypeCode)</div>
+            <div class="field-value readonly">OF <span style="font-size:11px;color:#9EA5AD;">(시스템 자동 생성, 읽기 전용)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">설치 정보</div>
+        <div class="field-grid" style="margin-bottom:16px;">
+          <div class="field-group">
+            <div class="field-label">설치 높이 (media.installation.heightMeters)</div>
+            <div class="field-value">4.2 m</div>
+          </div>
+        </div>
+        <div class="divider-label">설치 모습 (media.installation.photos)</div>
+        <div class="photo-strip">
+          <div class="photo-thumb">🖼</div>
+          <div class="photo-thumb">🖼</div>
+          <div class="photo-thumb">🖼</div>
+          <div class="photo-thumb" style="border-style:dashed; color:#9EA5AD; font-size:13px;">+ 추가</div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-secondary">취소</button>
+        <button class="btn-save">저장</button>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 3: 위치 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-location">
+
+      <div class="detail-card">
+        <div class="detail-card-title">주소 정보</div>
+        <div class="field-grid" style="margin-bottom:16px;">
+          <div class="field-group" style="grid-column:1/-1;">
+            <div class="field-label">주소 (media.location.address)</div>
+            <div class="field-value">서울특별시 강남구 강남대로 396 (강남역 1번출구)</div>
+          </div>
+        </div>
+        <div class="divider-label">지도 (media.location.mapPosition)</div>
+        <div class="map-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#CED2D6" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <span>지도 핀 표시 영역 — 서울 강남구 강남대로 396</span>
+        </div>
+        <div style="margin-top:12px;">
+          <div class="field-grid">
+            <div class="field-group">
+              <div class="field-label">좌표 위도 (media.location.coordinates.lat)</div>
+              <div class="field-value readonly">37.497942 <span style="font-size:11px;color:#9EA5AD;">(지도 핀으로 자동 갱신)</span></div>
             </div>
-
-            <!-- PDE Panel -->
-            <div>
-              <p class="section-title" style="margin-top:0;padding-top:0;border-top:none;">PDE 결정</p>
-              <div class="pde-panel restricted">
-                <div class="pde-panel-head">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#F3BE4A" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  <strong style="color:#B45309;">제한 (Restricted)</strong>
-                </div>
-                <p class="pde-label">제한 사유</p>
-                <p style="font-size:13px;color:#24292E;margin-bottom:10px;">운영 시간 외 광고 송출 정책 적용</p>
-                <dl class="pde-dl">
-                  <dt>Policy Version</dt><dd>v2.1.0</dd>
-                </dl>
-              </div>
+            <div class="field-group">
+              <div class="field-label">좌표 경도 (media.location.coordinates.lng)</div>
+              <div class="field-value readonly">127.027621</div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Panel 2: 광고물 정보 -->
-        <div class="tab-panel panel-2">
-          <p class="section-title">광고물 규격</p>
-          <dl class="info-grid">
-            <dt>화면 비율</dt><dd>16:9</dd>
-            <dt>화면 방향</dt><dd>가로 (Landscape)</dd>
-            <dt>해상도</dt><dd>1920 × 1080 px</dd>
-            <dt>지원 콘텐츠 유형</dt>
-            <dd>
-              <span style="display:inline-flex;gap:6px;flex-wrap:wrap;">
-                <span style="background:#EAF3FF;color:#2D84ED;padding:2px 8px;border-radius:4px;font-size:12px;">동영상</span>
-                <span style="background:#EAF3FF;color:#2D84ED;padding:2px 8px;border-radius:4px;font-size:12px;">이미지</span>
-                <span style="background:#EAF3FF;color:#2D84ED;padding:2px 8px;border-radius:4px;font-size:12px;">HTML</span>
-              </span>
-            </dd>
-            <dt>최소 재생시간</dt><dd>10초</dd>
-            <dt>최대 재생시간</dt><dd>60초</dd>
-            <dt>광고물 제작 가이드</dt>
-            <dd><button class="btn-outline" style="height:30px;font-size:12px;">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="vertical-align:middle;margin-right:4px;"><path d="M6 1v6M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              다운로드
-            </button></dd>
-          </dl>
-        </div>
+      <div class="action-bar">
+        <button class="btn-secondary">취소</button>
+        <button class="btn-save">저장</button>
+      </div>
+    </div>
 
-        <!-- Panel 3: 위치 -->
-        <div class="tab-panel panel-3">
-          <p class="section-title">위치 정보</p>
-          <dl class="info-grid">
-            <dt>위치 유형</dt><dd>고정 (Fixed)</dd>
-            <dt>주소</dt><dd>인천광역시 중구 공항로 272 인천국제공항 제1터미널</dd>
-            <dt>상세 위치</dt><dd>T1 3층 출국장 A구역</dd>
-            <dt>행정구역</dt><dd>인천 중구</dd>
-          </dl>
-          <div class="map-placeholder">지도 표시 영역</div>
-          <dl class="info-grid" style="margin-top:14px;">
-            <dt>위도</dt><dd><span class="ro-value">37.4491</span></dd>
-            <dt>경도</dt><dd><span class="ro-value">126.4530</span></dd>
-          </dl>
-        </div>
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 4: 디스플레이 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-display">
 
-        <!-- Panel 4: 기기 — 디스플레이 -->
-        <div class="tab-panel panel-4">
-          <p class="section-title">디스플레이 사양</p>
-          <dl class="info-grid">
-            <dt>화면 크기</dt><dd>98인치</dd>
-            <dt>밝기</dt><dd>5,000 nit</dd>
-            <dt>방수/방진</dt><dd>IP65</dd>
-            <dt>HDR 지원</dt><dd>예</dd>
-            <dt>터치 지원</dt><dd>아니오</dd>
-          </dl>
-        </div>
-
-        <!-- Panel 5: 기기 — 플레이어 -->
-        <div class="tab-panel panel-5">
-          <p class="section-title">셋탑/플레이어 정보</p>
-          <dl class="info-grid">
-            <dt>셋탑 모델</dt><dd>Brightsign XD1035</dd>
-            <dt>시리얼 번호</dt><dd><span class="ro-value">BS-2024-11934</span></dd>
-            <dt>OS</dt><dd>BrightSign OS 8.5</dd>
-            <dt>네트워크</dt><dd>LTE + Wi-Fi</dd>
-            <dt>IP 주소</dt><dd><span class="ro-value">192.168.10.55</span></dd>
-            <dt>플레이어 생애주기</dt>
-            <dd>
-              <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
-              <button class="btn-warn-outline" style="margin-left:8px;height:26px;font-size:12px;padding:0 10px;">비활성화</button>
-            </dd>
-            <dt>마지막 통신</dt><dd>2025-08-18 14:32:11</dd>
-            <dt>펌웨어 버전</dt><dd>8.5.0.3</dd>
-          </dl>
-        </div>
-
-        <!-- Panel 6: 기기 — 센서/MCU -->
-        <div class="tab-panel panel-6">
-          <p class="section-title">MCU</p>
-          <dl class="info-grid">
-            <dt>MCU 탑재</dt><dd>있음</dd>
-            <dt>MCU 모델</dt><dd>Arduino Mega 2560</dd>
-            <dt>연결 방식</dt><dd>USB-Serial</dd>
-          </dl>
-          <p class="section-title">센서 목록</p>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
-            <div style="padding:12px;border:1px solid #E5E7EA;border-radius:8px;background:#F6F7F9;">
-              <div style="font-size:12px;font-weight:600;color:#24292E;margin-bottom:4px;">온도</div>
-              <div style="font-size:11px;color:#9EA5AD;">DHT22</div>
-            </div>
-            <div style="padding:12px;border:1px solid #E5E7EA;border-radius:8px;background:#F6F7F9;">
-              <div style="font-size:12px;font-weight:600;color:#24292E;margin-bottom:4px;">조도</div>
-              <div style="font-size:11px;color:#9EA5AD;">BH1750</div>
-            </div>
-            <div style="padding:12px;border:1px solid #E5E7EA;border-radius:8px;background:#F6F7F9;">
-              <div style="font-size:12px;font-weight:600;color:#24292E;margin-bottom:4px;">모션</div>
-              <div style="font-size:11px;color:#9EA5AD;">PIR</div>
-            </div>
+      <div class="detail-card">
+        <div class="detail-card-title">디스플레이 정보 (media.display)</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <div class="field-label">패널 유형 (panelType)</div>
+            <div class="field-value">LED</div>
           </div>
-
-          <p class="section-title">냉각 / 팬</p>
-          <dl class="info-grid">
-            <dt>팬 구성</dt><dd>내장 2개, RPM 모니터링 지원</dd>
-          </dl>
-
-          <p class="section-title">PDE — 센서</p>
-          <div class="pde-panel approved" style="border-left-color:#58C65D;background:#F0FDF4;">
-            <div class="pde-panel-head">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#58C65D" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <strong style="color:#2E9E34;">승인 (Approved)</strong>
-            </div>
-            <p style="font-size:12px;color:#596066;margin:0;">센서 수집 허용</p>
+          <div class="field-group">
+            <div class="field-label">제조사 / 모델 (manufacturerModel)</div>
+            <div class="field-value">Samsung / LH55OHFPVBC</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">화면 크기 (screenSize)</div>
+            <div class="field-value">55인치 (121.7 × 68.5 cm)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">해상도 (resolution)</div>
+            <div class="field-value">1920 × 1080 px</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">화면 방향 (orientation)</div>
+            <div class="field-value">가로형 (Landscape)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">기준 밝기 (referenceBrightness)</div>
+            <div class="field-value">2,500 nit</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">화면 분할 (screenSplit)</div>
+            <div class="field-value">지원 · 최대 4 Zone</div>
           </div>
         </div>
-
-        <!-- Panel 7: Audit / 이력 -->
-        <div class="tab-panel panel-7">
-          <p class="section-title">상태 변경 이력</p>
-          <div class="timeline-list">
-            <div class="timeline-item">
-              <div>
-                <div class="timeline-dot"></div>
-                <div class="timeline-line"></div>
-              </div>
-              <div class="timeline-content">
-                <div class="timeline-time">2025-08-01 14:22</div>
-                <div class="timeline-desc">
-                  <span class="badge lc-active" style="font-size:11px;">활성</span>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="vertical-align:middle;margin:0 4px;"><path d="M2 6h8M6 2l4 4-4 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  <span class="badge lc-inactive" style="font-size:11px;">비활성</span>
-                </div>
-                <div class="timeline-actor">홍길동 · 정기점검</div>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div>
-                <div class="timeline-dot" style="background:#9EA5AD;box-shadow:0 0 0 2px #9EA5AD;"></div>
-                <div class="timeline-line"></div>
-              </div>
-              <div class="timeline-content">
-                <div class="timeline-time">2025-08-02 09:00</div>
-                <div class="timeline-desc">
-                  <span class="badge lc-inactive" style="font-size:11px;">비활성</span>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="vertical-align:middle;margin:0 4px;"><path d="M2 6h8M6 2l4 4-4 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  <span class="badge lc-active" style="font-size:11px;">활성</span>
-                </div>
-                <div class="timeline-actor">시스템 · 자동복구</div>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div>
-                <div class="timeline-dot" style="background:#9EA5AD;box-shadow:0 0 0 2px #9EA5AD;"></div>
-              </div>
-              <div class="timeline-content">
-                <div class="timeline-time">2024-08-15 10:00</div>
-                <div class="timeline-desc">
-                  <span class="badge lc-registered" style="font-size:11px;">등록</span>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="vertical-align:middle;margin:0 4px;"><path d="M2 6h8M6 2l4 4-4 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  <span class="badge lc-active" style="font-size:11px;">활성</span>
-                </div>
-                <div class="timeline-actor">홍길동</div>
-              </div>
-            </div>
+        <div style="margin-top:16px;">
+          <div class="field-label" style="margin-bottom:8px;">디스플레이 기능 지원 (display.capabilities)</div>
+          <div class="tag-list">
+            <span class="cap-chip">밝기 제어</span>
+            <span class="cap-chip">전원 제어</span>
+            <span class="cap-chip">화면분할</span>
+            <span class="cap-chip">원격 제어</span>
+            <span class="cap-chip">화면 캡처</span>
           </div>
         </div>
+      </div>
 
-      </div><!-- /.tab-content -->
-    </div><!-- /.tab-area -->
+      <div class="action-bar">
+        <button class="btn-secondary">취소</button>
+        <button class="btn-save">저장</button>
+      </div>
+    </div>
 
-  </div>
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 5: 플레이어 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-player">
+
+      <div class="detail-card">
+        <div class="detail-card-title">셋탑/플레이어 정보 (media.player)</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <div class="field-label">장비 기본정보 (basicInfo)</div>
+            <div class="field-value">BrightSign XD1034</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">MAC 주소 (macAddress)</div>
+            <div class="field-value">A4:C3:F0:12:3B:7E</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">셋탑 코드 (assetCode)</div>
+            <div class="field-value">STB-GN-001</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">OS / App Version (softwareVersion)</div>
+            <div class="field-value">Android 11 / v3.2.4</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">네트워크 정보 (network)</div>
+            <div class="field-value">유선 LAN · IP: 192.168.1.101</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Device ID (player.deviceId)</div>
+            <div class="field-value readonly">DEV-00123456 <span style="font-size:11px;color:#9EA5AD;">(시스템 자동, 읽기 전용)</span></div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="field-label" style="margin-bottom:8px;">플레이어 기능 지원 (player.capabilities)</div>
+          <div class="tag-list">
+            <span class="cap-chip">H.264</span>
+            <span class="cap-chip">H.265</span>
+            <span class="cap-chip">HTML5</span>
+            <span class="cap-chip">다중영역</span>
+            <span class="cap-chip">원격 재시작</span>
+            <span class="cap-chip">OTA 업데이트</span>
+            <span class="cap-chip">오프라인 재생</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">부착 기기 (media.attachedDevices)</div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">광각 카메라</div>
+            <div class="sensor-loc">연결 방식: USB · 기능: 시청자 카운팅</div>
+          </div>
+          <span class="cap-chip" style="background:#F0FDF4;color:#2E9E34;">연결됨</span>
+        </div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">터치 센서</div>
+            <div class="sensor-loc">연결 방식: RS-232 · 기능: 인터랙션</div>
+          </div>
+          <span class="cap-chip" style="background:#F0FDF4;color:#2E9E34;">연결됨</span>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-secondary">취소</button>
+        <button class="btn-save">저장</button>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 6: 센서·MCU -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-sensor">
+
+      <div class="detail-card">
+        <div class="detail-card-title">MCU (media.mcu)</div>
+        <div class="field-grid" style="margin-bottom:16px;">
+          <div class="field-group">
+            <div class="field-label">MCU 보드 여부 (mcu.enabled)</div>
+            <div class="field-value">있음 (Yes)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">제조사 / 모델 (mcu.manufacturerModel)</div>
+            <div class="field-value">Raspberry Pi / CM4</div>
+          </div>
+        </div>
+        <div class="field-label" style="margin-bottom:8px;">MCU 기능 지원 (mcu.capabilities)</div>
+        <div class="tag-list">
+          <span class="cap-chip">온도 센서 포트</span>
+          <span class="cap-chip">팬 제어</span>
+          <span class="cap-chip">릴레이 제어</span>
+          <span class="cap-chip">I2C 통신</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">센서 (media.sensors)</div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">온도 센서 (sensors.temperature)</div>
+            <div class="sensor-loc">위치: 함체 내부 (Internal) · 범위: -20~80°C</div>
+          </div>
+          <span class="cap-chip" style="background:#E8F8E9;color:#2E9E34;">등록됨</span>
+        </div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">충격 센서 (sensors.impact)</div>
+            <div class="sensor-loc">위치: 함체 내부 (Internal)</div>
+          </div>
+          <span class="cap-chip" style="background:#E8F8E9;color:#2E9E34;">등록됨</span>
+        </div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">모션/PIR 센서 (sensors.motionPir)</div>
+            <div class="sensor-loc">위치: 함체 내부 (Internal)</div>
+          </div>
+          <span class="cap-chip" style="background:#F0F1F3;color:#9EA5AD;">미등록</span>
+        </div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">조도 센서 (sensors.light)</div>
+            <div class="sensor-loc">위치: 외부</div>
+          </div>
+          <span class="cap-chip" style="background:#E8F8E9;color:#2E9E34;">등록됨</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">팬 (media.fan)</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <div class="field-label">팬 수량</div>
+            <div class="field-value">2개</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">제어 방식</div>
+            <div class="field-value">PWM 자동 제어</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">주변기기 (media.peripherals)</div>
+        <div class="sensor-row">
+          <div>
+            <div class="sensor-name">히터</div>
+            <div class="sensor-loc">저온 환경 동작 보조</div>
+          </div>
+          <span class="cap-chip" style="background:#E8F8E9;color:#2E9E34;">등록됨</span>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-secondary">취소</button>
+        <button class="btn-save">저장</button>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 7: Audit -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-audit">
+
+      <div class="detail-card">
+        <div class="detail-card-title">Audit 정보</div>
+        <div class="audit-row">
+          <div class="audit-key">생성일</div>
+          <div class="audit-val">2024-03-15 09:22:14</div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-key">마지막 수정일</div>
+          <div class="audit-val">2025-08-15 14:07:33</div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-key">생성자</div>
+          <div class="audit-val">홍길동 (admin@mnmnetworks.com)</div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-key">담당자</div>
+          <div class="audit-val">홍길동 (엠앤엠네트웍스 · 강남 담당)</div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-key">리비전</div>
+          <div class="audit-val">Rev. 14</div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-key">생애주기 변경 이력</div>
+          <div class="audit-val">등록(2024-03-15) → 활성(2024-03-20)</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.content-inner -->
 </main>
 
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+</script>
 </body>
 </html>

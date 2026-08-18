@@ -233,10 +233,11 @@
     <!-- Status summary chips -->
     <div class="summary-chips">
       <span class="chip chip-all">전체 <span class="chip-count">42</span></span>
-      <span class="chip chip-approved">승인 <span class="chip-count">24</span></span>
-      <span class="chip chip-review">검토대기 <span class="chip-count">6</span></span>
-      <span class="chip chip-validating">검증중 <span class="chip-count">3</span></span>
       <span class="chip chip-draft">초안 <span class="chip-count">7</span></span>
+      <span class="chip chip-validating">검증중 <span class="chip-count">3</span></span>
+      <span class="chip chip-review">검토대기 <span class="chip-count">6</span></span>
+      <span class="chip chip-approved">승인 <span class="chip-count">24</span></span>
+      <span class="chip" style="background:#FFF8E6;color:#B45309;border-color:transparent;">비활성 <span class="chip-count">0</span></span>
       <span class="chip chip-archived">보관 <span class="chip-count">2</span></span>
     </div>
 
@@ -255,17 +256,12 @@
         <option value="비활성">비활성</option>
         <option value="보관">보관</option>
       </select>
-      <select class="filter-select" id="filterType" onchange="filterTable()">
-        <option value="">콘텐츠 유형 전체</option>
-        <option value="파일">파일</option>
-        <option value="URL">URL</option>
-        <option value="콘텐츠체인">콘텐츠체인</option>
-      </select>
       <select class="filter-select" id="filterAdType" onchange="filterTable()">
-        <option value="">광고 유형 전체</option>
+        <option value="">광고유형 전체</option>
         <option value="일반광고">일반광고</option>
         <option value="공익광고">공익광고</option>
         <option value="자체광고">자체광고</option>
+        <option value="미디어아트">미디어아트</option>
       </select>
       <select class="filter-select" id="filterRetention" onchange="filterTable()">
         <option value="">Retention 전체</option>
@@ -284,178 +280,104 @@
       <table>
         <thead>
           <tr>
-            <th class="center" style="width:56px;">미리보기</th>
+            <th class="center" style="width:56px;">썸네일</th>
             <th>콘텐츠명</th>
-            <th style="width:110px;">콘텐츠 ID</th>
-            <th style="width:110px;">유형</th>
+            <th style="width:110px;">광고유형</th>
             <th class="center" style="width:80px;">재생시간</th>
             <th class="center" style="width:100px;">Lifecycle</th>
-            <th class="center" style="width:90px;">PDE</th>
             <th class="center" style="width:90px;">Retention</th>
             <th style="width:100px;">광고주</th>
-            <th style="width:90px;">등록일</th>
+            <th style="width:90px;">수정일</th>
           </tr>
         </thead>
         <tbody id="tableBody">
           <!-- Row 1 -->
-          <tr data-lc="승인" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">강남역 여름 캠페인 영상</div>
-              <div class="content-id">CNT-001</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-001</td>
-            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+          <tr data-lc="승인" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
+            <td><div class="content-name-link">갤럭시 S25 런칭 30초</div><div class="content-id">CNT-001</div></td>
+            <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">30초</td>
             <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
             <td style="font-size:12px;">삼성전자</td>
-            <td style="font-size:12px;color:#596066;">2025-06-10</td>
+            <td style="font-size:12px;color:#596066;">2025-08-01</td>
           </tr>
           <!-- Row 2 -->
-          <tr data-lc="승인" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">인천공항 브랜드 스팟</div>
-              <div class="content-id">CNT-002</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-002</td>
-            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+          <tr data-lc="승인" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
+            <td><div class="content-name-link">인천공항 브랜드 스팟</div><div class="content-id">CNT-002</div></td>
+            <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">15초</td>
             <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge pde-restricted">제한</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
             <td style="font-size:12px;">현대자동차</td>
-            <td style="font-size:12px;color:#596066;">2025-05-22</td>
+            <td style="font-size:12px;color:#596066;">2025-07-28</td>
           </tr>
           <!-- Row 3 -->
-          <tr data-lc="검토대기" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">홍대 팝업스토어 안내</div>
-              <div class="content-id">CNT-003</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-003</td>
-            <td><span style="font-size:12px;color:#596066;">파일(이미지)</span></td>
+          <tr data-lc="검토대기" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div></td>
+            <td><div class="content-name-link">홍대 팝업스토어 안내</div><div class="content-id">CNT-003</div></td>
+            <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">10초</td>
             <td class="center"><span class="badge lc-review">검토대기</span></td>
-            <td class="center"><span class="badge pde-deferred">보류</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
             <td style="font-size:12px;">나이키코리아</td>
             <td style="font-size:12px;color:#596066;">2025-07-01</td>
           </tr>
           <!-- Row 4 -->
-          <tr data-lc="검증중" data-type="URL" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="#CED2D6" stroke-width="1.5"/><path d="M10 7v3l2 2" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">코엑스 신제품 런칭</div>
-              <div class="content-id">CNT-004</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-004</td>
-            <td><span style="font-size:12px;color:#596066;">URL</span></td>
+          <tr data-lc="검증중" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="#CED2D6" stroke-width="1.5"/><path d="M10 7v3l2 2" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg></div></td>
+            <td><div class="content-name-link">코엑스 신제품 런칭</div><div class="content-id">CNT-004</div></td>
+            <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">20초</td>
             <td class="center"><span class="badge lc-validating">검증중</span></td>
-            <td class="center"><span class="pde-none">—</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
             <td style="font-size:12px;">LG전자</td>
             <td style="font-size:12px;color:#596066;">2025-07-15</td>
           </tr>
           <!-- Row 5 -->
-          <tr data-lc="초안" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#CED2D6"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">판교 IT 박람회</div>
-              <div class="content-id">CNT-005</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-005</td>
-            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+          <tr data-lc="초안" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#CED2D6"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
+            <td><div class="content-name-link">판교 IT 박람회 영상</div><div class="content-id">CNT-005</div></td>
+            <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">45초</td>
             <td class="center"><span class="badge lc-draft">초안</span></td>
-            <td class="center"><span class="pde-none">—</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
             <td style="font-size:12px;">SK하이닉스</td>
             <td style="font-size:12px;color:#596066;">2025-07-20</td>
           </tr>
           <!-- Row 6 -->
-          <tr data-lc="승인" data-type="파일" data-adtype="공익광고" data-retention="만료임박" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">공익광고 교통안전</div>
-              <div class="content-id">CNT-006</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-006</td>
-            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+          <tr data-lc="승인" data-adtype="공익광고" data-retention="만료임박" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
+            <td><div class="content-name-link">공익광고 교통안전</div><div class="content-id">CNT-006</div></td>
+            <td style="font-size:12px;color:#596066;">공익광고</td>
             <td class="center" style="font-size:13px;">30초</td>
             <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
             <td class="center"><span class="badge ret-soon">만료임박</span></td>
             <td style="font-size:12px;">서울시</td>
-            <td style="font-size:12px;color:#596066;">2025-01-10</td>
+            <td style="font-size:12px;color:#596066;">2025-06-30</td>
           </tr>
           <!-- Row 7 -->
-          <tr data-lc="승인" data-type="콘텐츠체인" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h4m4 0h4M8 10V6m0 4v4" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">여름 시즌 체인</div>
-              <div class="content-id">CNT-007</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-007</td>
-            <td><span style="font-size:12px;color:#596066;">콘텐츠체인</span></td>
-            <td class="center" style="font-size:13px;">75초</td>
-            <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
+          <tr data-lc="초안" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#CED2D6"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
+            <td><div class="content-name-link">여름 시즌 프로모션</div><div class="content-id">CNT-007</div></td>
+            <td style="font-size:12px;color:#596066;">일반광고</td>
+            <td class="center" style="font-size:13px;">20초</td>
+            <td class="center"><span class="badge lc-draft">초안</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
-            <td style="font-size:12px;">삼성전자</td>
-            <td style="font-size:12px;color:#596066;">2025-06-15</td>
+            <td style="font-size:12px;">롯데마트</td>
+            <td style="font-size:12px;color:#596066;">2025-08-05</td>
           </tr>
           <!-- Row 8 -->
-          <tr data-lc="비활성" data-type="파일" data-adtype="자체광고" data-retention="정상" onclick="location.href='content-detail'">
-            <td class="center">
-              <div class="thumb-box" style="margin:auto;">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
-              </div>
-            </td>
-            <td>
-              <div class="content-name-link">브랜드 자체 광고</div>
-              <div class="content-id">CNT-008</div>
-            </td>
-            <td style="font-size:12px;color:#596066;">CNT-008</td>
-            <td><span style="font-size:12px;color:#596066;">파일(이미지)</span></td>
+          <tr data-lc="비활성" data-adtype="자체광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div></td>
+            <td><div class="content-name-link">브랜드 자체 광고</div><div class="content-id">CNT-008</div></td>
+            <td style="font-size:12px;color:#596066;">자체광고</td>
             <td class="center" style="font-size:13px;">10초</td>
             <td class="center"><span class="badge lc-inactive">비활성</span></td>
-            <td class="center"><span class="badge pde-approved">승인</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
             <td style="font-size:12px;">MNM Networks</td>
-            <td style="font-size:12px;color:#596066;">2024-12-01</td>
+            <td style="font-size:12px;color:#596066;">2025-05-10</td>
           </tr>
         </tbody>
       </table>
@@ -467,19 +389,16 @@
 function filterTable() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   const lc = document.getElementById('filterLifecycle').value;
-  const type = document.getElementById('filterType').value;
   const adtype = document.getElementById('filterAdType').value;
   const ret = document.getElementById('filterRetention').value;
   document.querySelectorAll('#tableBody tr').forEach(row => {
     const name = row.querySelector('.content-name-link')?.textContent.toLowerCase() || '';
     const id = row.querySelector('.content-id')?.textContent.toLowerCase() || '';
     const rowLc = row.dataset.lc || '';
-    const rowType = row.dataset.type || '';
     const rowAdtype = row.dataset.adtype || '';
     const rowRet = row.dataset.retention || '';
     const ok = (!search || name.includes(search) || id.includes(search))
       && (!lc || rowLc === lc)
-      && (!type || rowType === type)
       && (!adtype || rowAdtype === adtype)
       && (!ret || rowRet === ret);
     row.style.display = ok ? '' : 'none';
