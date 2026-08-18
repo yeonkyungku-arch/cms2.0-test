@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>강남대로 DID 01 — 모니터링 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #9EA5AD;
+      margin-bottom: 16px;
+    }
+    .breadcrumb a { color: #9EA5AD; text-decoration: none; }
+    .breadcrumb a:hover { color: #2D84ED; }
+    .breadcrumb-sep { color: #CED2D6; }
+    .breadcrumb-current { color: #24292E; font-weight: 600; }
+
+    /* Layout */
+    .device-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .device-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .section-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .section-title { font-size: 14px; font-weight: 700; color: #24292E; margin: 0; }
+    .section-body { padding: 16px 18px; }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .info-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .info-item {}
+    .info-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .info-value { font-size: 13px; color: #24292E; font-weight: 500; }
+
+    /* Telemetry cards */
+    .telem-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .telem-card {
+      background: #F6F7F9;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .telem-label { font-size: 11px; font-weight: 600; color: #9EA5AD; margin-bottom: 6px; }
+    .telem-val-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .telem-val { font-size: 22px; font-weight: 800; color: #24292E; line-height: 1; }
+    .telem-unit { font-size: 12px; color: #596066; margin-bottom: 2px; }
+    .telem-bar-track { height: 6px; background: #E5E7EA; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+    .telem-bar-fill { height: 100%; border-radius: 4px; }
+    .telem-trend { font-size: 11px; font-weight: 600; }
+    .trend-up   { color: #E97474; }
+    .trend-down { color: #2E9E34; }
+    .trend-flat { color: #9EA5AD; }
+
+    /* Health score */
+    .health-score-section { display: flex; align-items: center; gap: 24px; }
+    .health-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 6px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .health-circle-val { font-size: 20px; font-weight: 800; }
+    .health-breakdown { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .health-comp-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .health-comp-label { color: #596066; width: 120px; flex-shrink: 0; }
+    .health-comp-bar-track { flex: 1; height: 6px; background: #E5E7EA; border-radius: 4px; overflow: hidden; }
+    .health-comp-bar-fill { height: 100%; border-radius: 4px; }
+    .health-comp-val { font-weight: 700; color: #24292E; width: 30px; text-align: right; }
+
+    /* Fault timeline */
+    .fault-list { display: flex; flex-direction: column; gap: 8px; }
+    .fault-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #F6F7F9;
+    }
+    .fault-item.critical { background: #FEF2F2; border: 1px solid #FECACA; }
+    .fault-item.warning  { background: #FFFBEB; border: 1px solid #FDEAB7; }
+    .fault-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .fault-crit { background: #FEE2E2; color: #991B1B; }
+    .fault-warn { background: #FFF8E6; color: #B45309; }
+    .fault-info { background: #EAF3FF; color: #2D84ED; }
+    .fault-content { flex: 1; }
+    .fault-msg { font-size: 13px; color: #24292E; margin-bottom: 3px; }
+    .fault-time { font-size: 11px; color: #9EA5AD; }
+
+    /* Schedule section */
+    .schedule-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: #F6F7F9;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .sched-label { font-size: 12px; color: #596066; flex: 1; }
+    .plays-bar-wrap { flex: 2; }
+    .plays-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: #596066; margin-bottom: 4px; }
+    .plays-bar-track { height: 8px; background: #E5E7EA; border-radius: 4px; overflow: hidden; }
+    .plays-bar-fill { height: 100%; border-radius: 4px; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .op-critical { background: #FEE2E2; color: #991B1B; }
+    .op-critical .badge-dot { background: #E97474; }
+    .op-normal { background: #E8F8E9; color: #2E9E34; }
+    .op-normal .badge-dot { background: #58C65D; }
+    .p1 { background: #FEE2E2; color: #991B1B; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+
+    /* Right panel */
+    .right-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .right-card-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #E5E7EA;
+      font-size: 13px;
+      font-weight: 700;
+      color: #24292E;
+      background: #F6F7F9;
+    }
+    .right-card-body { padding: 14px 16px; }
+
+    /* Remote control */
+    .remote-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .remote-btn {
+      padding: 10px 8px;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      color: #24292E;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+    .remote-btn:hover { background: #F6F7F9; }
+    .remote-btn.danger { border-color: #E97474; color: #E97474; }
+    .remote-btn.danger:hover { background: #FFF5F5; }
+    .remote-btn .btn-icon { font-size: 16px; display: block; margin-bottom: 3px; }
+    .remote-risk {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: #FFF8E6;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #B45309;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* Incident list (right) */
+    .inc-item-right {
+      padding: 10px 0;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .inc-item-right:last-of-type { border-bottom: none; }
+    .inc-item-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .inc-item-right .p1 { font-size: 10px; padding: 1px 6px; }
+    .inc-item-right .inc-product { font-size: 12px; font-weight: 600; color: #24292E; flex: 1; }
+    .inc-item-right .inc-desc { font-size: 11px; color: #596066; line-height: 1.5; }
+    .inc-item-right .inc-time { font-size: 10px; color: #9EA5AD; margin-top: 3px; }
+    .inc-open { background: #FEE2E2; color: #991B1B; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+
+    .btn-add-incident {
+      width: 100%;
+      height: 34px;
+      border: 1px dashed #CED2D6;
+      border-radius: 8px;
+      background: #F6F7F9;
+      font-size: 13px;
+      color: #9EA5AD;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 12px;
+    }
+    .btn-add-incident:hover { background: #EDEEF0; color: #596066; }
+
+    /* Priority badge inline */
+    .priority-display {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .p1-large {
+      background: #FEE2E2;
+      color: #991B1B;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 6px;
+    }
+    .cmd-result {
+      background: #F6F7F9;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #596066;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li class="gnb-disabled"><a href="#">대시보드 <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 8h6M7 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>캠페인</a></li>
+    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+      <div class="gnb-sub">
+        <div class="gnb-sub-title">편성표</div>
+        <a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+        <a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+      </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="monitoring" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Breadcrumb + Header -->
+    <div class="breadcrumb">
+      <a href="monitoring">모니터링</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="monitoring">강남 프라임 패키지</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">강남대로 DID 01</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <h1 style="font-size:20px;font-weight:700;color:#24292E;margin:0;">강남대로 DID 01</h1>
+        <span class="badge op-critical"><span class="badge-dot"></span>심각</span>
+      </div>
+      <div style="font-size:12px;color:#9EA5AD;">마지막 통신: 2026.08.18 14:30:05</div>
+    </div>
+
+    <div class="device-layout">
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- Device Info -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">디바이스 정보</h2>
+          </div>
+          <div class="section-body">
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Media ID</div>
+                <div class="info-value">MED-001-01</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">유형</div>
+                <div class="info-value">실내 DID · 가로형</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">위치</div>
+                <div class="info-value">서울 강남구 강남대로 396</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">설치일</div>
+                <div class="info-value">2023.04.12</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">셋탑 모델</div>
+                <div class="info-value">BrightSign XD5 232</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">IP 주소</div>
+                <div class="info-value" style="font-family:monospace;font-size:12px;">192.168.10.41</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">실시간 텔레메트리</h2>
+            <span style="font-size:11px;color:#9EA5AD;">5분 주기 업데이트</span>
+          </div>
+          <div class="section-body">
+            <div class="telem-row">
+              <div class="telem-card">
+                <div class="telem-label">CPU 사용률</div>
+                <div class="telem-val-row">
+                  <div class="telem-val" style="color:#E97474;">87</div>
+                  <div class="telem-unit">%</div>
+                </div>
+                <div class="telem-bar-track">
+                  <div class="telem-bar-fill" style="width:87%;background:#E97474;"></div>
+                </div>
+                <div class="telem-trend trend-up">▲ +12% (5분 전)</div>
+              </div>
+              <div class="telem-card">
+                <div class="telem-label">메모리 사용률</div>
+                <div class="telem-val-row">
+                  <div class="telem-val" style="color:#F3BE4A;">72</div>
+                  <div class="telem-unit">%</div>
+                </div>
+                <div class="telem-bar-track">
+                  <div class="telem-bar-fill" style="width:72%;background:#F3BE4A;"></div>
+                </div>
+                <div class="telem-trend trend-up">▲ +5% (5분 전)</div>
+              </div>
+              <div class="telem-card">
+                <div class="telem-label">디스크 사용률</div>
+                <div class="telem-val-row">
+                  <div class="telem-val" style="color:#2E9E34;">34</div>
+                  <div class="telem-unit">%</div>
+                </div>
+                <div class="telem-bar-track">
+                  <div class="telem-bar-fill" style="width:34%;background:#58C65D;"></div>
+                </div>
+                <div class="telem-trend trend-flat">— 변동 없음</div>
+              </div>
+              <div class="telem-card">
+                <div class="telem-label">온도</div>
+                <div class="telem-val-row">
+                  <div class="telem-val" style="color:#E97474;">73</div>
+                  <div class="telem-unit">°C</div>
+                </div>
+                <div class="telem-bar-track">
+                  <div class="telem-bar-fill" style="width:73%;background:#E97474;"></div>
+                </div>
+                <div class="telem-trend trend-up">▲ +8°C (5분 전)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Score -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">Health Score</h2>
+          </div>
+          <div class="section-body">
+            <div class="health-score-section">
+              <div class="health-circle" style="border-color:#E97474;color:#E97474;">
+                <div>
+                  <div class="health-circle-val" style="color:#E97474;">42</div>
+                  <div style="font-size:10px;color:#9EA5AD;text-align:center;">/100</div>
+                </div>
+              </div>
+              <div class="health-breakdown">
+                <div class="health-comp-row">
+                  <span class="health-comp-label">재생 안정성</span>
+                  <div class="health-comp-bar-track"><div class="health-comp-bar-fill" style="width:30%;background:#E97474;"></div></div>
+                  <span class="health-comp-val" style="color:#E97474;">30</span>
+                </div>
+                <div class="health-comp-row">
+                  <span class="health-comp-label">통신 상태</span>
+                  <div class="health-comp-bar-track"><div class="health-comp-bar-fill" style="width:50%;background:#F3BE4A;"></div></div>
+                  <span class="health-comp-val" style="color:#B45309;">50</span>
+                </div>
+                <div class="health-comp-row">
+                  <span class="health-comp-label">하드웨어 온도</span>
+                  <div class="health-comp-bar-track"><div class="health-comp-bar-fill" style="width:35%;background:#E97474;"></div></div>
+                  <span class="health-comp-val" style="color:#E97474;">35</span>
+                </div>
+                <div class="health-comp-row">
+                  <span class="health-comp-label">콘텐츠 동기화</span>
+                  <div class="health-comp-bar-track"><div class="health-comp-bar-fill" style="width:65%;background:#58C65D;"></div></div>
+                  <span class="health-comp-val" style="color:#2E9E34;">65</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fault Timeline -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">최근 Fault 이력</h2>
+            <span style="font-size:12px;color:#E97474;font-weight:600;">5건</span>
+          </div>
+          <div class="section-body">
+            <div class="fault-list">
+              <div class="fault-item critical">
+                <span class="fault-badge fault-crit">CRITICAL</span>
+                <div class="fault-content">
+                  <div class="fault-msg">셋탑박스 응답 없음 — 프로세스 응답 타임아웃 (30초)</div>
+                  <div class="fault-time">2026.08.18 11:22:14</div>
+                </div>
+              </div>
+              <div class="fault-item critical">
+                <span class="fault-badge fault-crit">CRITICAL</span>
+                <div class="fault-content">
+                  <div class="fault-msg">CPU 과부하 — 사용률 90% 초과 지속 (15분)</div>
+                  <div class="fault-time">2026.08.18 11:08:42</div>
+                </div>
+              </div>
+              <div class="fault-item warning">
+                <span class="fault-badge fault-warn">WARNING</span>
+                <div class="fault-content">
+                  <div class="fault-msg">온도 경고 — 70°C 임계값 초과</div>
+                  <div class="fault-time">2026.08.18 10:55:30</div>
+                </div>
+              </div>
+              <div class="fault-item warning">
+                <span class="fault-badge fault-warn">WARNING</span>
+                <div class="fault-content">
+                  <div class="fault-msg">콘텐츠 재생 지연 — 평균 대기시간 4.2초 초과</div>
+                  <div class="fault-time">2026.08.18 09:31:07</div>
+                </div>
+              </div>
+              <div class="fault-item">
+                <span class="fault-badge fault-info">INFO</span>
+                <div class="fault-content">
+                  <div class="fault-msg">콘텐츠 동기화 완료 — 3개 파일 수신</div>
+                  <div class="fault-time">2026.08.18 08:02:55</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Schedule -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">Active Schedule</h2>
+          </div>
+          <div class="section-body">
+            <div class="schedule-info">
+              <div class="sched-label">
+                <div style="font-weight:600;color:#24292E;margin-bottom:2px;">현대자동차 아이오닉9 브랜드 캠페인</div>
+                <div style="font-size:11px;color:#9EA5AD;">2026.02.15 – 03.15 &nbsp;·&nbsp; 30초 일반</div>
+              </div>
+              <div class="plays-bar-wrap">
+                <div class="plays-bar-label">
+                  <span>Expected Min Plays 달성률</span>
+                  <span style="font-weight:700;color:#E97474;">38%</span>
+                </div>
+                <div class="plays-bar-track">
+                  <div class="plays-bar-fill" style="width:38%;background:#E97474;"></div>
+                </div>
+                <div style="font-size:11px;color:#9EA5AD;margin-top:4px;">목표 1,200회 중 456회 완료 (위험)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /LEFT COLUMN -->
+
+      <!-- RIGHT COLUMN -->
+      <div>
+
+        <!-- Op Status Summary -->
+        <div class="right-card">
+          <div class="right-card-header">운영 상태 요약</div>
+          <div class="right-card-body">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:13px;color:#596066;">상태</span>
+                <span class="badge op-critical"><span class="badge-dot"></span>심각</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:13px;color:#596066;">Health Score</span>
+                <span style="font-size:16px;font-weight:800;color:#E97474;">42 <span style="font-size:11px;font-weight:400;color:#9EA5AD;">/100</span></span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:13px;color:#596066;">Priority</span>
+                <div class="priority-display">
+                  <span class="p1-large">P1</span>
+                  <span style="font-size:11px;color:#596066;">긴급</span>
+                </div>
+              </div>
+              <div style="background:#F6F7F9;border-radius:6px;padding:8px 10px;font-size:11px;color:#596066;line-height:1.6;">
+                셋탑박스 응답 없음 및 과부하 상태로 즉각적인 현장 점검 또는 원격 재부팅이 필요합니다.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remote Control -->
+        <div class="right-card">
+          <div class="right-card-header">원격 제어</div>
+          <div class="right-card-body">
+            <div class="remote-grid">
+              <button class="remote-btn" onclick="execCommand('콘텐츠 새로고침')">
+                <span class="btn-icon">🔄</span>
+                콘텐츠<br>새로고침
+              </button>
+              <button class="remote-btn danger" onclick="execCommand('재부팅')">
+                <span class="btn-icon">🔁</span>
+                재부팅
+              </button>
+              <button class="remote-btn danger" onclick="execCommand('전원 끄기')">
+                <span class="btn-icon">⏹</span>
+                전원 끄기
+              </button>
+              <button class="remote-btn" onclick="execCommand('전원 켜기')">
+                <span class="btn-icon">▶️</span>
+                전원 켜기
+              </button>
+            </div>
+            <div class="remote-risk">
+              <span>⚠️</span>
+              재부팅 이상 명령은 Level 2 — Admin 전용
+            </div>
+            <div class="cmd-result" id="cmdResult" style="display:none;">
+              <span id="cmdResultText"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incidents -->
+        <div class="right-card">
+          <div class="right-card-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>관련 Incident</span>
+            <span style="background:#E97474;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+          </div>
+          <div class="right-card-body">
+            <div class="inc-item-right">
+              <div class="inc-item-header">
+                <span class="p1">P1</span>
+                <span class="inc-product">셋탑박스 응답 불가</span>
+                <span class="inc-open">미해결</span>
+              </div>
+              <div class="inc-desc">재부팅 시도 후에도 응답 없음. 현장 점검 필요.</div>
+              <div class="inc-time">2026.08.18 11:22</div>
+            </div>
+            <div class="inc-item-right">
+              <div class="inc-item-header">
+                <span class="p1">P1</span>
+                <span class="inc-product">Min Plays 위험 수준</span>
+                <span class="inc-open">미해결</span>
+              </div>
+              <div class="inc-desc">보장 재생 횟수 달성률 40% 미만 — 광고주 SLA 위반 위험</div>
+              <div class="inc-time">2026.08.18 13:05</div>
+            </div>
+            <button class="btn-add-incident" onclick="alert('Incident 등록 (목업)')">
+              + Incident 신규 등록
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /RIGHT COLUMN -->
+    </div>
+
+  </div>
+</main>
+
+<script>
+function execCommand(cmd) {
+  var result = document.getElementById('cmdResult');
+  var text = document.getElementById('cmdResultText');
+  result.style.display = 'flex';
+  text.textContent = '⏳ "' + cmd + '" 명령 전송 중...';
+  setTimeout(function() {
+    text.textContent = '✅ "' + cmd + '" 명령이 성공적으로 전송되었습니다.';
+  }, 1200);
+}
+</script>
+<script src="../assets/js/cms.js"></script>
+</body>
+</html>
