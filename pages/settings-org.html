@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 목록 — D'ooh CMS</title>
+  <title>조직·사용자 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
@@ -11,77 +11,64 @@
       --green:#58C65D; --dark:#24292E; --main:#2D84ED;
       --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
     }
-    /* ── Toolbar ── */
-    .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
-    .toolbar-search { flex:1; min-width:220px; position:relative; }
-    .toolbar-search svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); pointer-events:none; }
-    .toolbar-search input {
-      width:100%; height:36px; padding:0 12px 0 34px;
-      border:1px solid #CED2D6; border-radius:6px; font-size:13px;
-      color:#24292E; background:#fff; box-sizing:border-box;
-    }
-    .toolbar-search input::placeholder { color:#9EA5AD; }
-    .filter-select {
-      height:36px; padding:0 28px 0 10px; border:1px solid #CED2D6;
-      border-radius:6px; font-size:13px; color:#24292E;
-      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
-      -webkit-appearance:none; appearance:none; cursor:pointer; white-space:nowrap;
-    }
     .btn-primary {
       height:36px; padding:0 16px; background:#58C65D; color:#fff;
       border:none; border-radius:6px; font-size:13px; font-weight:600;
-      cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:6px;
+      cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;
       text-decoration:none;
     }
     .btn-primary:hover { background:#4ab34f; }
-
-    /* ── Summary chips ── */
-    .summary-chips { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-    .summary-chip {
-      height:32px; display:inline-flex; align-items:center; gap:6px;
-      padding:0 14px; border-radius:20px; font-size:12px; font-weight:600;
-      background:#F6F7F9; color:#596066; border:1px solid #E5E7EA;
-      cursor:pointer; transition:background 0.12s, border-color 0.12s;
+    .btn-ghost {
+      height:32px; padding:0 12px; background:#fff; color:#24292E;
+      border:1px solid #E5E7EA; border-radius:6px; font-size:12px; font-weight:500;
+      cursor:pointer; display:inline-flex; align-items:center; gap:4px;
     }
-    .summary-chip:hover { border-color:#58C65D; }
-    .chip-count { font-size:14px; font-weight:700; color:#24292E; }
-    .chip-count.green { color:#2E9E34; }
-
-    /* ── Table ── */
+    /* Settings layout */
+    .settings-layout { display:flex; gap:0; }
+    .settings-sidebar {
+      width:200px; flex-shrink:0; background:#fff; border:1px solid #E5E7EA;
+      border-radius:10px; padding:8px; height:fit-content;
+    }
+    .settings-sidebar a {
+      display:block; padding:8px 12px; border-radius:6px; font-size:13px;
+      color:#596066; text-decoration:none; margin-bottom:2px; transition:background 0.1s;
+    }
+    .settings-sidebar a:hover { background:#F6F7F9; color:#24292E; }
+    .settings-sidebar a.active { background:#E8F8E9; color:#2E9E34; font-weight:600; }
+    .settings-main { flex:1; min-width:0; padding-left:20px; }
+    /* Section card */
+    .section-card {
+      background:#fff; border:1px solid #E5E7EA; border-radius:10px;
+      padding:20px; margin-bottom:16px;
+    }
+    .section-title { font-size:14px; font-weight:700; color:#24292E; margin-bottom:14px; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+    .info-item label { font-size:11px; font-weight:600; color:#9EA5AD; display:block; margin-bottom:4px; }
+    .info-item .val { font-size:13px; color:#24292E; font-weight:500; }
+    /* Table */
     .table-card { background:#fff; border:1px solid #E5E7EA; border-radius:10px; overflow:hidden; }
     .table-scroll { overflow-x:auto; }
-    table { width:100%; min-width:1100px; border-collapse:collapse; }
+    table { width:100%; min-width:900px; border-collapse:collapse; }
     thead th {
       background:#F6F7F9; padding:10px 14px; font-size:12px; font-weight:600;
       color:#596066; text-align:left; border-bottom:1px solid #E5E7EA; white-space:nowrap;
     }
-    tbody tr { border-bottom:1px solid #E5E7EA; transition:background 0.12s; cursor:pointer; }
+    tbody tr { border-bottom:1px solid #E5E7EA; transition:background 0.12s; }
     tbody tr:last-child { border-bottom:none; }
     tbody tr:hover { background:#F6F7F9; }
-    tbody td { padding:12px 14px; font-size:13px; color:#24292E; vertical-align:middle; }
-    .media-name-link { color:#24292E; font-weight:500; text-decoration:none; }
-    .media-name-link:hover { color:#58C65D; text-decoration:underline; }
+    tbody td { padding:11px 14px; font-size:13px; color:#24292E; vertical-align:middle; }
     .muted-text { color:#9EA5AD; font-size:12px; }
-
-    /* ── Badges ── */
     .badge {
-      display:inline-flex; align-items:center; gap:5px;
-      padding:2px 9px; border-radius:20px; font-size:12px;
-      font-weight:600; white-space:nowrap;
+      display:inline-flex; align-items:center; padding:2px 9px;
+      border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap;
     }
-    .lc-registered { background:#F0F1F3; color:#9EA5AD; }
-    .lc-active     { background:#E8F8E9; color:#2E9E34; }
-    .lc-inactive   { background:#FFF8E6; color:#B45309; }
-    .lc-retired    { background:#FEE2E2; color:#C83434; }
-    .op-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
-    .op-normal   { background:rgba(88,198,93,.12);  color:#319236; }
-    .op-warn     { background:rgba(243,190,74,.15); color:#A67000; }
-    .op-critical { background:rgba(233,116,116,.14); color:#C83434; }
-    .op-offline  { background:#F0F1F3; color:#9EA5AD; }
-    .op-normal   .op-dot { background:#58C65D; }
-    .op-warn     .op-dot { background:#F3BE4A; }
-    .op-critical .op-dot { background:#E97474; }
-    .op-offline  .op-dot { background:#9EA5AD; }
+    .role-super { background:#EDE9FE; color:#5B21B6; }
+    .role-admin { background:#DBEAFE; color:#1D4ED8; }
+    .role-operator { background:#F0F1F3; color:#596066; }
+    .status-active { background:#E8F8E9; color:#2E9E34; }
+    .status-inactive { background:#FFF8E6; color:#B45309; }
+    .table-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 0; }
+    .table-header-title { font-size:14px; font-weight:700; color:#24292E; }
   </style>
 </head>
 <body>
@@ -91,7 +78,7 @@
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
     <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
-    <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
     <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
     <div class="gnb-sub">
     <div class="gnb-sub-title">프로덕트</div>
@@ -139,7 +126,7 @@
     </div>
     </li>
     <div class="gnb-divider"></div>
-    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+    <li><a href="settings-org" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
@@ -167,158 +154,75 @@
 <!-- Main content -->
 <main class="content">
   <div class="content-inner">
-
-    <!-- Page header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-size:20px;font-weight:700;color:#24292E;">미디어</div>
-      <a href="media-register" class="btn-primary">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        미디어 등록
-      </a>
+      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
     </div>
 
-    <!-- 상태 요약 칩 -->
-    <div class="summary-chips">
-      <span class="summary-chip">전체 <span class="chip-count">28</span></span>
-      <span class="summary-chip">활성 <span class="chip-count green">18</span></span>
-      <span class="summary-chip">비활성 <span class="chip-count">6</span></span>
-      <span class="summary-chip">등록 <span class="chip-count">3</span></span>
-      <span class="summary-chip">폐기 <span class="chip-count">1</span></span>
-    </div>
+    <div class="settings-layout">
+      <!-- Left sidebar -->
+      <nav class="settings-sidebar">
+        <a href="settings-org" class="active">조직·사용자</a>
+        <a href="settings-permission">권한</a>
+        <a href="settings-master">공통 기준정보</a>
+        <a href="#">운영 설정</a>
+        <a href="#">알림 설정</a>
+        <a href="settings-integration">외부 연동</a>
+        <a href="settings-security">보안·접근</a>
+        <a href="settings-audit">감사·변경이력</a>
+        <a href="#">시스템 배포</a>
+      </nav>
 
-    <!-- 검색·필터 툴바 -->
-    <div class="toolbar">
-      <div class="toolbar-search">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <input type="text" placeholder="미디어명, 위치, 자산코드 검색">
+      <!-- Main area -->
+      <div class="settings-main">
+        <!-- 조직 정보 -->
+        <div class="section-card">
+          <div class="section-title">조직 정보</div>
+          <div class="info-grid">
+            <div class="info-item"><label>Organization ID</label><div class="val">ORG-0001</div></div>
+            <div class="info-item"><label>미디어사명</label><div class="val">엠앤엠네트웍스</div></div>
+            <div class="info-item"><label>사업자등록번호</label><div class="val">123-45-67890</div></div>
+            <div class="info-item"><label>대표연락처</label><div class="val">02-1234-5678</div></div>
+          </div>
+        </div>
+
+        <!-- 사용자 관리 -->
+        <div class="table-card">
+          <div class="table-header" style="padding:14px 16px;">
+            <span class="table-header-title">사용자 관리</span>
+            <button class="btn-primary" style="height:32px;font-size:12px;">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              사용자 초대
+            </button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>사용자명</th>
+                  <th>이메일</th>
+                  <th>역할</th>
+                  <th>Admin 스코프</th>
+                  <th>Sales WS</th>
+                  <th>상태</th>
+                  <th>마지막 로그인</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>홍길동</td><td>hong@mnm.co.kr</td><td><span class="badge role-super">Super Admin</span></td><td>전체</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 09:12</td></tr>
+                <tr><td>김미래</td><td>kim.m@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 08:45</td></tr>
+                <tr><td>이준혁</td><td>lee.j@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 17:30</td></tr>
+                <tr><td>박소연</td><td>park.s@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 14:22</td></tr>
+                <tr><td>최현우</td><td>choi.h@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-16 11:05</td></tr>
+                <tr><td>정다은</td><td>jung.d@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-16 09:58</td></tr>
+                <tr><td>강태양</td><td>kang.t@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-inactive">비활성</span></td><td class="muted-text">2026-07-30 16:44</td></tr>
+                <tr><td>윤서진</td><td>yoon.s@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-15 13:10</td></tr>
+                <tr><td>임채원</td><td>lim.c@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 07:55</td></tr>
+                <tr><td>오지수</td><td>oh.j@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-inactive">비활성</span></td><td class="muted-text">2026-08-01 10:30</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <select class="filter-select">
-        <option>생애주기 전체</option>
-        <option>등록</option>
-        <option>활성</option>
-        <option>비활성</option>
-        <option>폐기</option>
-      </select>
-      <select class="filter-select">
-        <option>운영상태 전체</option>
-        <option>정상</option>
-        <option>경고</option>
-        <option>심각</option>
-        <option>오프라인</option>
-      </select>
-      <select class="filter-select">
-        <option>미디어유형 전체</option>
-        <option>OF (옥외고정)</option>
-        <option>IFC (실내고정근접)</option>
-        <option>VF (차량고정)</option>
-        <option>OM (옥외이동)</option>
-      </select>
-      <select class="filter-select">
-        <option>설치위치 전체</option>
-        <option>옥외(Outdoor)</option>
-        <option>실내(Indoor)</option>
-        <option>기내(Vehicle)</option>
-      </select>
-    </div>
-
-    <!-- 테이블 -->
-    <div class="table-card table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>미디어명</th>
-            <th>미디어유형</th>
-            <th>위치</th>
-            <th>운영상태</th>
-            <th>생애주기</th>
-            <th>설치정보</th>
-            <th>기기(플레이어)</th>
-            <th>마지막수정일</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">강남역 1번출구 A</a><div class="muted-text">MED-001</div></td>
-            <td>OF</td>
-            <td>서울 강남구 강남대로 396</td>
-            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
-            <td><span class="badge lc-active">활성</span></td>
-            <td class="muted-text">옥외 / 고정 / 4.2m</td>
-            <td class="muted-text">Android 11</td>
-            <td class="muted-text">2025-08-15</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">홍대입구역 2번출구 광고판</a><div class="muted-text">MED-002</div></td>
-            <td>OF</td>
-            <td>서울 마포구 양화로 45</td>
-            <td><span class="badge op-warn"><span class="op-dot"></span>경고</span></td>
-            <td><span class="badge lc-active">활성</span></td>
-            <td class="muted-text">옥외 / 고정 / 3.8m</td>
-            <td class="muted-text">Android 12</td>
-            <td class="muted-text">2025-08-14</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">신촌역 스탠드형 A</a><div class="muted-text">MED-003</div></td>
-            <td>IFC</td>
-            <td>서울 서대문구 신촌역로 77</td>
-            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
-            <td><span class="badge lc-active">활성</span></td>
-            <td class="muted-text">실내 / 고정 / 1.5m</td>
-            <td class="muted-text">Windows 10</td>
-            <td class="muted-text">2025-08-12</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">잠실역 대형 LED</a><div class="muted-text">MED-004</div></td>
-            <td>OF</td>
-            <td>서울 송파구 올림픽로 240</td>
-            <td><span class="badge op-critical"><span class="op-dot"></span>심각</span></td>
-            <td><span class="badge lc-active">활성</span></td>
-            <td class="muted-text">옥외 / 고정 / 6.0m</td>
-            <td class="muted-text">Android 11</td>
-            <td class="muted-text">2025-08-10</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">서울역 환승통로 B</a><div class="muted-text">MED-005</div></td>
-            <td>IFC</td>
-            <td>서울 중구 통일로 1</td>
-            <td><span class="badge op-offline"><span class="op-dot"></span>오프라인</span></td>
-            <td><span class="badge lc-inactive">비활성</span></td>
-            <td class="muted-text">실내 / 고정 / 2.1m</td>
-            <td class="muted-text">Android 10</td>
-            <td class="muted-text">2025-08-08</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">합정역 메가폴 광고판</a><div class="muted-text">MED-006</div></td>
-            <td>OF</td>
-            <td>서울 마포구 합정역로 10</td>
-            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
-            <td><span class="badge lc-registered">등록</span></td>
-            <td class="muted-text">옥외 / 고정 / 5.0m</td>
-            <td class="muted-text">Android 13</td>
-            <td class="muted-text">2025-08-18</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">광화문광장 디지털 사이니지</a><div class="muted-text">MED-007</div></td>
-            <td>OF</td>
-            <td>서울 종로구 세종대로 175</td>
-            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
-            <td><span class="badge lc-active">활성</span></td>
-            <td class="muted-text">옥외 / 고정 / 3.5m</td>
-            <td class="muted-text">Android 12</td>
-            <td class="muted-text">2025-08-11</td>
-          </tr>
-          <tr onclick="location.href='media-detail'">
-            <td><a class="media-name-link" href="media-detail">건대입구역 버스 광고 1</a><div class="muted-text">MED-008</div></td>
-            <td>VF</td>
-            <td>서울 광진구 능동로 210</td>
-            <td><span class="badge op-offline"><span class="op-dot"></span>오프라인</span></td>
-            <td><span class="badge lc-retired">폐기</span></td>
-            <td class="muted-text">기내 / 고정 / —</td>
-            <td class="muted-text">Android 9</td>
-            <td class="muted-text">2025-06-30</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
 
   </div>

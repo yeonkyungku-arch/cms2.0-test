@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영업 대시보드 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
+    }
+    .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+    .kpi-card { background:#fff; border:1px solid var(--border); border-radius:10px; padding:18px 20px; }
+    .kpi-label { font-size:12px; color:#596066; font-weight:500; margin-bottom:6px; }
+    .kpi-value { font-size:22px; font-weight:700; color:#24292E; }
+    .kpi-sub { font-size:11px; color:#9EA5AD; margin-top:4px; }
+    .two-col { display:grid; grid-template-columns:1fr 1.5fr; gap:16px; margin-bottom:20px; }
+    .panel { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .panel-header { padding:14px 18px; font-size:14px; font-weight:700; color:#24292E; border-bottom:1px solid var(--border); }
+    .funnel-list { padding:14px 18px; display:flex; flex-direction:column; gap:10px; }
+    .funnel-row { display:flex; align-items:center; gap:10px; }
+    .funnel-label { font-size:13px; color:#596066; width:44px; flex-shrink:0; }
+    .funnel-bar-wrap { flex:1; background:#F6F7F9; border-radius:4px; height:20px; overflow:hidden; }
+    .funnel-bar { height:100%; background:#2D84ED; border-radius:4px; display:flex; align-items:center; justify-content:flex-end; padding-right:6px; font-size:11px; color:#fff; font-weight:600; }
+    .funnel-count { font-size:13px; font-weight:700; color:#24292E; width:24px; text-align:right; }
+    .follow-list { padding:0; }
+    .follow-item { display:flex; align-items:center; gap:12px; padding:11px 18px; border-bottom:1px solid var(--border); }
+    .follow-item:last-child { border-bottom:none; }
+    .follow-name { font-size:13px; font-weight:600; color:#24292E; flex:1; }
+    .follow-type { font-size:12px; color:#2D84ED; background:#EFF6FF; border-radius:4px; padding:2px 8px; }
+    .follow-time { font-size:12px; color:#596066; }
+    .follow-person { font-size:12px; color:#9EA5AD; }
+    .table-card { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; min-width:900px; border-collapse:collapse; }
+    thead th { background:#F6F7F9; padding:10px 14px; font-size:12px; font-weight:600; color:#596066; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+    tbody tr { border-bottom:1px solid var(--border); transition:background 0.12s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:#F6F7F9; }
+    tbody td { padding:11px 14px; font-size:13px; color:#24292E; vertical-align:middle; }
+    .muted-text { color:#9EA5AD; font-size:12px; }
+    .badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; }
+    .badge-call { background:#EFF6FF; color:#2D84ED; }
+    .badge-visit { background:#E8F8E9; color:#2E9E34; }
+    .badge-email { background:#FFF8E6; color:#B45309; }
+    .badge-proposal { background:#F5F0FF; color:#7C3AED; }
+    .section-title { font-size:15px; font-weight:700; color:#24292E; margin-bottom:12px; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main content -->
+<main class="content">
+  <div class="content-inner">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">영업 대시보드</div>
+      <span style="font-size:12px;color:#9EA5AD;">SAL-DB-001 · 기준일: 2026-08-18</span>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Pipeline 총액</div>
+        <div class="kpi-value">₩2.4B</div>
+        <div class="kpi-sub">▲ 전월 대비 +12%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">이번달 계약</div>
+        <div class="kpi-value">₩380M</div>
+        <div class="kpi-sub">계약 6건</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">영업기회</div>
+        <div class="kpi-value">34건</div>
+        <div class="kpi-sub">신규 5건 (이번달)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">계약 전환율</div>
+        <div class="kpi-value">42%</div>
+        <div class="kpi-sub">▲ 전월 대비 +3%p</div>
+      </div>
+    </div>
+
+    <!-- Funnel + Follow-up -->
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header">Pipeline 단계별 현황</div>
+        <div class="funnel-list">
+          <div class="funnel-row">
+            <div class="funnel-label">발굴</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%">34</div></div>
+            <div class="funnel-count">34</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">상담</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:65%;background:#58C65D;">22</div></div>
+            <div class="funnel-count">22</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">제안</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:44%;background:#F3BE4A;">15</div></div>
+            <div class="funnel-count">15</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">협상</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:26%;background:#E97474;">9</div></div>
+            <div class="funnel-count">9</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">계약</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:18%;background:#7C3AED;">6</div></div>
+            <div class="funnel-count">6</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">오늘의 Follow-up (5건)</div>
+        <div class="follow-list">
+          <div class="follow-item">
+            <div class="follow-name">삼성전자</div>
+            <span class="follow-type badge-call" style="background:#EFF6FF;color:#2D84ED;padding:2px 8px;border-radius:4px;font-size:12px;">전화</span>
+            <div class="follow-time">10:00</div>
+            <div class="follow-person">김민준</div>
+          </div>
+          <div class="follow-item">
+            <div class="follow-name">현대자동차</div>
+            <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:4px;font-size:12px;">방문</span>
+            <div class="follow-time">14:00</div>
+            <div class="follow-person">이수진</div>
+          </div>
+          <div class="follow-item">
+            <div class="follow-name">LG생활건강</div>
+            <span style="background:#FFF8E6;color:#B45309;padding:2px 8px;border-radius:4px;font-size:12px;">이메일</span>
+            <div class="follow-time">15:30</div>
+            <div class="follow-person">박지훈</div>
+          </div>
+          <div class="follow-item">
+            <div class="follow-name">네이버</div>
+            <span style="background:#F5F0FF;color:#7C3AED;padding:2px 8px;border-radius:4px;font-size:12px;">제안</span>
+            <div class="follow-time">16:00</div>
+            <div class="follow-person">김민준</div>
+          </div>
+          <div class="follow-item">
+            <div class="follow-name">롯데칠성음료</div>
+            <span style="background:#EFF6FF;color:#2D84ED;padding:2px 8px;border-radius:4px;font-size:12px;">전화</span>
+            <div class="follow-time">17:00</div>
+            <div class="follow-person">최유리</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 최근 영업활동 -->
+    <div class="section-title">최근 영업활동</div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>일시</th>
+              <th>활동유형</th>
+              <th>광고주</th>
+              <th>내용</th>
+              <th>담당자</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="muted-text">2026-08-18 09:30</td>
+              <td><span class="badge badge-call">전화</span></td>
+              <td>삼성전자</td>
+              <td>Q3 캠페인 예산 확인 및 제안 일정 협의</td>
+              <td>김민준</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-17 15:00</td>
+              <td><span class="badge badge-visit">방문</span></td>
+              <td>현대자동차</td>
+              <td>신차 출시 OOH 캠페인 제안서 전달</td>
+              <td>이수진</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-17 11:00</td>
+              <td><span class="badge badge-proposal">제안</span></td>
+              <td>네이버</td>
+              <td>디지털 OOH 패키지 제안서 발송 완료</td>
+              <td>김민준</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-16 14:30</td>
+              <td><span class="badge badge-email">이메일</span></td>
+              <td>LG생활건강</td>
+              <td>2026 하반기 광고 집행 일정 문의 답변</td>
+              <td>박지훈</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-16 10:00</td>
+              <td><span class="badge badge-call">전화</span></td>
+              <td>롯데칠성음료</td>
+              <td>가을 시즌 캠페인 예산 규모 확인</td>
+              <td>최유리</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-15 16:00</td>
+              <td><span class="badge badge-visit">방문</span></td>
+              <td>CJ제일제당</td>
+              <td>신제품 론칭 캠페인 기획 미팅 진행</td>
+              <td>이수진</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-15 13:00</td>
+              <td><span class="badge badge-email">이메일</span></td>
+              <td>SK텔레콤</td>
+              <td>5G 프로모션 미디어 믹스 제안 자료 발송</td>
+              <td>박지훈</td>
+            </tr>
+            <tr>
+              <td class="muted-text">2026-08-14 10:30</td>
+              <td><span class="badge badge-call">전화</span></td>
+              <td>아모레퍼시픽</td>
+              <td>연간 계약 갱신 협의 시작</td>
+              <td>최유리</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>

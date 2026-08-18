@@ -3,76 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>프로덕트 수정 — D'ooh CMS</title>
+  <title>외부 연동 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    .form-section + .form-section { border-top: 1px solid #E5E7EA; }
-    .form-section-head { padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EA; }
-    .form-section-title { font-size: 14px; font-weight: 600; color: #24292E; }
-    .form-section-desc  { font-size: 12px; color: #9EA5AD; margin-top: 3px; }
-    .form-section-body  { padding: 20px 24px; }
-    .form-row { display:grid;grid-template-columns:180px 1fr;gap:0;padding:10px 0;align-items:flex-start;border-bottom:1px solid #F6F7F9; }
-    .form-row:last-child { border-bottom:none; }
-    .form-label { font-size:13px;font-weight:500;color:#596066;padding-top:8px; }
-    .form-label .req { color:#E97474;margin-left:2px; }
-    .form-field { min-width:0; }
-    .input, .textarea, .select { width:100%;height:38px;border:1px solid #CED2D6;border-radius:4px;padding:0 12px;font-size:14px;color:#24292E;font-family:inherit;background:#fff;outline:none;transition:border-color .2s; }
-    .input:focus, .select:focus { border-color:#58C65D; }
-    .textarea { height:auto;padding:10px 12px;resize:vertical;min-height:80px; }
-    .input-hint { font-size:12px;color:#9EA5AD;margin-top:5px; }
-
-    .tag-input-wrap { display:flex;flex-wrap:wrap;gap:6px;border:1px solid #CED2D6;border-radius:4px;padding:7px 10px;background:#fff;min-height:38px;align-items:center;cursor:text;transition:border-color .2s; }
-    .tag-input-wrap:focus-within { border-color:#58C65D; }
-    .tag-item { display:inline-flex;align-items:center;gap:4px;background:#E8F8E9;border:1px solid #C1E9C3;border-radius:10px;padding:2px 10px;font-size:12px;color:#2E9E34; }
-    .tag-item button { background:none;border:none;color:#2E9E34;cursor:pointer;font-size:14px;line-height:1;padding:0; }
-
-    .media-search-area { border:1px solid #CED2D6;border-radius:6px;overflow:hidden; }
-    .media-search-bar { display:flex;align-items:center;gap:8px;padding:8px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA; }
-    .media-search-bar input { border:none;outline:none;background:none;font-size:14px;color:#24292E;font-family:inherit;flex:1; }
-    .media-list { max-height:220px;overflow-y:auto; }
-    .media-item { display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #F6F7F9;cursor:pointer;transition:background .15s; }
-    .media-item:last-child { border-bottom:none; }
-    .media-item:hover { background:#FAFAFA; }
-    .media-item input[type=checkbox] { accent-color:#58C65D;width:15px;height:15px;flex-shrink:0;cursor:pointer; }
-    .media-item-info { flex:1;min-width:0; }
-    .media-item-name { font-size:13px;font-weight:500;color:#24292E; }
-    .media-item-sub  { font-size:12px;color:#9EA5AD; }
-    .status-dot { width:8px;height:8px;border-radius:50%;display:inline-block; }
-    .status-dot.online  { background:#58C65D; }
-    .status-dot.offline { background:#CED2D6; }
-
-    .selected-media-area { margin-top:10px;display:flex;flex-wrap:wrap;gap:8px; }
-    .selected-media-chip { display:inline-flex;align-items:center;gap:6px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:16px;padding:4px 12px;font-size:12px;color:#24292E; }
-    .selected-media-chip button { background:none;border:none;color:#9EA5AD;cursor:pointer;font-size:14px;padding:0;line-height:1; }
-    .selected-media-chip button:hover { color:#E97474; }
-
-    /* ── 활성 스케줄 경고 배너 ── */
-    .warn-banner {
-      display:flex;align-items:flex-start;gap:10px;
-      background:#FFF8E6;border:1px solid #FFD970;border-radius:6px;
-      padding:12px 16px;margin-bottom:16px;
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
     }
-    .warn-banner-icon { color:#B97B00;font-size:18px;flex-shrink:0;margin-top:1px; }
-    .warn-banner-text { font-size:13px;color:#7A5500;line-height:1.5; }
-    .warn-banner-text strong { color:#5C3D00; }
-
-    /* ── 비활성화 미디어 ── */
-    .media-item.locked { opacity:0.5;pointer-events:none; }
-    .media-item.locked input[type=checkbox] { cursor:not-allowed; }
-
-    .form-actions { display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:20px 24px;border-top:1px solid #E5E7EA;background:#fff;position:sticky;bottom:0;z-index:10; }
+    .btn-primary {
+      height:34px; padding:0 14px; background:#58C65D; color:#fff;
+      border:none; border-radius:6px; font-size:12px; font-weight:600;
+      cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+    }
+    .btn-ghost {
+      height:34px; padding:0 14px; background:#fff; color:#24292E;
+      border:1px solid #E5E7EA; border-radius:6px; font-size:12px; font-weight:500;
+      cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+    }
+    .btn-danger-ghost {
+      height:34px; padding:0 14px; background:#fff; color:#C83434;
+      border:1px solid #FCA5A5; border-radius:6px; font-size:12px; font-weight:500;
+      cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+    }
+    .settings-layout { display:flex; gap:0; }
+    .settings-sidebar {
+      width:200px; flex-shrink:0; background:#fff; border:1px solid #E5E7EA;
+      border-radius:10px; padding:8px; height:fit-content;
+    }
+    .settings-sidebar a {
+      display:block; padding:8px 12px; border-radius:6px; font-size:13px;
+      color:#596066; text-decoration:none; margin-bottom:2px; transition:background 0.1s;
+    }
+    .settings-sidebar a:hover { background:#F6F7F9; color:#24292E; }
+    .settings-sidebar a.active { background:#E8F8E9; color:#2E9E34; font-weight:600; }
+    .settings-main { flex:1; min-width:0; padding-left:20px; }
+    .section-title { font-size:14px; font-weight:700; color:#24292E; margin-bottom:12px; }
+    /* Integration cards */
+    .int-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-bottom:20px; }
+    .int-card {
+      background:#fff; border:1px solid #E5E7EA; border-radius:10px; padding:18px;
+    }
+    .int-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .int-card-name { font-size:14px; font-weight:700; color:#24292E; }
+    .badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .badge-active { background:#E8F8E9; color:#2E9E34; }
+    .badge-test { background:#FFF8E6; color:#B45309; }
+    .badge-staged { background:#F0F1F3; color:#596066; }
+    .int-endpoint { font-size:12px; color:#596066; margin-bottom:6px; word-break:break-all; }
+    .int-last { font-size:11px; color:#9EA5AD; margin-bottom:12px; }
+    .int-actions { display:flex; gap:8px; }
+    /* API Key section */
+    .api-key-card {
+      background:#fff; border:1px solid #E5E7EA; border-radius:10px; padding:18px;
+    }
+    .api-key-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .api-key-label { font-size:13px; font-weight:600; color:#24292E; min-width:80px; }
+    .api-key-val {
+      flex:1; min-width:200px; font-family:monospace; font-size:13px;
+      color:#596066; background:#F6F7F9; border:1px solid #E5E7EA;
+      border-radius:6px; padding:6px 12px; letter-spacing:2px;
+    }
+    .key-hint { font-size:11px; color:#9EA5AD; margin-top:6px; }
   </style>
 </head>
 <body>
 
-<!-- ① GNB -->
+<!-- GNB -->
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
     <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
     <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
-    <li class="gnb-has-sub"><a href="product-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
     <div class="gnb-sub">
     <div class="gnb-sub-title">프로덕트</div>
     <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
@@ -119,11 +122,11 @@
     </div>
     </li>
     <div class="gnb-divider"></div>
-    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+    <li><a href="settings-org" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
-<!-- ② Topbar -->
+<!-- Topbar -->
 <header class="topbar">
   <div class="topbar-search">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -132,131 +135,101 @@
   <div class="topbar-user">
     <div class="topbar-icon-btn">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
     </div>
     <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
+      <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-name">홍길동</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
   </div>
 </header>
 
-<!-- ③ Breadcrumb -->
-<div class="bcrumb">
-  <a class="bcrumb-back" href="product-detail">←</a>
-  <a href="product-list">프로덕트</a>
-  <span class="sep">›</span>
-  <a href="product-detail">강남 A지구 패키지</a>
-  <span class="sep">›</span>
-  <span class="cur">수정</span>
-</div>
-
-<!-- ④ Content -->
 <main class="content">
-  <div class="content-inner" style="max-width:860px;">
-    <div class="card" style="margin-bottom:0;">
+  <div class="content-inner">
+    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">설정</div>
 
-      <!-- 활성 스케줄 경고 -->
-      <div style="padding:20px 24px 0;">
-        <div class="warn-banner">
-          <span class="warn-banner-icon">⚠</span>
-          <div class="warn-banner-text">
-            <strong>현재 활성 스케줄이 있습니다.</strong><br>
-            활성 스케줄이 연결된 동안 <strong>미디어 구성 변경이 제한</strong>됩니다.
-            프로덕트명·태그·설명 등 다른 항목은 수정 가능합니다.
+    <div class="settings-layout">
+      <nav class="settings-sidebar">
+        <a href="settings-org">조직·사용자</a>
+        <a href="settings-permission">권한</a>
+        <a href="settings-master">공통 기준정보</a>
+        <a href="#">운영 설정</a>
+        <a href="#">알림 설정</a>
+        <a href="settings-integration" class="active">외부 연동</a>
+        <a href="settings-security">보안·접근</a>
+        <a href="settings-audit">감사·변경이력</a>
+        <a href="#">시스템 배포</a>
+      </nav>
+
+      <div class="settings-main">
+        <div class="section-title">외부 시스템 연동</div>
+        <div class="int-grid">
+          <div class="int-card">
+            <div class="int-card-header">
+              <span class="int-card-name">PDE 연동</span>
+              <span class="badge badge-active">Active</span>
+            </div>
+            <div class="int-endpoint">https://pde.mnmnetworks.com/api/v2</div>
+            <div class="int-last">마지막 연결: 2026-08-18 09:10:23</div>
+            <div class="int-actions">
+              <button class="btn-ghost">설정</button>
+              <button class="btn-ghost">테스트</button>
+            </div>
           </div>
+          <div class="int-card">
+            <div class="int-card-header">
+              <span class="int-card-name">ADeX 연동</span>
+              <span class="badge badge-active">Active</span>
+            </div>
+            <div class="int-endpoint">https://adex-api.mnmnetworks.com/v1</div>
+            <div class="int-last">마지막 연결: 2026-08-18 08:55:44</div>
+            <div class="int-actions">
+              <button class="btn-ghost">설정</button>
+              <button class="btn-ghost">테스트</button>
+            </div>
+          </div>
+          <div class="int-card">
+            <div class="int-card-header">
+              <span class="int-card-name">RMS 연동</span>
+              <span class="badge badge-test">Test</span>
+            </div>
+            <div class="int-endpoint">https://rms-stage.mnmnetworks.com/api</div>
+            <div class="int-last">마지막 연결: 2026-08-17 15:30:01</div>
+            <div class="int-actions">
+              <button class="btn-ghost">설정</button>
+              <button class="btn-ghost">테스트</button>
+            </div>
+          </div>
+          <div class="int-card">
+            <div class="int-card-header">
+              <span class="int-card-name">DMS 연동</span>
+              <span class="badge badge-staged">Staged</span>
+            </div>
+            <div class="int-endpoint">https://dms.mnmnetworks.com/api/v1</div>
+            <div class="int-last">마지막 연결: 2026-08-10 11:20:00</div>
+            <div class="int-actions">
+              <button class="btn-ghost">설정</button>
+              <button class="btn-ghost">테스트</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">API Key</div>
+        <div class="api-key-card">
+          <div class="api-key-row">
+            <span class="api-key-label">API Key</span>
+            <div class="api-key-val">sk-mnm-••••••••••••••••••••••ABCD</div>
+            <button class="btn-danger-ghost">재발급</button>
+          </div>
+          <div class="key-hint" style="margin-top:10px;">* API Key 재발급은 Admin-System 권한 이상만 가능합니다. 재발급 시 기존 키는 즉시 폐기됩니다.</div>
         </div>
       </div>
-
-      <!-- ─ 기본 정보 ─ -->
-      <div class="form-section">
-        <div class="form-section-head">
-          <div class="form-section-title">기본 정보</div>
-        </div>
-        <div class="form-section-body">
-          <div class="form-row">
-            <div class="form-label">프로덕트명 <span class="req">*</span></div>
-            <div class="form-field">
-              <input type="text" class="input" value="강남 A지구 패키지" style="max-width:400px;">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-label">태그</div>
-            <div class="form-field">
-              <div class="tag-input-wrap" style="max-width:400px;" onclick="this.querySelector('input').focus()">
-                <span class="tag-item">강남 <button>×</button></span>
-                <span class="tag-item">실외 <button>×</button></span>
-                <input type="text" placeholder="태그 입력 후 Enter">
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-label">설명</div>
-            <div class="form-field">
-              <textarea class="textarea" style="max-width:560px;">강남역 일대 주요 유동인구 밀집 지역 패키지 상품</textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ─ 미디어 선택 (활성 스케줄로 인해 제한) ─ -->
-      <div class="form-section">
-        <div class="form-section-head">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="form-section-title">미디어 선택</div>
-            <span style="font-size:11px;background:#FFF8E6;border:1px solid #FFD970;border-radius:10px;padding:2px 8px;color:#7A5500;">활성 스케줄로 인해 변경 제한됨</span>
-          </div>
-          <div class="form-section-desc">활성 스케줄이 없는 경우에만 미디어 구성 변경이 가능합니다</div>
-        </div>
-        <div class="form-section-body">
-          <div class="media-search-area" style="opacity:0.6;pointer-events:none;">
-            <div class="media-search-bar">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l3 3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
-              <input type="text" placeholder="미디어명 · 위치 검색" disabled>
-            </div>
-            <div class="media-list">
-              <label class="media-item">
-                <input type="checkbox" checked disabled>
-                <div class="media-item-info"><div class="media-item-name">강남역 1번출구 A</div><div class="media-item-sub">서울 강남구 강남대로 396</div></div>
-                <div><span class="status-dot online"></span></div>
-              </label>
-              <label class="media-item">
-                <input type="checkbox" checked disabled>
-                <div class="media-item-info"><div class="media-item-name">강남역 1번출구 B</div><div class="media-item-sub">서울 강남구 강남대로 396</div></div>
-                <div><span class="status-dot online"></span></div>
-              </label>
-              <label class="media-item locked">
-                <input type="checkbox" disabled>
-                <div class="media-item-info"><div class="media-item-name">신논현역 메인 월</div><div class="media-item-sub">서울 강남구 언주로</div></div>
-                <div><span class="status-dot online"></span></div>
-              </label>
-            </div>
-          </div>
-          <div class="selected-media-area" style="opacity:0.6;">
-            <div class="selected-media-chip">강남역 1번출구 A</div>
-            <div class="selected-media-chip">강남역 1번출구 B</div>
-            <div class="selected-media-chip">신논현역 메인 월</div>
-            <div class="selected-media-chip">삼성역 코엑스 광장</div>
-            <div class="selected-media-chip">역삼역 2번출구</div>
-          </div>
-          <div class="input-hint" style="margin-top:6px;">5개 선택됨</div>
-        </div>
-      </div>
-
-      <!-- 액션 바 -->
-      <div class="form-actions">
-        <a href="product-detail" class="btn btn-ghost">취소</a>
-        <button class="btn btn-primary" onclick="location.href='product-detail'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          변경 사항 저장
-        </button>
-      </div>
-
     </div>
   </div>
 </main>
-<script src="../assets/js/cms.js"></script>
+
 </body>
 </html>

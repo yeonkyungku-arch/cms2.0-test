@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>알림센터 — D'ooh CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
+    }
+    /* Tabs */
+    .tab-bar { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:16px; }
+    .tab-btn {
+      height:38px; padding:0 18px; font-size:14px; font-weight:500; color:#9EA5AD;
+      background:transparent; border:none; cursor:pointer; position:relative;
+      display:inline-flex; align-items:center; gap:7px; font-family:inherit;
+    }
+    .tab-btn.active { color:#24292E; font-weight:700; }
+    .tab-btn.active::after {
+      content:''; position:absolute; bottom:-2px; left:0; right:0;
+      height:2px; background:#58C65D; border-radius:2px 2px 0 0;
+    }
+    .tab-badge {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width:18px; height:18px; padding:0 4px; border-radius:9px;
+      background:#E97474; color:#fff; font-size:11px; font-weight:700;
+    }
+
+    /* Filter bar */
+    .filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+    .filter-select {
+      height:36px; padding:0 28px 0 10px; border:1px solid #CED2D6;
+      border-radius:6px; font-size:13px; color:var(--dark);
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+      -webkit-appearance:none; appearance:none; cursor:pointer;
+    }
+
+    /* Alert list */
+    .alert-list { display:flex; flex-direction:column; gap:0; }
+    .alert-item {
+      display:flex; align-items:center; gap:14px; padding:14px 18px;
+      border-bottom:1px solid var(--border); background:#fff;
+      transition:background 0.12s;
+    }
+    .alert-item:first-child { border-radius:10px 10px 0 0; }
+    .alert-item:last-child  { border-radius:0 0 10px 10px; border-bottom:none; }
+    .alert-item:only-child  { border-radius:10px; }
+    .alert-item:hover { background:#F6F7F9; }
+    .alert-item.unread { border-left:3px solid #E97474; }
+    .alert-item.unread-warn { border-left:3px solid #F3BE4A; }
+
+    .alert-icon {
+      width:36px; height:36px; border-radius:10px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .alert-icon.danger  { background:rgba(233,116,116,.14); }
+    .alert-icon.warn    { background:rgba(243,190,74,.15); }
+    .alert-icon.info    { background:#EFF6FF; }
+    .alert-icon.neutral { background:#F0F1F3; }
+
+    .alert-body { flex:1; min-width:0; }
+    .alert-title { font-size:13px; font-weight:600; color:var(--dark); margin-bottom:2px; }
+    .alert-meta  { font-size:12px; color:#9EA5AD; display:flex; gap:10px; flex-wrap:wrap; }
+    .alert-meta-ref { color:#596066; }
+    .alert-time  { font-size:12px; color:#9EA5AD; white-space:nowrap; flex-shrink:0; }
+
+    .btn-confirm {
+      height:30px; padding:0 13px; border-radius:5px; font-size:12px; font-weight:600;
+      cursor:pointer; border:1px solid #CED2D6; background:#fff; color:#596066;
+      white-space:nowrap; font-family:inherit; flex-shrink:0;
+    }
+    .btn-confirm:hover { background:#F6F7F9; }
+    .btn-confirm.done { background:#F0F1F3; color:#9EA5AD; border-color:var(--border); cursor:default; }
+
+    .card-wrap { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main content -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Page header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#24292E;">알림센터</div>
+        <div style="font-size:13px;color:#9EA5AD;margin-top:2px;">MON-ALERT · 시스템 알림 통합 관리</div>
+      </div>
+      <button style="height:34px;padding:0 14px;border:1px solid #CED2D6;border-radius:6px;background:#fff;font-size:13px;color:#596066;cursor:pointer;font-family:inherit;">전체 확인</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active">전체</button>
+      <button class="tab-btn">미확인 <span class="tab-badge">8</span></button>
+      <button class="tab-btn">중요</button>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <select class="filter-select">
+        <option>유형 전체</option>
+        <option>기기 오프라인</option>
+        <option>재생 오류</option>
+        <option>온도 경고</option>
+        <option>네트워크 단절</option>
+        <option>스케줄 만료임박</option>
+        <option>시스템 오류</option>
+        <option>디스크 경고</option>
+      </select>
+      <select class="filter-select">
+        <option>기간: 오늘</option>
+        <option>최근 7일</option>
+        <option>최근 30일</option>
+      </select>
+    </div>
+
+    <!-- Alert list -->
+    <div class="card-wrap">
+      <div class="alert-list">
+
+        <div class="alert-item unread">
+          <div class="alert-icon danger">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#E97474" stroke-width="1.5"/><path d="M9 5.5v4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12" r="0.8" fill="#E97474"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">기기 오프라인 — 잠실역 대형 LED</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-004</span><span>기기 오프라인 · 즉시 조치 필요</span></div>
+          </div>
+          <div class="alert-time">09:12</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread">
+          <div class="alert-icon danger">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#E97474" stroke-width="1.5"/><path d="M9 5.5v4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12" r="0.8" fill="#E97474"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">네트워크 단절 — 부산 해운대 A</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-021</span><span>네트워크 연결 끊김 · 원격 접속 불가</span></div>
+          </div>
+          <div class="alert-time">07:44</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread-warn">
+          <div class="alert-icon warn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.5L15.5 14H2.5L9 2.5z" stroke="#F3BE4A" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v3" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.5" r="0.8" fill="#F3BE4A"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">재생 오류 — 홍대입구역 2번출구 광고판</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-002</span><span>콘텐츠 디코딩 실패 · 반복 재시도 중</span></div>
+          </div>
+          <div class="alert-time">08:55</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread-warn">
+          <div class="alert-icon warn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.5L15.5 14H2.5L9 2.5z" stroke="#F3BE4A" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v3" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.5" r="0.8" fill="#F3BE4A"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">온도 경고 — 서울역 환승통로 B</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-005</span><span>내부 온도 68°C 초과 · 과열 위험</span></div>
+          </div>
+          <div class="alert-time">08:31</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread">
+          <div class="alert-icon danger">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#E97474" stroke-width="1.5"/><path d="M9 5.5v4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12" r="0.8" fill="#E97474"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">기기 오프라인 — 대구 동성로 B</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-037</span><span>기기 응답 없음 · 22:14 이후 미수신</span></div>
+          </div>
+          <div class="alert-time">어제 22:14</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread-warn">
+          <div class="alert-icon warn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.5L15.5 14H2.5L9 2.5z" stroke="#F3BE4A" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v3" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.5" r="0.8" fill="#F3BE4A"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">스케줄 만료임박 — 신촌역 스탠드형 A</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-003</span><span>현재 스케줄 2시간 후 만료 예정</span></div>
+          </div>
+          <div class="alert-time">06:00</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread-warn">
+          <div class="alert-icon warn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.5L15.5 14H2.5L9 2.5z" stroke="#F3BE4A" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v3" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.5" r="0.8" fill="#F3BE4A"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">디스크 공간 경고 — 광화문 A타워 로비</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-014</span><span>저장 공간 92% 사용 · 콘텐츠 갱신 불가 위험</span></div>
+          </div>
+          <div class="alert-time">05:30</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <div class="alert-item unread">
+          <div class="alert-icon danger">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#E97474" stroke-width="1.5"/><path d="M9 5.5v4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12" r="0.8" fill="#E97474"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">시스템 오류 — 수원역 중앙홀 C</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-052</span><span>OS 크래시 보고 · 자동 재부팅 실패</span></div>
+          </div>
+          <div class="alert-time">어제 20:07</div>
+          <button class="btn-confirm">확인</button>
+        </div>
+
+        <!-- Confirmed alerts below -->
+        <div class="alert-item">
+          <div class="alert-icon info">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#2D84ED" stroke-width="1.5"/><path d="M9 8.5v3.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="6.5" r="0.8" fill="#2D84ED"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">스케줄 만료 — 강남역 1번출구 A</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-001</span><span>캠페인 CAM-081 종료 · 신규 스케줄 배정 필요</span></div>
+          </div>
+          <div class="alert-time">어제 23:59</div>
+          <button class="btn-confirm done">확인됨</button>
+        </div>
+
+        <div class="alert-item">
+          <div class="alert-icon warn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.5L15.5 14H2.5L9 2.5z" stroke="#F3BE4A" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v3" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.5" r="0.8" fill="#F3BE4A"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">재생 오류 — 인천공항 T1 게이트</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-058</span><span>H.265 디코딩 오류 · 코덱 업데이트 권장</span></div>
+          </div>
+          <div class="alert-time">어제 18:30</div>
+          <button class="btn-confirm done">확인됨</button>
+        </div>
+
+        <div class="alert-item">
+          <div class="alert-icon neutral">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M9 8.5v3.5" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="6.5" r="0.8" fill="#9EA5AD"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">펌웨어 업데이트 완료 — 여의도 IFC몰 B1</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-029</span><span>v3.4.1 → v3.5.0 자동 업데이트 완료</span></div>
+          </div>
+          <div class="alert-time">어제 14:22</div>
+          <button class="btn-confirm done">확인됨</button>
+        </div>
+
+        <div class="alert-item">
+          <div class="alert-icon info">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#2D84ED" stroke-width="1.5"/><path d="M9 8.5v3.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="6.5" r="0.8" fill="#2D84ED"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">신규 미디어 등록 — 판교 알파돔 G2</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-128</span><span>관리자 홍길동이 신규 미디어를 등록했습니다</span></div>
+          </div>
+          <div class="alert-time">어제 10:05</div>
+          <button class="btn-confirm done">확인됨</button>
+        </div>
+
+        <div class="alert-item">
+          <div class="alert-icon neutral">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M9 8.5v3.5" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="6.5" r="0.8" fill="#9EA5AD"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">캠페인 시작 — 삼성역 코엑스 정문</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-044 · CAM-099</span><span>캠페인 "2026 여름 특가" 재생 시작</span></div>
+          </div>
+          <div class="alert-time">08-17 08:00</div>
+          <button class="btn-confirm done">확인됨</button>
+        </div>
+
+        <div class="alert-item">
+          <div class="alert-icon warn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2.5L15.5 14H2.5L9 2.5z" stroke="#F3BE4A" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8v3" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.5" r="0.8" fill="#F3BE4A"/></svg>
+          </div>
+          <div class="alert-body">
+            <div class="alert-title">온도 경고 — 부평역 지하 광고판</div>
+            <div class="alert-meta"><span class="alert-meta-ref">MED-071</span><span>내부 온도 65°C 기록 · 모니터링 중</span></div>
+          </div>
+          <div class="alert-time">08-17 06:11</div>
+          <button class="btn-confirm done">확인됨</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>
