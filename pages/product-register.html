@@ -466,6 +466,15 @@
       .form-row { grid-template-columns: 1fr; gap: 6px; }
       .form-label { padding-bottom: 0; }
     }
+    /* ── 요일 칩 ── */
+    .day-chip-item input { display: none; }
+    .day-chip-item label {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid #CED2D6;
+      font-size: 13px; font-weight: 600; color: #596066; cursor: pointer; transition: all .15s;
+    }
+    .day-chip-item input:checked + label { background: #58C65D; border-color: #58C65D; color: #fff; }
+
     @media (max-width: 700px) {
       .section-body { padding: 16px; }
       .section-head { padding: 14px 16px 10px; }
@@ -830,6 +839,231 @@
           <div class="form-label">설명</div>
           <div class="form-field">
             <textarea class="textarea" placeholder="프로덕트에 대한 설명을 입력하세요" style="width:100%;"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 5. 운영 정보 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">운영 정보</div>
+      </div>
+      <div class="section-body">
+
+        <!-- product.operatingDays -->
+        <div class="form-row">
+          <div class="form-label">운영 요일 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <div class="day-chip-item"><input type="checkbox" id="pd1" checked><label for="pd1">월</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd2" checked><label for="pd2">화</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd3" checked><label for="pd3">수</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd4" checked><label for="pd4">목</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd5" checked><label for="pd5">금</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd6"><label for="pd6">토</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd7"><label for="pd7">일</label></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- product.operatingStartTime / endTime -->
+        <div class="form-row">
+          <div class="form-label">운영 시간 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="time" class="input" style="width:140px;" value="09:00">
+              <span style="color:#9EA5AD;">~</span>
+              <input type="time" class="input" style="width:140px;" value="22:00">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#596066;cursor:pointer;">
+                <input type="checkbox"> 익일 종료
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- product.regularClosing / holidayOperation -->
+        <div class="form-row">
+          <div class="form-label">정기 휴무</div>
+          <div class="form-field">
+            <input type="text" class="input" placeholder="예: 매주 일요일, 매월 마지막 주 토요일" style="max-width:400px;">
+            <div class="input-hint">반복 규칙을 텍스트로 입력하세요 (선택)</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">공휴일 운영 <span class="req">*</span></div>
+          <div class="form-field">
+            <select class="select" style="max-width:260px;">
+              <option value="">선택</option>
+              <option selected>운영</option>
+              <option>미운영</option>
+              <option>별도 정책</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- product.maxContentDuration -->
+        <div class="form-row">
+          <div class="form-label">콘텐츠 최대 길이 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" class="input" style="width:120px;" value="30" min="1">
+              <span style="font-size:14px;color:#596066;">초</span>
+            </div>
+            <div class="input-hint">이 프로덕트에 편성 가능한 콘텐츠의 최대 재생시간</div>
+          </div>
+        </div>
+
+        <!-- product.slotDurations / totalSlotCount -->
+        <div class="form-row">
+          <div class="form-label">슬롯 시간 구성 <span class="req">*</span></div>
+          <div class="form-field">
+            <div id="slotChipsWrap" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+              <span class="tag-item">15초 <button onclick="this.parentNode.remove()">×</button></span>
+              <span class="tag-item">30초 <button onclick="this.parentNode.remove()">×</button></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" class="input" id="slotInput" style="width:100px;" placeholder="초" min="1">
+              <button class="btn btn-ghost" style="font-size:13px;" onclick="addSlot()">+ 슬롯 추가</button>
+            </div>
+            <div class="input-hint">광고주가 선택할 수 있는 슬롯 시간 목록</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">총 슬롯 수 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" class="input" style="width:120px;" value="6" min="1" id="totalSlotCount" onchange="updateLoopKPI()">
+              <span style="font-size:14px;color:#596066;">개</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference Loop KPI (read-only, computed) -->
+        <div class="form-row" style="border-bottom:none;">
+          <div class="form-label">기준 루프 산출</div>
+          <div class="form-field">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:10px 16px;min-width:160px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">기준 슬롯 시간 (RSD)</div>
+                <div style="font-size:16px;font-weight:700;color:#24292E;" id="kpiRSD">30초</div>
+                <div style="font-size:10px;color:#9EA5AD;">MAX(슬롯 시간)</div>
+              </div>
+              <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:10px 16px;min-width:160px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">기준 루프 시간 (RLD)</div>
+                <div style="font-size:16px;font-weight:700;color:#24292E;" id="kpiRLD">180초</div>
+                <div style="font-size:10px;color:#9EA5AD;">RSD × 총슬롯수</div>
+              </div>
+              <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:10px 16px;min-width:180px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">예상 최소 집행횟수/일</div>
+                <div style="font-size:16px;font-weight:700;color:#58C65D;" id="kpiPlays">234회</div>
+                <div style="font-size:10px;color:#9EA5AD;">FLOOR(유효운영시간 ÷ RLD)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────────── 6. 가격 정보 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">가격 정보</div>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-label">기준 가격 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="text" class="input" style="width:200px;" placeholder="0" value="3,000,000">
+              <select class="select" style="width:100px;">
+                <option selected>KRW</option>
+                <option>USD</option>
+                <option>JPY</option>
+                <option>기타</option>
+              </select>
+              <span style="font-size:14px;color:#596066;">/</span>
+              <select class="select" style="width:120px;">
+                <option>일(Day)</option>
+                <option>주(Week)</option>
+                <option selected>월(Month)</option>
+                <option>분기(Quarter)</option>
+                <option>년(Year)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 7. 상품 옵션 (선택) ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="section-title">상품 옵션 <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
+          <div style="font-size:12px;color:#9EA5AD;margin-top:2px;">운영시간, 슬롯, 타깃 등 추가 옵션을 설정합니다</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:13px;" onclick="addOption()">+ 옵션 추가</button>
+      </div>
+      <div class="section-body" id="optionsWrap">
+        <!-- Sample option -->
+        <div style="border:1px solid #E5E7EA;border-radius:8px;padding:16px;margin-bottom:10px;" class="option-item">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션명 <span class="req">*</span></div>
+              <input type="text" class="input" value="프라임타임 패키지">
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션 유형 <span class="req">*</span></div>
+              <select class="select">
+                <option selected>운영시간</option><option>슬롯</option><option>노출횟수</option><option>조건광고</option><option>타깃</option><option>콘텐츠운영</option><option>리포트</option><option>기타</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">가격 유형</div>
+              <select class="select">
+                <option selected>정액(Fixed)</option><option>비율(Percentage)</option><option>회당(Per Play)</option><option>기간당(Per Period)</option><option>별도견적(Custom Quote)</option>
+              </select>
+            </div>
+            <button style="width:32px;height:32px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;color:#9EA5AD;font-size:16px;" onclick="this.closest('.option-item').remove()">×</button>
+          </div>
+          <div style="margin-top:10px;">
+            <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션 가격</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="text" class="input" style="width:180px;" value="500,000">
+              <select class="select" style="width:100px;"><option selected>KRW</option><option>USD</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 8. 매체 제작 가이드 (선택) ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">매체 제작 가이드 <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-label">추가 가이드</div>
+          <div class="form-field">
+            <textarea class="textarea" placeholder="광고소재 제작 시 주의사항, 해상도 요건, 파일 형식 등을 입력하세요" style="width:100%;min-height:80px;"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">가이드 파일</div>
+          <div class="form-field">
+            <div style="border:2px dashed #CED2D6;border-radius:6px;padding:20px;text-align:center;cursor:pointer;color:#9EA5AD;font-size:13px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 6px;"><path d="M12 4v12M8 8l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 18h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              파일 업로드 (PDF, PPTX, DOCX, ZIP)
+            </div>
+          </div>
+        </div>
+        <div class="form-row" style="border-bottom:none;">
+          <div class="form-label">참조 URL</div>
+          <div class="form-field">
+            <input type="url" class="input" placeholder="https://..." style="max-width:500px;">
           </div>
         </div>
       </div>
@@ -1470,6 +1704,52 @@ renderMediaList();
 renderChips();
 updateMediaCount();
 renderMediaMap();
+
+/* ── 슬롯 추가 ── */
+function addSlot() {
+  const v = document.getElementById('slotInput').value;
+  if (!v || isNaN(v) || v < 1) return;
+  const wrap = document.getElementById('slotChipsWrap');
+  const chip = document.createElement('span');
+  chip.className = 'tag-item';
+  chip.innerHTML = v + '초 <button onclick="this.parentNode.remove();updateLoopKPI()">×</button>';
+  wrap.appendChild(chip);
+  document.getElementById('slotInput').value = '';
+  updateLoopKPI();
+}
+
+/* ── 기준 루프 KPI 산출 ── */
+function updateLoopKPI() {
+  const chips = document.querySelectorAll('#slotChipsWrap .tag-item');
+  const slots = Array.from(chips).map(c => parseInt(c.textContent));
+  if (!slots.length) return;
+  const rsd = Math.max(...slots);
+  const total = parseInt(document.getElementById('totalSlotCount').value) || 1;
+  const rld = rsd * total;
+  const opsSeconds = 13 * 3600; // 09:00~22:00 = 13h
+  const plays = Math.floor(opsSeconds / rld);
+  document.getElementById('kpiRSD').textContent = rsd + '초';
+  document.getElementById('kpiRLD').textContent = rld + '초';
+  document.getElementById('kpiPlays').textContent = plays + '회';
+}
+
+/* ── 상품 옵션 추가 ── */
+let optCount = 1;
+function addOption() {
+  optCount++;
+  const wrap = document.getElementById('optionsWrap');
+  const el = document.createElement('div');
+  el.className = 'option-item';
+  el.style.cssText = 'border:1px solid #E5E7EA;border-radius:8px;padding:16px;margin-bottom:10px;';
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;">
+      <div><div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션명 <span style="color:#E97474;">*</span></div><input type="text" class="input" placeholder="옵션명"></div>
+      <div><div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션 유형</div><select class="select"><option selected>운영시간</option><option>슬롯</option><option>노출횟수</option><option>조건광고</option><option>타깃</option><option>콘텐츠운영</option><option>리포트</option><option>기타</option></select></div>
+      <div><div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">가격 유형</div><select class="select"><option>정액</option><option>비율</option><option>회당</option><option>기간당</option><option>별도견적</option></select></div>
+      <button style="width:32px;height:32px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;color:#9EA5AD;font-size:16px;" onclick="this.closest('.option-item').remove()">×</button>
+    </div>`;
+  wrap.appendChild(el);
+}
 </script>
 <script src="../assets/js/cms.js"></script>
 </body>
