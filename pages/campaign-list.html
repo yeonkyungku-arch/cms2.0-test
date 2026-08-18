@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>캠페인 목록 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .toolbar-search {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .toolbar-search svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .toolbar-search input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .toolbar-search input::placeholder { color: #9EA5AD; }
+    .filter-select {
+      height: 36px;
+      padding: 0 28px 0 10px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      height: 36px;
+      padding: 0 16px;
+      background: #58C65D;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary:hover { background: #4ab34f; }
+
+    /* Status summary chips */
+    .status-chips {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      background: #F6F7F9;
+      color: #596066;
+      transition: all 0.15s;
+    }
+    .status-chip:hover { background: #EDEEF0; }
+    .status-chip.active { border-color: #2D84ED; background: #EAF3FF; color: #2D84ED; }
+    .chip-count {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #24292E;
+    }
+
+    /* Table */
+    .table-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: #F6F7F9;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap;
+    }
+    thead th.center { text-align: center; }
+    tbody tr { border-bottom: 1px solid #E5E7EA; transition: background 0.12s; cursor: pointer; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #F6F7F9; }
+    tbody td {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #24292E;
+      vertical-align: middle;
+    }
+    tbody td.center { text-align: center; }
+    .campaign-name-link {
+      color: #24292E;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .campaign-name-link:hover { color: #2D84ED; text-decoration: underline; }
+    .id-text { font-size: 11px; color: #9EA5AD; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    /* Lifecycle badges */
+    .lc-draft        { background: #F0F1F3; color: #596066; }
+    .lc-draft .badge-dot { background: #9EA5AD; }
+    .lc-reviewing    { background: #EAF3FF; color: #2D84ED; }
+    .lc-reviewing .badge-dot { background: #2D84ED; }
+    .lc-recommended  { background: #F3EEFF; color: #7C5CBF; }
+    .lc-recommended .badge-dot { background: #7C5CBF; }
+    .lc-selected     { background: #E8F8E9; color: #2E9E34; }
+    .lc-selected .badge-dot { background: #58C65D; }
+    .lc-transferred  { background: #E0F4F4; color: #0E7C7B; }
+    .lc-transferred .badge-dot { background: #0E9E9D; }
+    .lc-completed    { background: #EAEAEA; color: #3A4349; }
+    .lc-completed .badge-dot { background: #596066; }
+    .lc-cancelled    { background: #FEE2E2; color: #991B1B; }
+    .lc-cancelled .badge-dot { background: #E97474; }
+
+    /* Recommendation badges */
+    .rec-done    { background: #E8F8E9; color: #2E9E34; }
+    .rec-running { background: #EAF3FF; color: #2D84ED; }
+    .rec-error   { background: #FEE2E2; color: #991B1B; }
+    .rec-na      { background: #F0F1F3; color: #9EA5AD; }
+
+    /* PDE badges */
+    .pde-approved { background: #E8F8E9; color: #2E9E34; }
+    .pde-limited  { background: #FFF8E6; color: #B45309; }
+    .pde-pending  { background: #F0F1F3; color: #596066; }
+    .pde-rejected { background: #FEE2E2; color: #991B1B; }
+
+    /* Action button */
+    .btn-action {
+      height: 28px;
+      padding: 0 12px;
+      border: 1px solid #CED2D6;
+      border-radius: 5px;
+      font-size: 12px;
+      color: #596066;
+      background: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-action:hover { background: #F6F7F9; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li class="gnb-disabled"><a href="#">대시보드 <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+    <li><a href="campaign-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 8h6M7 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>캠페인</a></li>
+    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+      <div class="gnb-sub">
+        <div class="gnb-sub-title">편성표</div>
+        <a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+        <a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+      </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="monitoring"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="content">
+  <div class="content-inner">
+    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">캠페인</div>
+
+    <!-- Status Summary Chips -->
+    <div class="status-chips">
+      <div class="status-chip active" onclick="filterChip('')">전체 <span class="chip-count" id="cnt-all">6</span></div>
+      <div class="status-chip" onclick="filterChip('active')">진행중 <span class="chip-count" id="cnt-active">3</span></div>
+      <div class="status-chip" onclick="filterChip('completed')">완료 <span class="chip-count" id="cnt-completed">2</span></div>
+      <div class="status-chip" onclick="filterChip('cancelled')">취소 <span class="chip-count" id="cnt-cancelled">1</span></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="searchInput" placeholder="캠페인명 검색" oninput="filterTable()">
+      </div>
+      <select class="filter-select" id="lcFilter" onchange="filterTable()">
+        <option value="">Lifecycle 전체</option>
+        <option value="draft">초안</option>
+        <option value="reviewing">검토중</option>
+        <option value="recommended">추천완료</option>
+        <option value="selected">선택완료</option>
+        <option value="transferred">스케줄이관</option>
+        <option value="completed">완료</option>
+        <option value="cancelled">취소</option>
+      </select>
+      <select class="filter-select" id="sourceFilter" onchange="filterTable()">
+        <option value="">유입경로 전체</option>
+        <option value="direct">Direct</option>
+        <option value="agency">Agency</option>
+        <option value="campaign">Campaign</option>
+      </select>
+      <select class="filter-select" id="advertiserFilter" onchange="filterTable()">
+        <option value="">광고주 전체</option>
+        <option value="삼성전자">삼성전자</option>
+        <option value="LG생활건강">LG생활건강</option>
+        <option value="현대자동차">현대자동차</option>
+        <option value="카카오">카카오</option>
+        <option value="네이버">네이버</option>
+      </select>
+      <button class="btn-primary" onclick="location.href='campaign-register'">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        캠페인 등록
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <table id="campaignTable">
+        <thead>
+          <tr>
+            <th style="width:110px;">캠페인 ID</th>
+            <th>캠페인명</th>
+            <th style="width:110px;">광고주</th>
+            <th class="center" style="width:90px;">유입경로</th>
+            <th style="width:150px;">기간</th>
+            <th class="center" style="width:110px;">Lifecycle</th>
+            <th class="center" style="width:100px;">추천 상태</th>
+            <th class="center" style="width:80px;">PDE</th>
+            <th style="width:100px;">등록일</th>
+            <th class="center" style="width:70px;">액션</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr data-lc="reviewing" data-source="direct" data-advertiser="삼성전자" data-group="active" onclick="location.href='campaign-detail'">
+            <td><span class="id-text">CMP-2026-001</span></td>
+            <td>
+              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">삼성전자 갤럭시 S26 론칭</a>
+              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">강남 프라임 패키지</div>
+            </td>
+            <td>삼성전자</td>
+            <td class="center"><span style="font-size:12px;color:#596066;">Direct</span></td>
+            <td><span style="font-size:12px;">2026.02.01 – 02.28</span></td>
+            <td class="center"><span class="badge lc-reviewing"><span class="badge-dot"></span>검토중</span></td>
+            <td class="center"><span class="badge rec-running">분석중</span></td>
+            <td class="center"><span class="badge pde-pending">보류</span></td>
+            <td style="font-size:12px;color:#9EA5AD;">2026.01.20</td>
+            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+          </tr>
+          <tr data-lc="recommended" data-source="agency" data-advertiser="LG생활건강" data-group="active" onclick="location.href='campaign-detail'">
+            <td><span class="id-text">CMP-2026-002</span></td>
+            <td>
+              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">LG 생활건강 봄 시즌 프로모션</a>
+              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">공항 프리미엄 네트워크</div>
+            </td>
+            <td>LG생활건강</td>
+            <td class="center"><span style="font-size:12px;color:#596066;">Agency</span></td>
+            <td><span style="font-size:12px;">2026.03.01 – 03.31</span></td>
+            <td class="center"><span class="badge lc-recommended"><span class="badge-dot"></span>추천완료</span></td>
+            <td class="center"><span class="badge rec-done">추천 완료</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td style="font-size:12px;color:#9EA5AD;">2026.01.25</td>
+            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+          </tr>
+          <tr data-lc="selected" data-source="direct" data-advertiser="현대자동차" data-group="active" onclick="location.href='campaign-detail'">
+            <td><span class="id-text">CMP-2026-003</span></td>
+            <td>
+              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">현대자동차 아이오닉9 브랜드 캠페인</a>
+              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">강남 프라임 패키지 외 1</div>
+            </td>
+            <td>현대자동차</td>
+            <td class="center"><span style="font-size:12px;color:#596066;">Direct</span></td>
+            <td><span style="font-size:12px;">2026.02.15 – 03.15</span></td>
+            <td class="center"><span class="badge lc-selected"><span class="badge-dot"></span>선택완료</span></td>
+            <td class="center"><span class="badge rec-done">추천 완료</span></td>
+            <td class="center"><span class="badge pde-limited">제한</span></td>
+            <td style="font-size:12px;color:#9EA5AD;">2026.02.01</td>
+            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+          </tr>
+          <tr data-lc="transferred" data-source="agency" data-advertiser="카카오" data-group="active" onclick="location.href='campaign-detail'">
+            <td><span class="id-text">CMP-2025-089</span></td>
+            <td>
+              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">카카오페이 연말 결산 캠페인</a>
+              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">홍대 타겟 테스트</div>
+            </td>
+            <td>카카오</td>
+            <td class="center"><span style="font-size:12px;color:#596066;">Agency</span></td>
+            <td><span style="font-size:12px;">2025.12.01 – 12.31</span></td>
+            <td class="center"><span class="badge lc-transferred"><span class="badge-dot"></span>스케줄이관</span></td>
+            <td class="center"><span class="badge rec-done">추천 완료</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td style="font-size:12px;color:#9EA5AD;">2025.11.15</td>
+            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+          </tr>
+          <tr data-lc="completed" data-source="direct" data-advertiser="네이버" data-group="completed" onclick="location.href='campaign-detail'">
+            <td><span class="id-text">CMP-2025-074</span></td>
+            <td>
+              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">네이버 클라우드 B2B 어웨어니스</a>
+              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">공항 프리미엄 네트워크</div>
+            </td>
+            <td>네이버</td>
+            <td class="center"><span style="font-size:12px;color:#596066;">Direct</span></td>
+            <td><span style="font-size:12px;">2025.10.01 – 10.31</span></td>
+            <td class="center"><span class="badge lc-completed"><span class="badge-dot"></span>완료</span></td>
+            <td class="center"><span class="badge rec-done">추천 완료</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td style="font-size:12px;color:#9EA5AD;">2025.09.20</td>
+            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+          </tr>
+          <tr data-lc="cancelled" data-source="agency" data-advertiser="삼성전자" data-group="cancelled" onclick="location.href='campaign-detail'">
+            <td><span class="id-text">CMP-2025-061</span></td>
+            <td>
+              <a class="campaign-name-link" href="campaign-detail" onclick="event.stopPropagation()">삼성전자 비스포크 가을 이벤트</a>
+              <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">강남 프라임 패키지</div>
+            </td>
+            <td>삼성전자</td>
+            <td class="center"><span style="font-size:12px;color:#596066;">Agency</span></td>
+            <td><span style="font-size:12px;">2025.09.01 – 09.30</span></td>
+            <td class="center"><span class="badge lc-cancelled"><span class="badge-dot"></span>취소</span></td>
+            <td class="center"><span class="badge rec-na">해당없음</span></td>
+            <td class="center"><span class="badge pde-rejected">거부</span></td>
+            <td style="font-size:12px;color:#9EA5AD;">2025.08.10</td>
+            <td class="center"><button class="btn-action" onclick="event.stopPropagation();location.href='campaign-detail'">상세</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+var chipFilter = '';
+
+function filterChip(group) {
+  chipFilter = group;
+  document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  filterTable();
+}
+
+function filterTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const lc = document.getElementById('lcFilter').value;
+  const src = document.getElementById('sourceFilter').value;
+  const adv = document.getElementById('advertiserFilter').value;
+  document.querySelectorAll('#tableBody tr').forEach(row => {
+    const name = row.querySelector('.campaign-name-link').textContent.toLowerCase();
+    const rowLc  = row.dataset.lc;
+    const rowSrc = row.dataset.source;
+    const rowAdv = row.dataset.advertiser;
+    const rowGrp = row.dataset.group;
+    const matchSearch = !search || name.includes(search);
+    const matchLc  = !lc  || rowLc  === lc;
+    const matchSrc = !src || rowSrc === src;
+    const matchAdv = !adv || rowAdv === adv;
+    const matchChip = !chipFilter || rowGrp === chipFilter || (chipFilter === 'active' && ['reviewing','recommended','selected','transferred'].includes(rowLc));
+    row.style.display = (matchSearch && matchLc && matchSrc && matchAdv && matchChip) ? '' : 'none';
+  });
+}
+</script>
+<script src="../assets/js/cms.js"></script>
+</body>
+</html>
