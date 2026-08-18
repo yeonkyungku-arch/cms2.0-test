@@ -3,365 +3,489 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>콘텐츠 관리 — CMS</title>
+  <title>콘텐츠 목록 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* page-specific */
-    .filter-row {
+    .toolbar {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       gap: 10px;
-      background: #F6F7F9;
-      border-radius: 6px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    .filter-row label {
+    .toolbar-search {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .toolbar-search svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .toolbar-search input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 34px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
       font-size: 13px;
-      color: #596066;
+      color: #24292E;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .toolbar-search input::placeholder { color: #9EA5AD; }
+    .filter-select {
+      height: 36px;
+      padding: 0 28px 0 10px;
+      border: 1px solid #CED2D6;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #24292E;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
       white-space: nowrap;
     }
-    .filter-sep {
+    .btn-primary {
+      background: #58C65D;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
       font-size: 13px;
-      color: #9EA5AD;
-      padding: 0 2px;
-    }
-    .tbl td.td-name {
-      text-align: left;
-    }
-    .card-foot {
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 6px;
+      height: 36px;
+      padding: 0 14px;
     }
+    .btn-primary:hover { background: #4ab34f; }
+
+    /* Status summary chips */
+    .summary-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: border-color .12s;
+    }
+    .chip:hover { opacity: .85; }
+    .chip-all    { background: #F0F1F3; color: #383F45; }
+    .chip-approved { background: #E8F8E9; color: #2E9E34; }
+    .chip-review   { background: #F3EEFF; color: #7C5CBF; }
+    .chip-validating { background: #EAF3FF; color: #2D84ED; }
+    .chip-draft    { background: #F0F1F3; color: #596066; }
+    .chip-archived { background: #F0F1F3; color: #383F45; }
+    .chip-count { font-size: 13px; font-weight: 700; }
+
+    /* Table */
+    .table-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: #F6F7F9;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap;
+    }
+    thead th.center { text-align: center; }
+    tbody tr {
+      border-bottom: 1px solid #E5E7EA;
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #F6F7F9; }
+    tbody td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #24292E;
+      vertical-align: middle;
+    }
+    tbody td.center { text-align: center; }
+
+    .thumb-box {
+      width: 36px;
+      height: 36px;
+      background: #E5E7EA;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .thumb-box svg { color: #9EA5AD; }
+
+    .content-name-link {
+      color: #24292E;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .content-name-link:hover { color: #2D84ED; text-decoration: underline; }
+    .content-id { font-size: 11px; color: #9EA5AD; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    /* Lifecycle */
+    .lc-draft     { background: #F0F1F3; color: #596066; }
+    .lc-validating { background: #EAF3FF; color: #2D84ED; }
+    .lc-review    { background: #F3EEFF; color: #7C5CBF; }
+    .lc-approved  { background: #E8F8E9; color: #2E9E34; }
+    .lc-inactive  { background: #FFF8E6; color: #B45309; }
+    .lc-archived  { background: #F0F1F3; color: #383F45; }
+    /* PDE decision */
+    .pde-approved  { background: #E8F8E9; color: #2E9E34; }
+    .pde-restricted { background: #FFF8E6; color: #B45309; }
+    .pde-deferred  { background: #F3EEFF; color: #7C5CBF; }
+    .pde-rejected  { background: #FEE2E2; color: #C83434; }
+    .pde-none { color: #CED2D6; font-size: 13px; }
+    /* Retention */
+    .ret-normal { background: #F0F1F3; color: #596066; border: 1px solid #CED2D6; }
+    .ret-soon   { background: #FFF8E6; color: #B45309; }
+    .ret-expired { background: #FEE2E2; color: #C83434; }
   </style>
 </head>
 <body>
 
-  <!-- GNB Sidebar -->
-  <aside class="gnb">
-    <!-- Logo -->
-    <div class="gnb-logo">
-      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="44" height="44" rx="8" fill="rgba(255,255,255,0.10)"/>
-        <text x="22" y="27" text-anchor="middle" font-family="'Pretendard','Apple SD Gothic Neo',sans-serif" font-size="13" font-weight="700" fill="#58C65D">DL</text>
-      </svg>
-    </div>
-    <!-- Nav -->
-    <nav class="gnb-nav">
-      <!-- 대시보드 -->
-      <a href="dashboard">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="7" height="7" rx="1"/>
-          <rect x="11" y="2" width="7" height="7" rx="1"/>
-          <rect x="2" y="11" width="7" height="7" rx="1"/>
-          <rect x="11" y="11" width="7" height="7" rx="1"/>
-        </svg>
-        대시보드
-      </a>
-      <!-- 미디어 -->
-      <a href="media-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="4" width="16" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M7 17h6M10 15v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        미디어
-      </a>
-      <!-- 프로덕트 -->
-      <a href="product-list" title="프로덕트">
-        <svg width="22" height="22" viewBox="0 0 24 24">
-          <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z" fill="currentColor"/>
-          <circle cx="20" cy="18" r="2.5" fill="currentColor"/>
-        </svg>
-        <span>프로덕트</span>
-      </a>
-
-      <!-- 콘텐츠 (active) -->
-      <a href="contents" class="active">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2H5a1 1 0 00-1 1v14a1 1 0 001 1h10a1 1 0 001-1V7l-4-5z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M12 2v5h4" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="7" y1="13" x2="11" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        콘텐츠
-      </a>
-      <!-- 스케줄 -->
-      <a href="schedule-list">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="4" width="14" height="14" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.5"/>
-          <rect x="6" y="12" width="2" height="2" rx="0.5" fill="currentColor"/>
-          <rect x="9" y="12" width="2" height="2" rx="0.5" fill="currentColor"/>
-          <rect x="12" y="12" width="2" height="2" rx="0.5" fill="currentColor"/>
-        </svg>
-        스케줄
-      </a>
-
-      <!-- 편성표 -->
-      <a href="schedule-media-month" title="편성표">
-        <svg width="22" height="22" viewBox="0 0 24 24">
-          <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M3 9h18M8 2v3M16 2v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-        </svg>
-        <span>편성표</span>
-      </a>
-      <!-- 모니터링 -->
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polyline points="2,14 6,9 9,12 13,6 18,10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-        모니터링
-      </a>
-      <!-- Divider -->
-      <div class="gnb-divider"></div>
-      <!-- 태그검색 -->
-      <a href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 3h6l8 8a2 2 0 010 2.83l-3.17 3.17a2 2 0 01-2.83 0L3 9V3z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <circle cx="7" cy="7" r="1.2" fill="currentColor"/>
-        </svg>
-        태그검색
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Topbar -->
-  <header class="topbar">
-    <!-- Search -->
-    <div class="topbar-search">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/>
-        <line x1="11" y1="11" x2="14.5" y2="14.5" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <input type="text" placeholder="검색">
-    </div>
-    <!-- User area -->
-    <div class="topbar-user">
-      <!-- Notification bell -->
-      <div class="topbar-icon-btn">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 2a5.5 5.5 0 00-5.5 5.5v3.5L2 14h14l-1.5-3V7.5A5.5 5.5 0 009 2z" stroke="#9EA5AD" stroke-width="1.3" fill="none"/>
-          <path d="M7 14a2 2 0 004 0" stroke="#9EA5AD" stroke-width="1.3" fill="none"/>
-        </svg>
-        <span class="dot-badge"></span>
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
+    <li><a href="contents" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+      <div class="gnb-sub">
+        <div class="gnb-sub-title">편성표</div>
+        <a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+        <a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
       </div>
-      <!-- Profile dropdown -->
-      <div class="topbar-profile" id="profileBtn" onclick="toggleProfile()">
-        <div class="topbar-avatar">관</div>
-        <div class="topbar-profile-info">
-          <div class="topbar-profile-name">관리자</div>
-          <div class="topbar-profile-org">DOOH Service</div>
-        </div>
-        <span class="topbar-caret">▾</span>
-        <div class="profile-dropdown" id="profileDropdown">
-          <a href="#">내 정보</a>
-          <a href="#">비밀번호 변경</a>
-          <a href="login" class="logout">로그아웃</a>
-        </div>
-      </div>
-    </div>
-  </header>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="monitoring"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+  </ul>
+</nav>
 
-  <!-- Breadcrumb -->
-  <div class="bcrumb">
-    <a href="#" class="bcrumb-back">‹</a>
-    <a href="#">콘텐츠 관리</a>
-    <span class="sep">›</span>
-    <span class="cur">콘텐츠 목록</span>
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
   </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
 
-  <!-- Main Content -->
-  <main class="content">
-    <div class="content-inner">
-      <div class="card">
+<!-- Main content -->
+<main class="content">
+  <div class="content-inner">
+    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">콘텐츠</div>
 
-        <!-- Card Head -->
-        <div class="card-head">
-          <span class="card-title">콘텐츠 목록</span>
-          <button class="btn btn-primary">＋ 콘텐츠 등록</button>
-        </div>
+    <!-- Status summary chips -->
+    <div class="summary-chips">
+      <span class="chip chip-all">전체 <span class="chip-count">42</span></span>
+      <span class="chip chip-approved">승인 <span class="chip-count">24</span></span>
+      <span class="chip chip-review">검토대기 <span class="chip-count">6</span></span>
+      <span class="chip chip-validating">검증중 <span class="chip-count">3</span></span>
+      <span class="chip chip-draft">초안 <span class="chip-count">7</span></span>
+      <span class="chip chip-archived">보관 <span class="chip-count">2</span></span>
+    </div>
 
-        <!-- Card Body -->
-        <div class="card-body">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="searchInput" placeholder="콘텐츠명, 콘텐츠 ID 검색" oninput="filterTable()">
+      </div>
+      <select class="filter-select" id="filterLifecycle" onchange="filterTable()">
+        <option value="">Lifecycle 전체</option>
+        <option value="초안">초안</option>
+        <option value="검증중">검증중</option>
+        <option value="검토대기">검토대기</option>
+        <option value="승인">승인</option>
+        <option value="비활성">비활성</option>
+        <option value="보관">보관</option>
+      </select>
+      <select class="filter-select" id="filterType" onchange="filterTable()">
+        <option value="">콘텐츠 유형 전체</option>
+        <option value="파일">파일</option>
+        <option value="URL">URL</option>
+        <option value="콘텐츠체인">콘텐츠체인</option>
+      </select>
+      <select class="filter-select" id="filterAdType" onchange="filterTable()">
+        <option value="">광고 유형 전체</option>
+        <option value="일반광고">일반광고</option>
+        <option value="공익광고">공익광고</option>
+        <option value="자체광고">자체광고</option>
+      </select>
+      <select class="filter-select" id="filterRetention" onchange="filterTable()">
+        <option value="">Retention 전체</option>
+        <option value="정상">정상</option>
+        <option value="만료임박">만료임박</option>
+        <option value="만료">만료</option>
+      </select>
+      <button class="btn-primary" onclick="location.href='content-register'">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        콘텐츠 등록
+      </button>
+    </div>
 
-          <!-- Tab Nav -->
-          <ul class="tab-nav">
-            <li class="active"><a href="#">전체(248)</a></li>
-            <li><a href="#">진행중(87)</a></li>
-            <li><a href="#">예약(42)</a></li>
-            <li><a href="#">완료(106)</a></li>
-            <li><a href="#">취소(13)</a></li>
-          </ul>
+    <!-- Table -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th class="center" style="width:56px;">미리보기</th>
+            <th>콘텐츠명</th>
+            <th style="width:110px;">콘텐츠 ID</th>
+            <th style="width:110px;">유형</th>
+            <th class="center" style="width:80px;">재생시간</th>
+            <th class="center" style="width:100px;">Lifecycle</th>
+            <th class="center" style="width:90px;">PDE</th>
+            <th class="center" style="width:90px;">Retention</th>
+            <th style="width:100px;">광고주</th>
+            <th style="width:90px;">등록일</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Row 1 -->
+          <tr data-lc="승인" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">강남역 여름 캠페인 영상</div>
+              <div class="content-id">CNT-001</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-001</td>
+            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+            <td class="center" style="font-size:13px;">30초</td>
+            <td class="center"><span class="badge lc-approved">승인</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">삼성전자</td>
+            <td style="font-size:12px;color:#596066;">2025-06-10</td>
+          </tr>
+          <!-- Row 2 -->
+          <tr data-lc="승인" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">인천공항 브랜드 스팟</div>
+              <div class="content-id">CNT-002</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-002</td>
+            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+            <td class="center" style="font-size:13px;">15초</td>
+            <td class="center"><span class="badge lc-approved">승인</span></td>
+            <td class="center"><span class="badge pde-restricted">제한</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">현대자동차</td>
+            <td style="font-size:12px;color:#596066;">2025-05-22</td>
+          </tr>
+          <!-- Row 3 -->
+          <tr data-lc="검토대기" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">홍대 팝업스토어 안내</div>
+              <div class="content-id">CNT-003</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-003</td>
+            <td><span style="font-size:12px;color:#596066;">파일(이미지)</span></td>
+            <td class="center" style="font-size:13px;">10초</td>
+            <td class="center"><span class="badge lc-review">검토대기</span></td>
+            <td class="center"><span class="badge pde-deferred">보류</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">나이키코리아</td>
+            <td style="font-size:12px;color:#596066;">2025-07-01</td>
+          </tr>
+          <!-- Row 4 -->
+          <tr data-lc="검증중" data-type="URL" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="#CED2D6" stroke-width="1.5"/><path d="M10 7v3l2 2" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">코엑스 신제품 런칭</div>
+              <div class="content-id">CNT-004</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-004</td>
+            <td><span style="font-size:12px;color:#596066;">URL</span></td>
+            <td class="center" style="font-size:13px;">20초</td>
+            <td class="center"><span class="badge lc-validating">검증중</span></td>
+            <td class="center"><span class="pde-none">—</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">LG전자</td>
+            <td style="font-size:12px;color:#596066;">2025-07-15</td>
+          </tr>
+          <!-- Row 5 -->
+          <tr data-lc="초안" data-type="파일" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#CED2D6"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">판교 IT 박람회</div>
+              <div class="content-id">CNT-005</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-005</td>
+            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+            <td class="center" style="font-size:13px;">45초</td>
+            <td class="center"><span class="badge lc-draft">초안</span></td>
+            <td class="center"><span class="pde-none">—</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">SK하이닉스</td>
+            <td style="font-size:12px;color:#596066;">2025-07-20</td>
+          </tr>
+          <!-- Row 6 -->
+          <tr data-lc="승인" data-type="파일" data-adtype="공익광고" data-retention="만료임박" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">공익광고 교통안전</div>
+              <div class="content-id">CNT-006</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-006</td>
+            <td><span style="font-size:12px;color:#596066;">파일(동영상)</span></td>
+            <td class="center" style="font-size:13px;">30초</td>
+            <td class="center"><span class="badge lc-approved">승인</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td class="center"><span class="badge ret-soon">만료임박</span></td>
+            <td style="font-size:12px;">서울시</td>
+            <td style="font-size:12px;color:#596066;">2025-01-10</td>
+          </tr>
+          <!-- Row 7 -->
+          <tr data-lc="승인" data-type="콘텐츠체인" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h4m4 0h4M8 10V6m0 4v4" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">여름 시즌 체인</div>
+              <div class="content-id">CNT-007</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-007</td>
+            <td><span style="font-size:12px;color:#596066;">콘텐츠체인</span></td>
+            <td class="center" style="font-size:13px;">75초</td>
+            <td class="center"><span class="badge lc-approved">승인</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">삼성전자</td>
+            <td style="font-size:12px;color:#596066;">2025-06-15</td>
+          </tr>
+          <!-- Row 8 -->
+          <tr data-lc="비활성" data-type="파일" data-adtype="자체광고" data-retention="정상" onclick="location.href='content-detail'">
+            <td class="center">
+              <div class="thumb-box" style="margin:auto;">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </td>
+            <td>
+              <div class="content-name-link">브랜드 자체 광고</div>
+              <div class="content-id">CNT-008</div>
+            </td>
+            <td style="font-size:12px;color:#596066;">CNT-008</td>
+            <td><span style="font-size:12px;color:#596066;">파일(이미지)</span></td>
+            <td class="center" style="font-size:13px;">10초</td>
+            <td class="center"><span class="badge lc-inactive">비활성</span></td>
+            <td class="center"><span class="badge pde-approved">승인</span></td>
+            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td style="font-size:12px;">MNM Networks</td>
+            <td style="font-size:12px;color:#596066;">2024-12-01</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
 
-          <!-- Search Filter Row -->
-          <div class="filter-row">
-            <label>기간</label>
-            <input type="date" class="inp" value="2024-01-01" style="width:140px;">
-            <span class="filter-sep">~</span>
-            <input type="date" class="inp" value="2024-12-31" style="width:140px;">
-            <select class="sel" style="width:130px;">
-              <option value="">전체</option>
-              <option>진행중</option>
-              <option>예약</option>
-              <option>완료</option>
-              <option>취소</option>
-            </select>
-            <select class="sel" style="width:140px;">
-              <option value="">카테고리</option>
-              <option>광고</option>
-              <option>공익</option>
-              <option>자체</option>
-            </select>
-            <input type="text" class="inp" placeholder="콘텐츠명 검색" style="width:160px;">
-            <button class="btn btn-primary" style="margin-left:auto;">검색</button>
-          </div>
-
-          <!-- List Option Row -->
-          <div class="list-option">
-            <select class="sel" style="width:100px;">
-              <option>10개씩 보기</option>
-              <option>20개씩 보기</option>
-              <option>50개씩 보기</option>
-            </select>
-            <button class="btn btn-ghost btn-sm ml-auto">엑셀 다운로드</button>
-          </div>
-
-          <!-- Table -->
-          <div class="tbl-wrap">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th style="width:40px;font-size:14px;font-weight:600;color:#596066;"><input type="checkbox" id="checkAll" onclick="toggleAll(this)"></th>
-                  <th style="width:60px;font-size:14px;font-weight:600;color:#596066;">번호</th>
-                  <th>콘텐츠명</th>
-                  <th style="width:90px;font-size:14px;font-weight:600;color:#596066;">썸네일</th>
-                  <th style="width:90px;font-size:14px;font-weight:600;color:#596066;">카테고리</th>
-                  <th style="width:80px;font-size:14px;font-weight:600;color:#596066;">상태</th>
-                  <th style="width:120px;font-size:14px;font-weight:600;color:#596066;">집행 기간</th>
-                  <th style="width:110px;font-size:14px;font-weight:600;color:#596066;">집행 사이트</th>
-                  <th style="width:100px;font-size:14px;font-weight:600;color:#596066;">등록일</th>
-                  <th style="width:80px;font-size:14px;font-weight:600;color:#596066;">관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>248</td>
-                  <td class="td-name"><a href="#">2024 하반기 브랜드 광고 캠페인 영상</a></td>
-                  <td><span class="thumb">MP4</span></td>
-                  <td>광고</td>
-                  <td><span class="badge badge-running">진행중</span></td>
-                  <td style="font-size:12px;">2024.07.01~12.31</td>
-                  <td>서울 강남 A</td>
-                  <td style="font-size:12px;">2024.06.28</td>
-                  <td><button class="btn btn-ghost btn-sm">수정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>247</td>
-                  <td class="td-name"><a href="#">공익 캠페인 — 에너지 절약 포스터</a></td>
-                  <td><span class="thumb">IMG</span></td>
-                  <td>공익</td>
-                  <td><span class="badge badge-running">진행중</span></td>
-                  <td style="font-size:12px;">2024.06.01~12.31</td>
-                  <td>전국 12개소</td>
-                  <td style="font-size:12px;">2024.05.30</td>
-                  <td><button class="btn btn-ghost btn-sm">수정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>246</td>
-                  <td class="td-name"><a href="#">신제품 출시 프로모션</a></td>
-                  <td><span class="thumb">MP4</span></td>
-                  <td>광고</td>
-                  <td><span class="badge badge-reserved">예약</span></td>
-                  <td style="font-size:12px;">2024.10.01~10.31</td>
-                  <td>서울 5개소</td>
-                  <td style="font-size:12px;">2024.09.15</td>
-                  <td><button class="btn btn-ghost btn-sm">수정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>245</td>
-                  <td class="td-name"><a href="#">2024 상반기 시즌 오프 세일 광고</a></td>
-                  <td><span class="thumb">IMG</span></td>
-                  <td>광고</td>
-                  <td><span class="badge badge-done">완료</span></td>
-                  <td style="font-size:12px;">2024.01.01~06.30</td>
-                  <td>경기 3개소</td>
-                  <td style="font-size:12px;">2023.12.20</td>
-                  <td><button class="btn btn-ghost btn-sm">보기</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td>
-                  <td>244</td>
-                  <td class="td-name"><a href="#">지방자치단체 공지 안내문</a></td>
-                  <td><span class="thumb">IMG</span></td>
-                  <td>자체</td>
-                  <td><span class="badge badge-cancel">취소</span></td>
-                  <td style="font-size:12px;">2024.03.01~03.15</td>
-                  <td>부산 1개소</td>
-                  <td style="font-size:12px;">2024.02.10</td>
-                  <td><button class="btn btn-ghost btn-sm">보기</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-        </div><!-- /card-body -->
-
-        <!-- Card Foot -->
-        <div class="card-foot">
-          <button class="btn btn-gray btn-sm">선택 삭제</button>
-          <nav class="pager">
-            <button>‹</button>
-            <a href="#" class="active">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <button>›</button>
-          </nav>
-          <span class="text-muted text-sm">총 248건</span>
-        </div>
-
-      </div><!-- /card -->
-    </div><!-- /content-inner -->
-  </main>
-
-  <script>
-    // Tab switching
-    document.querySelectorAll('.tab-nav li').forEach(function(li) {
-      li.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.tab-nav li').forEach(function(l) { l.classList.remove('active'); });
-        this.classList.add('active');
-      });
-    });
-
-    // Toggle all checkboxes
-    function toggleAll(master) {
-      document.querySelectorAll('tbody input[type=checkbox]').forEach(function(cb) {
-        cb.checked = master.checked;
-      });
-    }
-
-    // Profile dropdown
-    function toggleProfile() {
-      document.getElementById('profileDropdown').classList.toggle('open');
-    }
-    document.addEventListener('click', function(e) {
-      var btn = document.getElementById('profileBtn');
-      var dd  = document.getElementById('profileDropdown');
-      if (btn && !btn.contains(e.target)) {
-        dd.classList.remove('open');
-      }
-    });
-  </script>
+<script>
+function filterTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const lc = document.getElementById('filterLifecycle').value;
+  const type = document.getElementById('filterType').value;
+  const adtype = document.getElementById('filterAdType').value;
+  const ret = document.getElementById('filterRetention').value;
+  document.querySelectorAll('#tableBody tr').forEach(row => {
+    const name = row.querySelector('.content-name-link')?.textContent.toLowerCase() || '';
+    const id = row.querySelector('.content-id')?.textContent.toLowerCase() || '';
+    const rowLc = row.dataset.lc || '';
+    const rowType = row.dataset.type || '';
+    const rowAdtype = row.dataset.adtype || '';
+    const rowRet = row.dataset.retention || '';
+    const ok = (!search || name.includes(search) || id.includes(search))
+      && (!lc || rowLc === lc)
+      && (!type || rowType === type)
+      && (!adtype || rowAdtype === adtype)
+      && (!ret || rowRet === ret);
+    row.style.display = ok ? '' : 'none';
+  });
+}
+</script>
+<script src="../assets/js/cms.js"></script>
 </body>
 </html>
