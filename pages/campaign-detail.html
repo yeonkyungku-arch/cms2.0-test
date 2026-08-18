@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>삼성전자 갤럭시 S26 론칭 — D'ooh CMS</title>
+  <title>삼성전자 갤럭시 S25 런칭 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* Header */
+    /* ── Detail header ── */
     .detail-header {
       background: #fff;
       border: 1px solid #E5E7EA;
       border-radius: 10px;
       padding: 20px 24px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .detail-header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .back-link {
       color: #596066;
@@ -30,78 +32,90 @@
       gap: 6px;
     }
     .back-link:hover { color: #24292E; }
-    .header-actions { display: flex; gap: 8px; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn-outline {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      cursor: pointer;
-      font-weight: 500;
+      height: 34px; padding: 0 14px;
+      background: #fff; border: 1px solid #CED2D6; border-radius: 6px;
+      font-size: 13px; color: #24292E; cursor: pointer; font-weight: 500;
     }
     .btn-outline:hover { background: #F6F7F9; }
     .btn-primary-sm {
-      height: 34px;
-      padding: 0 14px;
-      background: #2D84ED;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
+      height: 34px; padding: 0 14px;
+      background: #2D84ED; border: none; border-radius: 6px;
+      font-size: 13px; color: #fff; cursor: pointer; font-weight: 600;
     }
     .btn-primary-sm:hover { background: #2272d0; }
     .btn-danger-outline {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #E97474;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #E97474;
-      cursor: pointer;
-      font-weight: 500;
+      height: 34px; padding: 0 14px;
+      background: #fff; border: 1px solid #E97474; border-radius: 6px;
+      font-size: 13px; color: #E97474; cursor: pointer; font-weight: 500;
     }
     .btn-danger-outline:hover { background: #FFF5F5; }
-    .detail-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #24292E;
-      margin: 0 0 6px;
-    }
+    .detail-title { font-size: 20px; font-weight: 700; color: #24292E; margin: 0 0 6px; }
     .detail-meta { font-size: 12px; color: #9EA5AD; }
 
-    /* Badges */
+    /* ── Badges ── */
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
     }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .lc-reviewing    { background: #EAF3FF; color: #2D84ED; }
-    .lc-reviewing .badge-dot { background: #2D84ED; }
-    .lc-recommended  { background: #F3EEFF; color: #7C5CBF; }
-    .lc-recommended .badge-dot { background: #7C5CBF; }
-    .lc-selected     { background: #E8F8E9; color: #2E9E34; }
-    .lc-selected .badge-dot { background: #58C65D; }
-    .rec-running { background: #EAF3FF; color: #2D84ED; }
+
+    /* Lifecycle SSOT */
+    .lc-draft      { background: #F0F1F3; color: #596066; }
+    .lc-draft .badge-dot { background: #9EA5AD; }
+    .lc-review     { background: #EAF3FF; color: #2D84ED; }
+    .lc-review .badge-dot { background: #2D84ED; }
+    .lc-approved   { background: #F0FDF4; color: #16A34A; }
+    .lc-approved .badge-dot { background: #58C65D; }
+    .lc-active     { background: #E0F2FE; color: #0369A1; }
+    .lc-active .badge-dot { background: #0EA5E9; }
+    .lc-completed  { background: #EAEAEA; color: #3A4349; }
+    .lc-completed .badge-dot { background: #596066; }
+    .lc-cancelled  { background: #FEE2E2; color: #991B1B; }
+    .lc-cancelled .badge-dot { background: #E97474; }
+
+    /* Recommendation mode */
+    .rec-auto   { background: #EAF3FF; color: #2D84ED; }
+    .rec-manual { background: #F0F1F3; color: #596066; }
+
+    /* PDE */
     .pde-approved { background: #E8F8E9; color: #2E9E34; }
     .pde-limited  { background: #FFF8E6; color: #B45309; }
-    .pde-pending  { background: #F0F1F3; color: #596066; }
+    .pde-deferred { background: #FFF4E0; color: #C2620D; }
     .pde-rejected { background: #FEE2E2; color: #991B1B; }
+
     .check-pass { color: #2E9E34; font-weight: 700; }
     .check-warn { color: #B45309; font-weight: 700; }
     .check-fail { color: #991B1B; font-weight: 700; }
 
-    /* Tabs (hidden radio input pattern) */
+    /* ── PDE Panel card (top of detail) ── */
+    .pde-top-card {
+      border-left: 4px solid #F3BE4A;
+      background: #FFFBF0;
+      border-radius: 0 8px 8px 0;
+      border: 1px solid #FDE68A;
+      border-left: 4px solid #F3BE4A;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pde-top-card.approved {
+      border-left-color: #58C65D;
+      background: #F0FDF4;
+      border-color: #A7F3D0;
+      border-left-color: #58C65D;
+    }
+    .pde-top-card-left { display: flex; align-items: center; gap: 10px; }
+    .pde-top-card-label { font-size: 12px; font-weight: 700; color: #596066; }
+    .pde-top-card-text { font-size: 13px; color: #24292E; }
+
+    /* ── Tabs (8 tabs) ── */
     .tabs-wrap { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; overflow: hidden; }
     .tab-inputs { display: none; }
     .tab-nav {
@@ -111,7 +125,7 @@
       overflow-x: auto;
     }
     .tab-label {
-      padding: 12px 20px;
+      padding: 12px 18px;
       font-size: 13px;
       font-weight: 500;
       color: #9EA5AD;
@@ -129,7 +143,8 @@
     #tab4:checked ~ .tab-nav label[for="tab4"],
     #tab5:checked ~ .tab-nav label[for="tab5"],
     #tab6:checked ~ .tab-nav label[for="tab6"],
-    #tab7:checked ~ .tab-nav label[for="tab7"] {
+    #tab7:checked ~ .tab-nav label[for="tab7"],
+    #tab8:checked ~ .tab-nav label[for="tab8"] {
       color: #24292E;
       border-bottom-color: #24292E;
       font-weight: 600;
@@ -142,9 +157,10 @@
     #tab4:checked ~ .tab-body > #content4,
     #tab5:checked ~ .tab-body > #content5,
     #tab6:checked ~ .tab-body > #content6,
-    #tab7:checked ~ .tab-body > #content7 { display: block; }
+    #tab7:checked ~ .tab-body > #content7,
+    #tab8:checked ~ .tab-body > #content8 { display: block; }
 
-    /* Info grid */
+    /* ── Info grid ── */
     .info-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -152,7 +168,6 @@
       margin-bottom: 24px;
     }
     .info-grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .info-item {}
     .info-label {
       font-size: 11px;
       font-weight: 600;
@@ -163,7 +178,7 @@
     }
     .info-value { font-size: 14px; color: #24292E; font-weight: 500; }
 
-    /* Section inside tab */
+    /* ── Tab sections ── */
     .tab-section {
       margin-bottom: 24px;
       padding-bottom: 24px;
@@ -177,7 +192,7 @@
       margin-bottom: 16px;
     }
 
-    /* Checklist */
+    /* ── Feasibility checklist ── */
     .checklist { display: flex; flex-direction: column; gap: 8px; }
     .check-item {
       display: flex;
@@ -195,7 +210,7 @@
     .check-item.warn { background: #FFFBEB; }
     .check-item.fail { background: #FEF2F2; }
 
-    /* Recommendation cards */
+    /* ── Recommendation cards ── */
     .rec-cards { display: flex; flex-direction: column; gap: 12px; }
     .rec-card {
       border: 1px solid #E5E7EA;
@@ -211,16 +226,10 @@
       margin-bottom: 12px;
     }
     .rank-badge {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      width: 28px; height: 28px; border-radius: 50%;
       background: #F0F1F3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 800;
-      color: #596066;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #596066;
       flex-shrink: 0;
     }
     .rank-badge.rank1 { background: #FFD700; color: #7A5000; }
@@ -235,115 +244,54 @@
     .rec-meta-item .label { color: #9EA5AD; margin-bottom: 2px; }
     .rec-meta-item .value { font-weight: 600; color: #24292E; }
     .select-btn {
-      height: 32px;
-      padding: 0 16px;
-      background: #58C65D;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      cursor: pointer;
+      height: 32px; padding: 0 16px;
+      background: #58C65D; border: none; border-radius: 6px;
+      font-size: 13px; font-weight: 600; color: #fff; cursor: pointer;
     }
     .select-btn:hover { background: #4ab34f; }
     .select-btn:disabled { background: #CED2D6; cursor: not-allowed; }
 
-    /* Score breakdown */
+    /* ── Score breakdown ── */
     .score-breakdown {
-      background: #F6F7F9;
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-top: 8px;
-      font-size: 12px;
+      background: #F6F7F9; border-radius: 8px;
+      padding: 12px 16px; margin-top: 8px; font-size: 12px;
     }
     .score-breakdown-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
+      display: flex; justify-content: space-between; align-items: center; padding: 4px 0;
     }
     .score-breakdown-row + .score-breakdown-row { border-top: 1px solid #E5E7EA; }
     .score-breakdown-label { color: #596066; }
     .score-breakdown-value { font-weight: 700; color: #24292E; }
 
-    /* PDE panel */
+    /* ── PDE panel (tab 7) ── */
     .pde-panel {
       border: 1px solid #E5E7EA;
-      border-radius: 10px;
+      border-left: 4px solid #F3BE4A;
+      border-radius: 0 10px 10px 0;
       overflow: hidden;
       margin-bottom: 20px;
     }
+    .pde-panel.approved { border-left-color: #58C65D; }
     .pde-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      background: #F6F7F9;
-      border-bottom: 1px solid #E5E7EA;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; background: #F6F7F9; border-bottom: 1px solid #E5E7EA;
     }
     .pde-panel-title { font-size: 14px; font-weight: 700; color: #24292E; }
     .pde-panel-body { padding: 16px 18px; }
     .pde-condition {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 8px 0;
-      border-bottom: 1px solid #F0F1F3;
-      font-size: 13px;
-      color: #24292E;
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 8px 0; border-bottom: 1px solid #F0F1F3;
+      font-size: 13px; color: #24292E;
     }
     .pde-condition:last-child { border-bottom: none; }
     .pde-cond-bullet {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #F3BE4A;
-      flex-shrink: 0;
-      margin-top: 4px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #58C65D; flex-shrink: 0; margin-top: 4px;
     }
 
-    /* Audit timeline */
-    .timeline { display: flex; flex-direction: column; gap: 0; }
-    .timeline-item {
-      display: flex;
-      gap: 16px;
-      padding: 14px 0;
-      border-bottom: 1px solid #F0F1F3;
-    }
-    .timeline-item:last-child { border-bottom: none; }
-    .timeline-dot-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-shrink: 0;
-      width: 16px;
-    }
-    .timeline-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #2D84ED;
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 2px #BDD9FF;
-      flex-shrink: 0;
-    }
-    .timeline-line { flex: 1; width: 1px; background: #E5E7EA; }
-    .timeline-content {}
-    .timeline-state {
-      font-size: 13px;
-      font-weight: 600;
-      color: #24292E;
-      margin-bottom: 2px;
-    }
-    .timeline-time { font-size: 11px; color: #9EA5AD; margin-bottom: 4px; }
-    .timeline-user { font-size: 12px; color: #596066; }
-
-    /* Snapshot info */
+    /* ── Snapshot grid ── */
     .snapshot-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;
     }
     .snapshot-item { background: #F6F7F9; border-radius: 8px; padding: 10px 14px; }
     .snapshot-label { font-size: 11px; font-weight: 600; color: #9EA5AD; margin-bottom: 3px; letter-spacing: 0.03em; }
@@ -351,15 +299,75 @@
     .freshness-fresh { color: #2E9E34; background: #E8F8E9; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
     .freshness-stale { color: #B45309; background: #FFF8E6; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
 
-    /* Selected product snapshot */
+    /* ── Selected snapshot (immutable) ── */
     .selected-snapshot {
-      border: 2px solid #58C65D;
-      border-radius: 10px;
-      padding: 16px 20px;
-      background: #F0FDF4;
-      margin-bottom: 20px;
+      border: 2px solid #58C65D; border-radius: 10px;
+      padding: 16px 20px; background: #F0FDF4; margin-bottom: 20px;
     }
     .selected-snapshot-title { font-size: 13px; font-weight: 700; color: #2E9E34; margin-bottom: 12px; }
+
+    /* ── Selection table (immutable) ── */
+    .immutable-table-wrap { overflow-x: auto; margin-bottom: 20px; }
+    .immutable-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .immutable-table th {
+      background: #F6F7F9; padding: 9px 14px;
+      font-size: 11px; font-weight: 600; color: #9EA5AD;
+      text-align: left; border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .immutable-table td {
+      padding: 10px 14px; border-bottom: 1px solid #F0F1F3;
+      color: #24292E;
+    }
+    .immutable-table tr:last-child td { border-bottom: none; }
+    .immutable-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 700; padding: 1px 7px;
+      border-radius: 10px; background: #F0F1F3; color: #596066;
+    }
+
+    /* ── Audit timeline ── */
+    .timeline { display: flex; flex-direction: column; }
+    .timeline-item {
+      display: flex; gap: 16px; padding: 14px 0;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      flex-shrink: 0; width: 16px;
+    }
+    .timeline-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #2D84ED; border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #BDD9FF; flex-shrink: 0;
+    }
+    .timeline-line { flex: 1; width: 1px; background: #E5E7EA; }
+    .timeline-state { font-size: 13px; font-weight: 600; color: #24292E; margin-bottom: 2px; }
+    .timeline-time { font-size: 11px; color: #9EA5AD; margin-bottom: 4px; }
+    .timeline-user { font-size: 12px; color: #596066; }
+
+    /* ── Map placeholder ── */
+    .map-placeholder {
+      width: 100%; height: 140px;
+      background: linear-gradient(135deg, #e8f1fb 0%, #dceeff 100%);
+      border: 1px solid #E5E7EA; border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      color: #9EA5AD; font-size: 12px; margin-bottom: 12px;
+    }
+
+    /* ── Condition trigger table ── */
+    .trigger-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .trigger-table th {
+      background: #F6F7F9; padding: 8px 12px;
+      font-size: 11px; font-weight: 600; color: #9EA5AD; text-align: left;
+      border-bottom: 1px solid #E5E7EA; white-space: nowrap;
+    }
+    .trigger-table td { padding: 9px 12px; border-bottom: 1px solid #F0F1F3; color: #24292E; }
+    .trigger-table tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -398,9 +406,9 @@
       <span class="dot-badge"></span>
     </div>
     <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
+      <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-name">홍길동</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
@@ -418,27 +426,42 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#596066" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           캠페인 목록
         </a>
+        <!-- State transition actions for 집행중: Close Campaign -->
         <div class="header-actions">
-          <button class="btn-outline" onclick="alert('재검토 요청 (목업)')">재검토 요청</button>
-          <button class="btn-outline" onclick="alert('스케줄 생성 (목업)')">스케줄 생성</button>
+          <button class="btn-outline" onclick="alert('캠페인 재개 (목업)')">재개(Resume)</button>
           <button class="btn-danger-outline" onclick="alert('캠페인 종료 확인 (목업)')">캠페인 종료</button>
           <button class="btn-primary-sm" onclick="alert('수정 모드 (목업)')">수정</button>
         </div>
       </div>
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
         <div>
-          <h1 class="detail-title">삼성전자 갤럭시 S26 론칭</h1>
-          <div class="detail-meta">CMP-2026-001 &nbsp;·&nbsp; 등록일: 2026.01.20 &nbsp;·&nbsp; 등록자: 구연경</div>
+          <h1 class="detail-title">삼성전자 갤럭시 S25 런칭</h1>
+          <div class="detail-meta">CMP-2026-001 &nbsp;·&nbsp; 생성일: 2025.12.20 &nbsp;·&nbsp; 담당자: 홍길동</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <span class="badge lc-reviewing"><span class="badge-dot"></span>검토중</span>
-          <span class="badge rec-running">분석중</span>
-          <span class="badge pde-pending">보류</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;">
+          <!-- Lifecycle State Badge -->
+          <span class="badge lc-active"><span class="badge-dot"></span>집행중</span>
+          <!-- Recommendation mode badge -->
+          <span class="badge rec-auto">자동추천</span>
+          <!-- PDE badge -->
+          <span class="badge pde-approved">PDE 승인</span>
         </div>
       </div>
     </div>
 
-    <!-- Tabs -->
+    <!-- PDE Panel Card (amber left-border for non-approved; green for approved) -->
+    <div class="pde-top-card approved">
+      <div class="pde-top-card-left">
+        <span style="font-size:18px;">✅</span>
+        <div>
+          <div class="pde-top-card-label">PDE Decision</div>
+          <div class="pde-top-card-text">정책 검토 통과 — 모든 후보 적합성이 승인되었습니다. (Policy Version: v2.1.3)</div>
+        </div>
+      </div>
+      <span class="badge pde-approved">승인</span>
+    </div>
+
+    <!-- 8-Tab Structure -->
     <div class="tabs-wrap">
       <input class="tab-inputs" type="radio" name="tabs" id="tab1" checked>
       <input class="tab-inputs" type="radio" name="tabs" id="tab2">
@@ -447,61 +470,143 @@
       <input class="tab-inputs" type="radio" name="tabs" id="tab5">
       <input class="tab-inputs" type="radio" name="tabs" id="tab6">
       <input class="tab-inputs" type="radio" name="tabs" id="tab7">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab8">
       <div class="tab-nav">
         <label class="tab-label" for="tab1">기본정보</label>
-        <label class="tab-label" for="tab2">광고효과 요구</label>
-        <label class="tab-label" for="tab3">광고 운영 요구</label>
-        <label class="tab-label" for="tab4">사전 검토</label>
-        <label class="tab-label" for="tab5">추천 결과</label>
-        <label class="tab-label" for="tab6">선택 결과 &amp; PDE</label>
-        <label class="tab-label" for="tab7">Audit</label>
+        <label class="tab-label" for="tab2">광고주 요구사항</label>
+        <label class="tab-label" for="tab3">광고효과 요구</label>
+        <label class="tab-label" for="tab4">광고 운영 요구</label>
+        <label class="tab-label" for="tab5">사전검토(Feasibility)</label>
+        <label class="tab-label" for="tab6">추천결과</label>
+        <label class="tab-label" for="tab7">선택결과 &amp; PDE</label>
+        <label class="tab-label" for="tab8">Audit</label>
       </div>
       <div class="tab-body">
 
-        <!-- Tab 1: 기본정보 -->
+        <!-- ══ Tab 1: 기본정보 ══ -->
         <div class="tab-content" id="content1">
           <div class="info-grid">
             <div class="info-item">
               <div class="info-label">캠페인명</div>
-              <div class="info-value">삼성전자 갤럭시 S26 론칭</div>
+              <div class="info-value">삼성전자 갤럭시 S25 런칭</div>
             </div>
             <div class="info-item">
-              <div class="info-label">유입경로</div>
-              <div class="info-value">Direct</div>
+              <div class="info-label">캠페인 ID</div>
+              <div class="info-value" style="font-size:13px;color:#9EA5AD;">CMP-2026-001</div>
             </div>
             <div class="info-item">
-              <div class="info-label">광고주</div>
+              <div class="info-label">Lifecycle 상태</div>
+              <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">광고주 (campaign.advertiserId)</div>
               <div class="info-value" style="color:#2D84ED;cursor:pointer;">삼성전자</div>
             </div>
             <div class="info-item">
-              <div class="info-label">캠페인 기간</div>
-              <div class="info-value">2026.02.01 – 2026.02.28</div>
+              <div class="info-label">대행사 (campaign.agencyId)</div>
+              <div class="info-value" style="color:#9EA5AD;">—</div>
             </div>
             <div class="info-item">
-              <div class="info-label">집행 기간</div>
-              <div class="info-value">2026.02.03 – 2026.02.25</div>
+              <div class="info-label">담당 매니저 (campaign.ownerManagerId)</div>
+              <div class="info-value">홍길동</div>
             </div>
             <div class="info-item">
-              <div class="info-label">집행 지역</div>
-              <div class="info-value">서울 전역</div>
+              <div class="info-label">광고주 담당자 (campaign.advertiserContactId)</div>
+              <div class="info-value">김민준 (마케팅팀장)</div>
             </div>
-          </div>
-          <div class="tab-section">
-            <div class="tab-section-title">메모</div>
-            <div style="background:#F6F7F9;border-radius:8px;padding:14px 16px;font-size:13px;color:#3A4349;line-height:1.7;">
-              갤럭시 S26 출시 기념 브랜드 어웨어니스 캠페인. 주 타겟은 20-40대 직장인. 강남·여의도·판교 권역 중심 노출 필요. 경쟁사 캠페인 집행 기간 고려하여 우선순위 배정 요청.
+            <div class="info-item">
+              <div class="info-label">유입경로 (campaign.sourceType)</div>
+              <div class="info-value">직접문의 (Direct)</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">추천방식</div>
+              <div class="info-value"><span class="badge rec-auto">자동추천 (Auto)</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Tab 2: 광고효과 요구 -->
+        <!-- ══ Tab 2: 광고주 요구사항 ══ -->
         <div class="tab-content" id="content2">
+
+          <!-- 캠페인 목표 -->
           <div class="tab-section">
-            <div class="tab-section-title">효과 KPI 우선순위</div>
+            <div class="tab-section-title">캠페인 목표 (campaign.objectives)</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">브랜드 인지도</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">도달 (Reach)</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">반복 노출</span>
+            </div>
+          </div>
+
+          <!-- 기간 -->
+          <div class="tab-section">
+            <div class="tab-section-title">희망 기간</div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">희망 시작일 (campaign.requestedStartDate)</div>
+                <div class="info-value">2026.01.15</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">희망 종료일 (campaign.requestedEndDate)</div>
+                <div class="info-value">2026.02.28</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 타깃 지역 -->
+          <div class="tab-section">
+            <div class="tab-section-title">희망 지역 (campaign.targetAreas)</div>
+            <div class="map-placeholder">
+              <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="16" r="8" stroke="#9EA5AD" stroke-width="1.8"/><path d="M18 24c0 0 8 6 8 10H10c0-4 8-10 8-10z" stroke="#9EA5AD" stroke-width="1.8" stroke-linejoin="round" fill="none"/><circle cx="18" cy="16" r="3" fill="#9EA5AD" opacity=".5"/></svg>
+              지도 뷰 (서울·강남·여의도·판교 권역 선택됨)
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">서울</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">강남구</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">영등포구</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">성남시(판교)</span>
+            </div>
+          </div>
+
+          <!-- 상품 선택 방식 -->
+          <div class="tab-section">
+            <div class="tab-section-title">상품 선택 방식 (campaign.selectionMode)</div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">선택 방식</div>
+                <div class="info-value"><span class="badge rec-auto">자동추천 (RECOMMENDATION)</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slot·콘텐츠·예산 -->
+          <div class="tab-section">
+            <div class="tab-section-title">슬롯·소재·예산</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">희망 슬롯 시간 (campaign.requestedSlotDuration)</div>
+                <div class="info-value">30초</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">콘텐츠 참조 (campaign.contentRevisionRef)</div>
+                <div class="info-value" style="color:#2D84ED;cursor:pointer;">CNT-S25-LAUNCH-v2</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">희망 예산 (campaign.requestedBudget)</div>
+                <div class="info-value">KRW 45,000,000 <span style="font-size:11px;color:#9EA5AD;">(참고값·계약가격 아님)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 3: 광고효과 요구 ══ -->
+        <div class="tab-content" id="content3">
+          <div class="tab-section">
+            <div class="tab-section-title">KPI 우선순위 가중치 (campaign.effectWeights)</div>
             <div style="display:flex;flex-direction:column;gap:14px;">
               <div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
-                  <span>유동인구 노출</span><span style="color:#2D84ED;">1순위</span>
+                  <span>유동인구 (footTraffic)</span><span style="color:#2D84ED;">1순위</span>
                 </div>
                 <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
                   <div style="width:90%;height:100%;background:#2D84ED;border-radius:4px;"></div>
@@ -509,7 +614,7 @@
               </div>
               <div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
-                  <span>광고 노출 횟수</span><span style="color:#58C65D;">2순위</span>
+                  <span>노출인구 (exposedAudience)</span><span style="color:#58C65D;">2순위</span>
                 </div>
                 <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
                   <div style="width:70%;height:100%;background:#58C65D;border-radius:4px;"></div>
@@ -517,7 +622,7 @@
               </div>
               <div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
-                  <span>주목도 (Eye-tracking)</span><span style="color:#F3BE4A;">3순위</span>
+                  <span>주목인구 (attentionAudience)</span><span style="color:#F3BE4A;">3순위</span>
                 </div>
                 <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
                   <div style="width:50%;height:100%;background:#F3BE4A;border-radius:4px;"></div>
@@ -525,7 +630,7 @@
               </div>
               <div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
-                  <span>랭킹 노출 보장</span><span style="color:#9EA5AD;">4순위</span>
+                  <span>랭킹 (ranking)</span><span style="color:#9EA5AD;">4순위</span>
                 </div>
                 <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
                   <div style="width:30%;height:100%;background:#9EA5AD;border-radius:4px;"></div>
@@ -534,24 +639,24 @@
             </div>
           </div>
           <div class="tab-section">
-            <div class="tab-section-title">타겟 조건</div>
+            <div class="tab-section-title">수용자 세그먼트 (campaign.audience)</div>
             <div class="info-grid">
               <div class="info-item">
-                <div class="info-label">성별</div>
+                <div class="info-label">성별 (audience.gender)</div>
                 <div class="info-value">전체</div>
               </div>
               <div class="info-item">
-                <div class="info-label">연령대</div>
+                <div class="info-label">연령대 (audience.ageBands)</div>
                 <div class="info-value">20대 – 40대</div>
               </div>
               <div class="info-item">
-                <div class="info-label">타겟 지역</div>
+                <div class="info-label">지역 세그먼트 (audience.regions)</div>
                 <div class="info-value">강남, 여의도, 판교</div>
               </div>
             </div>
           </div>
           <div class="tab-section">
-            <div class="tab-section-title">데이터 가용성</div>
+            <div class="tab-section-title">효과 데이터 가용성</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <span class="badge" style="background:#E8F8E9;color:#2E9E34;">유동인구 데이터 연동</span>
               <span class="badge" style="background:#E8F8E9;color:#2E9E34;">노출 집계 가용</span>
@@ -561,116 +666,124 @@
           </div>
         </div>
 
-        <!-- Tab 3: 광고 운영 요구 -->
-        <div class="tab-content" id="content3">
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">운영 방식</div>
-              <div class="info-value">일반</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">재생 시간</div>
-              <div class="info-value">30초</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">보장 횟수</div>
-              <div class="info-value">1,200회 / 월</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">예산</div>
-              <div class="info-value">₩ 45,000,000</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">콘텐츠 포맷</div>
-              <div class="info-value">1920×1080 MP4</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">최대 파일 크기</div>
-              <div class="info-value">500MB</div>
+        <!-- ══ Tab 4: 광고 운영 요구 ══ -->
+        <div class="tab-content" id="content4">
+          <div class="tab-section">
+            <div class="tab-section-title">운영 방식 (campaign.operationMode)</div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">운영 모드</div>
+                <div class="info-value">일반 Rolling</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">재생 시간</div>
+                <div class="info-value">30초</div>
+              </div>
             </div>
           </div>
           <div class="tab-section">
-            <div class="tab-section-title">콘텐츠 요구사항</div>
-            <div style="background:#F6F7F9;border-radius:8px;padding:14px 16px;font-size:13px;color:#3A4349;line-height:1.7;">
-              • 인트로 3초 내 브랜드 로고 노출 필수<br>
-              • 자막 없는 버전 / 자막 있는 버전 각 1개 제출<br>
-              • 갤럭시 S26 제품 정면 컷 반드시 포함<br>
-              • 경쟁사 제품명·로고 노출 금지
+            <div class="tab-section-title">조건 광고 트리거 (campaign.conditionalRules)</div>
+            <div style="background:#F6F7F9;border-radius:8px;padding:12px 16px;font-size:13px;color:#9EA5AD;text-align:center;">
+              운영 모드가 일반(Rolling)이므로 조건 광고 규칙이 없습니다.
             </div>
           </div>
         </div>
 
-        <!-- Tab 4: 사전 검토 (Feasibility) -->
-        <div class="tab-content" id="content4">
+        <!-- ══ Tab 5: 사전검토 (Feasibility) ══ -->
+        <div class="tab-content" id="content5">
           <div class="tab-section">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
               <div class="tab-section-title" style="margin:0;">Feasibility Snapshot</div>
               <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:12px;color:#9EA5AD;">평가일: 2026.01.20 14:32</span>
+                <span style="font-size:12px;color:#9EA5AD;">평가일: 2025.12.22 10:14</span>
                 <span class="freshness-fresh">FRESH</span>
               </div>
             </div>
             <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;">
               <span style="font-size:20px;">✅</span>
               <div>
-                <div style="font-size:14px;font-weight:700;color:#065F46;">검증 통과</div>
-                <div style="font-size:12px;color:#34D399;margin-top:2px;">6개 항목 중 5개 통과, 1개 경고</div>
+                <div style="font-size:14px;font-weight:700;color:#065F46;">Feasibility 통과</div>
+                <div style="font-size:12px;color:#34D399;margin-top:2px;">4개 항목 모두 통과 — Schedule 생성 가능</div>
               </div>
             </div>
           </div>
+
+          <!-- Checklist per IA_04 SSOT: 예산충분성/매체가용성/기간합리성/슬롯가용성 -->
           <div class="tab-section">
             <div class="tab-section-title">검증 체크리스트</div>
             <div class="checklist">
               <div class="check-item pass">
                 <span class="check-icon">✅</span>
-                <span class="check-item-label">기간 검증 — 캠페인 기간 정합성 확인</span>
+                <span class="check-item-label"><strong>예산충분성</strong> — 희망예산(KRW 45M) 기준 후보 List Price 범위 내 후보 3개 이상 확보</span>
                 <span class="check-item-result check-pass">통과</span>
               </div>
               <div class="check-item pass">
                 <span class="check-icon">✅</span>
-                <span class="check-item-label">Slot 가용 검증 — 요청 슬롯 수 충족 가능</span>
+                <span class="check-item-label"><strong>매체가용성</strong> — 요청 기간·지역 내 가용 Product/Package 후보 충분</span>
                 <span class="check-item-result check-pass">통과</span>
               </div>
               <div class="check-item pass">
                 <span class="check-icon">✅</span>
-                <span class="check-item-label">Playback 검증 — 재생시간 규격 준수</span>
+                <span class="check-item-label"><strong>기간합리성</strong> — 요청 시작일·종료일 정합성 확인, 최소 집행 기간 충족</span>
                 <span class="check-item-result check-pass">통과</span>
               </div>
               <div class="check-item pass">
                 <span class="check-icon">✅</span>
-                <span class="check-item-label">Capability 검증 — 미디어 장비 지원 포맷 확인</span>
+                <span class="check-item-label"><strong>슬롯가용성</strong> — 30초 Slot Catalog 매칭 확인, 요청 슬롯 충분히 가용</span>
                 <span class="check-item-result check-pass">통과</span>
               </div>
-              <div class="check-item warn">
-                <span class="check-icon">⚠️</span>
-                <span class="check-item-label">충돌 검증 — 동일 슬롯 경쟁 캠페인 존재 (우선순위 조정 필요)</span>
-                <span class="check-item-result check-warn">경고</span>
+            </div>
+          </div>
+
+          <!-- Snapshot metadata -->
+          <div class="tab-section">
+            <div class="tab-section-title">평가 스냅샷</div>
+            <div class="snapshot-grid">
+              <div class="snapshot-item">
+                <div class="snapshot-label">SNAPSHOT VERSION</div>
+                <div class="snapshot-value">FSB-SNAP-2025-1222-v1</div>
               </div>
-              <div class="check-item pass">
-                <span class="check-icon">✅</span>
-                <span class="check-item-label">Package Common Rule 검증 — 패키지 공통 규칙 적합</span>
-                <span class="check-item-result check-pass">통과</span>
+              <div class="snapshot-item">
+                <div class="snapshot-label">EVALUATED AT</div>
+                <div class="snapshot-value">2025.12.22 10:14</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">INVENTORY VERSION</div>
+                <div class="snapshot-value">INV-20251222-0100</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">PDE POLICY VERSION</div>
+                <div class="snapshot-value">v2.1.3</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">EFFECT DATA AS-OF</div>
+                <div class="snapshot-value">2025.12.21 00:00</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">FRESHNESS</div>
+                <div class="snapshot-value"><span class="freshness-fresh">FRESH</span></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tab 5: 추천 결과 -->
-        <div class="tab-content" id="content5">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <!-- ══ Tab 6: 추천결과 ══ -->
+        <div class="tab-content" id="content6">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
             <div>
-              <div style="font-size:14px;font-weight:700;color:#24292E;">추천 결과 — Top 3 후보</div>
-              <div style="font-size:12px;color:#9EA5AD;margin-top:2px;">Run Version: RUN-2026-0120-v3 &nbsp;·&nbsp; Rule Version: RULE-v1.4.2 &nbsp;·&nbsp; 생성일시: 2026.01.20 15:00</div>
+              <div style="font-size:14px;font-weight:700;color:#24292E;">추천 결과 — Top 3 후보 (자동추천)</div>
+              <div style="font-size:12px;color:#9EA5AD;margin-top:2px;">Run: RUN-2025-1222-v2 &nbsp;·&nbsp; Rule: RULE-v1.4.2 &nbsp;·&nbsp; 2025.12.22 10:30</div>
             </div>
-            <span style="font-size:12px;padding:4px 12px;background:#EAF3FF;color:#2D84ED;border-radius:20px;font-weight:600;">분석중</span>
+            <span class="badge rec-auto">자동추천 완료</span>
           </div>
           <div class="rec-cards">
-            <!-- Rank 1 -->
+            <!-- Rank 1 (selected) -->
             <div class="rec-card rank1">
               <div class="rec-card-header">
                 <div class="rank-badge rank1">1</div>
                 <div class="rec-product-name">강남 프라임 패키지 — 30초 일반</div>
-                <button class="select-btn" onclick="alert('추천완료 상태에서만 선택 가능합니다. (목업)')">선택</button>
+                <span class="badge pde-approved" style="font-size:11px;">PDE 승인</span>
+                <span style="font-size:12px;background:#E8F8E9;color:#2E9E34;padding:3px 10px;border-radius:20px;font-weight:600;">선택됨</span>
               </div>
               <div style="margin-bottom:8px;">
                 <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;font-weight:600;">TOTAL SCORE</div>
@@ -681,12 +794,20 @@
               </div>
               <div class="score-breakdown">
                 <div class="score-breakdown-row">
-                  <span class="score-breakdown-label">📊 효과 가중 점수 (Effect Weight)</span>
-                  <span class="score-breakdown-value">54.7 / 60</span>
+                  <span class="score-breakdown-label">편성가능성 점수 (Feasibility)</span>
+                  <span class="score-breakdown-value">28.4 / 30</span>
                 </div>
                 <div class="score-breakdown-row">
-                  <span class="score-breakdown-label">⚙️ 운영 가중 점수 (Operational Weight)</span>
-                  <span class="score-breakdown-value">36.5 / 40</span>
+                  <span class="score-breakdown-label">광고효과 점수 (Effect)</span>
+                  <span class="score-breakdown-value">36.2 / 40</span>
+                </div>
+                <div class="score-breakdown-row">
+                  <span class="score-breakdown-label">요구 적합도 (RequirementFit)</span>
+                  <span class="score-breakdown-value">17.6 / 20</span>
+                </div>
+                <div class="score-breakdown-row">
+                  <span class="score-breakdown-label">예산 적합도 (BudgetFit) <span style="font-size:10px;color:#9EA5AD;">참고값</span></span>
+                  <span class="score-breakdown-value">9.0 / 10</span>
                 </div>
               </div>
               <div class="rec-meta-grid" style="margin-top:12px;">
@@ -694,16 +815,13 @@
                 <div class="rec-meta-item"><div class="label">예상 노출</div><div class="value">124,500회/월</div></div>
                 <div class="rec-meta-item"><div class="label">List Price</div><div class="value">₩3,300,000</div></div>
               </div>
-              <div style="background:#F0F9F1;border-left:3px solid #58C65D;border-radius:0 6px 6px 0;padding:10px 14px;font-size:12px;color:#3A4349;line-height:1.6;margin-top:12px;">
-                강남 권역 유동인구 밀도가 가장 높으며, 20-40대 직장인 타겟 도달에 최적화된 위치입니다. 경쟁 캠페인 대비 슬롯 여유가 충분합니다.
-              </div>
             </div>
             <!-- Rank 2 -->
             <div class="rec-card">
               <div class="rec-card-header">
                 <div class="rank-badge rank2">2</div>
                 <div class="rec-product-name">여의도 IFC 미디어 — 30초 일반</div>
-                <button class="select-btn" disabled>선택</button>
+                <span class="badge pde-approved" style="font-size:11px;">PDE 승인</span>
               </div>
               <div class="score-bar-wrap">
                 <div class="score-bar-track"><div class="score-bar-fill" style="width:84%;background:#2D84ED;"></div></div>
@@ -720,7 +838,7 @@
               <div class="rec-card-header">
                 <div class="rank-badge rank3">3</div>
                 <div class="rec-product-name">판교 테크노밸리 DID — 30초 일반</div>
-                <button class="select-btn" disabled>선택</button>
+                <span class="badge pde-approved" style="font-size:11px;">PDE 승인</span>
               </div>
               <div class="score-bar-wrap">
                 <div class="score-bar-track"><div class="score-bar-fill" style="width:76%;background:#9EA5AD;"></div></div>
@@ -735,45 +853,47 @@
           </div>
         </div>
 
-        <!-- Tab 6: 선택 결과 & PDE -->
-        <div class="tab-content" id="content6">
-          <div class="selected-snapshot">
-            <div class="selected-snapshot-title">✅ 선택된 프로덕트 (Immutable Snapshot)</div>
-            <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">선택 프로덕트</div>
-                <div class="info-value">강남 프라임 패키지 — 30초 일반</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Score at Selection</div>
-                <div class="info-value" style="color:#2E9E34;">91.2</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">선택 일시</div>
-                <div class="info-value">2026.01.21 10:05</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">선택자</div>
-                <div class="info-value">구연경</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">가용률 (at 선택)</div>
-                <div class="info-value">87%</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">예상 노출 (at 선택)</div>
-                <div class="info-value">124,500회/월</div>
-              </div>
+        <!-- ══ Tab 7: 선택결과 & PDE ══ -->
+        <div class="tab-content" id="content7">
+
+          <!-- Immutable Selection Snapshot table -->
+          <div class="tab-section">
+            <div class="tab-section-title">Campaign Selection Snapshot (Immutable) <span class="immutable-badge">LOCKED</span></div>
+            <div class="immutable-table-wrap">
+              <table class="immutable-table">
+                <thead>
+                  <tr>
+                    <th>Snapshot ID</th>
+                    <th>선택 프로덕트</th>
+                    <th>Score</th>
+                    <th>Rank</th>
+                    <th>선택 일시</th>
+                    <th>선택자</th>
+                    <th>PDE Decision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-size:11px;color:#9EA5AD;">SEL-SNAP-20260115-001</td>
+                    <td>강남 프라임 패키지 — 30초 일반</td>
+                    <td style="font-weight:700;color:#2E9E34;">91.2</td>
+                    <td style="font-weight:700;">#1</td>
+                    <td style="font-size:12px;">2026.01.15 09:00</td>
+                    <td>홍길동</td>
+                    <td><span class="badge pde-approved">승인</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <!-- Snapshot 상세 -->
+          <!-- Version snapshot -->
           <div class="tab-section">
-            <div class="tab-section-title">버전 Snapshot</div>
+            <div class="tab-section-title">버전 Snapshot (campaign.selectionSnapshots)</div>
             <div class="snapshot-grid">
               <div class="snapshot-item">
                 <div class="snapshot-label">RUN VERSION</div>
-                <div class="snapshot-value">RUN-2026-0120-v3</div>
+                <div class="snapshot-value">RUN-2025-1222-v2</div>
               </div>
               <div class="snapshot-item">
                 <div class="snapshot-label">RULE VERSION</div>
@@ -781,7 +901,7 @@
               </div>
               <div class="snapshot-item">
                 <div class="snapshot-label">MODEL VERSION</div>
-                <div class="snapshot-value">MODEL-v2.1.0</div>
+                <div class="snapshot-value">N/A (Rule-based)</div>
               </div>
               <div class="snapshot-item">
                 <div class="snapshot-label">POLICY VERSION</div>
@@ -789,87 +909,140 @@
               </div>
               <div class="snapshot-item">
                 <div class="snapshot-label">DATA AS-OF</div>
-                <div class="snapshot-value">2026.01.20 14:00</div>
+                <div class="snapshot-value">2025.12.21 00:00</div>
               </div>
               <div class="snapshot-item">
-                <div class="snapshot-label">생성 일시</div>
-                <div class="snapshot-value">2026.01.20 15:00</div>
+                <div class="snapshot-label">SNAPSHOT AT</div>
+                <div class="snapshot-value">2026.01.15 09:00</div>
               </div>
             </div>
           </div>
 
-          <!-- PDE Panel -->
-          <div class="pde-panel">
+          <!-- PDE Decision Panel (amber left-border spec; green for approved) -->
+          <div class="pde-panel approved">
             <div class="pde-panel-header">
               <div class="pde-panel-title">PDE Decision</div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <span style="font-size:12px;color:#9EA5AD;">Policy Version: v2.1.3</span>
-                <span class="badge pde-limited">제한</span>
+                <span class="badge pde-approved">승인</span>
               </div>
             </div>
             <div class="pde-panel-body">
-              <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:12px;">제한 조건 목록</div>
+              <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:12px;">승인 사유</div>
               <div class="pde-condition">
                 <div class="pde-cond-bullet"></div>
-                <span>동일 광고주(삼성전자) 동시 집행 캠페인 최대 2개 초과 불가 — 현재 1개 활성 중이므로 추가 집행 가능하나 슬롯 배분 제한 적용</span>
+                <span>동일 광고주(삼성전자) 동시 집행 정책 충족 — 현재 1개 활성으로 허용 범위 내</span>
               </div>
               <div class="pde-condition">
                 <div class="pde-cond-bullet"></div>
-                <span>강남 권역 프리미엄 슬롯은 전자제품 카테고리 주간 집행 시간 총 4시간 이내 제한 (현재 2시간 40분 소진)</span>
+                <span>강남 권역 전자제품 카테고리 시간 제한 여유 충분 — 주간 1시간 20분 잔여 가용</span>
               </div>
               <div class="pde-condition">
                 <div class="pde-cond-bullet"></div>
-                <span>콘텐츠 심의 완료 전 실제 송출 불가 — 심의 완료 후 스케줄 이관 처리 필요</span>
+                <span>콘텐츠 심의 완료 확인 (CNT-S25-LAUNCH-v2) — 모든 정책 요건 통과</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tab 7: Audit -->
-        <div class="tab-content" id="content7">
-          <div class="tab-section-title">상태 변경 이력</div>
-          <div class="timeline">
-            <div class="timeline-item">
-              <div class="timeline-dot-wrap">
-                <div class="timeline-dot"></div>
-                <div class="timeline-line"></div>
+        <!-- ══ Tab 8: Audit ══ -->
+        <div class="tab-content" id="content8">
+          <div class="tab-section">
+            <div class="tab-section-title">기본 Audit 정보</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">생성일시</div>
+                <div class="info-value">2025.12.20 14:00</div>
               </div>
-              <div class="timeline-content">
-                <div class="timeline-state">Draft → Reviewing 전환</div>
-                <div class="timeline-time">2026.01.20 13:45</div>
-                <div class="timeline-user">구연경 · 검토 요청 제출</div>
+              <div class="info-item">
+                <div class="info-label">생성자</div>
+                <div class="info-value">홍길동</div>
               </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot-wrap">
-                <div class="timeline-dot" style="background:#F3BE4A;box-shadow:0 0 0 2px #FDEAB7;"></div>
-                <div class="timeline-line"></div>
+              <div class="info-item">
+                <div class="info-label">최종 수정일시</div>
+                <div class="info-value">2026.01.15 09:00</div>
               </div>
-              <div class="timeline-content">
-                <div class="timeline-state">Feasibility 검증 완료 (경고 1건)</div>
-                <div class="timeline-time">2026.01.20 14:32</div>
-                <div class="timeline-user">시스템 · 자동 검증</div>
+              <div class="info-item">
+                <div class="info-label">최종 수정자</div>
+                <div class="info-value">홍길동</div>
               </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot-wrap">
-                <div class="timeline-dot" style="background:#7C5CBF;box-shadow:0 0 0 2px #DDD0F5;"></div>
-                <div class="timeline-line"></div>
+              <div class="info-item">
+                <div class="info-label">현재 담당자</div>
+                <div class="info-value">홍길동</div>
               </div>
-              <div class="timeline-content">
-                <div class="timeline-state">추천 분석 시작 (분석중)</div>
-                <div class="timeline-time">2026.01.20 15:00</div>
-                <div class="timeline-user">시스템 · Run RUN-2026-0120-v3 실행</div>
+              <div class="info-item">
+                <div class="info-label">현재 Lifecycle</div>
+                <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></div>
               </div>
             </div>
-            <div class="timeline-item">
-              <div class="timeline-dot-wrap">
-                <div class="timeline-dot" style="background:#9EA5AD;box-shadow:0 0 0 2px #E5E7EA;"></div>
+          </div>
+          <div class="tab-section">
+            <div class="tab-section-title">상태 변경 이력</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#0EA5E9;box-shadow:0 0 0 2px #BAE6FD;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">승인 → 집행중 전환</div>
+                  <div class="timeline-time">2026.01.15 09:00</div>
+                  <div class="timeline-user">홍길동 · Schedule 생성 완료 후 집행 시작</div>
+                </div>
               </div>
-              <div class="timeline-content">
-                <div class="timeline-state">Draft 생성</div>
-                <div class="timeline-time">2026.01.20 10:15</div>
-                <div class="timeline-user">구연경 · 캠페인 최초 등록</div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#58C65D;box-shadow:0 0 0 2px #A7F3D0;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">선택완료 → 승인 전환 (PDE 승인)</div>
+                  <div class="timeline-time">2026.01.14 17:30</div>
+                  <div class="timeline-user">시스템 · PDE 자동 검증 통과</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#16A34A;box-shadow:0 0 0 2px #BBF7D0;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">추천완료 → 선택완료 (강남 프라임 패키지 선택)</div>
+                  <div class="timeline-time">2026.01.13 11:05</div>
+                  <div class="timeline-user">홍길동 · 추천 1순위 선택</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#7C5CBF;box-shadow:0 0 0 2px #DDD0F5;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">검토 → 추천완료 (자동추천 Run 완료)</div>
+                  <div class="timeline-time">2025.12.22 10:30</div>
+                  <div class="timeline-user">시스템 · Run RUN-2025-1222-v2 완료</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#2D84ED;box-shadow:0 0 0 2px #BDD9FF;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">초안 → 검토 전환</div>
+                  <div class="timeline-time">2025.12.22 09:00</div>
+                  <div class="timeline-user">홍길동 · 검토 요청 제출</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#9EA5AD;box-shadow:0 0 0 2px #E5E7EA;"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">초안(Draft) 생성</div>
+                  <div class="timeline-time">2025.12.20 14:00</div>
+                  <div class="timeline-user">홍길동 · 캠페인 최초 등록</div>
+                </div>
               </div>
             </div>
           </div>
