@@ -3,882 +3,241 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>강남 프라임 패키지 — D'ooh CMS</title>
+  <title>프로덕트 상세 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     /* ── Page header ── */
-    .detail-header {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-    }
-    .detail-header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-    .back-link {
-      color: #596066;
-      text-decoration: none;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .back-link:hover { color: #24292E; }
-    .header-actions { display: flex; gap: 8px; }
-    .btn-outline {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .btn-outline:hover { background: #F6F7F9; }
-    .btn-danger-outline {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #E97474;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #E97474;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .btn-danger-outline:hover { background: #FFF5F5; }
-    .detail-title-row {
+    .page-header {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .detail-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #24292E;
-      margin: 0;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .badge-active   { background: #E8F8E9; color: #2E9E34; }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .badge-active .badge-dot { background: #58C65D; }
-    .badge-adex    { background: #EAF3FF; color: #2D84ED; border: 1px solid #BDD9FF; font-size: 12px; padding: 3px 10px; border-radius: 5px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
-    .badge-no-adex { background: #F1F2F4; color: #9EA5AD; border: 1px solid #E5E7EA; font-size: 12px; padding: 3px 10px; border-radius: 5px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
-
-    /* 활성화 토글 */
-    .status-toggle-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .status-toggle-track {
-      width: 36px;
-      height: 20px;
-      border-radius: 10px;
-      background: #CED2D6;
-      position: relative;
-      transition: background 0.2s;
-      flex-shrink: 0;
-    }
-    .status-toggle-track.on { background: #58C65D; }
-    .status-toggle-thumb {
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      transition: left 0.2s;
-    }
-    .status-toggle-track.on .status-toggle-thumb { left: 19px; }
-    .status-toggle-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #9EA5AD;
-    }
-    .status-toggle-track.on + .status-toggle-label { color: #2E9E34; }
-    .media-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-    .media-tag {
-      padding: 4px 10px;
-      background: #EAF3FF;
-      color: #2D84ED;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    .reg-date { font-size: 12px; color: #9EA5AD; }
-
-    /* ── Section card ── */
-    .section-card {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .section-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #24292E;
-      margin: 0;
-    }
-    .link-btn {
-      font-size: 13px;
-      color: #2D84ED;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .link-btn:hover { text-decoration: underline; }
-
-    /* ── Playplan master-detail ── */
-    .playplan-layout {
-      display: flex;
-      min-height: 320px;
-    }
-    .playplan-list {
-      width: 240px;
-      flex-shrink: 0;
-      border-right: 1px solid #E5E7EA;
-      overflow-y: auto;
-    }
-    .playplan-list-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .playplan-list-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #596066;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .btn-add-small {
-      height: 26px;
-      padding: 0 10px;
-      background: #58C65D;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn-add-small:hover { background: #4ab34f; }
-    .plan-item {
-      padding: 12px 14px;
-      border-bottom: 1px solid #F0F1F3;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .plan-item:hover { background: #F6F7F9; }
-    .plan-item.selected { background: #EAF3FF; border-left: 3px solid #2D84ED; }
-    .plan-item-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #24292E;
-      margin-bottom: 4px;
-    }
-    .plan-item.selected .plan-item-name { color: #2D84ED; }
-    .plan-item-price { font-size: 12px; color: #596066; }
-
-    .playplan-detail {
-      flex: 1;
-      padding: 20px 24px;
-      overflow-y: auto;
-    }
-    .detail-empty {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: #9EA5AD;
-      font-size: 13px;
-    }
-
-    /* View mode */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
-      margin-bottom: 20px;
-    }
-    .info-item {}
-    .info-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #9EA5AD;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
       margin-bottom: 4px;
-    }
-    .info-value {
-      font-size: 14px;
-      color: #24292E;
-      font-weight: 500;
-    }
-    .plan-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-    .plan-table th {
-      background: #F6F7F9;
-      padding: 9px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #596066;
-      text-align: left;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .plan-table td {
-      padding: 11px 12px;
-      font-size: 13px;
-      color: #24292E;
-      border-bottom: 1px solid #F0F1F3;
-    }
-    .plan-table tr:last-child td { border-bottom: none; }
-    .plan-table .total-row td { font-weight: 700; background: #F6F7F9; }
-
-    /* Preview toggle */
-    .preview-toggle {
-      background: none;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 12px;
-      color: #596066;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    .preview-toggle:hover { background: #F6F7F9; }
-    .preview-panel {
-      background: #F6F7F9;
-      border-radius: 8px;
-      padding: 16px;
-      font-size: 12px;
-      color: #596066;
-      display: none;
-    }
-    .preview-panel.open { display: block; }
-
-    /* Edit form */
-    .edit-form { display: none; }
-    .edit-form.visible { display: block; }
-    .form-row {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    .form-label { font-size: 13px; color: #596066; font-weight: 500; }
-    .form-input {
-      height: 34px;
-      padding: 0 10px;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .form-select {
-      height: 34px;
-      padding: 0 28px 0 10px;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #24292E;
-      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .toggle-group {
-      display: flex;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      overflow: hidden;
-      width: fit-content;
-    }
-    .toggle-btn {
-      padding: 6px 16px;
-      font-size: 13px;
-      border: none;
-      background: #fff;
-      color: #596066;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .toggle-btn.active {
-      background: #24292E;
-      color: #fff;
-    }
-    .condition-fields { display: none; margin-top: 0; }
-    .condition-fields.visible { display: contents; }
-    .btn-primary-sm {
-      height: 34px;
-      padding: 0 16px;
-      background: #58C65D;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-primary-sm:hover { background: #4ab34f; }
-    .btn-cancel-sm {
-      height: 34px;
-      padding: 0 14px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #596066;
-      cursor: pointer;
-    }
-    .btn-cancel-sm:hover { background: #F6F7F9; }
-    .form-actions { display: flex; gap: 8px; margin-top: 20px; }
-
-    /* ── Chart section ── */
-    .chart-header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .toggle-pill {
-      display: flex;
-      border: 1px solid #CED2D6;
-      border-radius: 20px;
-      overflow: hidden;
-    }
-    .pill-btn {
-      padding: 4px 14px;
-      font-size: 12px;
-      border: none;
-      background: #fff;
-      color: #596066;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .pill-btn.active { background: #24292E; color: #fff; }
-    .chart-wrap { padding: 16px 24px; }
-    .chart-canvas-wrap { position: relative; height: 260px; }
-
-    /* ── Schedule section ── */
-    .mini-calendar {
-      display: flex;
-      gap: 6px;
-      padding: 16px 20px;
-      border-bottom: 1px solid #E5E7EA;
       flex-wrap: wrap;
     }
-    .cal-day {
+    .page-header-left { display: flex; flex-direction: column; gap: 6px; }
+    .page-title { font-size: 20px; font-weight: 700; color: #24292E; }
+    .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .page-id { font-size: 12px; color: #9EA5AD; font-family: monospace; }
+    .page-rev {
+      font-size: 12px; font-weight: 600;
+      background: #F0F1F3; color: #596066;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .breadcrumb {
+      font-size: 12px; color: #9EA5AD; margin-bottom: 12px;
+    }
+    .breadcrumb a { color: #9EA5AD; text-decoration: none; }
+    .breadcrumb a:hover { color: #2D84ED; }
+
+    /* ── State section ── */
+    .state-bar {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 8px 14px;
-      border: 1px solid #E5E7EA;
-      border-radius: 8px;
-      cursor: pointer;
+      gap: 10px;
       background: #fff;
-      transition: background 0.1s;
-      text-decoration: none;
-    }
-    .cal-day:hover { background: #F6F7F9; }
-    .cal-day.today { border-color: #2D84ED; background: #EAF3FF; }
-    .cal-day-label { font-size: 11px; color: #9EA5AD; font-weight: 500; }
-    .cal-day.today .cal-day-label { color: #2D84ED; }
-    .cal-day-date { font-size: 14px; font-weight: 700; color: #24292E; }
-    .cal-day.today .cal-day-date { color: #2D84ED; }
-    .cal-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-    /* schedule filter tabs */
-    .schedule-tabs {
-      display: flex;
-      gap: 0;
-      padding: 0 20px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .sched-tab {
-      padding: 10px 16px;
-      font-size: 13px;
-      color: #9EA5AD;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      font-weight: 500;
-      transition: color 0.1s;
-    }
-    .sched-tab.active { color: #24292E; border-bottom-color: #24292E; }
-    .sched-tab:hover { color: #596066; }
-
-    /* schedule table */
-    .sched-table { width: 100%; border-collapse: collapse; }
-    .sched-table th {
-      background: #F6F7F9;
-      padding: 9px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #596066;
-      text-align: left;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .sched-table td {
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
       padding: 12px 16px;
-      font-size: 13px;
-      color: #24292E;
-      border-bottom: 1px solid #F0F1F3;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
     }
-    .sched-table tr:last-child td { border-bottom: none; }
-    .sched-table tr[style*="none"] { display: none; }
-    .status-dot-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .sdot { width: 7px; height: 7px; border-radius: 50%; }
-    .sdot-running  { background: #10B981; }
-    .sdot-upcoming { background: #2D84ED; }
-    .type-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .type-badge.normal { background: #E8F8E9; color: #2E9E34; }
-    .type-badge.cond   { background: #EAF3FF; color: #2D84ED; }
+    .state-label { font-size: 12px; font-weight: 600; color: #596066; margin-right: 4px; }
 
-    /* ── Media summary section ── */
-    .media-summary-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    /* Lifecycle badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
     }
-    .media-map-panel {
-      overflow: hidden;
-      background: #F0F4F8;
-      border-right: 1px solid #E5E7EA;
-      display: flex;
-      flex-direction: column;
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .lc-draft    { background: #F0F1F3; color: #596066; }
+    .lc-draft    .badge-dot { background: #9EA5AD; }
+    .lc-ready    { background: #EAF3FF; color: #2D84ED; }
+    .lc-ready    .badge-dot { background: #2D84ED; }
+    .lc-approved { background: #F0EAFA; color: #7C5CBF; }
+    .lc-approved .badge-dot { background: #7C5CBF; }
+    .lc-active   { background: #E8F8E9; color: #2E9E34; }
+    .lc-active   .badge-dot { background: #58C65D; }
+    .lc-paused   { background: #FFFBE6; color: #B45309; }
+    .lc-paused   .badge-dot { background: #F3BE4A; }
+    .lc-ended    { background: #FFF0F0; color: #B03030; }
+    .lc-ended    .badge-dot { background: #E97474; }
+
+    /* Transition action buttons */
+    .action-btn {
+      height: 32px; padding: 0 14px;
+      border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent;
+      display: inline-flex; align-items: center; gap: 5px;
     }
-    .media-map-header {
+    .action-btn-pause {
+      background: #FFFBE6; color: #B45309; border-color: #F3BE4A;
+    }
+    .action-btn-pause:hover { background: #FFF3C4; }
+    .action-btn-end {
+      background: #FFF0F0; color: #B03030; border-color: #E97474;
+    }
+    .action-btn-end:hover { background: #FFE5E5; }
+    .action-btn-resume {
+      background: #E8F8E9; color: #2E9E34; border-color: #58C65D;
+    }
+    .action-btn-resume:hover { background: #D4F4D6; }
+
+    /* ── PDE amber panel ── */
+    .pde-panel {
+      border-left: 4px solid #F3BE4A;
+      background: #FFFBF0;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .pde-panel-title {
+      font-size: 12px; font-weight: 700; color: #92610A;
+      display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+    }
+    .pde-panel-body { font-size: 12px; color: #92610A; line-height: 1.5; }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid #E5E7EA; margin-bottom: 20px; overflow-x: auto; }
+    .tab-btn {
       padding: 10px 16px;
-      font-size:12px; font-weight:700; color:#596066;
-      background:#fff; border-bottom:1px solid #E5E7EA;
-      display:flex; align-items:center; justify-content:space-between; gap:6px;
-      flex-shrink: 0;
+      font-size: 13px; font-weight: 500; color: #596066;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; white-space: nowrap;
+      margin-bottom: -1px;
     }
-    .media-map-body { position:relative; flex:1; min-height:320px; overflow:hidden; }
-    .media-map-legend { padding:8px 16px; background:#fff; border-top:1px solid #E5E7EA; display:flex; gap:16px; font-size:11px; color:#596066; flex-shrink:0; }
-    .media-summary-grid {
-      display: flex;
-      flex-direction: column;
-    }
-    .media-summary-grid .media-card {
-      border-radius: 0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .media-summary-grid .media-card:last-child { border-bottom: none; }
-    @media (max-width: 900px) {
-      .media-summary-layout { grid-template-columns: 1fr; }
-      .media-map-panel { border-right: none; border-bottom: 1px solid #E5E7EA; }
-    }
-    .map-pin {
-      position: absolute;
-      transform: translate(-50%, -100%);
-      cursor: pointer;
-    }
-    .map-pin-dot {
-      width: 28px; height: 28px; border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,.2);
-    }
-    .map-pin-dot.online  { background: #58C65D; }
-    .map-pin-dot.offline { background: #9EA5AD; }
-    .map-pin-label {
-      position: absolute;
-      top: -36px; left: 50%; transform: translateX(-50%);
-      background: #24292E; color: #fff;
-      font-size: 10px; font-weight: 600;
-      padding: 2px 7px; border-radius: 4px;
-      white-space: nowrap;
-      pointer-events: none;
-      display: none;
-    }
-    .map-pin-tooltip {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.14);
-      padding: 10px;
-      pointer-events: none;
-      width: 160px;
-    }
-    .map-pin-tooltip-inner {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .map-pin-tooltip-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .map-pin-tooltip-img {
-      width: 100%; height: 100px;
-      border-radius: 7px;
-      background: #F0F2F5;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .map-pin-tooltip-name {
-      font-size: 12px; font-weight: 700; color: #24292E;
-    }
-    .map-pin-tooltip-addr {
-      font-size: 10px; color: #9EA5AD;
-    }
-    .media-addr { font-size:11px; color:#9EA5AD; margin-top:2px; }
-    .media-card {
-      border: 1px solid #E5E7EA;
-      overflow: hidden;
-      background: #fff;
-    }
-    .media-card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 14px 16px 10px;
-      gap: 8px;
-    }
-    .media-card-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: #24292E;
-      text-decoration: none;
-    }
-    a.media-card-name:hover { color: var(--main, #2d84ed); text-decoration: underline; }
-    .media-status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-    .media-status-pill.online  { background: #E8F8E9; color: #2E9E34; }
-    .media-status-pill.offline { background: #F1F2F4; color: #9EA5AD; }
-    .media-status-pill.online::before  { content:''; display:inline-block; width:5px; height:5px; border-radius:50%; background:#58C65D; }
-    .media-status-pill.offline::before { content:''; display:inline-block; width:5px; height:5px; border-radius:50%; background:#CED2D6; }
-    .media-card-body { }
-    .media-spec-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      padding: 4px 0;
-      border-bottom: 1px solid #F6F7F9;
-      font-size: 12px;
-    }
-    .media-spec-row:last-of-type { border-bottom: none; }
-    .media-spec-label { color: #9EA5AD; min-width: 80px; }
-    .media-spec-value { color: #24292E; font-weight: 500; text-align: right; }
-    .media-specs {
-      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 0; padding: 0 16px 12px;
-    }
-    .media-spec-item {
-      padding: 6px 0;
-      border-right: 1px solid #F0F1F3;
-      padding-right: 12px;
-      padding-left: 12px;
-    }
-    .media-spec-item:first-child { padding-left: 0; }
-    .media-spec-item:last-child  { border-right: none; }
-    .media-spec-item .media-spec-label { font-size: 10px; color: #9EA5AD; margin-bottom: 3px; min-width: unset; }
-    .media-spec-item .media-spec-value { font-size: 12px; font-weight: 600; color: #24292E; text-align: left; }
-    .media-card-footer {
-      padding: 10px 16px 12px;
-      border-top: 1px solid #F0F1F3;
-      background: #FAFBFC;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .media-usage-label { font-size: 11px; color: #9EA5AD; white-space: nowrap; }
-    .media-usage-pct   { font-size: 12px; font-weight: 700; color: #24292E; white-space: nowrap; }
-    .media-remain-bar-wrap {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid #F0F1F3;
-    }
-    .media-remain-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: #596066;
-      margin-bottom: 5px;
-    }
-    .media-remain-bar-track {
-      height: 6px;
-      background: #F0F1F3;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .media-remain-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.3s;
-    }
+    .tab-btn:hover { color: #24292E; }
+    .tab-btn.active { color: #2D84ED; border-bottom-color: #2D84ED; font-weight: 600; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
 
-    /* ── Effect analysis section ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .kpi-card {
-      padding: 18px 20px;
-      border-right: 1px solid #E5E7EA;
-    }
-    .kpi-card:last-child { border-right: none; }
-    .kpi-label {
-      font-size: 11px;
-      color: #9EA5AD;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
-    .kpi-value {
-      font-size: 22px;
-      font-weight: 800;
-      color: #24292E;
-      line-height: 1.2;
-      margin-bottom: 4px;
-    }
-    .kpi-sub {
-      font-size: 11px;
-      color: #596066;
-    }
-    .kpi-delta {
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .kpi-delta.up   { color: #2E9E34; }
-    .kpi-delta.down { color: #E97474; }
-    .effect-charts-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .effect-chart-block {
-      padding: 18px 20px;
-    }
-    .effect-chart-block + .effect-chart-block {
-      border-left: 1px solid #E5E7EA;
-    }
-    .effect-insight {
-      background: #F0F9F1;
-      border-left: 3px solid #58C65D;
-      border-radius: 0 6px 6px 0;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: #3A4349;
-      line-height: 1.6;
+    /* ── Section card ── */
+    .card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 20px 24px;
       margin-bottom: 16px;
     }
-    .effect-chart-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #24292E;
-      margin-bottom: 4px;
-    }
-    .effect-chart-sub {
-      font-size: 11px;
-      color: #9EA5AD;
-      margin-bottom: 14px;
-    }
-    .effect-canvas-wrap { position: relative; height: 200px; }
-    .effect-tab {
-      padding: 10px 18px;
-      font-size: 13px;
-      color: #9EA5AD;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      font-weight: 500;
-      font-family: inherit;
-      transition: color 0.1s;
-    }
-    .effect-tab.active { color: #24292E; border-bottom-color: #24292E; font-weight: 600; }
-    .effect-tab:hover { color: #596066; }
-    .effect-compare-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-    .effect-compare-table th {
-      background: #F6F7F9;
-      padding: 8px 14px;
-      font-weight: 600;
-      color: #596066;
-      text-align: left;
+    .card-title {
+      font-size: 13px; font-weight: 700; color: #24292E;
+      margin-bottom: 16px; padding-bottom: 10px;
       border-bottom: 1px solid #E5E7EA;
     }
-    .effect-compare-table th:not(:first-child) { text-align: right; }
-    .effect-compare-table td {
-      padding: 10px 14px;
-      color: #24292E;
-      border-bottom: 1px solid #F0F1F3;
+
+    /* ── Field grid ── */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+    .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .field-grid.one { grid-template-columns: 1fr; }
+    .field-item { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; }
+    .field-value { font-size: 14px; color: #24292E; }
+    .field-value.large { font-size: 18px; font-weight: 700; }
+    .field-value.mono { font-family: monospace; }
+
+    /* ── Tags ── */
+    .tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 12px; font-weight: 500;
+      background: #F0F1F3; color: #596066;
     }
-    .effect-compare-table td:not(:first-child) { text-align: right; }
-    .effect-compare-table tr:last-child td { border-bottom: none; }
-    .bar-inline {
-      display: inline-block;
-      height: 6px;
-      border-radius: 3px;
-      vertical-align: middle;
-      margin-right: 6px;
+
+    /* ── Slot chips ── */
+    .slot-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .slot-chip {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 6px; font-size: 13px; font-weight: 600;
+      background: #EAF3FF; color: #2D84ED; border: 1px solid #B8D9F8;
     }
-    /* ─── 인벤토리 현황 섹션 ─── */
-    .inv-tab-bar { display:flex; gap:4px; margin-bottom:16px; }
-    .inv-tab { padding:5px 14px; border-radius:16px; border:1px solid #E5E7EA; background:#fff; font-size:12px; color:#596066; cursor:pointer; font-weight:500; }
-    .inv-tab.active { background:#24292E; color:#fff; border-color:#24292E; }
-    .inv-panel { display:none; }
-    .inv-panel.active { display:block; }
-    .cycle-card { background:#F6F7F9; border-radius:8px; padding:16px 20px; margin-bottom:16px; }
-    .cycle-row { display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin-bottom:12px; }
-    .cycle-item { }
-    .cycle-label { font-size:11px; color:#9EA5AD; margin-bottom:4px; }
-    .cycle-value { font-size:18px; font-weight:800; color:#24292E; }
-    .cycle-unit { font-size:12px; font-weight:500; color:#596066; }
-    .cycle-bar-wrap { height:8px; background:#E5E7EA; border-radius:4px; overflow:hidden; margin-bottom:12px; }
-    .cycle-bar-fill { height:100%; border-radius:4px; transition:width 0.3s; }
-    .cycle-bar-label { font-size:11px; color:#596066; margin-bottom:12px; }
-    .cycle-footer { display:flex; align-items:center; gap:16px; font-size:12px; color:#596066; padding-top:12px; border-top:1px solid #E5E7EA; }
-    .cycle-footer strong { color:#24292E; }
-    .adex-card { border:1px solid #E5E7EA; border-radius:8px; overflow:hidden; }
-    .adex-header { background:#F6F7F9; padding:10px 16px; border-bottom:1px solid #E5E7EA; display:flex; align-items:center; gap:8px; }
-    .adex-title { font-size:13px; font-weight:700; color:#24292E; }
-    .adex-sub { font-size:11px; color:#9EA5AD; }
-    /* ─── 스케줄 예약 모달 ─── */
-    .booking-overlay { position:fixed; inset:0; background:rgba(36,41,46,.5); display:flex; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(2px); }
-    .booking-overlay.hidden { display:none; }
-    .booking-modal { background:#fff; border-radius:14px; width:520px; max-width:calc(100vw - 32px); max-height:90vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.2); }
-    .booking-modal-head { padding:18px 22px 14px; border-bottom:1px solid #E5E7EA; display:flex; align-items:flex-start; justify-content:space-between; }
-    .booking-modal-head h3 { font-size:15px; font-weight:700; color:#24292E; margin-bottom:2px; }
-    .booking-modal-head p  { font-size:12px; color:#9EA5AD; }
-    .booking-modal-close { width:28px; height:28px; border:none; background:#F6F7F9; border-radius:6px; cursor:pointer; font-size:16px; color:#596066; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .booking-modal-close:hover { background:#E5E7EA; }
-    .booking-modal-body { padding:18px 22px; display:flex; flex-direction:column; gap:16px; }
-    .booking-field label { display:block; font-size:11px; font-weight:600; color:#596066; margin-bottom:5px; }
-    .booking-field select,
-    .booking-field input[type=text],
-    .booking-field input[type=date],
-    .booking-field input[type=number] { width:100%; height:36px; padding:0 10px; border:1px solid #E5E7EA; border-radius:8px; font-size:13px; color:#24292E; outline:none; background:#fff; box-sizing:border-box; }
-    .booking-field select:focus, .booking-field input:focus { border-color:#58C65D; }
-    .booking-field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .plan-tabs { display:flex; border:1px solid #E5E7EA; border-radius:8px; overflow:hidden; }
-    .plan-tab { flex:1; padding:8px 0; font-size:12px; font-weight:600; color:#596066; background:#F6F7F9; border:none; cursor:pointer; transition:background .12s,color .12s; }
-    .plan-tab.active { background:#24292E; color:#fff; }
-    .playplan-list { border:1px solid #E5E7EA; border-radius:8px; overflow:hidden; max-height:180px; overflow-y:auto; }
-    .playplan-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid #F0F1F3; cursor:pointer; transition:background .1s; }
-    .playplan-item:last-child { border-bottom:none; }
-    .playplan-item:hover { background:#F6F7F9; }
-    .playplan-item.selected { background:rgba(88,198,93,.08); }
-    .playplan-item input[type=radio] { accent-color:#58C65D; width:15px; height:15px; flex-shrink:0; }
-    .playplan-item-name { font-size:13px; font-weight:500; color:#24292E; flex:1; }
-    .playplan-item-meta { font-size:11px; color:#9EA5AD; }
-    .type-toggle { display:flex; gap:8px; }
-    .type-btn { flex:1; height:36px; border:1px solid #E5E7EA; border-radius:8px; background:#F6F7F9; font-size:13px; color:#596066; cursor:pointer; font-weight:500; transition:all .12s; }
-    .type-btn.active { border-color:#58C65D; background:rgba(88,198,93,.08); color:#065F46; font-weight:700; }
-    .booking-modal-foot { padding:14px 22px; border-top:1px solid #E5E7EA; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .booking-foot-hint { font-size:11px; color:#9EA5AD; }
-    .booking-foot-btns { display:flex; gap:8px; }
-    .btn-bk-cancel { height:36px; padding:0 16px; border:1px solid #E5E7EA; border-radius:8px; background:#fff; font-size:13px; color:#596066; cursor:pointer; }
-    .btn-bk-submit { height:36px; padding:0 18px; border:none; border-radius:8px; background:#58C65D; font-size:13px; font-weight:700; color:#fff; cursor:pointer; transition:background .12s; }
-    .btn-bk-submit:hover { background:#4AB050; }
-    .btn-bk-submit:disabled { background:#CED2D6; cursor:not-allowed; }
-    /* 검증 결과 */
-    .booking-modal-step { font-size:11px; color:#9EA5AD; margin-top:2px; }
-    .verify-banner { display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:10px; border:1px solid; }
-    .verify-banner.pass { background:#F0FBF0; border-color:#58C65D; }
-    .verify-banner.warn { background:#FFF8ED; border-color:#F5A623; }
-    .verify-banner.fail { background:#FEF2F2; border-color:#C83434; }
-    .verify-banner-icon { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
-    .pass .verify-banner-icon { background:#58C65D; color:#fff; }
-    .warn .verify-banner-icon { background:#F5A623; color:#fff; }
-    .fail .verify-banner-icon { background:#C83434; color:#fff; }
-    .verify-banner-title { font-size:13px; font-weight:700; color:#24292E; }
-    .verify-banner-desc { font-size:11px; color:#596066; margin-top:2px; }
-    .verify-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .verify-cell { background:#F6F7F9; border-radius:8px; padding:10px 14px; }
-    .verify-cell-label { font-size:10px; font-weight:700; color:#9EA5AD; text-transform:uppercase; letter-spacing:.04em; }
-    .verify-cell-value { font-size:14px; font-weight:700; color:#24292E; margin-top:3px; }
-    .verify-cell-value.c-pass { color:#2D8A32; }
-    .verify-cell-value.c-warn { color:#C87C00; }
-    .verify-cell-value.c-fail { color:#C83434; }
-    .verify-conflicts { display:flex; flex-direction:column; gap:5px; }
-    .verify-conflict-title { font-size:11px; font-weight:700; color:#596066; margin-bottom:2px; }
-    .verify-conflict-item { display:flex; align-items:center; gap:8px; padding:7px 10px; background:#FEF2F2; border:1px solid #FBCECE; border-radius:6px; font-size:11px; color:#7A1A1A; }
-    .verify-conflict-dot { width:5px; height:5px; border-radius:50%; background:#C83434; flex-shrink:0; }
-    .verify-preempt { padding:10px 14px; background:#EEF4FF; border:1px solid #BFCFEE; border-radius:8px; font-size:11px; color:#2D4A8A; line-height:1.7; }
+
+    /* ── KPI cards ── */
+    .kpi-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .kpi-card {
+      flex: 1; min-width: 140px;
+      background: #F6F7F9; border: 1px solid #E5E7EA;
+      border-radius: 8px; padding: 14px 16px;
+    }
+    .kpi-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; font-variant-numeric: tabular-nums; }
+    .kpi-unit { font-size: 12px; font-weight: 400; color: #9EA5AD; margin-left: 2px; }
+    .kpi-formula { font-size: 11px; color: #9EA5AD; margin-top: 4px; }
+
+    /* ── Table inside cards ── */
+    .inner-table-wrap { overflow-x: auto; }
+    .inner-table { width: 100%; border-collapse: collapse; }
+    .inner-table thead th {
+      background: #F6F7F9; padding: 9px 12px;
+      font-size: 12px; font-weight: 600; color: #596066;
+      text-align: left; border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap;
+    }
+    .inner-table tbody td {
+      padding: 11px 12px; font-size: 13px; color: #24292E;
+      border-bottom: 1px solid #F0F1F3; vertical-align: middle;
+    }
+    .inner-table tbody tr:last-child td { border-bottom: none; }
+
+    /* ── Map placeholder ── */
+    .map-placeholder {
+      width: 100%; height: 240px;
+      background: #EEF0F2;
+      border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; color: #9EA5AD; font-size: 13px;
+    }
+
+    /* ── Operating day chips ── */
+    .day-chips { display: flex; gap: 6px; }
+    .day-chip {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+    }
+    .day-chip.on  { background: #2D84ED; color: #fff; }
+    .day-chip.off { background: #F0F1F3; color: #9EA5AD; }
+
+    /* ── Status badge for media ── */
+    .media-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+    }
+    .media-status.active { background: #E8F8E9; color: #2E9E34; }
+    .media-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #58C65D; }
+
+    /* ── Revision pill ── */
+    .rev-current {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 700;
+      background: #2D84ED; color: #fff;
+    }
+    .rev-past {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 600;
+      background: #F0F1F3; color: #596066;
+    }
+
+    /* ── Option availability ── */
+    .avail-on  { color: #2E9E34; font-size: 12px; font-weight: 600; }
+    .avail-off { color: #9EA5AD; font-size: 12px; font-weight: 600; }
+
+    /* ── Guide URL ── */
+    .guide-url { font-size: 13px; color: #2D84ED; text-decoration: none; word-break: break-all; }
+    .guide-url:hover { text-decoration: underline; }
+
+    /* ── Audit row ── */
+    .audit-row { display: flex; gap: 32px; flex-wrap: wrap; }
+    .audit-item { display: flex; flex-direction: column; gap: 3px; }
+
+    /* ── Numeric align ── */
+    .num { font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 700px) {
+      .field-grid, .field-grid.three { grid-template-columns: 1fr; }
+      .kpi-row { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
@@ -926,1772 +285,520 @@
   </div>
 </header>
 
-<!-- ③ Main -->
+<!-- ③ Main content -->
 <main class="content">
   <div class="content-inner">
 
-  <!-- Page header card -->
-  <div class="detail-header">
-    <div class="detail-header-top">
-      <a class="back-link" href="product-list">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#596066" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        프로덕트 목록
-      </a>
-      <div class="header-actions">
-        <button class="btn-outline" onclick="alert('편집 모드 (목업)')">편집</button>
-        <button class="btn-danger-outline" onclick="alert('삭제 확인 (목업)')">삭제</button>
-      </div>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="product-list">프로덕트</a> &rsaquo; 강남 프리미엄 패키지
     </div>
-    <div class="detail-title-row">
-      <div>
-        <h1 class="detail-title">강남 프라임 패키지</h1>
-        <div class="reg-date">ID: PRD001 &nbsp;·&nbsp; 등록일: 2026.01.15</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="badge-adex"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#2D84ED" stroke-width="1.2"/><path d="M3 6h6M6 3v6" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg>ADeX 연동</span>
-        <div class="status-toggle-wrap" onclick="toggleProductStatus()" title="클릭하여 활성/비활성 전환">
-        <div class="status-toggle-track on" id="statusTrack">
-          <div class="status-toggle-thumb"></div>
-        </div>
-        <span class="status-toggle-label" id="statusLabel">활성</span>
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="page-title">강남 프리미엄 패키지</div>
+        <div class="page-meta">
+          <span class="page-id">PRD-001</span>
+          <span class="page-rev">R2</span>
+          <span class="tag">강남</span>
+          <span class="tag">프리미엄</span>
+          <span class="tag">옥외</span>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ─── IA_02: Lifecycle State + Actions ─── -->
-  <div class="section-card" style="margin-bottom:16px;">
-    <div class="section-header" style="background:#F6F7F9;">
-      <h2 class="section-title">생애주기 상태 (Lifecycle)</h2>
+    <!-- State bar -->
+    <div class="state-bar">
+      <span class="state-label">Lifecycle</span>
+      <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
+      <div style="flex:1;"></div>
+      <button class="action-btn action-btn-pause" onclick="alert('중지 전환 확인이 필요합니다.')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="3" height="8" rx="1" fill="currentColor"/><rect x="7" y="2" width="3" height="8" rx="1" fill="currentColor"/></svg>
+        중지
+      </button>
+      <button class="action-btn action-btn-end" onclick="alert('종료는 되돌릴 수 없습니다. 확인하십시오.')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M4 4l4 4M8 4l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        종료
+      </button>
     </div>
-    <div style="padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-      <!-- Current state badge -->
-      <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;background:#E8F8E9;color:#2E9E34;font-size:13px;font-weight:700;">
-        <span style="width:8px;height:8px;border-radius:50%;background:#58C65D;flex-shrink:0;display:inline-block;"></span>
-        활성 (Active)
-      </span>
-      <span style="color:#9EA5AD;font-size:12px;">현재 Revision: v1.0 · 2024-03-01 적용</span>
-      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
-        <!-- Transition action buttons (no direct select) -->
-        <button style="height:32px;padding:0 14px;background:#FFFBE6;border:1px solid #F3BE4A;border-radius:6px;font-size:12px;font-weight:600;color:#B45309;cursor:pointer;" onclick="alert('중지(Suspended) 상태로 전환합니다. (Admin 권한 필요)')">중지 전환</button>
-        <button style="height:32px;padding:0 14px;background:#FFF0F0;border:1px solid #E97474;border-radius:6px;font-size:12px;font-weight:600;color:#B03030;cursor:pointer;" onclick="alert('종료(Terminated) 전환은 되돌릴 수 없습니다. (Admin 권한 필요)')">운영 종료</button>
+
+    <!-- PDE amber panel -->
+    <div class="pde-panel">
+      <div class="pde-panel-title">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1 12h12L7 1z" stroke="#92610A" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 5.5v3M7 10h.01" stroke="#92610A" stroke-width="1.4" stroke-linecap="round"/></svg>
+        PDE 판단 결과 — 승인됨
+      </div>
+      <div class="pde-panel-body">
+        미디어사 상품정책 검증이 완료되었습니다. 핵심조건(구성 미디어, 운영시간, 슬롯 구조, 기준가격) 변경 시 신규 Revision을 생성하고 PDE 재검증이 필요합니다.
+        <br>검증일시: 2026-07-20 14:32 &nbsp;·&nbsp; 다음 재검증 예정: 핵심조건 변경 시
       </div>
     </div>
-    <div style="padding:0 24px 16px;font-size:12px;color:#9EA5AD;">
-      Draft → <strong style="color:#2D84ED;">구성완료</strong> → [검증 요청] → <strong style="color:#7C5CBF;">승인됨</strong> → [활성화] → <strong style="color:#2E9E34;">활성</strong> ↔ <span style="color:#B45309;">중지</span> → <span style="color:#B03030;">종료</span> &nbsp;|&nbsp; 직접 상태 선택 불가 — 허용된 Action 버튼으로만 전환
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('basic')">기본정보</button>
+      <button class="tab-btn" onclick="switchTab('media')">구성 미디어</button>
+      <button class="tab-btn" onclick="switchTab('operation')">운영정보</button>
+      <button class="tab-btn" onclick="switchTab('slot')">슬롯 구조</button>
+      <button class="tab-btn" onclick="switchTab('price')">가격정보</button>
+      <button class="tab-btn" onclick="switchTab('options')">상품옵션</button>
+      <button class="tab-btn" onclick="switchTab('guide')">매체제작가이드</button>
+      <button class="tab-btn" onclick="switchTab('revision')">Revision</button>
+      <button class="tab-btn" onclick="switchTab('audit')">Audit</button>
     </div>
-  </div>
 
-  <!-- ─── IA_02: PDE 패널 ─── -->
-  <div class="section-card" style="margin-bottom:16px;border-left:4px solid #F3BE4A;">
-    <div class="section-header" style="background:#FFFBE6;">
-      <h2 class="section-title" style="display:flex;align-items:center;gap:8px;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M8 5v4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.5" r="0.8" fill="#F3BE4A"/></svg>
-        PDE 검토 결과
-      </h2>
-      <span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:4px;background:#FFF3CD;color:#8A6400;font-size:12px;font-weight:700;border:1px solid #F3BE4A;">⚠ 제한 (Restricted)</span>
-    </div>
-    <div style="padding:16px 24px;">
-      <div style="font-size:13px;color:#24292E;font-weight:600;margin-bottom:6px;">제한 조건</div>
-      <ul style="margin:0;padding-left:18px;font-size:13px;color:#596066;line-height:1.8;">
-        <li>공항 인근 미디어 포함 — 광고 카테고리 제한 적용 (주류·도박·성인 불가)</li>
-        <li>운영 시간 22:00 이후 일부 슬롯 운영 제한 (시설 정책)</li>
-        <li>캠페인 집행 시 PDE 재검토 요청 필요</li>
-      </ul>
-      <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
-        PDE Decision: <strong>제한(Restricted)</strong> — Lifecycle Approved 유지, 제한 조건 내 운영 가능 &nbsp;|&nbsp; 최종 검토: 2024-03-01 · 홍길동
-      </div>
-      <div style="margin-top:8px;font-size:12px;color:#9EA5AD;background:#F6F7F9;padding:8px 12px;border-radius:6px;">
-        💡 Lifecycle 승인(Approved)과 PDE Decision 승인(Approved)은 별개 개념입니다. PDE 결과가 상태전환 조건이 됩니다.
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── IA_02: 기준 루프·보장 정보 KPI ─── -->
-  <div class="section-card" style="margin-bottom:16px;">
-    <div class="section-header">
-      <h2 class="section-title">기준 루프 / 보장 정보</h2>
-      <span style="font-size:12px;color:#9EA5AD;">시스템 자동 계산 · Read-only</span>
-    </div>
-    <div style="padding:18px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-      <div style="background:#F6F7F9;border-radius:8px;padding:16px;">
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Reference Slot Duration</div>
-        <div style="font-size:24px;font-weight:700;color:#24292E;line-height:1;">30초</div>
-        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">MAX(Slot Durations) 자동 계산</div>
-      </div>
-      <div style="background:#F6F7F9;border-radius:8px;padding:16px;position:relative;">
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;display:flex;align-items:center;gap:4px;">
-          Reference Loop Duration
-          <span title="Reference Slot Duration × Total Slot Count. 다중 Slot 상품에서도 동일 Reference Loop를 보장횟수 기준으로 사용합니다." style="cursor:help;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#CED2D6;color:#fff;font-size:9px;font-weight:800;">?</span>
-        </div>
-        <div style="font-size:24px;font-weight:700;color:#2D84ED;line-height:1;">24분</div>
-        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">30초 × 48슬롯 = 1,440초</div>
-      </div>
-      <div style="background:#E8F8E9;border-radius:8px;padding:16px;">
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Expected Minimum Plays</div>
-        <div style="font-size:24px;font-weight:700;color:#2E9E34;line-height:1;">60회/일</div>
-        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">FLOOR(유효운영시간 ÷ Reference Loop)</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── IA_02: 운영 정보 ─── -->
-  <div class="section-card" style="margin-bottom:16px;">
-    <div class="section-header">
-      <h2 class="section-title">운영 정보</h2>
-    </div>
-    <div style="padding:18px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">운영 요일</div>
-        <div style="font-size:14px;color:#24292E;font-weight:500;">월~일 (매일)</div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">운영 시간</div>
-        <div style="font-size:14px;color:#24292E;font-weight:500;">07:00 – 22:00</div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">공휴일 운영</div>
-        <div style="font-size:14px;color:#24292E;font-weight:500;">운영</div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Max Content Duration</div>
-        <div style="font-size:14px;color:#24292E;font-weight:500;">30초</div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Slot Durations</div>
-        <div style="font-size:14px;color:#24292E;font-weight:500;">30초, 15초, 10초</div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;color:#9EA5AD;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;">Total Slot Count</div>
-        <div style="font-size:14px;color:#24292E;font-weight:500;">48</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── IA_02: 상품 옵션 (Product Option = Catalog Rule) ─── -->
-  <div class="section-card" style="margin-bottom:16px;">
-    <div class="section-header">
-      <h2 class="section-title">상품 옵션 (Product Option)</h2>
-      <button style="height:30px;padding:0 12px;background:#fff;border:1px solid #CED2D6;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;" onclick="alert('옵션 추가 (목업)')">+ 옵션 추가</button>
-    </div>
-    <div style="padding:12px 24px;background:#FFFBE6;border-bottom:1px solid #E5E7EA;font-size:12px;color:#8A6400;display:flex;align-items:center;gap:6px;">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#F3BE4A" stroke-width="1.2"/><path d="M7 4v4" stroke="#F3BE4A" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="10" r=".7" fill="#F3BE4A"/></svg>
-      Product Option은 <strong>판매 가능한 조건을 정의하는 Catalog Rule</strong>입니다. 실제 조건 판단·실행은 관련 시스템(CMS/운영 서비스)이 담당하며, 프로덕트가 실행 책임을 소유하지 않습니다.
-    </div>
-    <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="background:#F6F7F9;">
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">옵션명</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">유형</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">가격 방식</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:right;border-bottom:1px solid #E5E7EA;">옵션 가격</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:center;border-bottom:1px solid #E5E7EA;">상태</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid #F0F1F3;">
-            <td style="padding:12px 16px;font-size:13px;font-weight:500;">프라임타임 운영 (18–22시)</td>
-            <td style="padding:12px 16px;font-size:12px;"><span style="display:inline-flex;padding:2px 8px;background:#EAF3FF;color:#2D84ED;border-radius:4px;font-weight:600;">운영시간</span></td>
-            <td style="padding:12px 16px;font-size:13px;color:#596066;">정액 (Fixed)</td>
-            <td style="padding:12px 16px;font-size:13px;text-align:right;font-weight:600;">₩2,000,000</td>
-            <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;padding:2px 8px;background:#E8F8E9;color:#2E9E34;border-radius:4px;font-size:12px;font-weight:600;">사용</span></td>
-          </tr>
-          <tr>
-            <td style="padding:12px 16px;font-size:13px;font-weight:500;">타깃 노출 보장</td>
-            <td style="padding:12px 16px;font-size:12px;"><span style="display:inline-flex;padding:2px 8px;background:#F0EAFA;color:#7C5CBF;border-radius:4px;font-weight:600;">타깃</span></td>
-            <td style="padding:12px 16px;font-size:13px;color:#596066;">별도 견적 (Custom Quote)</td>
-            <td style="padding:12px 16px;font-size:13px;text-align:right;color:#9EA5AD;">견적 요청</td>
-            <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;padding:2px 8px;background:#F0F1F3;color:#9EA5AD;border-radius:4px;font-size:12px;font-weight:600;">미사용</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ─── IA_02: Revision 이력 ─── -->
-  <div class="section-card" style="margin-bottom:20px;">
-    <div class="section-header">
-      <h2 class="section-title">Revision 이력</h2>
-      <button style="height:30px;padding:0 12px;background:#fff;border:1px solid #CED2D6;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;" onclick="alert('새 Revision 생성: Active/Suspended 이후 핵심조건 변경 시 기존 필드 직접 덮어쓰기가 차단되고 새 Revision이 생성됩니다. (Admin 권한 필요)')">+ 새 Revision</button>
-    </div>
-    <div style="padding:10px 24px;background:#EAF3FF;border-bottom:1px solid #E5E7EA;font-size:12px;color:#2D84ED;">
-      현재 계약·캠페인·스케줄은 적용 당시 Revision을 참조합니다. 과거 Revision은 조회만 가능하며 수정·삭제할 수 없습니다.
-    </div>
-    <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="background:#F6F7F9;">
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">버전</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">상태</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">적용일</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">작성자</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid #E5E7EA;">변경 내용</th>
-            <th style="padding:9px 16px;font-size:12px;font-weight:600;color:#596066;text-align:center;border-bottom:1px solid #E5E7EA;">비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding:12px 16px;font-size:13px;font-weight:700;font-family:monospace;">v1.0</td>
-            <td style="padding:12px 16px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#E8F8E9;color:#2E9E34;border-radius:4px;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:#58C65D;"></span>적용 중</span></td>
-            <td style="padding:12px 16px;font-size:13px;">2024-03-01</td>
-            <td style="padding:12px 16px;font-size:13px;">홍길동</td>
-            <td style="padding:12px 16px;font-size:13px;color:#596066;">최초 등록</td>
-            <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;padding:2px 8px;background:#EAF3FF;color:#2D84ED;border-radius:4px;font-size:11px;font-weight:600;">현재</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ─── Section M: 미디어 정보 요약 ─── -->
-  <div class="section-card">
-    <div class="section-header">
-      <h2 class="section-title">포함 미디어</h2>
-    </div>
-    <div class="media-summary-layout">
-
-      <!-- 지도 패널 (메인) -->
-      <div class="media-map-panel">
-        <div class="media-map-header">
-          <span style="display:flex;align-items:center;gap:6px;">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1C4.79 1 3 2.79 3 5c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4z" fill="#58C65D"/><circle cx="7" cy="5" r="1.5" fill="#fff"/></svg>
-            미디어 위치
-          </span>
-          <span style="font-size:11px;color:#9EA5AD;font-weight:400;">강남/홍대/잠실 · 3개 미디어</span>
-        </div>
-        <div class="media-map-body">
-          <!-- 배경: 강남역 권역 지도 -->
-          <svg width="100%" height="100%" viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;">
-            <!-- 배경 -->
-            <rect width="700" height="380" fill="#EEF2F6"/>
-
-            <!-- 도시 블록 -->
-            <rect x="10"  y="10"  width="180" height="110" rx="5" fill="#DFE5EC"/>
-            <rect x="280" y="10"  width="150" height="110" rx="5" fill="#DFE5EC"/>
-            <rect x="470" y="10"  width="130" height="110" rx="5" fill="#DFE5EC"/>
-            <rect x="620" y="10"  width="72"  height="110" rx="5" fill="#DFE5EC"/>
-            <rect x="10"  y="158" width="180" height="100" rx="5" fill="#DFE5EC"/>
-            <rect x="280" y="158" width="150" height="100" rx="5" fill="#DFE5EC"/>
-            <rect x="470" y="158" width="222" height="100" rx="5" fill="#DFE5EC"/>
-            <rect x="10"  y="296" width="680" height="76"  rx="5" fill="#DFE5EC"/>
-
-            <!-- 강남대로 (주간선 남북) -->
-            <rect x="200" y="0" width="72" height="380" fill="#FFFFFF"/>
-            <line x1="236" y1="0" x2="236" y2="380" stroke="#F5A623" stroke-width="1.5" stroke-dasharray="10 7" opacity=".5"/>
-
-            <!-- 테헤란로 (주간선 동서) -->
-            <rect x="0" y="124" width="700" height="26" fill="#FFFFFF"/>
-            <line x1="0" y1="137" x2="700" y2="137" stroke="#F5A623" stroke-width="1.5" stroke-dasharray="10 7" opacity=".5"/>
-
-            <!-- 소로 (동서) -->
-            <rect x="0" y="258" width="700" height="10" fill="#FFFFFF" opacity=".75"/>
-            <!-- 소로 (남북) -->
-            <rect x="448" y="0" width="10" height="380" fill="#FFFFFF" opacity=".7"/>
-
-            <!-- 지하철 2호선 (동서, 희미하게) -->
-            <line x1="0" y1="137" x2="700" y2="137" stroke="#007AC5" stroke-width="5" opacity=".12"/>
-            <!-- 신분당선 (남북, 희미하게) -->
-            <line x1="236" y1="0" x2="236" y2="380" stroke="#D31145" stroke-width="4" opacity=".1"/>
-
-            <!-- 도로 라벨 -->
-            <text transform="rotate(-90,236,290)" x="236" y="290" text-anchor="middle" font-size="12" fill="#9EA5AD" font-family="sans-serif">강남대로</text>
-            <text x="560" y="120" text-anchor="middle" font-size="11" fill="#9EA5AD" font-family="sans-serif">테헤란로</text>
-
-            <!-- 강남역 마커 -->
-            <rect x="198" y="116" width="76" height="28" rx="5" fill="#3C54A0"/>
-            <text x="236" y="134" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="sans-serif">강남역</text>
-
-            <!-- 나침반 -->
-            <circle cx="672" cy="28" r="18" fill="#fff" opacity=".7" stroke="#CED2D6" stroke-width="1.5"/>
-            <text x="672" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="#3C54A0" font-family="sans-serif">N</text>
-          </svg>
-          <!-- 핀 1: 강남대로 DID 01 -->
-          <div class="map-pin" style="left:28%;top:31%;" onmouseenter="showMapPinTooltip(event,'강남대로 DID 01','서울 강남구 강남대로 396')" onmouseleave="hideMapPinTooltip()">
-            <div class="map-pin-dot online" style="width:26px;height:26px;">
-              <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">1</span>
-            </div>
+    <!-- ====== TAB 1: 기본정보 ====== -->
+    <div class="tab-panel active" id="tab-basic">
+      <div class="card">
+        <div class="card-title">식별 정보</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">프로덕트명</div>
+            <div class="field-value">강남 프리미엄 패키지</div>
           </div>
-          <!-- 핀 2: 홍대입구 미디어보드 -->
-          <div class="map-pin" style="left:36%;top:31%;" onmouseenter="showMapPinTooltip(event,'홍대입구 미디어보드','서울 마포구 양화로 160')" onmouseleave="hideMapPinTooltip()">
-            <div class="map-pin-dot online" style="width:26px;height:26px;">
-              <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">2</span>
-            </div>
+          <div class="field-item">
+            <div class="field-label">프로덕트 ID</div>
+            <div class="field-value mono">PRD-001</div>
           </div>
-          <!-- 핀 3: 잠실 롯데월드몰 2F -->
-          <div class="map-pin" style="left:37%;top:45%;" onmouseenter="showMapPinTooltip(event,'잠실 롯데월드몰 2F','서울 송파구 올림픽로 300')" onmouseleave="hideMapPinTooltip()">
-            <div class="map-pin-dot online" style="width:26px;height:26px;">
-              <span style="transform:rotate(45deg);font-size:10px;font-weight:800;color:#fff;">3</span>
-            </div>
-          </div>
-        </div>
-        <!-- 범례 -->
-        <div style="padding:8px 16px;background:#fff;border-top:1px solid #E5E7EA;display:flex;gap:16px;font-size:11px;color:#596066;">
-          <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block;"></span>운영 중</span>
-          <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#9EA5AD;display:inline-block;"></span>점검 중</span>
-        </div>
-      </div>
-
-      <!-- 카드 목록 (서브 정보) -->
-      <div class="media-summary-grid">
-
-        <!-- 미디어 1 -->
-        <div class="media-card" style="border-left:3px solid #58C65D;">
-          <div class="media-card-header">
-            <div style="flex:1;min-width:0;">
-              <a class="media-card-name" href="media-detail">강남대로 DID 01</a>
-              <div class="media-addr">서울 강남구 강남대로 396</div>
-            </div>
-            <span class="media-status-pill online">운영 중</span>
-          </div>
-          <div class="media-card-body">
-            <div class="media-specs">
-              <div class="media-spec-item">
-                <div class="media-spec-label">설치 유형</div>
-                <div class="media-spec-value">실내 · 가로형</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">운영 시간</div>
-                <div class="media-spec-value">09:00–18:00</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">최소 보장</div>
-                <div class="media-spec-value">54회/일</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">기준 슬롯</div>
-                <div class="media-spec-value">20초 × 30개</div>
+          <div class="field-item">
+            <div class="field-label">태그</div>
+            <div class="field-value">
+              <div class="tag-group">
+                <span class="tag">강남</span>
+                <span class="tag">프리미엄</span>
+                <span class="tag">옥외</span>
               </div>
             </div>
           </div>
-          <div class="media-card-footer">
-            <span class="media-usage-label">평균 슬롯 사용률</span>
-            <div style="flex:1;height:5px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
-              <div style="width:21%;height:100%;background:#58C65D;border-radius:4px;"></div>
-            </div>
-            <span class="media-usage-pct">21%</span>
-            <a href="schedule-media-month" style="font-size:11px;color:#2D84ED;margin-left:4px;">편성표 →</a>
+          <div class="field-item">
+            <div class="field-label">현재 Revision</div>
+            <div class="field-value"><span class="rev-current">R2</span></div>
           </div>
-        </div>
-
-        <!-- 미디어 2 -->
-        <div class="media-card" style="border-left:3px solid #58C65D;">
-          <div class="media-card-header">
-            <div style="flex:1;min-width:0;">
-              <a class="media-card-name" href="media-detail">홍대입구 미디어보드</a>
-              <div class="media-addr">서울 마포구 양화로 160</div>
-            </div>
-            <span class="media-status-pill online">운영 중</span>
-          </div>
-          <div class="media-card-body">
-            <div class="media-specs">
-              <div class="media-spec-item">
-                <div class="media-spec-label">설치 유형</div>
-                <div class="media-spec-value">실외 · 가로형</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">운영 시간</div>
-                <div class="media-spec-value">10:00–23:00</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">최소 보장</div>
-                <div class="media-spec-value">65회/일</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">기준 슬롯</div>
-                <div class="media-spec-value">20초 × 36개</div>
-              </div>
-            </div>
-          </div>
-          <div class="media-card-footer">
-            <span class="media-usage-label">평균 슬롯 사용률</span>
-            <div style="flex:1;height:5px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
-              <div style="width:32%;height:100%;background:#E8841A;border-radius:4px;"></div>
-            </div>
-            <span class="media-usage-pct">32%</span>
-            <a href="schedule-media-month" style="font-size:11px;color:#2D84ED;margin-left:4px;">편성표 →</a>
-          </div>
-        </div>
-
-        <!-- 미디어 3 -->
-        <div class="media-card" style="border-left:3px solid #58C65D;">
-          <div class="media-card-header">
-            <div style="flex:1;min-width:0;">
-              <a class="media-card-name" href="media-detail">잠실 롯데월드몰 2F</a>
-              <div class="media-addr">서울 송파구 올림픽로 300</div>
-            </div>
-            <span class="media-status-pill online">운영 중</span>
-          </div>
-          <div class="media-card-body">
-            <div class="media-specs">
-              <div class="media-spec-item">
-                <div class="media-spec-label">설치 유형</div>
-                <div class="media-spec-value">실내 · 가로형</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">운영 시간</div>
-                <div class="media-spec-value">08:00–22:00</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">최소 보장</div>
-                <div class="media-spec-value">112회/일</div>
-              </div>
-              <div class="media-spec-item">
-                <div class="media-spec-label">기준 슬롯</div>
-                <div class="media-spec-value">15초 × 30개</div>
-              </div>
-            </div>
-          </div>
-          <div class="media-card-footer">
-            <span class="media-usage-label">평균 슬롯 사용률</span>
-            <div style="flex:1;height:5px;background:#F0F1F3;border-radius:4px;overflow:hidden;">
-              <div style="width:16%;height:100%;background:#58C65D;border-radius:4px;"></div>
-            </div>
-            <span class="media-usage-pct">16%</span>
-            <a href="schedule-media-month" style="font-size:11px;color:#2D84ED;margin-left:4px;">편성표 →</a>
-          </div>
-        </div>
-
-      </div><!-- /media-summary-grid -->
-
-    </div><!-- /media-summary-layout -->
-  </div>
-
-  <!-- ─── Section A: 플레이플랜 ─── -->
-  <div class="section-card">
-    <div class="section-header">
-      <h2 class="section-title">플레이플랜</h2>
-    </div>
-    <div class="playplan-layout">
-
-      <!-- Left list -->
-      <div class="playplan-list">
-        <div class="playplan-list-header">
-          <span class="playplan-list-label">목록</span>
-          <button class="btn-add-small" onclick="showAddForm()">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
-            추가
-          </button>
-        </div>
-        <div class="plan-item selected" onclick="selectPlan(this, 0)">
-          <div class="plan-item-name">▶ 30초 일반</div>
-          <div class="plan-item-price">3,300,000원</div>
-        </div>
-        <div class="plan-item" onclick="selectPlan(this, 1)">
-          <div class="plan-item-name">20초 일반</div>
-          <div class="plan-item-price">2,800,000원</div>
-        </div>
-        <div class="plan-item" onclick="selectPlan(this, 2)">
-          <div class="plan-item-name">30초 조건</div>
-          <div class="plan-item-price">2,500,000원</div>
         </div>
       </div>
 
-      <!-- Right detail -->
-      <div class="playplan-detail" id="planDetailPanel">
-
-        <!-- View mode panels (one per plan) -->
-        <div id="viewPanel0" class="view-panel">
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">재생 시간</div>
-              <div class="info-value">30초</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">광고 유형</div>
-              <div class="info-value">일반</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">운영 기간 단위</div>
-              <div class="info-value">월</div>
+      <div class="card">
+        <div class="card-title">생애주기 상태 (Lifecycle State)</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">현재 상태</div>
+            <div class="field-value">
+              <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
             </div>
           </div>
-          <table class="plan-table">
+          <div class="field-item">
+            <div class="field-label">상태전환 이력</div>
+            <div class="field-value" style="font-size:13px;color:#596066;">
+              초안 → 구성완료 → 승인됨 → <strong>활성</strong>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:#9EA5AD;">
+          ※ 생애주기 상태는 직접 변경이 아닌 허용된 전환 액션으로만 변경됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 2: 구성 미디어 ====== -->
+    <div class="tab-panel" id="tab-media">
+      <div class="card">
+        <div class="card-title">구성 미디어 목록</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
             <thead>
               <tr>
-                <th>미디어</th>
-                <th>운영 시간</th>
-                <th>기준 슬롯 수</th>
-                <th>슬롯 재생 시간</th>
+                <th>#</th>
+                <th>미디어명</th>
+                <th>위치</th>
+                <th>미디어 유형</th>
+                <th>운영 상태</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>강남역 1번출구 A</td><td>07:00–22:00</td><td>20개</td><td>30초</td></tr>
-              <tr><td>강남역 1번출구 B</td><td>07:00–22:00</td><td>16개</td><td>30초</td></tr>
-              <tr><td>강남역 2번출구</td><td>08:00–21:00</td><td>18개</td><td>30초</td></tr>
+              <tr>
+                <td style="color:#9EA5AD;font-size:12px;">1</td>
+                <td style="font-weight:600;">강남역 1번 출구 A</td>
+                <td style="color:#596066;">서울 강남구 강남대로 396</td>
+                <td>옥외 디지털</td>
+                <td><span class="media-status active"><span class="media-status-dot"></span>활성</span></td>
+              </tr>
+              <tr>
+                <td style="color:#9EA5AD;font-size:12px;">2</td>
+                <td style="font-weight:600;">강남역 삼성로 코너 B</td>
+                <td style="color:#596066;">서울 강남구 테헤란로 1</td>
+                <td>옥외 디지털</td>
+                <td><span class="media-status active"><span class="media-status-dot"></span>활성</span></td>
+              </tr>
+              <tr>
+                <td style="color:#9EA5AD;font-size:12px;">3</td>
+                <td style="font-weight:600;">신논현역 교차로 C</td>
+                <td style="color:#596066;">서울 강남구 강남대로 526</td>
+                <td>옥외 디지털</td>
+                <td><span class="media-status active"><span class="media-status-dot"></span>활성</span></td>
+              </tr>
             </tbody>
           </table>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 12px;background:#F6F7F9;border-radius:6px;border:1px solid #E5E7EA;">
-            <span style="font-size:12px;color:#596066;font-weight:600;">합계 가격</span>
-            <span style="font-size:15px;font-weight:700;color:#24292E;">3,300,000원</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">위치도 (Product Map)</div>
+        <div class="map-placeholder">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#CED2D6" stroke-width="2"/><path d="M20 10a6 6 0 016 6c0 4-6 14-6 14S14 20 14 16a6 6 0 016-6z" stroke="#9EA5AD" stroke-width="1.5" fill="none"/><circle cx="20" cy="16" r="2" fill="#9EA5AD"/></svg>
+          <span>지도 자동 표시 영역 — 구성 미디어 3개 위치 플롯</span>
+          <span style="font-size:11px;color:#CED2D6;">강남역 1번 출구 A · 강남역 삼성로 코너 B · 신논현역 교차로 C</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 3: 운영정보 ====== -->
+    <div class="tab-panel" id="tab-operation">
+      <div class="card">
+        <div class="card-title">기본 운영조건</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">운영 요일</div>
+            <div class="field-value">
+              <div class="day-chips">
+                <span class="day-chip on">월</span>
+                <span class="day-chip on">화</span>
+                <span class="day-chip on">수</span>
+                <span class="day-chip on">목</span>
+                <span class="day-chip on">금</span>
+                <span class="day-chip on">토</span>
+                <span class="day-chip off">일</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">운영 시작시간</div>
+            <div class="field-value">07:00</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">운영 종료시간</div>
+            <div class="field-value">23:00</div>
           </div>
         </div>
+      </div>
 
-        <div id="viewPanel1" class="view-panel" style="display:none;">
-          <div class="info-grid">
-            <div class="info-item"><div class="info-label">재생 시간</div><div class="info-value">20초</div></div>
-            <div class="info-item"><div class="info-label">광고 유형</div><div class="info-value">일반</div></div>
-            <div class="info-item"><div class="info-label">운영 기간 단위</div><div class="info-value">월</div></div>
+      <div class="card">
+        <div class="card-title">휴무 정책</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">정기 휴무</div>
+            <div class="field-value">없음</div>
           </div>
-          <table class="plan-table">
-            <thead><tr>
-              <th>미디어</th>
-              <th>운영 시간</th>
-              <th>기준 슬롯 수</th>
-              <th>슬롯 재생 시간</th>
-              <th>최소 보장 횟수</th>
-            </tr></thead>
+          <div class="field-item">
+            <div class="field-label">공휴일 운영 여부</div>
+            <div class="field-value">운영</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">콘텐츠 상한</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">최대 콘텐츠 재생시간</div>
+            <div class="field-value large num">30<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">초</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 4: 슬롯 구조 ====== -->
+    <div class="tab-panel" id="tab-slot">
+      <div class="card">
+        <div class="card-title">슬롯 시간 구성</div>
+        <div class="field-item" style="margin-bottom:16px;">
+          <div class="field-label">슬롯 시간 (Slot Durations)</div>
+          <div class="slot-chips" style="margin-top:8px;">
+            <span class="slot-chip">15초</span>
+            <span class="slot-chip">30초</span>
+          </div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">총 슬롯 수 (Total Slot Count)</div>
+          <div class="field-value large num">6<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">슬롯</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Reference Loop — 자동 계산 (Read-only)</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">기준 슬롯 시간 (RSD)</div>
+            <div class="kpi-value">30<span class="kpi-unit">초</span></div>
+            <div class="kpi-formula">= MAX(15, 30)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">기준 루프 시간 (RLD)</div>
+            <div class="kpi-value">180<span class="kpi-unit">초</span></div>
+            <div class="kpi-formula">= RSD(30초) × 총슬롯(6)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">예상 최소 집행횟수/일</div>
+            <div class="kpi-value">480<span class="kpi-unit">회</span></div>
+            <div class="kpi-formula">= FLOOR(86,400초 ÷ 180초)</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;padding:8px 12px;background:#F6F7F9;border-radius:6px;">
+          <strong>산식</strong> &nbsp; RSD = MAX(Slot Durations) &nbsp;·&nbsp; RLD = RSD × Total Slot Count &nbsp;·&nbsp; MinPlays = FLOOR(운영시간(초) ÷ RLD)
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 5: 가격정보 ====== -->
+    <div class="tab-panel" id="tab-price">
+      <div class="card">
+        <div class="card-title">기준가격 (List Price)</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">기준가격</div>
+            <div class="field-value large num">3,000,000<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">원</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">통화 (Currency)</div>
+            <div class="field-value">KRW (원화)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">가격 단위 (Price Unit)</div>
+            <div class="field-value">월 (Month)</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:#9EA5AD;">
+          ※ 기준가격은 영업·견적의 참고가입니다. 실제 계약가격은 캠페인/영업 영역에서 별도 관리합니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 6: 상품옵션 ====== -->
+    <div class="tab-panel" id="tab-options">
+      <div class="card">
+        <div class="card-title">상품 옵션 목록</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>옵션명</th>
+                <th>유형</th>
+                <th>가격 적용 방식</th>
+                <th class="right">옵션 가격</th>
+                <th class="center">가용 상태</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>강남역 1번출구 A</td><td>07:00–22:00</td><td>20개</td><td>30초</td><td>90회/일</td></tr>
-              <tr><td>강남역 1번출구 B</td><td>07:00–22:00</td><td>16개</td><td>30초</td><td>112회/일</td></tr>
-              <tr><td>강남역 2번출구</td><td>08:00–21:00</td><td>18개</td><td>30초</td><td>86회/일</td></tr>
+              <tr>
+                <td style="font-weight:600;">황금시간대 집중 노출</td>
+                <td>운영시간</td>
+                <td>기간당 (Per Period)</td>
+                <td class="right num">+500,000원/월</td>
+                <td class="center"><span class="avail-on">사용</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">타깃 시간대 (출퇴근)</td>
+                <td>타깃</td>
+                <td>정액 (Fixed)</td>
+                <td class="right num">+300,000원/월</td>
+                <td class="center"><span class="avail-on">사용</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">월간 성과 리포트</td>
+                <td>리포트</td>
+                <td>정액 (Fixed)</td>
+                <td class="right num">+100,000원/월</td>
+                <td class="center"><span class="avail-off">미사용</span></td>
+              </tr>
             </tbody>
           </table>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 12px;background:#F6F7F9;border-radius:6px;border:1px solid #E5E7EA;">
-            <span style="font-size:12px;color:#596066;font-weight:600;">합계 가격</span>
-            <span style="font-size:15px;font-weight:700;color:#24292E;">2,800,000원</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 7: 매체제작가이드 ====== -->
+    <div class="tab-panel" id="tab-guide">
+      <div class="card">
+        <div class="card-title">자동 기술 사양 (Read-only)</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">해상도</div>
+            <div class="field-value">1920 × 1080 (FHD)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">화면 방향</div>
+            <div class="field-value">가로 (Landscape)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최대 콘텐츠 재생시간</div>
+            <div class="field-value num">30초</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">지원 포맷</div>
+            <div class="field-value">MP4 (H.264), WebM</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최대 파일 크기</div>
+            <div class="field-value">100 MB</div>
           </div>
         </div>
+      </div>
 
-        <div id="viewPanel2" class="view-panel" style="display:none;">
-          <div class="info-grid">
-            <div class="info-item"><div class="info-label">재생 시간</div><div class="info-value">30초</div></div>
-            <div class="info-item"><div class="info-label">광고 유형</div><div class="info-value">조건</div></div>
-            <div class="info-item"><div class="info-label">운영 기간 단위</div><div class="info-value">월</div></div>
+      <div class="card">
+        <div class="card-title">추가 제작 가이드</div>
+        <div class="field-grid one">
+          <div class="field-item">
+            <div class="field-label">제작 유의사항</div>
+            <div class="field-value" style="line-height:1.7;white-space:pre-line;">
+콘텐츠 시작 0.5초 이내 브랜드 로고 노출 필수.
+외곽 안전영역(Safe Zone) 5% 확보 요망.
+음성 콘텐츠 재생 불가 — 무음 제작.
+야간 광도 기준 준수: 최대 500 cd/m² (23:00 이후 자동 감소).
+            </div>
           </div>
-          <table class="plan-table">
-            <thead><tr>
-              <th>미디어</th>
-              <th>운영 시간</th>
-              <th>기준 슬롯 수</th>
-              <th>슬롯 재생 시간</th>
-              <th>최소 보장 횟수</th>
-            </tr></thead>
+          <div class="field-item">
+            <div class="field-label">가이드 파일</div>
+            <div class="field-value">
+              <a href="#" class="guide-url">강남프리미엄패키지_제작가이드_v2.pdf</a>
+              <span style="font-size:11px;color:#9EA5AD;margin-left:8px;">PDF · 2.4 MB</span>
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">참조 URL</div>
+            <div class="field-value">
+              <a href="#" class="guide-url">https://guide.dooh-cms.io/products/PRD-001/spec</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 8: Revision ====== -->
+    <div class="tab-panel" id="tab-revision">
+      <div class="card">
+        <div class="card-title">Revision 이력</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Revision</th>
+                <th>변경 사유</th>
+                <th>핵심 변경 항목</th>
+                <th>효력 시작일</th>
+                <th>효력 종료일</th>
+                <th>생성자</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>강남역 1번출구 A</td><td>07:00–22:00</td><td>20개</td><td>30초</td><td>90회/일</td></tr>
-              <tr><td>강남역 1번출구 B</td><td>07:00–22:00</td><td>16개</td><td>30초</td><td>112회/일</td></tr>
-              <tr><td>강남역 2번출구</td><td>08:00–21:00</td><td>18개</td><td>30초</td><td>86회/일</td></tr>
+              <tr>
+                <td><span class="rev-current">R2</span> <span style="font-size:11px;color:#9EA5AD;">현재</span></td>
+                <td>슬롯 구조 및 기준가격 조정</td>
+                <td style="font-size:12px;color:#596066;">Slot Durations, List Price, Total Slot Count</td>
+                <td class="num">2026-07-01</td>
+                <td class="num" style="color:#9EA5AD;">—</td>
+                <td>홍길동</td>
+              </tr>
+              <tr>
+                <td><span class="rev-past">R1</span></td>
+                <td>최초 활성화</td>
+                <td style="font-size:12px;color:#596066;">신규 생성</td>
+                <td class="num">2026-01-15</td>
+                <td class="num">2026-06-30</td>
+                <td>홍길동</td>
+              </tr>
             </tbody>
           </table>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 12px;background:#F6F7F9;border-radius:6px;border:1px solid #E5E7EA;">
-            <span style="font-size:12px;color:#596066;font-weight:600;">합계 가격</span>
-            <span style="font-size:15px;font-weight:700;color:#24292E;">2,500,000원</span>
-          </div>
         </div>
-
-        <!-- Add/Edit form -->
-        <div id="editForm" class="edit-form">
-          <h3 style="font-size:14px;font-weight:700;color:#24292E;margin:0 0 18px;">새 플레이플랜 추가</h3>
-          <div class="form-row">
-            <label class="form-label">재생 시간</label>
-            <input class="form-input" type="number" placeholder="예) 30" style="width:120px;">
-          </div>
-          <div class="form-row">
-            <label class="form-label">광고 유형</label>
-            <div class="toggle-group">
-              <button class="toggle-btn active" onclick="setType(this,'normal')">일반</button>
-              <button class="toggle-btn" onclick="setType(this,'cond')">조건</button>
-            </div>
-          </div>
-          <div id="condFields" class="form-row condition-fields">
-            <label class="form-label">조건 유형</label>
-            <select class="form-select" style="width:200px;">
-              <option>날씨 조건</option>
-              <option>시간 조건</option>
-              <option>요일 조건</option>
-            </select>
-          </div>
-          <div id="condDetailFields" class="form-row condition-fields">
-            <label class="form-label">조건 상세</label>
-            <input class="form-input" type="text" placeholder="조건 상세 입력" style="width:260px;">
-          </div>
-          <div class="form-row">
-            <label class="form-label">운영 기간 단위</label>
-            <select class="form-select" style="width:160px;">
-              <option>월</option>
-              <option>주</option>
-              <option>일</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <label class="form-label">합계 가격 <span style="color:#E97474;">*</span></label>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input class="form-input" type="number" id="editTotalPrice" placeholder="0" style="width:160px;text-align:right;">
-              <span style="font-size:13px;color:#596066;">원</span>
-            </div>
-            <div style="font-size:11px;color:#9EA5AD;margin-top:4px;margin-left:0;">전체 미디어 포함 합산 가격</div>
-          </div>
-          <div class="form-actions">
-            <button class="btn-primary-sm" onclick="saveForm()">저장</button>
-            <button class="btn-cancel-sm" onclick="cancelForm()">취소</button>
-          </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 과거 Revision은 삭제할 수 없으며, 해당 Revision 기준으로 생성된 계약·캠페인은 계속 참조됩니다.
         </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── Section C: 스케줄 현황 ─── -->
-  <div class="section-card">
-    <div class="section-header">
-      <h2 class="section-title">스케줄 현황</h2>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <button class="btn-primary" onclick="openSchedModal()" style="height:32px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-          스케줄 예약
-        </button>
-        <a class="link-btn" href="schedule-product-month">편성표 보기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg></a>
       </div>
     </div>
 
-    <!-- Filter tabs -->
-    <div class="schedule-tabs">
-      <button class="sched-tab active" onclick="filterSched(this,'all')">전체</button>
-      <button class="sched-tab" onclick="filterSched(this,'running')">운영</button>
-      <button class="sched-tab" onclick="filterSched(this,'confirmed')">확정</button>
-      <button class="sched-tab" onclick="filterSched(this,'unconfirmed')">미확정</button>
-      <button class="sched-tab" onclick="filterSched(this,'reserved')">예약</button>
-    </div>
+    <!-- ====== TAB 9: Audit ====== -->
+    <div class="tab-panel" id="tab-audit">
+      <div class="card">
+        <div class="card-title">감사 정보 (Audit Log)</div>
+        <div class="audit-row">
+          <div class="audit-item">
+            <div class="field-label">최초 생성일</div>
+            <div class="field-value">2026-01-10</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">생성자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">최종 수정일</div>
+            <div class="field-value">2026-08-10 09:22</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">최종 수정자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">현재 Revision</div>
+            <div class="field-value"><span class="rev-current">R2</span></div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">Lifecycle 상태</div>
+            <div class="field-value"><span class="badge lc-active" style="font-size:12px;"><span class="badge-dot"></span>활성</span></div>
+          </div>
+        </div>
 
-    <!-- Schedule table -->
-    <table class="sched-table">
-      <thead>
-        <tr>
-          <th>스케줄명</th>
-          <th>광고주</th>
-          <th>광고 기간</th>
-          <th>재생 시간</th>
-          <th>유형</th>
-          <th>상태</th>
-        </tr>
-      </thead>
-      <tbody id="schedBody">
-        <tr data-sched="running">
-          <td><a href="schedule-detail" style="color:#2D84ED;text-decoration:none;font-weight:500;">삼성 갤럭시 S25 런칭</a></td>
-          <td>삼성전자</td>
-          <td>2026.05.01 ~ 2026.06.30</td>
-          <td>30초</td>
-          <td><span class="type-badge normal">일반</span></td>
-          <td><div class="status-dot-label"><span class="sdot sdot-running"></span>운영 중</div></td>
-        </tr>
-        <tr data-sched="running">
-          <td><a href="schedule-detail" style="color:#2D84ED;text-decoration:none;font-weight:500;">나이키 FW25 캠페인</a></td>
-          <td>나이키 코리아</td>
-          <td>2026.06.01 ~ 2026.07.31</td>
-          <td>30초</td>
-          <td><span class="type-badge cond">조건</span></td>
-          <td><div class="status-dot-label"><span class="sdot sdot-running"></span>운영 중</div></td>
-        </tr>
-        <tr data-sched="confirmed">
-          <td><a href="schedule-detail" style="color:#2D84ED;text-decoration:none;font-weight:500;">현대차 아이오닉9</a></td>
-          <td>현대자동차</td>
-          <td>2026.07.01 ~ 2026.07.31</td>
-          <td>30초</td>
-          <td><span class="type-badge normal">일반</span></td>
-          <td><div class="status-dot-label"><span class="sdot" style="background:#3C3489;"></span>확정</div></td>
-        </tr>
-        <tr data-sched="unconfirmed">
-          <td><a href="schedule-detail" style="color:#2D84ED;text-decoration:none;font-weight:500;">카카오 브랜드 위크</a></td>
-          <td>카카오</td>
-          <td>2026.08.15 ~ 2026.08.31</td>
-          <td>20초</td>
-          <td><span class="type-badge normal">일반</span></td>
-          <td><div class="status-dot-label"><span class="sdot" style="background:#E8841A;"></span>미확정</div></td>
-        </tr>
-        <tr data-sched="reserved">
-          <td><a href="schedule-detail" style="color:#2D84ED;text-decoration:none;font-weight:500;">롯데백화점 하반기</a></td>
-          <td>롯데쇼핑</td>
-          <td>2026.08.01 ~ 2026.09.30</td>
-          <td>20초</td>
-          <td><span class="type-badge normal">일반</span></td>
-          <td><div class="status-dot-label"><span class="sdot" style="background:#9EA5AD;"></span>예약</div></td>
-        </tr>
-        <tr data-sched="reserved">
-          <td><a href="schedule-detail" style="color:#2D84ED;text-decoration:none;font-weight:500;">CJ 제일제당 추석 기획전</a></td>
-          <td>CJ제일제당</td>
-          <td>2026.09.10 ~ 2026.09.25</td>
-          <td>30초</td>
-          <td><span class="type-badge normal">일반</span></td>
-          <td><div class="status-dot-label"><span class="sdot" style="background:#9EA5AD;"></span>예약</div></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ─── Section D: 미디어 효과 분석 ─── -->
-  <div class="section-card">
-    <div class="section-header">
-      <h2 class="section-title">미디어 효과 분석</h2>
-      <span style="font-size:11px;color:#9EA5AD;">최신 업로드: 2026.06.08</span>
-    </div>
-
-    <!-- KPI 요약 -->
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-label">일 총 누적 노출</div>
-        <div class="kpi-value">125,550<span style="font-size:14px;font-weight:600;color:#596066;">명</span></div>
-        <div class="kpi-sub">3개 미디어 합산 · 일평균</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">평균 재생 완료율</div>
-        <div class="kpi-value">98.6<span style="font-size:14px;font-weight:600;">%</span></div>
-        <div class="kpi-sub">사이클 내 정상 재생 · 미디어 평균</div>
+        <div style="margin-top:20px;">
+          <div class="card-title" style="font-size:12px;border-bottom:none;padding-bottom:0;margin-bottom:10px;">최근 변경 이력</div>
+          <div class="inner-table-wrap">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <th>일시</th>
+                  <th>변경 항목</th>
+                  <th>이전 값</th>
+                  <th>변경 후 값</th>
+                  <th>처리자</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-08-10 09:22</td>
+                  <td>List Price</td>
+                  <td style="color:#9EA5AD;">₩2,500,000</td>
+                  <td>₩3,000,000</td>
+                  <td>홍길동</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-07-01 10:00</td>
+                  <td>Revision 생성 (R2)</td>
+                  <td style="color:#9EA5AD;">R1</td>
+                  <td>R2</td>
+                  <td>홍길동</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-01-15 09:00</td>
+                  <td>Lifecycle 상태전환</td>
+                  <td style="color:#9EA5AD;">승인됨</td>
+                  <td>활성</td>
+                  <td>System</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- 분석 탭 -->
-    <div style="border-bottom:1px solid #E5E7EA;">
-      <div style="display:flex;gap:0;padding:0 20px;" id="effectTabNav">
-        <button class="effect-tab active" onclick="switchEffectTab(this,'timeslot')">시간대별</button>
-        <button class="effect-tab" onclick="switchEffectTab(this,'weekday')">요일별</button>
-        <button class="effect-tab" onclick="switchEffectTab(this,'monthly')">월별</button>
-        <button class="effect-tab" onclick="switchEffectTab(this,'demo')">성별·연령대</button>
-        <button class="effect-tab" onclick="switchEffectTab(this,'region')">거주지·근무지</button>
-      </div>
-    </div>
-
-    <!-- 탭별 콘텐츠 -->
-    <div style="padding:20px 24px;">
-
-      <!-- 시간대별 -->
-      <div id="tabTimeslot" class="effect-tab-panel">
-        <div class="effect-insight">📊 <strong>18시</strong> 퇴근 피크 시간대에 노출이 가장 높으며, 저녁(18~22시) 구간이 전체 노출의 약 <strong>38%</strong>를 차지합니다. 오전 대비 저녁 시간대 집중 운영이 효과적입니다.</div>
-        <div>
-          <div class="effect-chart-title">시간대별 미디어 평균 노출 인구 수</div>
-          <div class="effect-chart-sub">시간별 · 미디어 평균 노출 인구 (명)</div>
-          <div class="effect-canvas-wrap" style="height:240px;">
-            <canvas id="chartHourly"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- 요일별 -->
-      <div id="tabWeekday" class="effect-tab-panel" style="display:none;">
-        <div class="effect-insight">📅 <strong>토요일</strong>이 주간 최고 노출 요일로, 평일 평균 대비 <strong>+26.9%</strong> 높습니다. 주말 유동 인구 집중으로 토·일 편성 비중을 높이면 노출 효율이 개선됩니다.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-          <div>
-            <div class="effect-chart-title">요일별 평균 노출</div>
-            <div class="effect-chart-sub">월~일 · 미디어 합산 누적 노출 일평균 (명)</div>
-            <div class="effect-canvas-wrap" style="height:220px;">
-              <canvas id="chartWeekday"></canvas>
-            </div>
-          </div>
-          <div>
-            <div class="effect-chart-title">평일 vs 주말</div>
-            <div class="effect-chart-sub">평일 5일 / 주말 2일 평균 비교</div>
-            <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
-              <div style="background:#F6F7F9;border-radius:8px;padding:16px 18px;">
-                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">평일 평균 (월~금)</div>
-                <div style="font-size:22px;font-weight:800;color:#24292E;">41,850<span style="font-size:13px;font-weight:500;color:#596066;">명</span></div>
-                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">미디어당 일 평균 기준</div>
-                <div style="margin-top:8px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
-                  <div style="width:72%;height:100%;background:#58C65D;border-radius:3px;"></div>
-                </div>
-              </div>
-              <div style="background:#F6F7F9;border-radius:8px;padding:16px 18px;">
-                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">주말 평균 (토~일)</div>
-                <div style="font-size:22px;font-weight:800;color:#24292E;">53,100<span style="font-size:13px;font-weight:500;color:#596066;">명</span></div>
-                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">미디어당 일 평균 기준</div>
-                <div style="margin-top:8px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
-                  <div style="width:93%;height:100%;background:#2D84ED;border-radius:3px;"></div>
-                </div>
-                <div style="font-size:11px;color:#2D84ED;margin-top:4px;font-weight:600;">▲ 26.9% 평일 대비</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 월별 -->
-      <div id="tabMonthly" class="effect-tab-panel" style="display:none;">
-        <div class="effect-insight">📈 <strong>6월</strong>이 최근 6개월 중 최고 노출월(125,550명/일)로, 전월 대비 <strong>+5%</strong> 증가했습니다. 강남역 B 미디어의 성장세가 전체 상승을 견인하고 있습니다.</div>
-        <div class="effect-chart-title">월별 누적 노출</div>
-        <div class="effect-chart-sub">미디어별 일 누적 노출 합산 (명/일) — 누적 막대그래프</div>
-        <div class="effect-canvas-wrap" style="height:240px;">
-          <canvas id="chartMonthly"></canvas>
-        </div>
-      </div>
-
-      <!-- 성별·연령대 -->
-      <div id="tabDemo" class="effect-tab-panel" style="display:none;">
-        <div class="effect-insight">👥 <strong>30대 남성</strong>이 핵심 노출 타깃으로, 전체의 약 <strong>15%</strong>를 차지합니다. 20·30대 합산 비중이 52%로 젊은 직장인 대상 캠페인에 최적화된 매체입니다.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-          <div>
-            <div class="effect-chart-title">연령대별 노출 비율</div>
-            <div class="effect-chart-sub">전체 미디어 합산 · 성별 구분</div>
-            <div class="effect-canvas-wrap" style="height:220px;">
-              <canvas id="chartAge"></canvas>
-            </div>
-          </div>
-          <div>
-            <div class="effect-chart-title">성별 분포</div>
-            <div class="effect-chart-sub">전체 노출 중 성별 비율</div>
-            <div style="display:flex;gap:12px;margin-top:12px;margin-bottom:20px;">
-              <div style="flex:1;background:#EAF3FF;border-radius:8px;padding:14px 16px;text-align:center;">
-                <div style="font-size:11px;color:#2D84ED;font-weight:600;margin-bottom:4px;">남성</div>
-                <div style="font-size:26px;font-weight:800;color:#2D84ED;">54<span style="font-size:14px;">%</span></div>
-                <div style="font-size:11px;color:#596066;margin-top:2px;">65,610명/일</div>
-              </div>
-              <div style="flex:1;background:#FFF0F5;border-radius:8px;padding:14px 16px;text-align:center;">
-                <div style="font-size:11px;color:#C9317A;font-weight:600;margin-bottom:4px;">여성</div>
-                <div style="font-size:26px;font-weight:800;color:#C9317A;">46<span style="font-size:14px;">%</span></div>
-                <div style="font-size:11px;color:#596066;margin-top:2px;">55,890명/일</div>
-              </div>
-            </div>
-            <div class="effect-chart-title" style="margin-bottom:8px;">연령대 비율</div>
-            <div style="display:flex;flex-direction:column;gap:6px;">
-              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
-                <span style="min-width:32px;color:#596066;">30대</span>
-                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;"><div style="width:28%;height:100%;background:#58C65D;border-radius:4px;"></div></div>
-                <span style="min-width:36px;text-align:right;font-weight:700;">28%</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
-                <span style="min-width:32px;color:#596066;">20대</span>
-                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;"><div style="width:24%;height:100%;background:#58C65D;border-radius:4px;"></div></div>
-                <span style="min-width:36px;text-align:right;font-weight:700;">24%</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
-                <span style="min-width:32px;color:#596066;">40대</span>
-                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;"><div style="width:22%;height:100%;background:#E8841A;border-radius:4px;"></div></div>
-                <span style="min-width:36px;text-align:right;font-weight:700;">22%</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
-                <span style="min-width:32px;color:#596066;">50대+</span>
-                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;"><div style="width:16%;height:100%;background:#CED2D6;border-radius:4px;"></div></div>
-                <span style="min-width:36px;text-align:right;font-weight:700;">16%</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
-                <span style="min-width:32px;color:#596066;">10대</span>
-                <div style="flex:1;height:8px;background:#F0F1F3;border-radius:4px;overflow:hidden;"><div style="width:10%;height:100%;background:#CED2D6;border-radius:4px;"></div></div>
-                <span style="min-width:36px;text-align:right;font-weight:700;">10%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 거주지·근무지 Top 5 -->
-      <div id="tabRegion" class="effect-tab-panel" style="display:none;">
-        <div class="effect-insight">📍 노출 인원의 거주지·근무지 모두 <strong>서울 강남구</strong>가 1위로, 지역 밀착형 생활권 광고로서의 높은 효과를 보여줍니다. 강남·서초·송파 3개 구가 거주지 기준 전체의 <strong>47%</strong>를 점유합니다.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-
-          <!-- 거주지 Top 5 -->
-          <div>
-            <div class="effect-chart-title">거주지 Top 5</div>
-            <div class="effect-chart-sub">노출 인원의 실거주 지역 기준</div>
-            <div style="display:flex;flex-direction:column;gap:0;margin-top:12px;border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:7px 14px;background:#F6F7F9;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">
-                <span>순위</span><span>지역</span><span style="text-align:right;">인원</span><span style="text-align:right;">비율</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#58C65D;">1</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 강남구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:100%;height:100%;background:#58C65D;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">24,300명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">20%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">2</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 서초구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:78%;height:100%;background:#58C65D;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">18,900명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">15.6%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">3</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 송파구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:57%;height:100%;background:#58C65D;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">13,900명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">11.4%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">4</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">경기 성남시</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:42%;height:100%;background:#58C65D;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">10,200명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">8.4%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">5</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 용산구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:30%;height:100%;background:#58C65D;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">7,300명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">6.0%</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 근무지 Top 5 -->
-          <div>
-            <div class="effect-chart-title">근무지 Top 5</div>
-            <div class="effect-chart-sub">노출 인원의 주요 직장 소재지 기준</div>
-            <div style="display:flex;flex-direction:column;gap:0;margin-top:12px;border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;">
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:7px 14px;background:#F6F7F9;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">
-                <span>순위</span><span>지역</span><span style="text-align:right;">인원</span><span style="text-align:right;">비율</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#2D84ED;">1</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 강남구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:100%;height:100%;background:#2D84ED;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">31,600명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">26%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">2</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 서초구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:65%;height:100%;background:#2D84ED;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">20,500명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">16.9%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">3</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 중구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:44%;height:100%;background:#2D84ED;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">14,000명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">11.5%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;border-bottom:1px solid #F0F1F3;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">4</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">서울 종로구</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:32%;height:100%;background:#2D84ED;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">10,100명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">8.3%</span>
-              </div>
-              <div style="display:grid;grid-template-columns:28px 1fr 60px 56px;padding:10px 14px;align-items:center;">
-                <span style="font-size:13px;font-weight:800;color:#596066;">5</span>
-                <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;">경기 과천시</div>
-                  <div style="margin-top:4px;height:4px;background:#F0F1F3;border-radius:2px;overflow:hidden;"><div style="width:18%;height:100%;background:#2D84ED;border-radius:2px;"></div></div>
-                </div>
-                <span style="text-align:right;font-size:12px;color:#596066;">5,700명</span>
-                <span style="text-align:right;font-size:12px;font-weight:700;">4.7%</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </div><!-- /padding -->
-  </div>
 
   </div><!-- /content-inner -->
 </main>
 
 <script>
-/* ── Playplan master-detail ── */
-let currentPlanIndex = 0;
-
-function selectPlan(el, idx) {
-  document.querySelectorAll('.plan-item').forEach(i => i.classList.remove('selected'));
-  el.classList.add('selected');
-  // Update arrow indicator
-  document.querySelectorAll('.plan-item .plan-item-name').forEach(n => {
-    n.textContent = n.textContent.replace(/^▶ /, '');
-  });
-  el.querySelector('.plan-item-name').textContent = '▶ ' + el.querySelector('.plan-item-name').textContent;
-
-  // Hide edit form
-  document.getElementById('editForm').classList.remove('visible');
-
-  // Show correct view panel
-  document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
-  const vp = document.getElementById('viewPanel' + idx);
-  if (vp) vp.style.display = 'block';
-  currentPlanIndex = idx;
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
 }
-
-function showAddForm() {
-  document.querySelectorAll('.view-panel').forEach(p => p.style.display = 'none');
-  document.querySelectorAll('.plan-item').forEach(i => i.classList.remove('selected'));
-  document.getElementById('editForm').classList.add('visible');
-}
-
-function cancelForm() {
-  document.getElementById('editForm').classList.remove('visible');
-  // re-show first panel
-  document.querySelectorAll('.view-panel').forEach((p, i) => p.style.display = i === 0 ? 'block' : 'none');
-  document.querySelectorAll('.plan-item')[0].classList.add('selected');
-}
-
-function saveForm() {
-  alert('플레이플랜이 저장되었습니다. (목업)');
-  cancelForm();
-}
-
-function setType(btn, type) {
-  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const condRows = document.querySelectorAll('.condition-fields');
-  condRows.forEach(r => {
-    if (type === 'cond') r.classList.add('visible');
-    else r.classList.remove('visible');
-  });
-}
-
-function togglePreview(btn) {
-  const panel = btn.nextElementSibling;
-  panel.classList.toggle('open');
-  const svg = btn.querySelector('svg path');
-  if (panel.classList.contains('open')) {
-    svg.setAttribute('d', 'M2 8l4-4 4 4');
-    btn.childNodes[btn.childNodes.length - 1].textContent = ' 광고주 뷰 접기';
-  } else {
-    svg.setAttribute('d', 'M2 4l4 4 4-4');
-    btn.childNodes[btn.childNodes.length - 1].textContent = ' 광고주 뷰 미리보기';
-  }
-}
-
-/* ── Chart ── */
-const labels = ['6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8'];
-
-/* 미디어별 운영 설정 (미디어마다 사이클 최대 시간과 슬롯 수가 다를 수 있음) */
-const mediaConfig = {
-  A: { name: '강남역 1번출구 A', cycleMax: 600, slotMax: 20, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
-  B: { name: '강남역 1번출구 B', cycleMax: 480, slotMax: 16, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
-  C: { name: '강남역 2번출구',   cycleMax: 540, slotMax: 18, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
-};
-
-/* 실제 잔여 시간(초) / 잔여 슬롯 수 — 날짜별 원시값 */
-const timeDataRaw = {
-  A: [480, 510, 525, 490, 470, 455, 475],
-  B: [200, 180, 150, 130, 120, 110, 100],
-  C: [540, 550, 555, 560, 565, 570, 575]
-};
-const slotDataRaw = {
-  A: [16, 17, 18, 15, 14, 13, 15],
-  B: [7,  6,  5,  4,  4,  3,  3],
-  C: [18, 18, 19, 19, 20, 20, 20]
-};
-
-/* % 변환 */
-function toPct(raw, key, mode) {
-  const max = mode === 'time' ? mediaConfig[key].cycleMax : mediaConfig[key].slotMax;
-  return raw[key].map(v => Math.round(v / max * 100));
-}
-
-let chartMode = 'time';
-
-function buildChart() {
-  if (!document.getElementById('remainChart')) return;
-  const ctx = document.getElementById('remainChart').getContext('2d');
-  const isTime = chartMode === 'time';
-
-  /* Y축은 항상 0~100% */
-  const datasets = Object.keys(mediaConfig).map(key => {
-    const cfg = mediaConfig[key];
-    const pctData = toPct(isTime ? timeDataRaw : slotDataRaw, key, chartMode);
-    return {
-      label: cfg.name,
-      data: pctData,
-      /* 원시값을 별도 저장해 툴팁에서 꺼내 씀 */
-      rawData: (isTime ? timeDataRaw : slotDataRaw)[key],
-      borderColor: cfg.color,
-      backgroundColor: cfg.bg,
-      tension: 0.3,
-      pointRadius: 5,
-      pointHoverRadius: 7,
-      pointBackgroundColor: pctData.map(v => v <= 20 ? '#E97474' : cfg.color)
-    };
-  });
-
-  if (remainChart) remainChart.destroy();
-  remainChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      onClick: () => { window.location.href = 'schedule-product-month'; },
-      plugins: {
-        legend: {
-          position: 'top',
-          labels: { font: { size: 12 }, color: '#596066', boxWidth: 12 }
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          backgroundColor: '#fff',
-          borderColor: '#E5E7EA',
-          borderWidth: 1,
-          titleColor: '#24292E',
-          bodyColor: '#596066',
-          padding: 12,
-          callbacks: {
-            title: items => labels[items[0].dataIndex] + ' 잔여 현황',
-            label: item => {
-              const key = ['A','B','C'][item.datasetIndex];
-              const cfg = mediaConfig[key];
-              const idx = item.dataIndex;
-              const rawVal = (isTime ? timeDataRaw : slotDataRaw)[key][idx];
-              const maxVal = isTime ? cfg.cycleMax : cfg.slotMax;
-              const pct = item.parsed.y;
-              const unit = isTime ? '초' : '개';
-              const detail = isTime
-                ? `잔여 ${rawVal}초 / 사이클 최대 ${maxVal}초`
-                : `잔여 ${rawVal}개 / 총 슬롯 ${maxVal}개`;
-              return ` ${cfg.name}  ${pct}%  (${detail})`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: '#F0F1F3' },
-          ticks: { color: '#9EA5AD', font: { size: 11 } }
-        },
-        y: {
-          min: 0,
-          max: 100,
-          grid: { color: '#F0F1F3' },
-          ticks: {
-            color: '#9EA5AD',
-            font: { size: 11 },
-            stepSize: 20,
-            callback: v => v + '%'
-          }
-        }
-      }
-    },
-    plugins: [{
-      /* 20% 위험선을 직접 그리는 플러그인 */
-      id: 'dangerLine',
-      afterDraw(chart) {
-        const { ctx: c, chartArea: { left, right, top, bottom }, scales: { y } } = chart;
-        const yPos = y.getPixelForValue(20);
-        c.save();
-        c.beginPath();
-        c.setLineDash([5, 4]);
-        c.strokeStyle = '#E97474';
-        c.lineWidth = 1.5;
-        c.moveTo(left, yPos);
-        c.lineTo(right, yPos);
-        c.stroke();
-        c.setLineDash([]);
-        c.font = '10px sans-serif';
-        c.fillStyle = '#E97474';
-        c.fillText('위험 (20%)', right - 60, yPos - 4);
-        c.restore();
-      }
-    }]
-  });
-}
-
-function switchChart(mode) {
-  chartMode = mode;
-  document.getElementById('btnTime').classList.toggle('active', mode === 'time');
-  document.getElementById('btnSlot').classList.toggle('active', mode === 'slot');
-  buildChart();
-}
-
-/* ── Schedule filter ── */
-function filterSched(tab, filter) {
-  document.querySelectorAll('.sched-tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  document.querySelectorAll('#schedBody tr').forEach(row => {
-    row.style.display = (filter === 'all' || row.dataset.sched === filter) ? '' : 'none';
-  });
-}
-
-/* ── Effect analysis: 4-tab chart system ── */
-
-/* 미디어 설정 — avgPerCycle × 450사이클 = 일 누적 */
-const effectMediaCfg = [
-  { name: '강남역 1번출구 A', dailyTotal: 45000, color: '#58C65D', bg: 'rgba(88,198,93,0.08)' },
-  { name: '강남역 1번출구 B', dailyTotal: 49500, color: '#E8841A', bg: 'rgba(232,132,26,0.08)' },
-  { name: '강남역 2번출구',   dailyTotal: 31050, color: '#2D84ED', bg: 'rgba(45,132,237,0.08)' }
-];
-
-/* 일별 데이터 (6/1~6/8, 미디어별 일 누적 노출 명/일) */
-const dailyData = {
-  labels: ['6/1', '6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8'],
-  A: [45900, 44100, 45000, 43650, 45450, 45000, 45900, 45000],
-  B: [50400, 48600, 49500, 48150, 50400, 49050, 50850, 49500],
-  C: [31500, 30150, 31050, 29700, 31500, 30600, null, 31050]  /* 6/7 점검 */
-};
-
-/* 요일별 데이터 (월~일 일 누적 평균, 미디어별 명/일) */
-const weekdayData = {
-  labels: ['월', '화', '수', '목', '금', '토', '일'],
-  values: [40050, 41400, 40950, 41850, 44100, 54000, 52200],
-  A: [14400, 14850, 14700, 15000, 15750, 19350, 18900],
-  B: [15750, 16200, 16200, 16650, 17550, 21150, 20700],
-  C: [ 9900, 10350, 10050, 10200, 10800, 13500, 12600]
-};
-
-/* 월별 데이터 (1~6월 미디어 합산 일평균, 명/일) */
-const monthlyData = {
-  labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
-  total: [108000, 112000, 118000, 120000, 119500, 125550],
-  A: [42000, 43000, 44000, 45000, 45000, 45000],
-  B: [45000, 46000, 48000, 49500, 49500, 49500],
-  C: [21000, 23000, 26000, 25500, 25000, 31050]
-};
-
-/* 성별·연령대 데이터 (%) */
-const ageData = {
-  labels: ['10대', '20대', '30대', '40대', '50대+'],
-  male:   [6,  12, 16, 13, 7],
-  female: [4,  12, 12,  9, 9]
-};
-
-/* 시간대별 데이터 (07~21시 미디어별 평균 노출 인구 명, 시간당) */
-const hourlyData = {
-  labels: ['07시','08시','09시','10시','11시','12시','13시','14시','15시','16시','17시','18시','19시','20시','21시'],
-  values: [2340, 3150, 2940, 2640, 2730, 2820, 2880, 2610, 2550, 2640, 2850, 3360, 3240, 2850, 2460],
-  A: [ 840, 1140, 1050,  960,  990, 1020, 1050,  930,  900,  960, 1020, 1200, 1170, 1020,  870],
-  B: [ 930, 1230, 1140, 1050, 1080, 1110, 1140, 1020,  990, 1050, 1110, 1320, 1260, 1110,  960],
-  C: [ 570,  780,  750,  630,  660,  690,  690,  660,  660,  630,  720,  840,  810,  720,  630]
-};
-
-const effectCharts = {};
-
-function makeLineDatasets(keys) {
-  return effectMediaCfg.map((cfg, i) => ({
-    label: cfg.name,
-    data: keys[i],
-    borderColor: cfg.color,
-    backgroundColor: cfg.bg,
-    borderWidth: 2,
-    pointRadius: 3,
-    pointBackgroundColor: keys[i].map(v =>
-      (v !== null && v < cfg.avgPerCycle * 0.85) ? '#E97474' : cfg.color
-    ),
-    tension: 0.3,
-    fill: true,
-    spanGaps: false
-  }));
-}
-
-function lineOpts(unit, suggestedMin, suggestedMax) {
-  return {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
-      tooltip: {
-        mode: 'index', intersect: false,
-        callbacks: { label: ctx => ctx.raw === null ? ` ${ctx.dataset.label}: 점검 중` : ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}${unit}` }
-      }
-    },
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-      y: { grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v >= 1000 ? (v/1000).toFixed(0)+'K' : v) + unit.replace('명','') }, suggestedMin: suggestedMin || 0, suggestedMax: suggestedMax || undefined }
-    }
-  };
-}
-
-function buildTimeslotCharts() {
-  const hourlyPeakIdx = hourlyData.values.indexOf(Math.max(...hourlyData.values));
-  if (effectCharts.hourly) effectCharts.hourly.destroy();
-  if (effectCharts.timeSlot) { effectCharts.timeSlot.destroy(); effectCharts.timeSlot = null; }
-  const hColors = [
-    { base: '#2D84ED99', peak: '#2D84ED' },
-    { base: '#58C65D99', peak: '#58C65D' },
-    { base: '#C9317A99', peak: '#C9317A' }
-  ];
-  const hKeys = ['A', 'B', 'C'];
-  const hLabels = ['강남역 A', '강남역 B', '강남역 C'];
-  effectCharts.hourly = new Chart(document.getElementById('chartHourly').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: hourlyData.labels,
-      datasets: hKeys.map((key, ki) => ({
-        label: hLabels[ki],
-        data: hourlyData[key],
-        backgroundColor: hourlyData[key].map((_, i) => i === hourlyPeakIdx ? hColors[ki].peak : hColors[ki].base),
-        borderColor: hourlyData[key].map((_, i) => i === hourlyPeakIdx ? hColors[ki].peak : hColors[ki].base),
-        borderWidth: 0,
-        borderRadius: ki === hKeys.length - 1 ? 3 : 0,
-        stack: 'media'
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 12 } },
-        tooltip: {
-          mode: 'index', intersect: false,
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}명`,
-            footer: items => ` 합계: ${items.reduce((s, i) => s + i.raw, 0).toLocaleString()}명`
-          }
-        }
-      },
-      scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: ctx => ({ size: 11, weight: ctx.index === hourlyPeakIdx ? '700' : '400' }) } },
-        y: { stacked: true, beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v.toLocaleString() } }
-      }
-    }
-  });
-}
-
-function buildWeekdayChart() {
-  const wPeakIdx = weekdayData.values.indexOf(Math.max(...weekdayData.values));
-  if (effectCharts.weekday) effectCharts.weekday.destroy();
-  const wColors = [
-    { base: '#2D84ED99', peak: '#2D84ED' },
-    { base: '#58C65D99', peak: '#58C65D' },
-    { base: '#C9317A99', peak: '#C9317A' }
-  ];
-  const wKeys = ['A', 'B', 'C'];
-  const wLabels = ['강남역 A', '강남역 B', '강남역 C'];
-  effectCharts.weekday = new Chart(document.getElementById('chartWeekday').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: weekdayData.labels,
-      datasets: wKeys.map((key, ki) => ({
-        label: wLabels[ki],
-        data: weekdayData[key],
-        backgroundColor: weekdayData[key].map((_, i) => i === wPeakIdx ? wColors[ki].peak : wColors[ki].base),
-        borderColor: weekdayData[key].map((_, i) => i === wPeakIdx ? wColors[ki].peak : wColors[ki].base),
-        borderWidth: 0,
-        borderRadius: ki === wKeys.length - 1 ? 4 : 0,
-        stack: 'media'
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 12 } },
-        tooltip: {
-          mode: 'index', intersect: false,
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}명`,
-            footer: items => ` 합계: ${items.reduce((s, i) => s + i.raw, 0).toLocaleString()}명/일`
-          }
-        }
-      },
-      scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: ctx => ({ size: 12, weight: ctx.index === wPeakIdx ? '700' : '400' }) } },
-        y: { stacked: true, beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0)+'K' } }
-      }
-    }
-  });
-}
-
-function buildMonthlyCharts() {
-  if (effectCharts.monthly) effectCharts.monthly.destroy();
-  if (effectCharts.monthlyMedia) { effectCharts.monthlyMedia.destroy(); effectCharts.monthlyMedia = null; }
-  const mPeakIdx = monthlyData.total.indexOf(Math.max(...monthlyData.total));
-  const mediaColors = [
-    { base: '#2D84ED99', peak: '#2D84ED' },
-    { base: '#58C65D99', peak: '#58C65D' },
-    { base: '#C9317A99', peak: '#C9317A' }
-  ];
-  const mediaKeys = ['A', 'B', 'C'];
-  const mediaLabels = ['강남역 A', '강남역 B', '강남역 C'];
-  effectCharts.monthly = new Chart(document.getElementById('chartMonthly').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: monthlyData.labels,
-      datasets: mediaKeys.map((key, ki) => ({
-        label: mediaLabels[ki],
-        data: monthlyData[key],
-        backgroundColor: monthlyData[key].map((_, i) => i === mPeakIdx ? mediaColors[ki].peak : mediaColors[ki].base),
-        borderColor: monthlyData[key].map((_, i) => i === mPeakIdx ? mediaColors[ki].peak : mediaColors[ki].base),
-        borderWidth: monthlyData[key].map((_, i) => i === mPeakIdx ? 2 : 0),
-        borderRadius: ki === mediaKeys.length - 1 ? 4 : 0,
-        stack: 'media'
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 12 } },
-        tooltip: {
-          mode: 'index', intersect: false,
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}명`,
-            footer: items => ` 합계: ${items.reduce((s, i) => s + i.raw, 0).toLocaleString()}명/일`
-          }
-        }
-      },
-      scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: ctx => ({ size: 11, weight: ctx.index === mPeakIdx ? '700' : '400' }) } },
-        y: { stacked: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => (v/1000).toFixed(0) + 'K' }, beginAtZero: true }
-      }
-    }
-  });
-}
-
-function buildDemoCharts() {
-  /* 연령대×성별 grouped bar — 피크(30대, index 2) 강조 */
-  const ageTotals = ageData.labels.map((_, i) => ageData.male[i] + ageData.female[i]);
-  const agePeakIdx = ageTotals.indexOf(Math.max(...ageTotals));
-  if (effectCharts.age) effectCharts.age.destroy();
-  effectCharts.age = new Chart(document.getElementById('chartAge').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: ageData.labels,
-      datasets: [
-        {
-          label: '남성',
-          data: ageData.male,
-          backgroundColor: ageData.male.map((_, i) => i === agePeakIdx ? '#2D84ED' : '#2D84ED99'),
-          borderColor:     ageData.male.map((_, i) => i === agePeakIdx ? '#2D84ED' : '#2D84ED99'),
-          borderWidth: 0,
-          borderRadius: 3
-        },
-        {
-          label: '여성',
-          data: ageData.female,
-          backgroundColor: ageData.female.map((_, i) => i === agePeakIdx ? '#C9317A' : '#C9317A99'),
-          borderColor:     ageData.female.map((_, i) => i === agePeakIdx ? '#C9317A' : '#C9317A99'),
-          borderWidth: 0,
-          borderRadius: 3
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
-        tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%` } }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: ctx => ({ size: 11, weight: ctx.index === agePeakIdx ? '700' : '400' }) } },
-        y: { beginAtZero: true, grid: { color: '#F0F1F3' }, ticks: { font: { size: 11 }, callback: v => v + '%' }, suggestedMax: 20 }
-      }
-    }
-  });
-}
-
-function switchEffectTab(btn, tab) {
-  document.querySelectorAll('.effect-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.effect-tab-panel').forEach(p => p.style.display = 'none');
-
-  const panelMap = { timeslot: 'tabTimeslot', weekday: 'tabWeekday', monthly: 'tabMonthly', demo: 'tabDemo', region: 'tabRegion' };
-  document.getElementById(panelMap[tab]).style.display = 'block';
-
-  /* 탭별 차트는 처음 열릴 때 한 번만 그림 */
-  if (tab === 'timeslot' && !effectCharts.hourly)   buildTimeslotCharts();
-  if (tab === 'weekday'  && !effectCharts.weekday)  buildWeekdayChart();
-  if (tab === 'monthly'  && !effectCharts.monthly)  buildMonthlyCharts();
-  if (tab === 'demo'     && !effectCharts.age)      buildDemoCharts();
-}
-
-// Init
-document.addEventListener('DOMContentLoaded', () => {
-  buildTimeslotCharts();  /* 기본 탭 시간대별 차트 초기화 */
-});
-
-function toggleProductStatus() {
-  const track = document.getElementById('statusTrack');
-  const label = document.getElementById('statusLabel');
-  const isOn = track.classList.contains('on');
-  const action = isOn ? '비활성화' : '활성화';
-  if (!confirm(`프로덕트를 ${action}하시겠습니까?`)) return;
-  track.classList.toggle('on');
-  label.textContent = isOn ? '비활성' : '활성';
-}
-
-// ─── 인벤토리 탭 전환 ───
-function switchInvTab(key) {
-  document.querySelectorAll('.inv-tab').forEach((btn, i) => {
-    const keys = ['A','B','C'];
-    btn.classList.toggle('active', keys[i] === key);
-  });
-  document.querySelectorAll('.inv-panel').forEach(p => p.classList.remove('active'));
-  const panel = document.getElementById('inv-panel-' + key);
-  if (panel) panel.classList.add('active');
-}
-
-// ─── 스케줄 예약 모달 ───
-const INV_DATA = {
-  'A': { name:'강남역 1번출구 A', cycleMax:600, usedTime:125, usedSlots:5, baseSlots:20, opsTime:54000, guaranteed:90 },
-  'B': { name:'강남역 1번출구 B', cycleMax:480, usedTime:90,  usedSlots:3, baseSlots:16, opsTime:54000, guaranteed:112 },
-  'C': { name:'강남역 2번출구',   cycleMax:540, usedTime:108, usedSlots:4, baseSlots:18, opsTime:46800, guaranteed:86 }
-};
-const PP_DATA = {
-  'pp0': { label:'30초 일반', duration:30 },
-  'pp1': { label:'20초 일반', duration:20 },
-  'pp2': { label:'30초 조건', duration:30 }
-};
-
-function openSchedModal() {
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('schedDateStart').value = today;
-  document.getElementById('schedDateEnd').value   = today;
-  document.getElementById('schedDateInfo').style.display = 'none';
-  document.getElementById('schedFootHint').textContent   = '';
-  document.getElementById('schedFootHint').style.color   = '';
-  document.getElementById('schedFormWrap').style.display   = 'block';
-  document.getElementById('schedVerifyWrap').style.display = 'none';
-  document.getElementById('schedModalStep').textContent    = '1단계 · 예약 정보 입력';
-  schedSwitchPlanTab('select');
-  document.getElementById('schedModal').classList.remove('hidden');
-}
-function closeSchedModal() {
-  document.getElementById('schedModal').classList.add('hidden');
-}
-function schedSwitchPlanTab(tab) {
-  document.getElementById('schedPanePlanSelect').style.display = tab === 'select' ? '' : 'none';
-  document.getElementById('schedPanePlanDirect').style.display = tab === 'direct' ? '' : 'none';
-  document.getElementById('schedTabSelect').classList.toggle('active', tab === 'select');
-  document.getElementById('schedTabDirect').classList.toggle('active', tab === 'direct');
-}
-function schedSelectPlayplan(el, id) {
-  document.querySelectorAll('#schedPanePlanSelect .playplan-item').forEach(i => i.classList.remove('selected'));
-  el.classList.add('selected');
-  el.querySelector('input[type=radio]').checked = true;
-}
-function schedSetType(type) {
-  document.getElementById('schedTypeBtnNormal').classList.toggle('active', type === 'normal');
-  document.getElementById('schedTypeBtnCond').classList.toggle('active', type === 'condition');
-  document.getElementById('schedCondFields').style.display = type === 'condition' ? '' : 'none';
-}
-function runSchedVerify() {
-  var dateStart = document.getElementById('schedDateStart').value;
-  var dateEnd   = document.getElementById('schedDateEnd').value;
-  if (!dateStart || !dateEnd || dateStart > dateEnd) {
-    document.getElementById('schedFootHint').textContent = '기간을 올바르게 입력해주세요.';
-    document.getElementById('schedFootHint').style.color = '#C83434';
-    return;
-  }
-
-  // 선택된 플레이 플랜 이름
-  var planName = '기본 편성 플랜 A';
-  var selected = document.querySelector('#schedPanePlanSelect .playplan-item.selected .playplan-item-name');
-  if (selected) planName = selected.textContent;
-
-  var fmt = function(d) { var p = d.split('-'); return parseInt(p[1]) + '/' + parseInt(p[2]); };
-  document.getElementById('vPeriod').textContent = fmt(dateStart) + ' ~ ' + fmt(dateEnd);
-  document.getElementById('vPlan').textContent   = planName;
-
-  // 더미 검증 로직
-  var remain = 408;
-  var days = Math.round((new Date(dateEnd) - new Date(dateStart)) / 86400000) + 1;
-  var needed = days * 6;
-  var afterRemain = remain - needed;
-  var hasConflict = days > 14;
-
-  document.getElementById('vRemain').textContent = remain + '회';
-  document.getElementById('vAfter').textContent  = afterRemain + '회';
-
-  var banner   = document.getElementById('schedVerifyBanner');
-  var icon     = document.getElementById('schedVerifyIcon');
-  var title    = document.getElementById('schedVerifyTitle');
-  var desc     = document.getElementById('schedVerifyDesc');
-  var afterEl  = document.getElementById('vAfter');
-  var conflicts= document.getElementById('schedConflicts');
-  var confirmBtn = document.getElementById('schedConfirmBtn');
-
-  banner.className = 'verify-banner';
-  conflicts.style.display = 'none';
-  confirmBtn.disabled = false;
-  confirmBtn.style.opacity = '1';
-
-  if (afterRemain < 0) {
-    banner.classList.add('fail');
-    icon.textContent = '✕';
-    title.textContent = '슬롯 부족';
-    desc.textContent  = '보장 횟수가 잔여 슬롯을 초과합니다. 기간을 줄여주세요.';
-    afterEl.className = 'verify-cell-value c-fail';
-    confirmBtn.disabled = true;
-    confirmBtn.style.opacity = '0.4';
-  } else if (hasConflict) {
-    banner.classList.add('warn');
-    icon.textContent = '!';
-    title.textContent = '충돌 구간 존재';
-    desc.textContent  = '일부 구간에 기존 예약과 충돌이 있습니다. 확인 후 진행하세요.';
-    afterEl.className = 'verify-cell-value c-warn';
-    conflicts.style.display = 'flex';
-  } else {
-    banner.classList.add('pass');
-    icon.textContent = '✓';
-    title.textContent = '검증 통과';
-    desc.textContent  = '선택한 기간에 예약 가능한 슬롯이 충분합니다.';
-    afterEl.className = 'verify-cell-value c-pass';
-  }
-
-  document.getElementById('schedModalStep').textContent = '2단계 · 검증 결과 확인';
-  document.getElementById('schedFormWrap').style.display   = 'none';
-  document.getElementById('schedVerifyWrap').style.display = 'block';
-}
-function goBackSchedForm() {
-  document.getElementById('schedVerifyWrap').style.display = 'none';
-  document.getElementById('schedFormWrap').style.display   = 'block';
-  document.getElementById('schedModalStep').textContent    = '1단계 · 예약 정보 입력';
-  document.getElementById('schedFootHint').textContent     = '';
-}
-function confirmSchedBooking() {
-  alert('예약이 확정되었습니다. 슬롯이 임시 선점되었습니다.');
-  closeSchedModal();
-}
-function submitSchedBooking() { runSchedVerify(); }
 </script>
-
-<!-- ─── 스케줄 예약 모달 ─── -->
-<div class="booking-overlay hidden" id="schedModal" onclick="if(event.target===this)closeSchedModal()">
-  <div class="booking-modal">
-    <div class="booking-modal-head">
-      <div>
-        <h3>스케줄 예약</h3>
-        <p id="schedModalDate"></p>
-        <p class="booking-modal-step" id="schedModalStep">1단계 · 예약 정보 입력</p>
-      </div>
-      <button class="booking-modal-close" onclick="closeSchedModal()">✕</button>
-    </div>
-    <!-- 입력 폼 -->
-    <div id="schedFormWrap">
-    <div class="booking-modal-body">
-
-      <!-- ① 광고 기간 -->
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">1</span>
-          광고 기간
-        </div>
-        <div class="booking-field-row">
-          <div class="booking-field"><label>시작일</label><input type="date" id="schedDateStart"></div>
-          <div class="booking-field"><label>종료일</label><input type="date" id="schedDateEnd"></div>
-        </div>
-        <div id="schedDateInfo" style="display:none;margin-top:7px;font-size:11px;color:#596066;padding:6px 10px;background:#F6F7F9;border-radius:6px;"></div>
-      </div>
-
-      <!-- ② 플레이 플랜 -->
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#24292E;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-          <span style="width:18px;height:18px;background:#24292E;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">2</span>
-          플레이 플랜
-        </div>
-        <div class="plan-tabs" style="margin-bottom:10px;">
-          <button class="plan-tab active" id="schedTabSelect" onclick="schedSwitchPlanTab('select')">플레이 플랜 선택</button>
-          <button class="plan-tab" id="schedTabDirect" onclick="schedSwitchPlanTab('direct')">직접 입력</button>
-        </div>
-        <div id="schedPanePlanSelect">
-          <div class="playplan-list">
-            <div class="playplan-item selected" onclick="schedSelectPlayplan(this,'pp1')">
-              <input type="radio" name="schedPlayplan" value="pp1" checked>
-              <div style="flex:1;"><div class="playplan-item-name">기본 편성 플랜 A</div><div class="playplan-item-meta">30초 · 일반 · 사이클 순서 1번</div></div>
-              <span class="playplan-item-meta">사용 30초</span>
-            </div>
-            <div class="playplan-item" onclick="schedSelectPlayplan(this,'pp2')">
-              <input type="radio" name="schedPlayplan" value="pp2">
-              <div style="flex:1;"><div class="playplan-item-name">프리미엄 편성 플랜 B</div><div class="playplan-item-meta">30초 · 일반 · 시보 후 우선 편성</div></div>
-              <span class="playplan-item-meta">사용 30초</span>
-            </div>
-            <div class="playplan-item" onclick="schedSelectPlayplan(this,'pp3')">
-              <input type="radio" name="schedPlayplan" value="pp3">
-              <div style="flex:1;"><div class="playplan-item-name">조건 편성 플랜 C</div><div class="playplan-item-meta">20초 · 조건 · 기온 &gt; 28°C</div></div>
-              <span class="playplan-item-meta">사용 20초</span>
-            </div>
-          </div>
-        </div>
-        <div id="schedPanePlanDirect" style="display:none;">
-          <div class="booking-field" style="margin-bottom:10px;">
-            <label>스케줄 유형</label>
-            <div class="type-toggle">
-              <button class="type-btn active" id="schedTypeBtnNormal" onclick="schedSetType('normal')">일반</button>
-              <button class="type-btn" id="schedTypeBtnCond" onclick="schedSetType('condition')">조건</button>
-            </div>
-          </div>
-          <div id="schedCondFields" style="display:none;margin-bottom:10px;">
-            <div class="booking-field">
-              <label>조건 설정</label>
-              <select><option>기온 조건</option><option>날씨 조건</option><option>시간 조건</option></select>
-            </div>
-          </div>
-          <div class="booking-field">
-            <label>재생 시간 (초)</label>
-            <input type="number" id="schedDuration" min="5" max="600" step="5" value="30" placeholder="30">
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <div class="booking-modal-foot">
-      <span class="booking-foot-hint" id="schedFootHint"></span>
-      <div class="booking-foot-btns">
-        <button class="btn-bk-cancel" onclick="closeSchedModal()">취소</button>
-        <button class="btn-bk-submit" id="schedSubmitBtn" onclick="runSchedVerify()">검증 및 확인</button>
-      </div>
-    </div>
-    </div><!-- /schedFormWrap -->
-
-    <!-- 검증 결과 -->
-    <div id="schedVerifyWrap" style="display:none;">
-      <div class="booking-modal-body">
-        <div class="verify-banner pass" id="schedVerifyBanner">
-          <div class="verify-banner-icon" id="schedVerifyIcon">✓</div>
-          <div>
-            <div class="verify-banner-title" id="schedVerifyTitle">검증 통과</div>
-            <div class="verify-banner-desc" id="schedVerifyDesc">선택한 기간에 예약 가능한 슬롯이 충분합니다.</div>
-          </div>
-        </div>
-        <div class="verify-grid">
-          <div class="verify-cell"><div class="verify-cell-label">예약 기간</div><div class="verify-cell-value" id="vPeriod">-</div></div>
-          <div class="verify-cell"><div class="verify-cell-label">플레이 플랜</div><div class="verify-cell-value" id="vPlan">-</div></div>
-          <div class="verify-cell"><div class="verify-cell-label">잔여 슬롯</div><div class="verify-cell-value c-pass" id="vRemain">-</div></div>
-          <div class="verify-cell"><div class="verify-cell-label">선점 후 잔여</div><div class="verify-cell-value c-pass" id="vAfter">-</div></div>
-        </div>
-        <div class="verify-conflicts" id="schedConflicts" style="display:none;">
-          <div class="verify-conflict-title">충돌 구간</div>
-          <div class="verify-conflict-item"><span class="verify-conflict-dot"></span>10/20 ~ 10/22 · 기존 예약 #B-0041 (48회 중복)</div>
-          <div class="verify-conflict-item"><span class="verify-conflict-dot"></span>10/28 · 전체 슬롯 선점됨 (잔여 0회)</div>
-        </div>
-        <div class="verify-preempt">저장 시 슬롯이 임시 선점됩니다. 임시 선점은 <strong>확정 전까지 72시간</strong> 유지되며 이후 자동 해제됩니다.</div>
-      </div>
-      <div class="booking-modal-foot">
-        <span class="booking-foot-hint"></span>
-        <div class="booking-foot-btns">
-          <button class="btn-bk-cancel" onclick="goBackSchedForm()">이전으로</button>
-          <button class="btn-bk-submit" id="schedConfirmBtn" onclick="confirmSchedBooking()">예약 확정</button>
-        </div>
-      </div>
-    </div><!-- /schedVerifyWrap -->
-  </div>
-</div>
 <script src="../assets/js/cms.js"></script>
-<div id="mapPinTooltip" class="map-pin-tooltip">
-  <div class="map-pin-tooltip-inner">
-    <div class="map-pin-tooltip-info">
-      <div class="map-pin-tooltip-name" id="mapPinName"></div>
-      <div class="map-pin-tooltip-addr" id="mapPinAddr"></div>
-    </div>
-    <div class="map-pin-tooltip-img">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#CED2D6" stroke-width="1.5" fill="none"/><circle cx="12" cy="13" r="4" stroke="#CED2D6" stroke-width="1.5" fill="none"/></svg>
-    </div>
-  </div>
-</div>
-<script>
-function showMapPinTooltip(e, name, addr) {
-  var tip = document.getElementById('mapPinTooltip');
-  document.getElementById('mapPinName').textContent = name;
-  document.getElementById('mapPinAddr').textContent = addr || '';
-  tip.style.display = 'block';
-  var pin = e.target.closest('.map-pin');
-  var rect = pin.getBoundingClientRect();
-  var tw = 160, th = tip.offsetHeight || 140;
-  var left = rect.right + 8;
-  var top  = rect.top + rect.height / 2 - th / 2;
-  if (left + tw > window.innerWidth - 8) left = rect.left - tw - 8;
-  if (top < 8) top = 8;
-  tip.style.left = left + 'px';
-  tip.style.top  = top  + 'px';
-}
-function hideMapPinTooltip() {
-  document.getElementById('mapPinTooltip').style.display = 'none';
-}
-</script>
 </body>
 </html>
