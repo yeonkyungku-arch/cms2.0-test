@@ -288,20 +288,20 @@
     <div class="state-header">
       <div class="state-header-left">
         <div>
-          <div class="media-title">강남역 1번출구 A</div>
-          <div class="media-subtitle">MED-001 · 자산코드: AST-KN-001 · Rev. 14</div>
+          <div class="media-title" id="med-title">강남역 1번출구 A</div>
+          <div class="media-subtitle" id="med-subtitle">MED-001 · 자산코드: AST-KN-001 · Rev. 14</div>
         </div>
 
         <!-- 4-axis badges -->
         <div class="state-row">
           <!-- LC axis -->
-          <span class="state-badge lc-active"><span class="state-dot"></span>활성</span>
+          <span class="state-badge lc-active" id="med-lc-badge"><span class="state-dot"></span>활성</span>
           <!-- OPS axis (read-only, computed by Monitoring) -->
-          <span class="op-badge op-normal"><span class="op-dot"></span>정상</span>
+          <span class="op-badge op-normal" id="med-ops-badge"><span class="op-dot"></span>정상</span>
           <!-- APPR axis — Media does not go through approval workflow -->
-          <span class="badge" style="background:#F0F1F3;color:#9EA5AD;font-size:11px;">승인 N/A</span>
+          <span class="badge" id="med-appr-badge" style="background:#F0F1F3;color:#9EA5AD;font-size:11px;">승인 N/A</span>
           <!-- PDE axis -->
-          <span class="pde-badge pde-approved" style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">PDE 승인</span>
+          <span class="pde-badge pde-approved" id="med-pde-badge" style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">PDE 승인</span>
         </div>
         <!-- Axis labels -->
         <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;color:#9EA5AD;">
@@ -803,6 +803,40 @@ function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
   alert(action + ' 처리되었습니다.'); location.reload();
 }
+</script>
+<script>
+(function() {
+  const MEDIA = {
+    'MED-001': { name: '강남역 1번출구 A', address: '서초구 강남대로 지하', lc: 'active', lcLabel: '집행중', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 11', size: '55인치', height: '4.2m' },
+    'MED-002': { name: '홍대입구역 2번출구', address: '마포구 양화로', lc: 'active', lcLabel: '활성', ops: 'warn', opsLabel: '경고', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 10', size: '65인치', height: '3.8m' },
+    'MED-003': { name: '잠실역 8번출구', address: '송파구 올림픽로', lc: 'inactive', lcLabel: '비활성', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 9', size: '55인치', height: '4.0m' },
+    'MED-004': { name: '신촌역 1번출구', address: '서대문구 신촌로', lc: 'registered', lcLabel: '등록', ops: 'na', opsLabel: 'N/A', pde: 'PDE 검토중', pdeClass: 'pde-deferred', os: 'Android 11', size: '75인치', height: '5.1m' },
+    'MED-005': { name: '판교역 1번출구', address: '성남시 판교역로', lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '55인치', height: '3.5m' },
+    'MED-006': { name: '강동구청역 2번출구', address: '강동구 천호대로', lc: 'inactive', lcLabel: '비활성', ops: 'critical', opsLabel: '심각', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '55인치', height: '4.0m' },
+    'MED-007': { name: '광화문광장 디지털 사이니지', address: '종로구 세종대로', lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '65인치', height: '3.5m' },
+    'MED-008': { name: '건대입구역 버스 광고 1', address: '광진구 능동로', lc: 'retired', lcLabel: '폐기', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '40인치', height: '—' }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const id = new URLSearchParams(location.search).get('id') || 'MED-001';
+    const d = MEDIA[id] || MEDIA['MED-001'];
+
+    const titleEl = document.getElementById('med-title');
+    if (titleEl) titleEl.textContent = d.name;
+
+    const subEl = document.getElementById('med-subtitle');
+    if (subEl) subEl.textContent = id + ' · ' + d.address + ' · OS: ' + d.os + ' · ' + d.size + ' · ' + d.height;
+
+    const lcEl = document.getElementById('med-lc-badge');
+    if (lcEl) { lcEl.className = 'state-badge lc-' + d.lc; lcEl.innerHTML = '<span class="state-dot"></span>' + d.lcLabel; }
+
+    const opsEl = document.getElementById('med-ops-badge');
+    if (opsEl) { opsEl.className = 'op-badge op-' + d.ops; opsEl.innerHTML = '<span class="op-dot"></span>' + d.opsLabel; }
+
+    const pdeEl = document.getElementById('med-pde-badge');
+    if (pdeEl) { pdeEl.className = 'pde-badge ' + d.pdeClass; pdeEl.style.cssText = 'display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;'; pdeEl.textContent = d.pde; }
+  });
+})();
 </script>
 </body>
 </html>

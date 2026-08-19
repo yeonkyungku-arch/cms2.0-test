@@ -375,12 +375,12 @@
         </div>
       </div>
       <div class="detail-title-row">
-        <h1 class="detail-title">갤럭시 S25 런칭 30초</h1>
-        <span class="badge lc-approved"><span class="badge-dot"></span>승인</span>
+        <h1 class="detail-title" id="cnt-title">갤럭시 S25 런칭 30초</h1>
+        <span class="badge lc-approved" id="cnt-lc-badge"><span class="badge-dot"></span>승인</span>
         <!-- Approval -->
-        <span class="badge appr-approved" style="background:#E8F8E9;color:#2E9E34;">승인됨</span>
+        <span class="badge appr-approved" id="cnt-appr-badge" style="background:#E8F8E9;color:#2E9E34;">승인됨</span>
         <!-- PDE Decision -->
-        <span class="badge-pde-approved">PDE 승인</span>
+        <span class="badge-pde-approved" id="cnt-pde-badge">PDE 승인</span>
         <span class="chip-type">파일(동영상)</span>
         <div class="lifecycle-action-group">
           <!-- State Transition Actions — 승인(Approved) 상태 -->
@@ -389,7 +389,7 @@
         </div>
       </div>
       <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;color:#9EA5AD;"><span>Lifecycle</span><span>승인</span><span>PDE</span></div>
-      <div style="font-size:12px;color:#9EA5AD;">content.id: CNT-001 &nbsp;·&nbsp; Revision: <strong style="color:#596066;">R1</strong> (Immutable) &nbsp;·&nbsp; Retention: <span class="badge ret-normal" style="font-size:11px;padding:1px 8px;">정상</span></div>
+      <div style="font-size:12px;color:#9EA5AD;" id="cnt-meta">content.id: CNT-001 &nbsp;·&nbsp; Revision: <strong style="color:#596066;">R1</strong> (Immutable) &nbsp;·&nbsp; Retention: <span class="badge ret-normal" style="font-size:11px;padding:1px 8px;">정상</span></div>
     </div>
 
     <!-- Tabs -->
@@ -879,5 +879,39 @@
 </main>
 
 <script src="../assets/js/cms.js"></script>
+<script>
+(function() {
+  const CONTENTS = {
+    'CNT-001': { title: '갤럭시 S25 런칭 30초', advertiser: '삼성전자', duration: '30초', lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved' },
+    'CNT-002': { title: '인천공항 브랜드 스팟', advertiser: '인천국제공항공사', duration: '15초', lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved' },
+    'CNT-003': { title: '홍대 팝업스토어 안내', advertiser: '무신사', duration: '20초', lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '' },
+    'CNT-004': { title: '코엑스 신제품 런칭', advertiser: 'LG전자', duration: '30초', lc: 'review', lcLabel: '검토중', appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', pde: 'PDE 검토중', pdeClass: 'badge-pde-restricted' },
+    'CNT-005': { title: '판교 IT 박람회 영상', advertiser: 'KT', duration: '45초', lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved' },
+    'CNT-006': { title: '공익광고 교통안전', advertiser: '도로교통공단', duration: '30초', lc: 'inactive', lcLabel: '비활성', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved' },
+    'CNT-007': { title: '여름 시즌 프로모션', advertiser: '롯데마트', duration: '20초', lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '' },
+    'CNT-008': { title: '브랜드 자체 광고', advertiser: '엠앤엠네트웍스', duration: '10초', lc: 'inactive', lcLabel: '비활성', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved' }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const id = new URLSearchParams(location.search).get('id') || 'CNT-001';
+    const d = CONTENTS[id] || CONTENTS['CNT-001'];
+
+    const titleEl = document.getElementById('cnt-title');
+    if (titleEl) titleEl.textContent = d.title;
+
+    const metaEl = document.getElementById('cnt-meta');
+    if (metaEl) metaEl.innerHTML = 'content.id: ' + id + ' &nbsp;·&nbsp; 광고주: <strong style="color:#596066;">' + d.advertiser + '</strong> &nbsp;·&nbsp; 길이: ' + d.duration;
+
+    const lcEl = document.getElementById('cnt-lc-badge');
+    if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const apprEl = document.getElementById('cnt-appr-badge');
+    if (apprEl) { apprEl.textContent = d.appr; apprEl.setAttribute('style', d.apprStyle); }
+
+    const pdeEl = document.getElementById('cnt-pde-badge');
+    if (pdeEl) { pdeEl.textContent = d.pde; pdeEl.className = d.pdeClass; }
+  });
+})();
+</script>
 </body>
 </html>

@@ -347,9 +347,9 @@
     <!-- Page header -->
     <div class="page-header">
       <div class="page-header-left">
-        <div class="page-title">강남 프리미엄 패키지</div>
+        <div class="page-title" id="prd-title">강남 프리미엄 패키지</div>
         <div class="page-meta">
-          <span class="page-id">PRD-001</span>
+          <span class="page-id" id="prd-id">PRD-001</span>
           <span class="page-rev">R3</span>
           <span class="tag">강남</span>
           <span class="tag">프리미엄</span>
@@ -361,15 +361,15 @@
     <!-- State bar -->
     <div class="state-bar">
       <span class="state-label">Lifecycle</span>
-      <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
+      <span class="badge lc-active" id="prd-lc-badge"><span class="badge-dot"></span>활성</span>
       <!-- Operational Status (system-computed, read-only) -->
-      <span class="badge ops-badge" title="모니터링에서 산출 — 직접 변경 불가">
+      <span class="badge ops-badge" id="prd-ops-badge" title="모니터링에서 산출 — 직접 변경 불가">
         <span class="badge-dot" style="background:#58C65D;"></span>정상
       </span>
       <!-- Approval -->
-      <span class="badge appr-badge appr-approved">승인됨</span>
+      <span class="badge appr-badge appr-approved" id="prd-appr-badge">승인됨</span>
       <!-- PDE Decision -->
-      <span class="badge pde-badge-approved">PDE 승인</span>
+      <span class="badge pde-badge-approved" id="prd-pde-badge">PDE 승인</span>
       <div style="flex:1;"></div>
       <!-- Active → allowed: 중지, 새 Revision -->
       <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
@@ -898,5 +898,38 @@ function showRevisionModal() {
 }
 </script>
 <script src="../assets/js/cms.js"></script>
+<script>
+(function() {
+  const PRODUCTS = {
+    'PRD-001': { name: '강남 프리미엄 패키지', mediaCount: 3, price: '₩3,000,000/월', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-002': { name: '홍대 청년 패키지', mediaCount: 2, price: '₩1,500,000/월', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-003': { name: '강동 지역 패키지', mediaCount: 4, price: '₩2,200,000/월', lc: 'inactive', lcLabel: '비활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-004': { name: '판교 테크 패키지', mediaCount: 2, price: '₩2,800,000/월', lc: 'review', lcLabel: '검토중', appr: '승인대기', apprClass: 'badge appr-badge', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'PRD-005': { name: '코엑스몰 스탠다드', mediaCount: 1, price: '₩550,000/월', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-006': { name: '판교 IT 특화 스팟', mediaCount: 2, price: '₩1,200,000/월', lc: 'paused', lcLabel: '중지', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-007': { name: '서울역 환승 허브', mediaCount: 3, price: '₩1,800,000/월', lc: 'draft', lcLabel: '초안', appr: '미제출', apprClass: 'badge appr-badge', pde: 'PDE 미심사', pdeClass: 'badge' }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const id = new URLSearchParams(location.search).get('id') || 'PRD-001';
+    const d = PRODUCTS[id] || PRODUCTS['PRD-001'];
+
+    const titleEl = document.getElementById('prd-title');
+    if (titleEl) titleEl.textContent = d.name;
+
+    const idEl = document.getElementById('prd-id');
+    if (idEl) idEl.textContent = id;
+
+    const lcEl = document.getElementById('prd-lc-badge');
+    if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const apprEl = document.getElementById('prd-appr-badge');
+    if (apprEl) { apprEl.className = d.apprClass; apprEl.textContent = d.appr; }
+
+    const pdeEl = document.getElementById('prd-pde-badge');
+    if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.textContent = d.pde; }
+  });
+})();
+</script>
 </body>
 </html>

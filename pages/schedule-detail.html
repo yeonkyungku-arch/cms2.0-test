@@ -259,12 +259,12 @@
   <div class="state-banner">
     <div class="state-left">
       <div>
-        <div class="state-title">강남역 갤럭시 S25 광고 25Q4</div>
-        <div class="state-meta" style="margin-top:4px;">SCH-2025-0041 · 삼성전자 · 2025-10-15 ~ 12-31</div>
+        <div class="state-title" id="sch-title">강남역 갤럭시 S25 광고 25Q4</div>
+        <div class="state-meta" style="margin-top:4px;" id="sch-meta">SCH-2025-0041 · 삼성전자 · 2025-10-15 ~ 12-31</div>
       </div>
-      <span class="badge lc-active" style="font-size:13px; padding:4px 12px;"><span class="badge-dot"></span>집행중</span>
-      <span class="badge appr-approved" style="font-size:12px;">승인됨</span>
-      <span class="badge pde-approved" style="font-size:12px;">PDE 승인</span>
+      <span class="badge lc-active" id="sch-lc-badge" style="font-size:13px; padding:4px 12px;"><span class="badge-dot"></span>집행중</span>
+      <span class="badge appr-approved" id="sch-appr-badge" style="font-size:12px;">승인됨</span>
+      <span class="badge pde-approved" id="sch-pde-badge" style="font-size:12px;">PDE 승인</span>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
       <button class="btn btn-warn" onclick="if(confirm('스케줄을 일시중지하시겠습니까?'))location.reload()">일시중지</button>
@@ -786,6 +786,40 @@ function showTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
 }
+</script>
+<script>
+(function() {
+  const SCHEDULES = {
+    'SCH-2025-0041': { title: '강남역 갤럭시 S25 광고 25Q4', advertiser: '삼성전자', period: '2025-10-15 ~ 12-31', campaign: 'CMP-2026-001', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0037': { title: '강남 여름 시즌 캠페인', advertiser: '삼성전자', period: '2025-07-01 ~ 08-31', campaign: 'CMP-2025-061', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0039': { title: '공항 브랜드 패키지 Q4', advertiser: '현대자동차', period: '2025-11-01 ~ 11-30', campaign: 'CMP-2026-003', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0040': { title: '코엑스 신제품 런칭 스팟', advertiser: 'LG전자', period: '2025-11-15 ~ 12-15', campaign: 'CMP-2026-002', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0042': { title: '홍대 팝업 스팟 조건광고', advertiser: '나이키코리아', period: '2025-11-01 ~ 11-17', campaign: 'CMP-2026-003', lc: 'draft', lcLabel: '초안', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'SCH-2025-0043': { title: '롯데타운 연말 프로모션', advertiser: '롯데백화점', period: '2025-12-01 ~ 12-31', campaign: 'CMP-2026-004', lc: 'draft', lcLabel: '초안', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'SCH-2025-0044': { title: '카카오 브랜드 디스플레이', advertiser: '카카오', period: '2025-12-01 ~ 12-31', campaign: 'CMP-2026-004', lc: 'draft', lcLabel: '초안', appr: '미요청', apprClass: 'badge appr-none', pde: 'PDE 미심사', pdeClass: 'badge' },
+    'SCH-2025-0022': { title: 'SK하이닉스 AI 칩 캠페인', advertiser: 'SK하이닉스', period: '2025-06-01 ~ 07-31', campaign: 'CMP-2025-089', lc: 'done', lcLabel: '완료', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const id = new URLSearchParams(location.search).get('id') || 'SCH-2025-0041';
+    const d = SCHEDULES[id] || SCHEDULES['SCH-2025-0041'];
+
+    const titleEl = document.getElementById('sch-title');
+    if (titleEl) titleEl.textContent = d.title;
+
+    const metaEl = document.getElementById('sch-meta');
+    if (metaEl) metaEl.textContent = id + ' · ' + d.advertiser + ' · ' + d.period;
+
+    const lcEl = document.getElementById('sch-lc-badge');
+    if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.style.cssText = 'font-size:13px; padding:4px 12px;'; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const apprEl = document.getElementById('sch-appr-badge');
+    if (apprEl) { apprEl.className = d.apprClass; apprEl.style.cssText = 'font-size:12px;'; apprEl.textContent = d.appr; }
+
+    const pdeEl = document.getElementById('sch-pde-badge');
+    if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.style.cssText = 'font-size:12px;'; pdeEl.textContent = d.pde; }
+  });
+})();
 </script>
 </body>
 </html>

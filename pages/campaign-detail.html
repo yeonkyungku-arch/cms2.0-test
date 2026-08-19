@@ -462,7 +462,7 @@
           캠페인 목록
         </a>
         <!-- State transition actions for 집행중: Close Campaign -->
-        <div class="header-actions">
+        <div class="header-actions" id="cmp-actions">
           <button class="btn-outline" onclick="if(confirm('캠페인을 재개하시겠습니까?'))location.reload()">재개(Resume)</button>
           <button class="btn-danger-outline" onclick="if(confirm('캠페인을 종료하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))location.href='campaign-list'">캠페인 종료</button>
           <button class="btn-primary-sm" onclick="location.href='campaign-edit'">수정</button>
@@ -470,18 +470,18 @@
       </div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
         <div>
-          <h1 class="detail-title">삼성전자 갤럭시 S25 런칭</h1>
-          <div class="detail-meta">CMP-2026-001 &nbsp;·&nbsp; 생성일: 2025.12.20 &nbsp;·&nbsp; 담당자: 홍길동</div>
+          <h1 class="detail-title" id="cmp-title">삼성전자 갤럭시 S25 런칭</h1>
+          <div class="detail-meta" id="cmp-meta">CMP-2026-001 &nbsp;·&nbsp; 생성일: 2025.12.20 &nbsp;·&nbsp; 담당자: 홍길동</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;">
           <!-- Lifecycle State Badge -->
-          <span class="badge lc-active"><span class="badge-dot"></span>집행중</span>
+          <span class="badge lc-active" id="cmp-lc-badge"><span class="badge-dot"></span>집행중</span>
           <!-- Recommendation mode badge -->
           <span class="badge rec-auto">자동추천</span>
           <!-- Approval -->
-          <span class="badge" style="background:#E8F8E9;color:#2E9E34;">PDE 검토완료</span>
+          <span class="badge" id="cmp-appr-badge" style="background:#E8F8E9;color:#2E9E34;">승인됨</span>
           <!-- PDE badge -->
-          <span class="badge pde-approved">PDE 승인</span>
+          <span class="badge pde-approved" id="cmp-pde-badge">PDE 승인</span>
         </div>
       </div>
       <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;color:#9EA5AD;"><span>Lifecycle</span><span>추천모드</span><span>승인</span><span>PDE</span></div>
@@ -1093,5 +1093,109 @@
 </main>
 
 <script src="../assets/js/cms.js"></script>
+<script>
+(function() {
+  const CAMPAIGNS = {
+    'CMP-2026-001': {
+      title: '삼성전자 갤럭시 S25 런칭',
+      advertiser: '삼성전자',
+      budget: '₩480,000,000',
+      period: '2026.01.15 – 2026.06.30',
+      lc: 'active', lcLabel: '집행중',
+      appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
+      pde: 'PDE 승인', pdeClass: 'pde-approved',
+      actions: '<button class="btn-outline" onclick="if(confirm(\'캠페인을 재개하시겠습니까?\'))location.reload()">재개(Resume)</button><button class="btn-danger-outline" onclick="if(confirm(\'캠페인을 종료하시겠습니까?\'))location.href=\'campaign-list\'">캠페인 종료</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2025.12.20', manager: '홍길동'
+    },
+    'CMP-2026-002': {
+      title: 'LG생활건강 봄 시즌 프로모션',
+      advertiser: 'LG생활건강',
+      budget: '₩120,000,000',
+      period: '2026.03.01 – 2026.05.31',
+      lc: 'approved', lcLabel: '승인됨',
+      appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
+      pde: 'PDE 승인', pdeClass: 'pde-approved',
+      actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">집행시작</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026.01.25', manager: '김영수'
+    },
+    'CMP-2026-003': {
+      title: '현대자동차 아이오닉9 브랜드 캠페인',
+      advertiser: '현대자동차',
+      budget: '₩320,000,000',
+      period: '2026.04.01 – 2026.09.30',
+      lc: 'review', lcLabel: '검토중',
+      appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;',
+      pde: 'PDE 검토중', pdeClass: 'pde-deferred',
+      actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026.02.01', manager: '이지은'
+    },
+    'CMP-2026-004': {
+      title: '카카오페이 2026 브랜드 어웨어니스',
+      advertiser: '카카오페이',
+      budget: '₩85,000,000',
+      period: '2026.06.01 – 2026.08.31',
+      lc: 'draft', lcLabel: '초안',
+      appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
+      pde: 'PDE 미심사', pdeClass: '',
+      actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026.02.10', manager: '박민서'
+    },
+    'CMP-2025-089': {
+      title: '네이버 플러스 멤버십 인지도',
+      advertiser: '네이버',
+      budget: '₩200,000,000',
+      period: '2025.09.01 – 2025.12.31',
+      lc: 'completed', lcLabel: '완료',
+      appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
+      pde: 'PDE 승인', pdeClass: 'pde-approved',
+      actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (완료된 캠페인)</span>',
+      createdAt: '2025.09.20', manager: '홍길동'
+    },
+    'CMP-2025-061': {
+      title: '삼성전자 갤럭시 탭 S9',
+      advertiser: '삼성전자',
+      budget: '₩160,000,000',
+      period: '2025.06.01 – 2025.08.31',
+      lc: 'cancelled', lcLabel: '취소',
+      appr: '—', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
+      pde: '—', pdeClass: '',
+      actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (취소된 캠페인)</span>',
+      createdAt: '2025.08.10', manager: '김영수'
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const id = new URLSearchParams(location.search).get('id') || 'CMP-2026-001';
+    const d = CAMPAIGNS[id] || CAMPAIGNS['CMP-2026-001'];
+
+    const titleEl = document.getElementById('cmp-title');
+    if (titleEl) titleEl.textContent = d.title;
+
+    const metaEl = document.getElementById('cmp-meta');
+    if (metaEl) metaEl.innerHTML = id + ' &nbsp;·&nbsp; 생성일: ' + d.createdAt + ' &nbsp;·&nbsp; 담당자: ' + d.manager;
+
+    const lcBadge = document.getElementById('cmp-lc-badge');
+    if (lcBadge) {
+      lcBadge.className = 'badge lc-' + d.lc;
+      lcBadge.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel;
+    }
+
+    const apprBadge = document.getElementById('cmp-appr-badge');
+    if (apprBadge) {
+      apprBadge.textContent = d.appr;
+      apprBadge.setAttribute('style', d.apprStyle);
+    }
+
+    const pdeBadge = document.getElementById('cmp-pde-badge');
+    if (pdeBadge) {
+      pdeBadge.textContent = d.pde;
+      pdeBadge.className = 'badge ' + d.pdeClass;
+    }
+
+    const actionsEl = document.getElementById('cmp-actions');
+    if (actionsEl) actionsEl.innerHTML = d.actions;
+  });
+})();
+</script>
 </body>
 </html>
