@@ -289,14 +289,35 @@ ul, ol { list-style: none; }
 ================================================================ */
 .content {
   margin-left: 93px;
-  padding-top: 84px;
+  padding-top: 100px;   /* topbar 60px + breadcrumb 40px */
   padding-left: 24px;
   padding-right: 24px;
   padding-bottom: 48px;
   min-height: 100vh;
   background: #F6F7F9;
+  min-width: 0;
+  overflow-x: hidden;
 }
-.content-inner { padding: 0; }
+.content-inner { padding: 0; max-width: 100%; }
+
+/* 전역: 내부 요소가 content 밖으로 넘치지 않도록 */
+.content * { max-width: 100%; box-sizing: border-box; }
+/* 테이블은 min-width 유지하되 스크롤 컨테이너 안에서만 */
+.content table { max-width: none; }
+/* 스크롤 컨테이너 */
+.content .table-scroll,
+.content .table-wrap,
+.content .tbl-wrap { overflow-x: auto; }
+
+/* 페이지 카드 너비 제한 */
+.page-card {
+  width: 100%;
+  max-width: 1560px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+}
 
 /* ================================================================
    Card
