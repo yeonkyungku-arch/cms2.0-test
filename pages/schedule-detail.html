@@ -790,20 +790,25 @@ function showTab(id, btn) {
 <script>
 (function() {
   const SCHEDULES = {
-    'SCH-2025-0041': { title: '강남역 갤럭시 S25 광고 25Q4', advertiser: '삼성전자', period: '2025-10-15 ~ 12-31', campaign: 'CMP-2026-001', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0037': { title: '강남 여름 시즌 캠페인', advertiser: '삼성전자', period: '2025-07-01 ~ 08-31', campaign: 'CMP-2025-061', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0039': { title: '공항 브랜드 패키지 Q4', advertiser: '현대자동차', period: '2025-11-01 ~ 11-30', campaign: 'CMP-2026-003', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0040': { title: '코엑스 신제품 런칭 스팟', advertiser: 'LG전자', period: '2025-11-15 ~ 12-15', campaign: 'CMP-2026-002', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0042': { title: '홍대 팝업 스팟 조건광고', advertiser: '나이키코리아', period: '2025-11-01 ~ 11-17', campaign: 'CMP-2026-003', lc: 'draft', lcLabel: '초안', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
-    'SCH-2025-0043': { title: '롯데타운 연말 프로모션', advertiser: '롯데백화점', period: '2025-12-01 ~ 12-31', campaign: 'CMP-2026-004', lc: 'draft', lcLabel: '초안', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
-    'SCH-2025-0044': { title: '카카오 브랜드 디스플레이', advertiser: '카카오', period: '2025-12-01 ~ 12-31', campaign: 'CMP-2026-004', lc: 'draft', lcLabel: '초안', appr: '미요청', apprClass: 'badge appr-none', pde: 'PDE 미심사', pdeClass: 'badge' },
-    'SCH-2025-0022': { title: 'SK하이닉스 AI 칩 캠페인', advertiser: 'SK하이닉스', period: '2025-06-01 ~ 07-31', campaign: 'CMP-2025-089', lc: 'done', lcLabel: '완료', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' }
+    'SCH-2025-0041': { title: '강남역 갤럭시 S25 광고 25Q4', advertiser: '삼성전자', period: '2025-10-15 ~ 2025-12-31', campaign: 'CMP-2026-001', campaignName: '삼성전자 갤럭시 S25 런칭', manager: '홍길동', registeredAt: '2025-10-14', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['강남', 'Q4'], apprReviewer: '김관리 (Admin)', apprDate: '2025-10-10 16:45', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '일반 옥외광고, 업종·지역·시간대 제한 없음', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0037': { title: '강남 여름 시즌 캠페인', advertiser: '삼성전자', period: '2025-07-01 ~ 2025-08-31', campaign: 'CMP-2025-061', campaignName: '삼성전자 비스포크 가을 이벤트', manager: '홍길동', registeredAt: '2025-07-01', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['강남', '여름', '삼성'], apprReviewer: '김관리 (Admin)', apprDate: '2025-06-28 10:30', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '일반 소비재 광고, 제한사항 없음', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0039': { title: '공항 브랜드 패키지 Q4', advertiser: '현대자동차', period: '2025-11-01 ~ 2025-11-30', campaign: 'CMP-2026-003', campaignName: '현대자동차 아이오닉9 브랜드 캠페인', manager: '김민준', registeredAt: '2025-10-10', mode: 'Fixed', source: '직접', sourceClass: 'source-direct', tags: ['공항', 'Q4', '현대'], apprReviewer: '이관리 (Admin)', apprDate: '2025-10-08 11:00', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '공항 내 자동차 브랜드 광고, 제한사항 없음', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0040': { title: '코엑스 신제품 런칭 스팟', advertiser: 'LG전자', period: '2025-11-15 ~ 2025-12-15', campaign: 'CMP-2026-002', campaignName: 'LG생활건강 봄 시즌 프로모션', manager: '이수아', registeredAt: '2025-10-12', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['코엑스', '신제품', 'LG'], apprReviewer: '김관리 (Admin)', apprDate: '2025-10-11 14:20', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '가전제품 광고, 코엑스 실내 위치 적합', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0042': { title: '홍대 팝업 스팟 조건광고', advertiser: '나이키코리아', period: '2025-11-01 ~ 2025-11-17', campaign: 'CMP-2026-003', campaignName: '현대자동차 아이오닉9 브랜드 캠페인', manager: '홍길동', registeredAt: '2025-10-13', mode: 'Fixed', source: '캠페인', sourceClass: 'source-campaign', tags: ['홍대', '나이키', '팝업'], apprReviewer: '(대기 중)', apprDate: '—', pdeResult: '검토중', pdeStyle: 'background:#FFFBEB;border:1px solid #F3BE4A;', pdeReason: '스포츠 브랜드 광고 정책 검토 중 — 위치·시간대 적합성 확인 필요', lc: 'pending', lcLabel: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'SCH-2025-0043': { title: '롯데타운 연말 프로모션', advertiser: '롯데백화점', period: '2025-12-01 ~ 2025-12-31', campaign: 'CMP-2026-004', campaignName: '카카오페이 2026 브랜드 어웨어니스', manager: '박지은', registeredAt: '2025-10-15', mode: 'Rolling', source: '직접', sourceClass: 'source-direct', tags: ['롯데', '연말', '프로모션'], apprReviewer: '(대기 중)', apprDate: '—', pdeResult: '검토중', pdeStyle: 'background:#FFFBEB;border:1px solid #F3BE4A;', pdeReason: '연말 소비 촉진 광고 — 위치·노출 빈도 정책 확인 중', lc: 'pending', lcLabel: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'SCH-2025-0044': { title: '카카오 브랜드 디스플레이', advertiser: '카카오', period: '2025-12-01 ~ 2025-12-31', campaign: 'CMP-2026-004', campaignName: '카카오페이 2026 브랜드 어웨어니스', manager: '홍길동', registeredAt: '2025-10-15', mode: 'Fixed', source: '직접', sourceClass: 'source-direct', tags: ['카카오', '브랜드'], apprReviewer: '(미요청)', apprDate: '—', pdeResult: '미심사', pdeStyle: 'background:#F0F1F3;border:1px solid #CED2D6;', pdeReason: '승인 요청 전 — PDE 심사 미진행', lc: 'draft', lcLabel: '초안', appr: '미요청', apprClass: 'badge appr-none', pde: 'PDE 미심사', pdeClass: 'badge' },
+    'SCH-2025-0022': { title: 'SK하이닉스 AI 칩 캠페인', advertiser: 'SK하이닉스', period: '2025-06-01 ~ 2025-07-31', campaign: 'CMP-2025-089', campaignName: '네이버 클라우드 B2B 어웨어니스', manager: '이수아', registeredAt: '2025-05-28', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['SK하이닉스', 'AI', '반도체'], apprReviewer: '김관리 (Admin)', apprDate: '2025-05-27 09:15', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '기술·반도체 B2B 광고, 제한사항 없음', lc: 'done', lcLabel: '완료', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' }
   };
+
+  function infoRow(label, value) {
+    return '<div class="info-label">' + label + '</div><div class="info-value">' + value + '</div>';
+  }
 
   document.addEventListener('DOMContentLoaded', function() {
     const id = new URLSearchParams(location.search).get('id') || 'SCH-2025-0041';
     const d = SCHEDULES[id] || SCHEDULES['SCH-2025-0041'];
 
+    // Header
     const titleEl = document.getElementById('sch-title');
     if (titleEl) titleEl.textContent = d.title;
 
@@ -818,6 +823,41 @@ function showTab(id, btn) {
 
     const pdeEl = document.getElementById('sch-pde-badge');
     if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.style.cssText = 'font-size:12px;'; pdeEl.textContent = d.pde; }
+
+    // Tab: 기본정보 (tab-basic)
+    var tabBasic = document.getElementById('tab-basic');
+    if (tabBasic) {
+      var tags = (d.tags || []).map(function(t) {
+        return '<span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;margin-right:4px;">' + t + '</span>';
+      }).join('');
+      var isApproved = d.appr === '승인됨';
+      tabBasic.innerHTML = '<div class="card"><div class="card-head"><span class="card-title">스케줄 기본 정보</span></div>'
+        + '<div class="card-body"><div class="info-grid">'
+        + infoRow('스케줄 ID', '<span style="color:#9EA5AD;font-variant-numeric:tabular-nums;">' + id + '</span>')
+        + infoRow('스케줄명', '<span style="font-weight:600;">' + d.title + '</span>')
+        + infoRow('태그', tags || '—')
+        + infoRow('광고주', d.advertiser)
+        + infoRow('생성 출처', '<span class="badge ' + d.sourceClass + '">' + d.source + '</span>')
+        + infoRow('연계 캠페인', '<span style="color:#2D84ED;">' + d.campaign + ' — ' + d.campaignName + '</span>')
+        + infoRow('담당자', d.manager)
+        + infoRow('운영기간', '<span style="font-variant-numeric:tabular-nums;">' + d.period + '</span>')
+        + infoRow('운영 방식', d.mode)
+        + infoRow('등록일', '<span style="font-variant-numeric:tabular-nums;">' + d.registeredAt + '</span>')
+        + infoRow('Lifecycle 상태', '<span class="badge lc-' + d.lc + '"><span class="badge-dot"></span>' + d.lcLabel + ' (' + (d.lc === 'active' ? 'Active' : d.lc === 'scheduled' ? 'Scheduled' : d.lc === 'pending' ? 'Pending' : d.lc === 'done' ? 'Done' : 'Draft') + ')</span>')
+        + '</div></div></div>'
+        + '<div class="card"><div class="card-head"><span class="card-title">승인 워크플로우</span>'
+        + (isApproved ? '<span style="font-size:12px;color:#58C65D;display:flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#58C65D"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>Feasibility 통과</span>' : '')
+        + '</div><div class="card-body"><div class="appr-card">'
+        + '<div class="appr-field"><div class="appr-field-label">승인 상태</div><div class="appr-field-value"><span class="' + d.apprClass + '">' + d.appr + '</span></div></div>'
+        + '<div class="appr-field"><div class="appr-field-label">승인자</div><div class="appr-field-value">' + d.apprReviewer + '</div></div>'
+        + '<div class="appr-field"><div class="appr-field-label">승인일시</div><div class="appr-field-value">' + d.apprDate + '</div></div>'
+        + '</div></div></div>'
+        + '<div class="card"><div class="card-head"><span class="card-title">PDE 검토 결과</span></div>'
+        + '<div class="card-body"><div style="' + d.pdeStyle + 'border-radius:8px;padding:14px 18px;">'
+        + '<div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:8px;">PDE 결정: ' + d.pdeResult + '</div>'
+        + '<div class="info-grid"><div class="info-label">사유</div><div class="info-value">' + d.pdeReason + '</div></div>'
+        + '</div></div></div>';
+    }
   });
 })();
 </script>

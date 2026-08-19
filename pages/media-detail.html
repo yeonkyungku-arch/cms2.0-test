@@ -807,20 +807,25 @@ function confirmTransition(action, message) {
 <script>
 (function() {
   const MEDIA = {
-    'MED-001': { name: '강남역 1번출구 A', address: '서초구 강남대로 지하', lc: 'active', lcLabel: '집행중', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 11', size: '55인치', height: '4.2m' },
-    'MED-002': { name: '홍대입구역 2번출구', address: '마포구 양화로', lc: 'active', lcLabel: '활성', ops: 'warn', opsLabel: '경고', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 10', size: '65인치', height: '3.8m' },
-    'MED-003': { name: '잠실역 8번출구', address: '송파구 올림픽로', lc: 'inactive', lcLabel: '비활성', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 9', size: '55인치', height: '4.0m' },
-    'MED-004': { name: '신촌역 1번출구', address: '서대문구 신촌로', lc: 'registered', lcLabel: '등록', ops: 'na', opsLabel: 'N/A', pde: 'PDE 검토중', pdeClass: 'pde-deferred', os: 'Android 11', size: '75인치', height: '5.1m' },
-    'MED-005': { name: '판교역 1번출구', address: '성남시 판교역로', lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '55인치', height: '3.5m' },
-    'MED-006': { name: '강동구청역 2번출구', address: '강동구 천호대로', lc: 'inactive', lcLabel: '비활성', ops: 'critical', opsLabel: '심각', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '55인치', height: '4.0m' },
-    'MED-007': { name: '광화문광장 디지털 사이니지', address: '종로구 세종대로', lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '65인치', height: '3.5m' },
-    'MED-008': { name: '건대입구역 버스 광고 1', address: '광진구 능동로', lc: 'retired', lcLabel: '폐기', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '40인치', height: '—' }
+    'MED-001': { name: '강남역 1번출구 A', address: '서울 강남구 강남대로 396', mediaType: 'OF (옥외고정)', assetCode: 'AST-KN-001', installType: '고정', registeredAt: '2024-03-15', manager: '홍길동', revision: 14, tags: ['강남', '역세권', '프리미엄', '야외노출'], lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 11', size: '55인치', height: '4.2m' },
+    'MED-002': { name: '홍대입구역 2번출구 광고판', address: '서울 마포구 양화로 45', mediaType: 'OF (옥외고정)', assetCode: 'AST-MP-002', installType: '고정', registeredAt: '2024-05-10', manager: '이민지', revision: 7, tags: ['홍대', '역세권', '20대'], lc: 'active', lcLabel: '활성', ops: 'warn', opsLabel: '경고', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '65인치', height: '3.8m' },
+    'MED-003': { name: '신촌역 스탠드형 A', address: '서울 서대문구 신촌역로 77', mediaType: 'IFC (실내고정근접)', assetCode: 'AST-SD-003', installType: '고정', registeredAt: '2024-07-01', manager: '홍길동', revision: 5, tags: ['신촌', '실내', '대학가'], lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Windows 10', size: '55인치', height: '1.5m' },
+    'MED-004': { name: '잠실역 대형 LED', address: '서울 송파구 올림픽로 240', mediaType: 'OF (옥외고정)', assetCode: 'AST-SP-004', installType: '고정', registeredAt: '2023-11-20', manager: '김영수', revision: 22, tags: ['잠실', '대형LED', '스포츠'], lc: 'active', lcLabel: '활성', ops: 'critical', opsLabel: '심각', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 11', size: '75인치', height: '6.0m' },
+    'MED-005': { name: '서울역 환승통로 B', address: '서울 중구 통일로 1', mediaType: 'IFC (실내고정근접)', assetCode: 'AST-JG-005', installType: '고정', registeredAt: '2024-02-28', manager: '박민서', revision: 3, tags: ['서울역', '환승', '실내'], lc: 'inactive', lcLabel: '비활성', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 10', size: '55인치', height: '2.1m' },
+    'MED-006': { name: '합정역 메가폴 광고판', address: '서울 마포구 합정역로 10', mediaType: 'OF (옥외고정)', assetCode: 'AST-MP-006', installType: '고정', registeredAt: '2026-08-01', manager: '홍길동', revision: 1, tags: ['합정', '신규', '옥외'], lc: 'registered', lcLabel: '등록', ops: 'normal', opsLabel: '정상', pde: 'PDE 검토중', pdeClass: 'pde-deferred', os: 'Android 13', size: '65인치', height: '5.0m' },
+    'MED-007': { name: '광화문광장 디지털 사이니지', address: '서울 종로구 세종대로 175', mediaType: 'OF (옥외고정)', assetCode: 'AST-JR-007', installType: '고정', registeredAt: '2024-01-10', manager: '이민지', revision: 11, tags: ['광화문', '광장', '프리미엄'], lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '65인치', height: '3.5m' },
+    'MED-008': { name: '건대입구역 버스 광고 1', address: '서울 광진구 능동로 210', mediaType: 'VF (차량고정)', assetCode: 'AST-GJ-008', installType: '고정', registeredAt: '2022-06-15', manager: '김영수', revision: 18, tags: ['버스', '폐기', '광진'], lc: 'retired', lcLabel: '폐기', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '40인치', height: '—' }
   };
+
+  function fg(label, value) {
+    return '<div class="field-group"><div class="field-label">' + label + '</div><div class="field-value">' + value + '</div></div>';
+  }
 
   document.addEventListener('DOMContentLoaded', function() {
     const id = new URLSearchParams(location.search).get('id') || 'MED-001';
     const d = MEDIA[id] || MEDIA['MED-001'];
 
+    // Header
     const titleEl = document.getElementById('med-title');
     if (titleEl) titleEl.textContent = d.name;
 
@@ -835,6 +840,29 @@ function confirmTransition(action, message) {
 
     const pdeEl = document.getElementById('med-pde-badge');
     if (pdeEl) { pdeEl.className = 'pde-badge ' + d.pdeClass; pdeEl.style.cssText = 'display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;'; pdeEl.textContent = d.pde; }
+
+    // Tab 1: 기본정보 (panel-basic)
+    var panelBasic = document.getElementById('panel-basic');
+    if (panelBasic) {
+      var tags = (d.tags || []).map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('');
+      panelBasic.innerHTML = '<div class="detail-card"><div class="detail-card-title">식별정보</div>'
+        + '<div class="field-grid">'
+        + fg('미디어명 (media.name)', d.name)
+        + fg('미디어 ID (media.id)', id)
+        + fg('미디어유형코드 (mediaTypeCode)', d.mediaType || 'OF')
+        + fg('자산코드 (media.assetCode)', d.assetCode || '—')
+        + fg('설치유형', d.installType || '고정')
+        + fg('설치높이', d.height)
+        + fg('화면크기', d.size)
+        + fg('OS', d.os)
+        + fg('등록일', d.registeredAt || '—')
+        + fg('담당자', d.manager || '—')
+        + fg('리비전 (media.revision)', (d.revision || '—') + ' <span style="font-size:11px;color:#9EA5AD;">(자동, 읽기 전용)</span>')
+        + '</div></div>'
+        + '<div class="detail-card"><div class="detail-card-title">태그 (media.tags)</div>'
+        + '<div class="tag-list">' + (tags || '<span style="color:#9EA5AD;font-size:13px;">태그 없음</span>') + '</div></div>'
+        + '<div class="action-bar"><button class="btn-secondary">취소</button><button class="btn-save">저장</button></div>';
+    }
   });
 })();
 </script>

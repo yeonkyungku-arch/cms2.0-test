@@ -1098,76 +1098,126 @@
   const CAMPAIGNS = {
     'CMP-2026-001': {
       title: '삼성전자 갤럭시 S25 런칭',
-      advertiser: '삼성전자',
-      budget: '₩480,000,000',
+      advertiser: '삼성전자', agency: '제일기획 (AGY-011)',
+      manager: '홍길동', contact: '박지원 (ADV-001-C01)',
+      sourceType: '직접문의 (Direct)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩480,000,000', requestedBudget: 'KRW 45,000,000',
       period: '2026.01.15 – 2026.06.30',
+      startDate: '2026.01.15', endDate: '2026.02.28',
+      slotDuration: '30초', contentRef: 'CNT-S25-LAUNCH-v2',
+      targetAreas: ['서울', '강남구', '영등포구', '성남시(판교)'],
+      goals: ['브랜드 인지도', '도달 (Reach)', '반복 노출'],
       lc: 'active', lcLabel: '집행중',
       appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
       pde: 'PDE 승인', pdeClass: 'pde-approved',
       actions: '<button class="btn-outline" onclick="if(confirm(\'캠페인을 재개하시겠습니까?\'))location.reload()">재개(Resume)</button><button class="btn-danger-outline" onclick="if(confirm(\'캠페인을 종료하시겠습니까?\'))location.href=\'campaign-list\'">캠페인 종료</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
-      createdAt: '2025.12.20', manager: '홍길동'
+      createdAt: '2025.12.20'
     },
     'CMP-2026-002': {
       title: 'LG생활건강 봄 시즌 프로모션',
-      advertiser: 'LG생활건강',
-      budget: '₩120,000,000',
-      period: '2026.03.01 – 2026.05.31',
+      advertiser: 'LG생활건강', agency: 'HS애드 (AGY-007)',
+      manager: '김영수', contact: '이수정 (ADV-002-C01)',
+      sourceType: '대행사 (Agency)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩120,000,000', requestedBudget: 'KRW 12,000,000',
+      period: '2026.03.01 – 2026.03.31',
+      startDate: '2026.03.01', endDate: '2026.03.31',
+      slotDuration: '15초', contentRef: 'CNT-LG-SPRING-v1',
+      targetAreas: ['서울', '마포구', '용산구', '서대문구'],
+      goals: ['신제품 인지도', '구매의향 제고'],
       lc: 'approved', lcLabel: '승인됨',
       appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
-      pde: 'PDE 승인', pdeClass: 'pde-approved',
+      pde: 'PDE 제한', pdeClass: 'pde-limited',
       actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">집행시작</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
-      createdAt: '2026.01.25', manager: '김영수'
+      createdAt: '2026.01.25'
     },
     'CMP-2026-003': {
       title: '현대자동차 아이오닉9 브랜드 캠페인',
-      advertiser: '현대자동차',
-      budget: '₩320,000,000',
-      period: '2026.04.01 – 2026.09.30',
+      advertiser: '현대자동차', agency: '이노션 (AGY-003)',
+      manager: '이지은', contact: '최병훈 (ADV-003-C02)',
+      sourceType: '직접문의 (Direct)', selectionMode: '직접선택 (MANUAL)',
+      budget: '₩320,000,000', requestedBudget: 'KRW 30,000,000',
+      period: '2026.02.15 – 2026.03.15',
+      startDate: '2026.02.15', endDate: '2026.03.15',
+      slotDuration: '30초', contentRef: 'CNT-HMC-IONIQ9-v2',
+      targetAreas: ['서울', '강남구', '수원시', '용인시'],
+      goals: ['브랜드 프리미엄', '신모델 인지도'],
       lc: 'review', lcLabel: '검토중',
       appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;',
-      pde: 'PDE 검토중', pdeClass: 'pde-deferred',
+      pde: 'PDE 보류', pdeClass: 'pde-deferred',
       actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
-      createdAt: '2026.02.01', manager: '이지은'
+      createdAt: '2026.02.01'
     },
     'CMP-2026-004': {
       title: '카카오페이 2026 브랜드 어웨어니스',
-      advertiser: '카카오페이',
-      budget: '₩85,000,000',
-      period: '2026.06.01 – 2026.08.31',
+      advertiser: '카카오', agency: '직접 (없음)',
+      manager: '박민서', contact: '장하은 (ADV-004-C01)',
+      sourceType: '인바운드 (Inbound)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩85,000,000', requestedBudget: 'KRW 8,500,000',
+      period: '2026.04.01 – 2026.04.30',
+      startDate: '2026.04.01', endDate: '2026.04.30',
+      slotDuration: '15초', contentRef: '(미정)',
+      targetAreas: ['서울', '경기', '판교'],
+      goals: ['앱 인지도', 'MZ세대 도달'],
       lc: 'draft', lcLabel: '초안',
       appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
       pde: 'PDE 미심사', pdeClass: '',
       actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
-      createdAt: '2026.02.10', manager: '박민서'
+      createdAt: '2026.02.10'
     },
     'CMP-2025-089': {
-      title: '네이버 플러스 멤버십 인지도',
-      advertiser: '네이버',
-      budget: '₩200,000,000',
-      period: '2025.09.01 – 2025.12.31',
+      title: '네이버 클라우드 B2B 어웨어니스',
+      advertiser: '네이버', agency: 'TBWA코리아 (AGY-015)',
+      manager: '홍길동', contact: '오민지 (ADV-005-C01)',
+      sourceType: '직접문의 (Direct)', selectionMode: '직접선택 (MANUAL)',
+      budget: '₩200,000,000', requestedBudget: 'KRW 20,000,000',
+      period: '2025.10.01 – 2025.10.31',
+      startDate: '2025.10.01', endDate: '2025.10.31',
+      slotDuration: '30초', contentRef: 'CNT-NAVER-CLOUD-v3',
+      targetAreas: ['서울', '강남구', '여의도', '판교'],
+      goals: ['B2B 인지도', '기업 신뢰도'],
       lc: 'completed', lcLabel: '완료',
       appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
       pde: 'PDE 승인', pdeClass: 'pde-approved',
       actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (완료된 캠페인)</span>',
-      createdAt: '2025.09.20', manager: '홍길동'
+      createdAt: '2025.09.20'
     },
     'CMP-2025-061': {
-      title: '삼성전자 갤럭시 탭 S9',
-      advertiser: '삼성전자',
-      budget: '₩160,000,000',
-      period: '2025.06.01 – 2025.08.31',
+      title: '삼성전자 비스포크 가을 이벤트',
+      advertiser: '삼성전자', agency: '제일기획 (AGY-011)',
+      manager: '김영수', contact: '박지원 (ADV-001-C01)',
+      sourceType: '대행사 (Agency)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩160,000,000', requestedBudget: 'KRW 16,000,000',
+      period: '2025.09.01 – 2025.09.30',
+      startDate: '2025.09.01', endDate: '2025.09.30',
+      slotDuration: '30초', contentRef: 'CNT-BESPOKE-v1',
+      targetAreas: ['서울', '경기'],
+      goals: ['가을 시즌 판매 촉진'],
       lc: 'cancelled', lcLabel: '취소',
       appr: '—', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
       pde: '—', pdeClass: '',
       actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (취소된 캠페인)</span>',
-      createdAt: '2025.08.10', manager: '김영수'
+      createdAt: '2025.08.10'
     }
   };
+
+  function infoItem(label, value) {
+    return '<div class="info-item"><div class="info-label">' + label + '</div><div class="info-value">' + value + '</div></div>';
+  }
+  function badge(cls, label, dot) {
+    return '<span class="badge ' + cls + '">' + (dot ? '<span class="badge-dot"></span>' : '') + label + '</span>';
+  }
+  function areaBadges(arr) {
+    return arr.map(function(a) { return '<span class="badge" style="background:#EAF3FF;color:#2D84ED;">' + a + '</span>'; }).join(' ');
+  }
+  function goalBadges(arr) {
+    return arr.map(function(g) { return '<span class="badge" style="background:#EAF3FF;color:#2D84ED;">' + g + '</span>'; }).join(' ');
+  }
 
   document.addEventListener('DOMContentLoaded', function() {
     const id = new URLSearchParams(location.search).get('id') || 'CMP-2026-001';
     const d = CAMPAIGNS[id] || CAMPAIGNS['CMP-2026-001'];
 
+    // ── Header ──
     const titleEl = document.getElementById('cmp-title');
     if (titleEl) titleEl.textContent = d.title;
 
@@ -1175,25 +1225,57 @@
     if (metaEl) metaEl.innerHTML = id + ' &nbsp;·&nbsp; 생성일: ' + d.createdAt + ' &nbsp;·&nbsp; 담당자: ' + d.manager;
 
     const lcBadge = document.getElementById('cmp-lc-badge');
-    if (lcBadge) {
-      lcBadge.className = 'badge lc-' + d.lc;
-      lcBadge.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel;
-    }
+    if (lcBadge) { lcBadge.className = 'badge lc-' + d.lc; lcBadge.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
 
     const apprBadge = document.getElementById('cmp-appr-badge');
-    if (apprBadge) {
-      apprBadge.textContent = d.appr;
-      apprBadge.setAttribute('style', d.apprStyle);
-    }
+    if (apprBadge) { apprBadge.textContent = d.appr; apprBadge.setAttribute('style', d.apprStyle); }
 
     const pdeBadge = document.getElementById('cmp-pde-badge');
-    if (pdeBadge) {
-      pdeBadge.textContent = d.pde;
-      pdeBadge.className = 'badge ' + d.pdeClass;
-    }
+    if (pdeBadge) { pdeBadge.textContent = d.pde; pdeBadge.className = 'badge ' + d.pdeClass; }
 
     const actionsEl = document.getElementById('cmp-actions');
     if (actionsEl) actionsEl.innerHTML = d.actions;
+
+    // ── Tab 1: 기본정보 ──
+    var c1 = document.getElementById('content1');
+    if (c1) {
+      var modeClass = d.selectionMode.indexOf('자동') >= 0 ? 'rec-auto' : 'rec-manual';
+      c1.innerHTML = '<div class="info-grid">'
+        + infoItem('캠페인명', d.title)
+        + infoItem('캠페인 ID', '<span style="font-size:13px;color:#9EA5AD;">' + id + '</span>')
+        + infoItem('Lifecycle 상태', badge('lc-' + d.lc, d.lcLabel, true))
+        + infoItem('광고주 (campaign.advertiserId)', '<span style="color:#2D84ED;cursor:pointer;">' + d.advertiser + '</span>')
+        + infoItem('대행사 (campaign.agencyId)', d.agency)
+        + infoItem('내부 담당 (campaign.ownerManagerId)', d.manager)
+        + infoItem('광고주 담당자 (campaign.advertiserContactId)', d.contact)
+        + infoItem('유입경로 (campaign.sourceType)', d.sourceType)
+        + infoItem('추천방식', badge(modeClass, d.selectionMode, false))
+        + '</div>';
+    }
+
+    // ── Tab 2: 광고주 요구사항 ──
+    var c2 = document.getElementById('content2');
+    if (c2) {
+      c2.innerHTML = '<div class="tab-section"><div class="tab-section-title">캠페인 목표 (campaign.objectives)</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + goalBadges(d.goals) + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">희망 기간</div>'
+        + '<div class="info-grid info-grid-2">'
+        + infoItem('희망 시작일 (campaign.requestedStartDate)', d.startDate)
+        + infoItem('희망 종료일 (campaign.requestedEndDate)', d.endDate)
+        + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">희망 지역 (campaign.targetAreas)</div>'
+        + '<div class="map-placeholder"><svg width="28" height="28" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="16" r="8" stroke="#9EA5AD" stroke-width="1.8"/><path d="M18 24c0 0 8 6 8 10H10c0-4 8-10 8-10z" stroke="#9EA5AD" stroke-width="1.8" stroke-linejoin="round" fill="none"/><circle cx="18" cy="16" r="3" fill="#9EA5AD" opacity=".5"/></svg>'
+        + '지도 뷰 (' + d.targetAreas.join('·') + ' 선택됨)</div>'
+        + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">' + areaBadges(d.targetAreas) + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">상품 선택 방식 (campaign.selectionMode)</div>'
+        + '<div class="info-grid info-grid-2">' + infoItem('선택 방식', badge(d.selectionMode.indexOf('자동') >= 0 ? 'rec-auto' : 'rec-manual', d.selectionMode, false)) + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">슬롯·소재·예산</div>'
+        + '<div class="info-grid">'
+        + infoItem('희망 슬롯 시간 (campaign.requestedSlotDuration)', d.slotDuration)
+        + infoItem('콘텐츠 참조 (campaign.contentRevisionRef)', '<span style="color:#2D84ED;cursor:pointer;">' + d.contentRef + '</span>')
+        + infoItem('희망 예산 (campaign.requestedBudget)', d.requestedBudget + ' <span style="font-size:11px;color:#9EA5AD;">(참고값·계약가격 아님)</span>')
+        + '</div></div>';
+    }
   });
 })();
 </script>
