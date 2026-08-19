@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>콘텐츠 새 Revision — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    .form-section + .form-section { border-top: 1px solid #E5E7EA; }
+    .form-section-head { padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EA; }
+    .form-section-title { font-size: 14px; font-weight: 600; color: #24292E; display:flex;align-items:center;gap:8px; }
+    .form-section-desc  { font-size: 12px; color: #9EA5AD; margin-top: 3px; }
+    .form-section-body  { padding: 20px 24px; }
+    .form-row { display:grid;grid-template-columns:180px 1fr;gap:0;padding:10px 0;align-items:flex-start;border-bottom:1px solid #F6F7F9; }
+    .form-row:last-child { border-bottom:none; }
+    .form-label { font-size:13px;font-weight:500;color:#596066;padding-top:8px; }
+    .form-label .req { color:#E97474;margin-left:2px; }
+    .form-field { min-width:0; }
+    .input,.textarea,.select { width:100%;height:38px;border:1px solid #CED2D6;border-radius:4px;padding:0 12px;font-size:14px;color:#24292E;font-family:inherit;background:#fff;outline:none;transition:border-color .2s; }
+    .input:focus,.select:focus { border-color:#2D84ED; }
+    .textarea { height:auto;padding:10px 12px;resize:vertical;min-height:80px; }
+    .input-hint { font-size:12px;color:#9EA5AD;margin-top:5px; }
+    .input-row { display:flex;align-items:center;gap:8px; }
+    .input-unit { font-size:13px;color:#596066;white-space:nowrap; }
+
+    .info-banner { display:flex;align-items:flex-start;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:14px 18px;margin-bottom:20px; }
+    .info-banner-icon { color:#2563EB;font-size:18px;flex-shrink:0;margin-top:1px; }
+    .info-banner-text { font-size:13px;color:#1E40AF;line-height:1.6; }
+
+    .readonly-card { background:#F6F7F9;border:1px solid #E5E7EA;border-radius:6px;padding:14px 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px; }
+    .readonly-card-item label { font-size:11px;color:#9EA5AD;font-weight:500;display:block;margin-bottom:3px; }
+    .readonly-card-item span { font-size:13px;color:#24292E;font-weight:500; }
+
+    .upload-zone { border:2px dashed #CED2D6;border-radius:6px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s; }
+    .upload-zone:hover { border-color:#2D84ED; }
+    .upload-zone-icon { font-size:28px;margin-bottom:8px; }
+    .upload-zone-text { font-size:13px;color:#596066; }
+    .upload-zone-current { font-size:12px;color:#9EA5AD;margin-top:6px;font-family:monospace; }
+
+    .section-badge { font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;letter-spacing:.3px; }
+    .section-badge.revision { background:#EFF6FF;color:#2563EB; }
+    .section-badge.minor { background:#E8F8E9;color:#2E9E34; }
+
+    .readonly-field { display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;font-size:14px;color:#596066; }
+
+    .form-actions { display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #E5E7EA;background:#fff;position:sticky;bottom:0;z-index:10; }
+    .btn { height:36px;padding:0 18px;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:inherit;transition:opacity .15s; }
+    .btn:hover { opacity:.85; }
+    .btn-ghost { background:#fff;border-color:#CED2D6;color:#596066; }
+    .btn-primary { background:#2D84ED;color:#fff;border-color:#2D84ED; }
+  </style>
+</head>
+<body>
+
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">프로덕트</div><a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a><a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">콘텐츠</div><a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a><a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a><a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a></div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">편성표</div><a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a><a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">모니터링</div><a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a><a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a><a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">영업 워크스페이스</div><a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>영업 대시보드</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="bcrumb">
+  <a class="bcrumb-back" href="contents">←</a>
+  <a href="contents">콘텐츠</a>
+  <span class="sep">›</span>
+  <a href="content-detail">갤럭시 S25 런칭 30초</a>
+  <span class="sep">›</span>
+  <span>새 Revision (R2)</span>
+</div>
+
+<main class="main">
+  <div class="page-head" style="padding-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1 class="page-title">갤럭시 S25 런칭 30초 — R2 생성</h1>
+      <span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;background:#DCFCE7;color:#15803D;">승인됨</span>
+      <span style="font-size:12px;color:#9EA5AD;">CNT-001</span>
+    </div>
+  </div>
+
+  <div class="info-banner">
+    <div class="info-banner-icon">ℹ</div>
+    <div class="info-banner-text">
+      <strong style="display:block;margin-bottom:2px;font-size:14px;color:#1E3A8A;">승인된 콘텐츠 — New Revision 생성 모드</strong>
+      승인된 콘텐츠의 핵심 조건 변경 시 새 Revision(R2)이 생성됩니다. 기존 R1은 불변이며 이력으로 보존됩니다.
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+
+    <!-- 원본 R1 정보 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">원본 정보 (R1 — 읽기 전용)</div>
+        <div class="form-section-desc">기존 승인 Revision입니다. 변경 불가.</div>
+      </div>
+      <div class="form-section-body" style="padding-top:14px;padding-bottom:14px;">
+        <div class="readonly-card" style="margin-bottom:0;">
+          <div class="readonly-card-item">
+            <label>콘텐츠 ID</label>
+            <span>CNT-001</span>
+          </div>
+          <div class="readonly-card-item">
+            <label>원본 Revision</label>
+            <span>R1 (2025-08-01 승인)</span>
+          </div>
+          <div class="readonly-card-item">
+            <label>광고주</label>
+            <span>삼성전자</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 새 영상 첨부 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">새 영상 첨부</div>
+        <div class="form-section-desc">새 Revision에 사용할 영상 파일을 업로드하세요.</div>
+      </div>
+      <div class="form-section-body">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-zone-icon">🎬</div>
+          <div class="upload-zone-text">클릭하여 파일 선택 또는 드래그 앤 드롭</div>
+          <div class="upload-zone-current">현재 파일: galaxy_s25_launch_30sec_v3.mp4</div>
+        </div>
+        <input type="file" id="fileInput" accept="video/*" style="display:none" onchange="updateFileName(this)">
+        <div class="input-hint" style="margin-top:8px;">지원 형식: MP4, MOV, AVI · 최대 2GB</div>
+      </div>
+    </div>
+
+    <!-- 핵심 조건 (→ Revision) -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          핵심 조건 수정
+          <span class="section-badge revision">핵심 → Revision</span>
+        </div>
+        <div class="form-section-desc">아래 항목 변경 시 R2가 신규 생성되어 기술 검증 요청이 발송됩니다.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">재생시간<span class="req">*</span></div>
+          <div class="form-field">
+            <div class="input-row">
+              <input class="input" type="number" id="duration" value="30" min="1" max="300" style="max-width:120px;">
+              <span class="input-unit">초</span>
+            </div>
+            <div class="input-hint">변경 시 R2 생성 트리거</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">광고유형<span class="req">*</span></div>
+          <div class="form-field">
+            <select class="select" id="adType" style="max-width:280px;">
+              <option value="general" selected>일반광고</option>
+              <option value="psa">공익광고</option>
+              <option value="brand">브랜드광고</option>
+              <option value="event">이벤트광고</option>
+            </select>
+            <div class="input-hint">변경 시 R2 생성 트리거</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Revision 메타 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">Revision 생성 정보<span style="color:#E97474;margin-left:4px;">*</span></div>
+        <div class="form-section-desc">R2 생성을 위한 필수 정보입니다.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">Effective From<span class="req">*</span></div>
+          <div class="form-field">
+            <input class="input" type="date" id="effectiveFrom" style="max-width:200px;" required>
+            <div class="input-hint">R2가 적용되기 시작하는 날짜</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">변경 이유<span class="req">*</span></div>
+          <div class="form-field">
+            <textarea class="textarea" id="changeReason" placeholder="R2를 생성하는 이유를 입력하세요 (예: 최종 편집본 교체, 재생시간 수정 등)" required></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="history.back()">취소</button>
+    <button class="btn btn-primary" onclick="saveRevision()">R2 저장 → 기술검증 요청</button>
+  </div>
+</main>
+
+<script>
+function updateFileName(input) {
+  if (input.files && input.files[0]) {
+    document.querySelector('.upload-zone-current').textContent = '새 파일: ' + input.files[0].name;
+  }
+}
+function saveRevision() {
+  const ef = document.getElementById('effectiveFrom').value;
+  const cr = document.getElementById('changeReason').value.trim();
+  if (!ef) { alert('Effective From 날짜를 선택하세요.'); return; }
+  if (!cr) { alert('변경 이유를 입력하세요.'); return; }
+  alert('R2가 생성되었습니다. 기술 검증 요청이 발송됩니다.');
+}
+function goScheduleMain() {
+  const t = localStorage.getItem('scheduleType') || 'media';
+  location.href = t === 'product' ? 'schedule-product-month' : 'schedule-media-month';
+}
+function setScheduleType(t) { localStorage.setItem('scheduleType', t); }
+</script>
+</body>
+</html>
