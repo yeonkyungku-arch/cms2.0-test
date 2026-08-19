@@ -148,6 +148,12 @@
     /* ── Immutability notice ── */
     .immutability-notice { background: #FFF8E6; border: 1px solid #F3BE4A; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #B45309; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
+    /* ── Feasibility Gate cards ── */
+    .gate-card { border-radius:8px; padding:16px 20px; margin-bottom:20px; }
+    .gate-failed { border:1.5px solid #F3BE4A; background:#FFFBEB; }
+    .gate-stale { border:1.5px solid #9EA5AD; background:#F9FAFB; }
+    .btn-outline { height:30px; padding:0 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #CED2D6; background:#fff; color:#596066; }
+
     /* ── Audit timeline ── */
     .audit-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F0F1F3; font-size: 13px; }
     .audit-row:last-child { border-bottom: none; }
@@ -313,7 +319,13 @@
 
     <!-- Approval Workflow Card -->
     <div class="card">
-      <div class="card-head"><span class="card-title">승인 워크플로우</span></div>
+      <div class="card-head">
+        <span class="card-title">승인 워크플로우</span>
+        <span style="font-size:12px;color:#58C65D;display:flex;align-items:center;gap:4px;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#58C65D"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Feasibility 통과
+        </span>
+      </div>
       <div class="card-body">
         <div class="appr-card">
           <div class="appr-field">
@@ -489,6 +501,39 @@
 
   <!-- ===== TAB 4: Feasibility 검증 ===== -->
   <div id="tab-feasibility" class="tab-panel">
+
+    <!-- Feasibility Gate Card -->
+    <div class="gate-card gate-passed" style="border:1.5px solid #58C65D; border-radius:8px; padding:16px 20px; background:#F0FDF4; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#2E9E34;">✓ Feasibility 검증 통과</div>
+        <div style="font-size:12px;color:#596066;margin-top:4px;">검증일시: 2026-08-18 14:32 &nbsp;·&nbsp; 유효기간 내 (48h) &nbsp;·&nbsp; 담당자: 홍길동</div>
+      </div>
+      <div style="text-align:right;">
+        <button class="btn btn-outline" style="font-size:12px;" onclick="alert('Feasibility 재검증 요청')">재검증 요청</button>
+      </div>
+    </div>
+
+    <!-- STALE/FAILED gate card examples (reference only — shown based on gate status) -->
+    <!--
+    STALE (48h 초과):
+    <div class="gate-card gate-stale" style="border:1.5px solid #9EA5AD; border-radius:8px; padding:16px 20px; background:#F9FAFB; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#596066;">⏰ Feasibility 검증 만료</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-top:4px;">검증일시: 2026-08-16 10:00 · 유효기간 초과 (48h) — 승인요청 전 재검증 필요</div>
+      </div>
+      <div><button class="btn btn-outline">재검증 요청</button></div>
+    </div>
+
+    FAILED:
+    <div class="gate-card gate-failed" style="border:1.5px solid #F3BE4A; border-radius:8px; padding:16px 20px; background:#FFFBEB; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#B45309;">⚠ Feasibility 검증 미통과</div>
+        <div style="font-size:12px;color:#596066;margin-top:4px;">슬롯 가용성 부족 — 승인요청이 차단됩니다. 검증 결과를 확인하세요.</div>
+      </div>
+      <div><button class="btn btn-warn">검증 재시도</button></div>
+    </div>
+    -->
+
     <div class="card">
       <div class="card-head">
         <span class="card-title">Feasibility 검증 결과</span>

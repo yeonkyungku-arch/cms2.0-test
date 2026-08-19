@@ -98,6 +98,21 @@
     }
     .pde-panel-body { font-size: 12px; color: #92610A; line-height: 1.5; }
 
+    /* ── 4-axis badge styles ── */
+    .ops-badge { background:#F0F1F3; color:#596066; border:1px solid #E5E7EA; }
+    .appr-badge { background:#EAF3FF; color:#2D84ED; }
+    .appr-approved { background:#E8F8E9; color:#2E9E34; }
+    .appr-pending { background:#FFF8E6; color:#B45309; }
+    .appr-rejected { background:#FEF2F2; color:#B91C1C; }
+    .pde-badge-approved { background:#E8F8E9; color:#2E9E34; }
+    .axis-labels { display:flex; gap:16px; margin-top:6px; font-size:11px; color:#9EA5AD; }
+
+    /* Warn / danger outline buttons */
+    .btn-warn { border-color:#F3BE4A; color:#B45309; }
+    .btn-warn:hover { background:#FFFBEB; }
+    .btn-danger { border-color:#E97474; color:#B91C1C; }
+    .btn-danger:hover { background:#FEF2F2; }
+
     /* ── Tabs ── */
     .tabs { display: flex; gap: 0; border-bottom: 1px solid #E5E7EA; margin-bottom: 20px; overflow-x: auto; }
     .tab-btn {
@@ -347,16 +362,27 @@
     <div class="state-bar">
       <span class="state-label">Lifecycle</span>
       <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
+      <!-- Operational Status (system-computed, read-only) -->
+      <span class="badge ops-badge" title="모니터링에서 산출 — 직접 변경 불가">
+        <span class="badge-dot" style="background:#58C65D;"></span>정상
+      </span>
+      <!-- Approval -->
+      <span class="badge appr-badge appr-approved">승인됨</span>
+      <!-- PDE Decision -->
+      <span class="badge pde-badge-approved">PDE 승인</span>
       <div style="flex:1;"></div>
-      <button class="action-btn action-btn-pause" onclick="alert('중지 전환 확인이 필요합니다.')">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="2" width="3" height="8" rx="1" fill="currentColor"/><rect x="7" y="2" width="3" height="8" rx="1" fill="currentColor"/></svg>
-        중지
-      </button>
-      <button class="action-btn action-btn-end" onclick="alert('종료는 되돌릴 수 없습니다. 확인하십시오.')">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M4 4l4 4M8 4l-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        종료
-      </button>
+      <!-- Active → allowed: 중지, 새 Revision -->
+      <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+        <button class="action-btn action-btn-pause btn-warn" onclick="confirmTransition('중지', '중지하면 해당 Product를 참조하는 스케줄에 영향을 줄 수 있습니다.')">중지</button>
+        <button class="action-btn action-btn-resume" onclick="showRevisionModal()">새 Revision</button>
+      </div>
     </div>
+    <!-- Product 상태 흐름 note -->
+    <div style="font-size:11px;color:#9EA5AD;margin-top:4px;padding:0 4px;">
+      상태 흐름: 초안 → 구성완료 → <span style="color:#7C5CBF;">PDE 검토</span> → 승인됨 → <span style="color:#58C65D;font-weight:600;">활성 ✓ 현재</span> → 중지 / 종료
+    </div>
+    <div style="display:none;"><!-- Draft/Configured state: show Product 활성화 플로우 section --></div>
+    <div class="axis-labels" style="padding:0 0 4px 0;"><span>Lifecycle</span><span>운영상태</span><span>승인</span><span>PDE</span></div>
 
     <!-- PDE amber panel -->
     <div class="pde-panel">
@@ -832,6 +858,15 @@ function switchTab(id) {
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
   event.target.classList.add('active');
   document.getElementById('tab-' + id).classList.add('active');
+}
+
+function confirmTransition(action, message) {
+  if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
+  alert(action + ' 전환 처리됨 (시연용)');
+}
+
+function showRevisionModal() {
+  alert('새 Revision 생성:\n핵심 조건(슬롯구조, 운영정보, 가격) 변경 시 새 Revision이 생성됩니다.\n기존 Revision을 참조하는 스케줄은 영향받지 않습니다.');
 }
 </script>
 <script src="../assets/js/cms.js"></script>

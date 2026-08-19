@@ -177,6 +177,16 @@
     }
     .btn-save:hover { background:#2472d4; }
 
+    /* Generic btn classes for action group */
+    .btn {
+      height:32px; padding:0 14px; border-radius:6px; font-size:12px;
+      font-weight:600; cursor:pointer; border:1px solid; white-space:nowrap;
+    }
+    .btn-outline { background:#fff; color:#24292E; border-color:#CED2D6; }
+    .btn-outline:hover { background:#F6F7F9; }
+    .btn-primary { background:#2D84ED; color:#fff; border-color:#2D84ED; }
+    .btn-primary:hover { background:#2472d4; }
+
     .divider-label {
       font-size:11px; font-weight:700; color:#9EA5AD; text-transform:uppercase;
       letter-spacing:.05em; margin:16px 0 8px;
@@ -282,18 +292,28 @@
           <div class="media-subtitle">MED-001 · 자산코드: AST-GN-001 · Rev. 14</div>
         </div>
 
-        <!-- Lifecycle State Badge + Transition Actions -->
+        <!-- 4-axis badges -->
         <div class="state-row">
+          <!-- LC axis -->
           <span class="state-badge lc-active"><span class="state-dot"></span>활성</span>
-          <!-- 활성(Active) → 비활성화, 폐기 액션 -->
-          <button class="action-btn action-btn-deactivate" onclick="confirm('비활성화 하시겠습니까?')">비활성화</button>
-          <button class="action-btn action-btn-retire" onclick="confirm('폐기 처리 하시겠습니까? (Admin 전용)')">폐기</button>
-        </div>
-
-        <!-- Operational Status (read-only, computed by Monitoring) -->
-        <div class="state-row" style="gap:8px;">
-          <span class="op-label">운영상태 (모니터링에서 산출, 읽기 전용):</span>
+          <!-- OPS axis (read-only, computed by Monitoring) -->
           <span class="op-badge op-normal"><span class="op-dot"></span>정상</span>
+          <!-- APPR axis — Media does not go through approval workflow -->
+          <span class="badge" style="background:#F0F1F3;color:#9EA5AD;font-size:11px;">승인 N/A</span>
+          <!-- PDE axis -->
+          <span class="pde-badge pde-approved" style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">PDE 승인</span>
+        </div>
+        <!-- Axis labels -->
+        <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;color:#9EA5AD;">
+          <span>Lifecycle</span>
+          <span>운영상태</span>
+          <span>승인</span>
+          <span>PDE</span>
+        </div>
+        <!-- Active state → allowed transition: 비활성화 -->
+        <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+          <button class="btn btn-outline" onclick="confirmTransition('비활성화', '미디어를 비활성화하면 운영에서 제외됩니다.')">비활성화</button>
+          <button class="btn btn-primary" onclick="confirmTransition('수정', '')">수정</button>
         </div>
       </div>
 
@@ -711,6 +731,11 @@ function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   event.currentTarget.classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
+}
+
+function confirmTransition(action, message) {
+  if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
+  alert(action + ' 전환 처리됨 (시연용)');
 }
 </script>
 </body>
