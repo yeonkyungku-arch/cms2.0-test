@@ -267,8 +267,8 @@
       <span class="badge pde-approved" style="font-size:12px;">PDE 승인</span>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn btn-warn">일시중지</button>
-      <button class="btn btn-ghost">새 Revision</button>
+      <button class="btn btn-warn" onclick="if(confirm('스케줄을 일시중지하시겠습니까?'))location.reload()">일시중지</button>
+      <button class="btn btn-ghost" onclick="location.href='schedule-edit'">새 Revision</button>
     </div>
   </div>
 
@@ -475,7 +475,7 @@
         <div style="font-size:12px;color:#596066;margin-top:4px;">검증일시: 2026-08-18 14:32 &nbsp;·&nbsp; 유효기간 내 (48h) &nbsp;·&nbsp; 담당자: 홍길동</div>
       </div>
       <div style="text-align:right;">
-        <button class="btn btn-outline" style="font-size:12px;" onclick="alert('Feasibility 재검증 요청')">재검증 요청</button>
+        <button class="btn btn-outline" style="font-size:12px;" onclick="if(confirm('Feasibility 재검증을 요청하시겠습니까?'))alert('재검증 요청이 전송되었습니다.')">재검증 요청</button>
       </div>
     </div>
 

@@ -373,8 +373,8 @@
       <div style="flex:1;"></div>
       <!-- Active → allowed: 중지, 새 Revision -->
       <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
-        <button class="action-btn action-btn-pause btn-warn" onclick="confirmTransition('중지', '중지하면 해당 Product를 참조하는 스케줄에 영향을 줄 수 있습니다.')">중지</button>
-        <button class="action-btn action-btn-resume" onclick="showRevisionModal()">새 Revision</button>
+        <button class="action-btn action-btn-pause btn-warn" onclick="if(confirm('중지하면 해당 Product를 참조하는 스케줄에 영향을 줄 수 있습니다.\n계속하시겠습니까?'))location.reload()">중지</button>
+        <button class="action-btn action-btn-resume" onclick="location.href='product-edit'">새 Revision</button>
       </div>
     </div>
     <!-- Product 상태 흐름 note -->
@@ -890,11 +890,11 @@ function switchTab(id) {
 
 function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
-  alert(action + ' 전환 처리됨 (시연용)');
+  alert(action + ' 처리되었습니다.'); location.reload();
 }
 
 function showRevisionModal() {
-  alert('새 Revision 생성:\n핵심 조건(슬롯구조, 운영정보, 가격) 변경 시 새 Revision이 생성됩니다.\n기존 Revision을 참조하는 스케줄은 영향받지 않습니다.');
+  location.href='product-edit';
 }
 </script>
 <script src="../assets/js/cms.js"></script>

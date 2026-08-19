@@ -1197,7 +1197,7 @@ function saveDraft() {
 function submitCampaign() {
   var name = document.getElementById('f-name').value.trim();
   if (!name) { alert('캠페인명을 입력하세요.'); currentStep = 1; updateStepUI(); return; }
-  alert('캠페인이 등록되었습니다.\n캠페인 목록으로 이동합니다.');
+  alert('캠페인이 등록되었습니다.'); location.href='campaign-detail';
   location.href = 'campaign-list';
 }
 

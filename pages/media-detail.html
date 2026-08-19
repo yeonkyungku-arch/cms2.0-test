@@ -313,7 +313,7 @@
         <!-- Active state → allowed transition: 비활성화 -->
         <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-top:10px;">
           <button class="btn btn-outline" onclick="confirmTransition('비활성화', '미디어를 비활성화하면 운영에서 제외됩니다.')">비활성화</button>
-          <button class="btn btn-primary" onclick="confirmTransition('수정', '')">수정</button>
+          <button class="btn btn-primary" onclick="location.href='media-edit'">수정</button>
         </div>
       </div>
 
@@ -801,7 +801,7 @@ function switchTab(name) {
 
 function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
-  alert(action + ' 전환 처리됨 (시연용)');
+  alert(action + ' 처리되었습니다.'); location.reload();
 }
 </script>
 </body>

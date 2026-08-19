@@ -287,7 +287,7 @@
 
   <!-- Sticky action bar -->
   <div class="form-actions">
-    <button class="btn btn-ghost" onclick="history.back()">취소</button>
+    <button class="btn btn-ghost" onclick="location.href='media-detail'">취소</button>
     <button class="btn btn-warn" onclick="deactivateAndEdit()">비활성화 후 수정</button>
     <button class="btn btn-primary" onclick="saveMinorFields()">저장</button>
   </div>
@@ -296,14 +296,14 @@
 <script>
 function deactivateAndEdit() {
   if (confirm('미디어를 비활성화하고 전체 수정 모드로 전환하시겠습니까?\n비활성화 중에는 광고 집행이 중단됩니다.')) {
-    alert('비활성화 처리 후 전체 수정 화면으로 이동합니다. (시연용)');
+    location.href='media-detail';
   }
 }
 
 function saveMinorFields() {
   const name = document.getElementById('mediaName').value.trim();
   if (!name) { alert('미디어명을 입력하세요.'); return; }
-  alert('부가 정보가 저장되었습니다.');
+  alert('저장되었습니다.'); location.href='media-detail';
 }
 
 function goScheduleMain() {

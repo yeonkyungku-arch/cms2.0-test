@@ -463,9 +463,9 @@
         </a>
         <!-- State transition actions for 집행중: Close Campaign -->
         <div class="header-actions">
-          <button class="btn-outline" onclick="alert('캠페인 재개 (목업)')">재개(Resume)</button>
-          <button class="btn-danger-outline" onclick="alert('캠페인 종료 확인 (목업)')">캠페인 종료</button>
-          <button class="btn-primary-sm" onclick="alert('수정 모드 (목업)')">수정</button>
+          <button class="btn-outline" onclick="if(confirm('캠페인을 재개하시겠습니까?'))location.reload()">재개(Resume)</button>
+          <button class="btn-danger-outline" onclick="if(confirm('캠페인을 종료하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))location.href='campaign-list'">캠페인 종료</button>
+          <button class="btn-primary-sm" onclick="location.href='campaign-edit'">수정</button>
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">

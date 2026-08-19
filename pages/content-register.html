@@ -1151,14 +1151,14 @@ function submitForm() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
-  alert('콘텐츠가 등록되었습니다.');
+  alert('콘텐츠가 등록되었습니다.'); location.href='content-detail';
   location.href = 'contents';
 }
 
 /* 신규 등록 다이얼로그 (플레이스홀더) */
 function openNewReg(type) {
   const labels = { advertiser: '광고주', agency: '대행사', public_org: '공익기관' };
-  alert((labels[type] || type) + ' 신규 등록 화면으로 이동합니다.');
+  location.href='content-register';
 }
 </script>
 <script src="../assets/js/cms.js"></script>

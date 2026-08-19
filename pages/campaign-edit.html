@@ -110,7 +110,7 @@
     <div class="red-banner-icon">🔒</div>
     <div class="red-banner-text">
       <strong>집행중 캠페인 — 부가 정보만 수정 가능합니다</strong>
-      요구조건(캠페인명·광고주·예산·운영기간) 변경이 필요한 경우 <a onclick="alert('새 캠페인 생성 화면으로 이동합니다. (시연용)')">새 Campaign을 생성</a>하세요.
+      요구조건(캠페인명·광고주·예산·운영기간) 변경이 필요한 경우 <a onclick="location.href='campaign-register'">새 Campaign을 생성</a>하세요.
     </div>
   </div>
 
@@ -206,14 +206,14 @@
   </div>
 
   <div class="form-actions">
-    <button class="btn btn-ghost" onclick="history.back()">취소</button>
+    <button class="btn btn-ghost" onclick="location.href='campaign-detail'">취소</button>
     <button class="btn btn-primary" onclick="saveMinor()">부가 정보 저장</button>
   </div>
 </main>
 
 <script>
 function saveMinor() {
-  alert('부가 정보가 저장되었습니다.');
+  alert('저장되었습니다.'); location.href='campaign-detail';
 }
 function goScheduleMain() {
   const t = localStorage.getItem('scheduleType') || 'media';
