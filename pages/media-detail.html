@@ -407,6 +407,40 @@
     <div class="tab-panel" id="panel-ad">
 
       <div class="detail-card">
+        <div class="detail-card-title">광고물 규격 (media.adSpec)</div>
+        <div class="field-grid">
+          <div class="field-group">
+            <div class="field-label">화면크기 (screenSize)</div>
+            <div class="field-value">1920×1080 px</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">실물크기 (physicalSize)</div>
+            <div class="field-value">W2400mm × H1350mm</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">최대콘텐츠시간 (maxContentDuration)</div>
+            <div class="field-value">30초</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">광고유형 (adType)</div>
+            <div class="field-value">동영상, 이미지</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">최소해상도 (minResolution)</div>
+            <div class="field-value">1920×1080</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">색공간 (colorSpace)</div>
+            <div class="field-value">sRGB</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">오디오 (audio)</div>
+            <div class="field-value">없음 (무음 환경)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
         <div class="detail-card-title">미디어 분류 (media.classification)</div>
         <div class="field-grid">
           <div class="field-group">
@@ -465,7 +499,19 @@
         <div class="field-grid" style="margin-bottom:16px;">
           <div class="field-group" style="grid-column:1/-1;">
             <div class="field-label">주소 (media.location.address)</div>
-            <div class="field-value">서울특별시 강남구 강남대로 396 (강남역 1번출구)</div>
+            <div class="field-value">서울특별시 강남구 강남대로 396</div>
+          </div>
+          <div class="field-group" style="grid-column:1/-1;">
+            <div class="field-label">상세위치 (media.location.detail)</div>
+            <div class="field-value">강남역 1번출구 우측 3m</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">설치환경</div>
+            <div class="field-value">지하철역 출구 (인도측)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">유동인구</div>
+            <div class="field-value">일평균 약 32,000명</div>
           </div>
         </div>
         <div class="divider-label">지도 (media.location.mapPosition)</div>
@@ -570,11 +616,15 @@
           </div>
           <div class="field-group">
             <div class="field-label">OS / App Version (softwareVersion)</div>
-            <div class="field-value">Android 11 / v3.2.4</div>
+            <div class="field-value">Android 11 (보안패치 2024-11) / v3.2.4</div>
           </div>
           <div class="field-group">
             <div class="field-label">네트워크 정보 (network)</div>
-            <div class="field-value">유선 LAN · IP: 192.168.1.101</div>
+            <div class="field-value">LTE (백업: WiFi)</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">마지막 Heartbeat</div>
+            <div class="field-value readonly">2026-08-19 09:14:32</div>
           </div>
           <div class="field-group">
             <div class="field-label">Device ID (player.deviceId)</div>
@@ -714,30 +764,26 @@
     <div class="tab-panel" id="panel-audit">
 
       <div class="detail-card">
-        <div class="detail-card-title">Audit 정보</div>
+        <div class="detail-card-title">Audit 이력 — MED-001</div>
         <div class="audit-row">
-          <div class="audit-key">생성일</div>
-          <div class="audit-val">2024-03-15 09:22:14</div>
+          <div class="audit-key">2024-03-15</div>
+          <div class="audit-val"><strong>등록</strong> · 홍길동 · 미디어 최초 등록 및 기본정보 입력</div>
         </div>
         <div class="audit-row">
-          <div class="audit-key">마지막 수정일</div>
-          <div class="audit-val">2025-08-15 14:07:33</div>
+          <div class="audit-key">2024-03-20</div>
+          <div class="audit-val"><strong>활성화</strong> · 홍길동 · 현장 설치 확인 후 Lifecycle → 활성 전환</div>
         </div>
         <div class="audit-row">
-          <div class="audit-key">생성자</div>
-          <div class="audit-val">홍길동 (admin@mnmnetworks.com)</div>
+          <div class="audit-key">2025-01-10</div>
+          <div class="audit-val"><strong>위치정보 수정</strong> · 이민지 · 상세위치(강남역 1번출구 우측 3m) 및 좌표 재측량 반영</div>
         </div>
         <div class="audit-row">
-          <div class="audit-key">담당자</div>
-          <div class="audit-val">홍길동 (엠앤엠네트웍스 · 강남 담당)</div>
+          <div class="audit-key">2025-08-15</div>
+          <div class="audit-val"><strong>플레이어 OS 업데이트</strong> · 시스템 · Android 보안패치 2024-11 자동 적용, Heartbeat 정상 확인</div>
         </div>
         <div class="audit-row">
-          <div class="audit-key">리비전</div>
-          <div class="audit-val">Rev. 14</div>
-        </div>
-        <div class="audit-row">
-          <div class="audit-key">생애주기 변경 이력</div>
-          <div class="audit-val">등록(2024-03-15) → 활성(2024-03-20)</div>
+          <div class="audit-key">2026-08-19</div>
+          <div class="audit-val"><strong>조회</strong> · 홍길동 · 상세 페이지 조회 (운영 정상 확인)</div>
         </div>
       </div>
     </div>

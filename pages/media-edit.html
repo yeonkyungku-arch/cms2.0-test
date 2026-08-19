@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미디어 수정 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    .form-section + .form-section { border-top: 1px solid #E5E7EA; }
+    .form-section-head { padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EA; }
+    .form-section-title { font-size: 14px; font-weight: 600; color: #24292E; display:flex;align-items:center;gap:8px; }
+    .form-section-desc  { font-size: 12px; color: #9EA5AD; margin-top: 3px; }
+    .form-section-body  { padding: 20px 24px; }
+    .form-row { display:grid;grid-template-columns:180px 1fr;gap:0;padding:10px 0;align-items:flex-start;border-bottom:1px solid #F6F7F9; }
+    .form-row:last-child { border-bottom:none; }
+    .form-label { font-size:13px;font-weight:500;color:#596066;padding-top:8px; }
+    .form-label .req { color:#E97474;margin-left:2px; }
+    .form-field { min-width:0; }
+    .input, .textarea, .select { width:100%;height:38px;border:1px solid #CED2D6;border-radius:4px;padding:0 12px;font-size:14px;color:#24292E;font-family:inherit;background:#fff;outline:none;transition:border-color .2s; }
+    .input:focus, .select:focus { border-color:#58C65D; }
+    .textarea { height:auto;padding:10px 12px;resize:vertical;min-height:80px; }
+    .input-hint { font-size:12px;color:#9EA5AD;margin-top:5px; }
+
+    /* State banner */
+    .state-banner {
+      display:flex;align-items:flex-start;gap:10px;
+      background:#FFF8E6;border:1px solid #FFD970;border-radius:6px;
+      padding:14px 18px;margin-bottom:0;
+    }
+    .state-banner-icon { color:#B97B00;font-size:18px;flex-shrink:0;margin-top:1px; }
+    .state-banner-text { font-size:13px;color:#7A5500;line-height:1.6; }
+    .state-banner-text strong { color:#5C3D00;display:block;margin-bottom:2px;font-size:14px; }
+
+    /* State badge inline */
+    .state-badge { display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600; }
+    .state-badge.active { background:#DCFCE7;color:#15803D; }
+
+    /* Section label badge */
+    .section-badge { font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;letter-spacing:.3px; }
+    .section-badge.minor { background:#E8F8E9;color:#2E9E34; }
+    .section-badge.locked-badge { background:#F6F7F9;color:#9EA5AD; }
+
+    /* Read-only locked rows */
+    .readonly-field { display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;font-size:14px;color:#596066; }
+    .lock-icon { color:#CED2D6;font-size:14px;flex-shrink:0; }
+
+    /* Deactivate note */
+    .deactivate-note { display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px 14px;background:#FFF8E6;border:1px solid #FFD970;border-radius:6px;font-size:13px;color:#7A5500; }
+    .deactivate-note svg { flex-shrink:0; }
+    .deactivate-note a { color:#B97B00;font-weight:600;text-decoration:underline;cursor:pointer; }
+
+    /* Sticky action bar */
+    .form-actions { display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #E5E7EA;background:#fff;position:sticky;bottom:0;z-index:10; }
+    .btn { height:36px;padding:0 18px;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:inherit;transition:opacity .15s; }
+    .btn:hover { opacity:.85; }
+    .btn-ghost { background:#fff;border-color:#CED2D6;color:#596066; }
+    .btn-primary { background:#58C65D;color:#fff;border-color:#58C65D; }
+    .btn-warn { background:#F3A623;color:#fff;border-color:#F3A623; }
+
+    /* Current state chip in breadcrumb area */
+    .page-meta { display:flex;align-items:center;gap:10px;padding:0 24px 16px; }
+    .page-meta-id { font-size:12px;color:#9EA5AD; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Breadcrumb -->
+<div class="bcrumb">
+  <a class="bcrumb-back" href="media-list">←</a>
+  <a href="media-list">미디어</a>
+  <span class="sep">›</span>
+  <a href="media-detail">강남역 1번출구 A</a>
+  <span class="sep">›</span>
+  <span>수정</span>
+</div>
+
+<!-- Main content -->
+<main class="main">
+  <div class="page-head" style="padding-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1 class="page-title">강남역 1번출구 A</h1>
+      <span class="state-badge active">활성</span>
+      <span style="font-size:12px;color:#9EA5AD;">MED-001</span>
+    </div>
+  </div>
+
+  <!-- State banner -->
+  <div style="padding:0 0 20px;">
+    <div class="state-banner">
+      <div class="state-banner-icon">⚠</div>
+      <div class="state-banner-text">
+        <strong>활성 미디어입니다. 위치·기기 핵심 정보 변경은 비활성화 후 진행하세요.</strong>
+        현재 이 미디어는 광고가 집행 중입니다. 아래 <strong>부가 정보</strong>는 직접 수정할 수 있으나, 위치·기기 구조 등 <strong>핵심 조건</strong>은 잠금 처리되어 있습니다. 변경이 필요한 경우 비활성화 후 진행하세요.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+
+    <!-- Section 1: 직접 수정 가능 (부가 정보) -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          직접 수정 가능
+          <span class="section-badge minor">부가 정보</span>
+        </div>
+        <div class="form-section-desc">아래 항목은 활성 상태에서도 즉시 저장됩니다.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">미디어명<span class="req">*</span></div>
+          <div class="form-field">
+            <input class="input" type="text" id="mediaName" value="강남역 1번출구 A">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">담당자</div>
+          <div class="form-field">
+            <select class="select" id="manager">
+              <option value="hong" selected>홍길동</option>
+              <option value="kim">김철수</option>
+              <option value="lee">이영희</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">메모 / 비고</div>
+          <div class="form-field">
+            <textarea class="textarea" id="memo" placeholder="관리 메모를 입력하세요"></textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">최대 콘텐츠 시간</div>
+          <div class="form-field">
+            <input class="input" type="number" id="maxDuration" value="30" style="max-width:160px;">
+            <div class="input-hint">단위: 초 (sec)</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">허용 광고유형</div>
+          <div class="form-field">
+            <select class="select" id="adTypes" style="max-width:300px;">
+              <option value="all" selected>전체 허용</option>
+              <option value="general">일반광고만</option>
+              <option value="psa">공익광고만</option>
+              <option value="no-psa">공익광고 제외</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 2: 변경 불가 (핵심 조건) -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          변경 불가
+          <span class="section-badge locked-badge">핵심 조건 — 비활성화 필요</span>
+        </div>
+        <div class="form-section-desc">위치·기기 구조 변경은 비활성화 후 전체 수정 모드에서만 가능합니다.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">위치</div>
+          <div class="form-field">
+            <div class="readonly-field">
+              <span class="lock-icon">🔒</span>
+              서울특별시 강남구 강남대로 396
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">기기 구조</div>
+          <div class="form-field">
+            <div class="readonly-field">
+              <span class="lock-icon">🔒</span>
+              Android 11, Brightsign XD1034
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">설치 유형</div>
+          <div class="form-field">
+            <div class="readonly-field">
+              <span class="lock-icon">🔒</span>
+              고정
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="deactivate-note" style="margin:0 24px 20px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#B97B00" stroke-width="1.3"/><path d="M8 5v4M8 11v.5" stroke="#B97B00" stroke-width="1.3" stroke-linecap="round"/></svg>
+        위치·기기 변경이 필요한 경우 <a onclick="deactivateAndEdit()">비활성화 후 수정</a>을 클릭하세요.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sticky action bar -->
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="history.back()">취소</button>
+    <button class="btn btn-warn" onclick="deactivateAndEdit()">비활성화 후 수정</button>
+    <button class="btn btn-primary" onclick="saveMinorFields()">저장</button>
+  </div>
+</main>
+
+<script>
+function deactivateAndEdit() {
+  if (confirm('미디어를 비활성화하고 전체 수정 모드로 전환하시겠습니까?\n비활성화 중에는 광고 집행이 중단됩니다.')) {
+    alert('비활성화 처리 후 전체 수정 화면으로 이동합니다. (시연용)');
+  }
+}
+
+function saveMinorFields() {
+  const name = document.getElementById('mediaName').value.trim();
+  if (!name) { alert('미디어명을 입력하세요.'); return; }
+  alert('부가 정보가 저장되었습니다.');
+}
+
+function goScheduleMain() {
+  const t = localStorage.getItem('scheduleType') || 'media';
+  location.href = t === 'product' ? 'schedule-product-month' : 'schedule-media-month';
+}
+function setScheduleType(t) { localStorage.setItem('scheduleType', t); }
+</script>
+</body>
+</html>

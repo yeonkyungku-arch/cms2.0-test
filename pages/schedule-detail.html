@@ -263,12 +263,12 @@
         <div class="state-meta" style="margin-top:4px;">SCH-2025-0041 · 삼성전자 · 2025-10-15 ~ 12-31</div>
       </div>
       <span class="badge lc-active" style="font-size:13px; padding:4px 12px;"><span class="badge-dot"></span>집행중</span>
-      <span class="badge appr-approved" style="font-size:12px;">Approval: 승인</span>
+      <span class="badge appr-approved" style="font-size:12px;">승인됨</span>
+      <span class="badge pde-approved" style="font-size:12px;">PDE 승인</span>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn btn-warn">일시정지</button>
-      <button class="btn btn-danger">중단(Terminate)</button>
-      <button class="btn btn-ghost">New Revision</button>
+      <button class="btn btn-warn">일시중지</button>
+      <button class="btn btn-ghost">새 Revision</button>
     </div>
   </div>
 
@@ -304,13 +304,15 @@
           <div class="info-label">생성 출처</div>
           <div class="info-value"><span class="badge source-campaign">캠페인</span></div>
           <div class="info-label">연계 캠페인</div>
-          <div class="info-value" style="color:#2D84ED;">CAM-2025-0041 — 삼성전자 갤럭시 S25 런칭</div>
-          <div class="info-label">승인 권한</div>
-          <div class="info-value">팀장 승인</div>
+          <div class="info-value" style="color:#2D84ED;">CMP-2026-001 — 삼성전자 갤럭시 S25 런칭</div>
+          <div class="info-label">담당자</div>
+          <div class="info-value">홍길동</div>
           <div class="info-label">운영기간</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-15 ~ 2025-12-31 (77일)</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-15 ~ 2025-12-31</div>
           <div class="info-label">운영 방식</div>
           <div class="info-value">Rolling</div>
+          <div class="info-label">등록일</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-14</div>
           <div class="info-label">Lifecycle 상태</div>
           <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중 (Active)</span></div>
         </div>
@@ -330,23 +332,33 @@
         <div class="appr-card">
           <div class="appr-field">
             <div class="appr-field-label">승인 상태</div>
-            <div class="appr-field-value"><span class="badge appr-approved">승인 완료</span></div>
-          </div>
-          <div class="appr-field">
-            <div class="appr-field-label">요청일</div>
-            <div class="appr-field-value">2025-10-12</div>
+            <div class="appr-field-value"><span class="badge appr-approved">승인됨</span></div>
           </div>
           <div class="appr-field">
             <div class="appr-field-label">승인자</div>
-            <div class="appr-field-value">김팀장 (팀장)</div>
+            <div class="appr-field-value">김관리 (Admin)</div>
           </div>
           <div class="appr-field">
-            <div class="appr-field-label">승인일</div>
-            <div class="appr-field-value">2025-10-14</div>
+            <div class="appr-field-label">승인일시</div>
+            <div class="appr-field-value">2025-10-10 16:45</div>
           </div>
-          <div class="appr-field" style="grid-column:span 2;">
-            <div class="appr-field-label">승인 의견</div>
-            <div class="appr-field-value" style="color:#596066; font-size:12px;">Feasibility 및 PDE 검토 완료. 운영 기간 및 슬롯 구성 적합. 집행 승인합니다.</div>
+        </div>
+      </div>
+    </div>
+    <!-- PDE Card -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">PDE 검토 결과</span>
+        <span style="font-size:12px;color:#B45309;font-weight:600;">Amber — 조건부 승인</span>
+      </div>
+      <div class="card-body">
+        <div style="background:#FFFBEB;border:1px solid #F3BE4A;border-radius:8px;padding:14px 18px;">
+          <div style="font-size:13px;font-weight:700;color:#B45309;margin-bottom:8px;">PDE 결정: Approved</div>
+          <div class="info-grid">
+            <div class="info-label">검토일</div>
+            <div class="info-value">2025-10-08</div>
+            <div class="info-label">사유</div>
+            <div class="info-value">일반 옥외광고, 업종·지역·시간대 제한 없음</div>
           </div>
         </div>
       </div>
@@ -384,7 +396,7 @@
                 <td style="color:#2D84ED;">강남 프리미엄 패키지 (R3)</td>
                 <td>30초</td>
                 <td>콘텐츠</td>
-                <td style="color:#2D84ED;">갤럭시 S25 런칭 15초 (R2)</td>
+                <td style="color:#2D84ED;">갤럭시 S25 런칭 30초 CNT-001 (R1)</td>
                 <td>월~금</td>
                 <td>09:00 ~ 22:00</td>
                 <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
@@ -393,11 +405,11 @@
               <tr>
                 <td style="font-weight:600; color:#596066;">Item 2</td>
                 <td>프로덕트</td>
-                <td style="color:#2D84ED;">신촌 역세권 디스플레이 (R1)</td>
+                <td style="color:#2D84ED;">강남 프리미엄 패키지 PRD-001 (R3)</td>
                 <td>15초</td>
                 <td>콘텐츠</td>
-                <td style="color:#2D84ED;">갤럭시 S25 런칭 15초 (R2)</td>
-                <td>월~토</td>
+                <td style="color:#2D84ED;">갤럭시 S25 런칭 30초 CNT-001 (R1)</td>
+                <td>토~일</td>
                 <td>10:00 ~ 21:00</td>
                 <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
                 <td><span class="badge conflict-valid">Valid</span></td>
@@ -414,86 +426,40 @@
 
   <!-- ===== TAB 3: 기준 루프 보장 ===== -->
   <div id="tab-loop" class="tab-panel">
-    <!-- Item 1 -->
     <div class="card">
-      <div class="card-head"><span class="card-title">Item 1 — 강남 프리미엄 패키지 (R3)</span></div>
+      <div class="card-head"><span class="card-title">기준 루프 보장 현황</span></div>
       <div class="card-body">
         <div class="kpi-row" style="margin-bottom:16px;">
           <div class="kpi-card">
-            <div class="kpi-label">Reference Slot Duration (RSD)</div>
+            <div class="kpi-label">Reference Slot Duration</div>
             <div class="kpi-value">30</div>
-            <div class="kpi-unit">초 (MAX Slot)</div>
+            <div class="kpi-unit">초</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Total Slot Count</div>
-            <div class="kpi-value">20</div>
-            <div class="kpi-unit">슬롯 / 루프</div>
+            <div class="kpi-label">Reference Loop Duration</div>
+            <div class="kpi-value">180</div>
+            <div class="kpi-unit">초</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Reference Loop Duration (RLD)</div>
-            <div class="kpi-value">600</div>
-            <div class="kpi-unit">초 (= 30× 20)</div>
+            <div class="kpi-label">유효 운영시간</div>
+            <div class="kpi-value">13</div>
+            <div class="kpi-unit">시간/일 (09:00~22:00)</div>
           </div>
         </div>
         <div class="kpi-row">
           <div class="kpi-card">
-            <div class="kpi-label">유효 운영시간</div>
-            <div class="kpi-value">8,008</div>
-            <div class="kpi-unit">시간 (77일 × 13h × 8매체)</div>
+            <div class="kpi-label">예상 최소 집행횟수/일</div>
+            <div class="kpi-value">260</div>
+            <div class="kpi-unit">회</div>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Expected Minimum Plays</div>
-            <div class="kpi-value" style="color:#2E9E34;">48,048</div>
-            <div class="kpi-unit">회 (FLOOR(8,008h / 600s))</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Assigned Slot Duration</div>
-            <div class="kpi-value">30</div>
-            <div class="kpi-unit">초 (실제 구매 슬롯)</div>
+          <div class="kpi-card" style="background:#E8F8E9;">
+            <div class="kpi-label" style="color:#2E9E34;">실제 집행횟수/일 (어제)</div>
+            <div class="kpi-value" style="color:#2E9E34;">274</div>
+            <div class="kpi-unit" style="color:#2E9E34;">회 ✓ 보장 충족</div>
           </div>
         </div>
         <div style="margin-top:12px; font-size:12px; color:#9EA5AD; background:#F6F7F9; border-radius:6px; padding:10px 12px;">
           ⓘ Expected Minimum Plays = FLOOR(유효운영시간 / RLD). Assigned Slot이 RSD보다 짧아도 동일 Reference Loop 기준 사용.
-        </div>
-      </div>
-    </div>
-    <!-- Item 2 -->
-    <div class="card">
-      <div class="card-head"><span class="card-title">Item 2 — 신촌 역세권 디스플레이 (R1)</span></div>
-      <div class="card-body">
-        <div class="kpi-row" style="margin-bottom:16px;">
-          <div class="kpi-card">
-            <div class="kpi-label">Reference Slot Duration (RSD)</div>
-            <div class="kpi-value">30</div>
-            <div class="kpi-unit">초 (MAX Slot)</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Total Slot Count</div>
-            <div class="kpi-value">24</div>
-            <div class="kpi-unit">슬롯 / 루프</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Reference Loop Duration (RLD)</div>
-            <div class="kpi-value">720</div>
-            <div class="kpi-unit">초 (= 30× 24)</div>
-          </div>
-        </div>
-        <div class="kpi-row">
-          <div class="kpi-card">
-            <div class="kpi-label">유효 운영시간</div>
-            <div class="kpi-value">5,082</div>
-            <div class="kpi-unit">시간 (77일 × 11h × 6매체)</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Expected Minimum Plays</div>
-            <div class="kpi-value" style="color:#2E9E34;">25,410</div>
-            <div class="kpi-unit">회 (FLOOR(5,082h / 720s))</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Assigned Slot Duration</div>
-            <div class="kpi-value">15</div>
-            <div class="kpi-unit">초 (실제 구매 슬롯)</div>
-          </div>
         </div>
       </div>
     </div>
