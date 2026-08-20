@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시나리오 가이드 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    .guide-hero {
+      background: linear-gradient(135deg, #24292E 0%, #383F45 100%);
+      border-radius: 12px;
+      padding: 32px 36px;
+      margin-bottom: 28px;
+      color: #fff;
+    }
+    .guide-hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .12em; color: #58C65D; text-transform: uppercase; margin-bottom: 8px; }
+    .guide-hero h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .guide-hero p { font-size: 13px; color: #9EA5AD; line-height: 1.6; max-width: 620px; }
+    .guide-hero-meta { display: flex; gap: 24px; margin-top: 20px; }
+    .guide-hero-stat { }
+    .guide-hero-stat-val { font-size: 24px; font-weight: 700; color: #58C65D; }
+    .guide-hero-stat-lbl { font-size: 11px; color: #9EA5AD; margin-top: 2px; }
+
+    .domain-section { margin-bottom: 32px; }
+    .domain-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 2px solid #E5E7EA;
+    }
+    .domain-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .domain-title { font-size: 16px; font-weight: 700; color: #24292E; }
+    .domain-code { font-size: 11px; color: #9EA5AD; font-weight: 500; background: #F6F7F9; padding: 2px 7px; border-radius: 4px; }
+    .domain-count { font-size: 12px; color: #9EA5AD; margin-left: auto; }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+
+    .scenario-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: box-shadow .2s, border-color .2s;
+    }
+    .scenario-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); border-color: #CED2D6; }
+
+    .scenario-card-accent { height: 4px; }
+    .scenario-card-body { padding: 16px 18px; }
+    .scenario-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .scenario-task-id { font-size: 10px; font-weight: 700; letter-spacing: .06em; color: #9EA5AD; font-family: monospace; }
+    .scenario-title { font-size: 14px; font-weight: 700; color: #24292E; margin-bottom: 4px; }
+    .scenario-user { font-size: 11px; color: #9EA5AD; margin-bottom: 10px; }
+    .scenario-user strong { color: #596066; }
+
+    .scenario-steps {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 3px; margin-bottom: 12px;
+    }
+    .step-pill {
+      font-size: 11px; background: #F6F7F9; color: #596066;
+      padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+    }
+    .step-arrow { font-size: 10px; color: #CED2D6; }
+
+    .scenario-key-action {
+      font-size: 11px; color: #596066; margin-bottom: 12px;
+      display: flex; gap: 5px; align-items: flex-start;
+    }
+    .scenario-key-action-lbl { font-weight: 600; color: #9EA5AD; flex-shrink: 0; }
+
+    .scenario-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .scenario-domain-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 4px; border: 1px solid currentColor;
+    }
+    .scenario-start-btn {
+      height: 30px; padding: 0 14px;
+      border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: none; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 5px;
+      transition: opacity .15s;
+      color: #fff;
+    }
+    .scenario-start-btn:hover { opacity: .85; }
+    .scenario-start-btn svg { flex-shrink: 0; }
+
+    /* domain colors */
+    .c-media    { background: #2D84ED; }
+    .c-product  { background: #7C3AED; }
+    .c-content  { background: #0EA5E9; }
+    .c-campaign { background: #F59E0B; }
+    .c-schedule { background: #10B981; }
+    .c-monitor  { background: #E97474; }
+    .c-sales    { background: #F97316; }
+    .c-adv      { background: #8B5CF6; }
+    .c-settings { background: #6B7280; }
+
+    .badge-media    { color: #2D84ED; border-color: #BFDBFE; background: #EFF6FF; }
+    .badge-product  { color: #7C3AED; border-color: #DDD6FE; background: #F5F3FF; }
+    .badge-content  { color: #0EA5E9; border-color: #BAE6FD; background: #F0F9FF; }
+    .badge-campaign { color: #D97706; border-color: #FDE68A; background: #FFFBEB; }
+    .badge-schedule { color: #059669; border-color: #A7F3D0; background: #ECFDF5; }
+    .badge-monitor  { color: #E97474; border-color: #FECACA; background: #FEF2F2; }
+    .badge-sales    { color: #F97316; border-color: #FED7AA; background: #FFF7ED; }
+    .badge-adv      { color: #7C3AED; border-color: #DDD6FE; background: #F5F3FF; }
+    .badge-settings { color: #6B7280; border-color: #E5E7EA; background: #F9FAFB; }
+
+    .not-impl { opacity: .55; }
+    .not-impl .scenario-start-btn { background: #CED2D6 !important; cursor: not-allowed; pointer-events: none; }
+    .impl-tag { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: #DCFCE7; color: #15803D; }
+    .partial-tag { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: #FEF3C7; color: #92400E; }
+    .tbd-tag { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: #F0F1F3; color: #9EA5AD; }
+  </style>
+</head>
+<body>
+
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+      <div class="gnb-sub"><div class="gnb-sub-title">프로덕트</div><a href="product-list">프로덕트 목록</a><a href="package-list">패키지 목록</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+      <div class="gnb-sub"><div class="gnb-sub-title">콘텐츠</div><a href="contents">콘텐츠 목록</a><a href="content-chain">콘텐츠 체인</a><a href="content-archive">보관 관리</a></div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="schedule-media-month"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+      <div class="gnb-sub"><div class="gnb-sub-title">편성표</div><a href="schedule-media-month">미디어 편성표</a><a href="schedule-product-month">프로덕트 편성표</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+      <div class="gnb-sub"><div class="gnb-sub-title">모니터링</div><a href="monitoring-dashboard">운영 대시보드</a><a href="monitoring-incident">Incident Center</a><a href="monitoring-alert">알림센터</a><a href="monitoring-control">원격 제어</a><a href="monitoring-history">제어·복구 이력</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+      <div class="gnb-sub"><div class="gnb-sub-title">영업 워크스페이스</div><a href="sales-dashboard">영업 대시보드</a><a href="sales-advertiser">광고주 관리</a><a href="sales-opportunity">영업기회</a><a href="sales-proposal">제안·협상</a><a href="sales-contract">계약</a><a href="sales-analytics">영업 분석</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-avatar" style="width:32px;height:32px;border-radius:50%;background:#596066;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;">구</div>
+  </div>
+</header>
+
+<div class="bcrumb">
+  <a class="bcrumb-back" href="dashboard">←</a>
+  <a href="dashboard">대시보드</a>
+  <span class="sep">›</span>
+  <span class="cur">시나리오 가이드</span>
+</div>
+
+<main class="content">
+
+  <div class="guide-hero">
+    <div class="guide-hero-eyebrow">D'ooh CMS 2.0 Prototype</div>
+    <h1>시나리오 가이드</h1>
+    <p>IA Task Flow 기준 전체 31개 시나리오를 도메인별로 정리합니다. 각 카드의 <strong style="color:#fff;">시작</strong> 버튼을 눌러 해당 플로우를 탐색하세요. 상세 페이지 내 상태 전환 버튼으로 라이프사이클을 시뮬레이션할 수 있습니다.</p>
+    <div class="guide-hero-meta">
+      <div class="guide-hero-stat"><div class="guide-hero-stat-val">31</div><div class="guide-hero-stat-lbl">전체 Task Flow</div></div>
+      <div class="guide-hero-stat"><div class="guide-hero-stat-val">9</div><div class="guide-hero-stat-lbl">도메인</div></div>
+      <div class="guide-hero-stat"><div class="guide-hero-stat-val">60+</div><div class="guide-hero-stat-lbl">구현 페이지</div></div>
+    </div>
+  </div>
+
+  <!-- ───── 미디어 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#EFF6FF;">📺</div>
+      <div class="domain-title">미디어</div>
+      <div class="domain-code">CMS-MEDIA</div>
+      <div class="domain-count">2개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-media"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MED-01</div><div class="scenario-title">신규 미디어 등록</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">미디어 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">등록</span><span class="step-arrow">›</span>
+            <span class="step-pill">상세(등록)</span><span class="step-arrow">›</span>
+            <span class="step-pill">활성화</span><span class="step-arrow">›</span>
+            <span class="step-pill">상세(활성)</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> 등록→저장→Registered→Active 상태전환</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-media">CMS-MEDIA</span>
+            <a href="media-register" class="scenario-start-btn c-media">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-media"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MED-02</div><div class="scenario-title">미디어 위치·기기 정보 수정</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">미디어 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">수정</span><span class="step-arrow">›</span>
+            <span class="step-pill">저장</span><span class="step-arrow">›</span>
+            <span class="step-pill">상세(갱신)</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Edit/Save — Retired는 Read-only</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-media">CMS-MEDIA</span>
+            <a href="media-list" class="scenario-start-btn c-media">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 프로덕트 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#F5F3FF;">📦</div>
+      <div class="domain-title">프로덕트 · 패키지</div>
+      <div class="domain-code">CMS-PRODUCT</div>
+      <div class="domain-count">3개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-product"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-PROD-01</div><div class="scenario-title">프로덕트 생성·활성화</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">프로덕트 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">등록</span><span class="step-arrow">›</span>
+            <span class="step-pill">구성 Media</span><span class="step-arrow">›</span>
+            <span class="step-pill">운영·Slot</span><span class="step-arrow">›</span>
+            <span class="step-pill">가격</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE</span><span class="step-arrow">›</span>
+            <span class="step-pill">승인→활성</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create / Validate / Activate</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-product">CMS-PRODUCT</span>
+            <a href="product-register" class="scenario-start-btn c-product">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-product"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-PROD-02</div><div class="scenario-title">Active 프로덕트 핵심조건 변경</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">프로덕트 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">새 Revision</span><span class="step-arrow">›</span>
+            <span class="step-pill">변경</span><span class="step-arrow">›</span>
+            <span class="step-pill">검증</span><span class="step-arrow">›</span>
+            <span class="step-pill">적용</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> New Revision — 원본 Overwrite 금지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-product">CMS-PRODUCT</span>
+            <a href="product-detail?id=PRD-001" class="scenario-start-btn c-product">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-product"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-PKG-01</div><div class="scenario-title">패키지 구성</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">패키지 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">등록</span><span class="step-arrow">›</span>
+            <span class="step-pill">Product 선택</span><span class="step-arrow">›</span>
+            <span class="step-pill">공통범위 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">가격/검증</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create/Validate — Media 직접 선택 금지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-product">CMS-PRODUCT</span>
+            <a href="package-list" class="scenario-start-btn c-product">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 콘텐츠 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#F0F9FF;">🎬</div>
+      <div class="domain-title">콘텐츠</div>
+      <div class="domain-code">CMS-CONTENT</div>
+      <div class="domain-count">3개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-content"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-CONT-01</div><div class="scenario-title">콘텐츠 등록·승인</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">콘텐츠 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">등록</span><span class="step-arrow">›</span>
+            <span class="step-pill">파일 업로드</span><span class="step-arrow">›</span>
+            <span class="step-pill">기술검증</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE 검토</span><span class="step-arrow">›</span>
+            <span class="step-pill">승인됨</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Upload / Validate — 기술 실패 시 PDE 호출 금지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-content">CMS-CONTENT</span>
+            <a href="content-register" class="scenario-start-btn c-content">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-content"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-CONT-02</div><div class="scenario-title">콘텐츠 체인 생성</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">콘텐츠 체인</span><span class="step-arrow">›</span>
+            <span class="step-pill">생성</span><span class="step-arrow">›</span>
+            <span class="step-pill">Approved 선택</span><span class="step-arrow">›</span>
+            <span class="step-pill">순서 조정</span><span class="step-arrow">›</span>
+            <span class="step-pill">총시간 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">검증</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create / Reorder — 중복 Content 허용</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-content">CMS-CONTENT</span>
+            <a href="content-chain" class="scenario-start-btn c-content">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-content"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-CONT-03</div><div class="scenario-title">Approved 콘텐츠 핵심 변경 → 신규 Revision → 재승인</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">콘텐츠 상세(승인됨)</span><span class="step-arrow">›</span>
+            <span class="step-pill">새 Revision</span><span class="step-arrow">›</span>
+            <span class="step-pill">변경·기술검증</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE</span><span class="step-arrow">›</span>
+            <span class="step-pill">재승인</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> New Revision / Re-approve — 기존 Revision 불변</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-content">CMS-CONTENT</span>
+            <a href="content-detail?id=CNT-001" class="scenario-start-btn c-content">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 캠페인 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#FFFBEB;">📣</div>
+      <div class="domain-title">캠페인</div>
+      <div class="domain-code">CMS-CAMPAIGN</div>
+      <div class="domain-count">2개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-campaign"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-CAM-01</div><div class="scenario-title">광고 운영안 분석·추천</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Sales Request</div>
+          <div class="scenario-steps">
+            <span class="step-pill">캠페인 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">캠페인 생성</span><span class="step-arrow">›</span>
+            <span class="step-pill">요구조건</span><span class="step-arrow">›</span>
+            <span class="step-pill">Feasibility</span><span class="step-arrow">›</span>
+            <span class="step-pill">추천/비교</span><span class="step-arrow">›</span>
+            <span class="step-pill">Selection Snapshot</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Analyze / Compare / Select — Stale 결과 재분석 유도</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-campaign">CMS-CAMPAIGN</span>
+            <a href="campaign-register" class="scenario-start-btn c-campaign">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-campaign"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-CAM-02</div><div class="scenario-title">선택안 Schedule 전환</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">캠페인 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Feasibility 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">Schedule 전환</span><span class="step-arrow">›</span>
+            <span class="step-pill">스케줄 Draft</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> FRESH Feasibility 필수 — 아니면 Action 차단</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-campaign">CMS-CAMPAIGN</span>
+            <a href="campaign-detail?id=CMP-2026-001" class="scenario-start-btn c-campaign">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 스케줄 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#ECFDF5;">📅</div>
+      <div class="domain-title">스케줄</div>
+      <div class="domain-code">CMS-SCHEDULE</div>
+      <div class="domain-count">3개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-schedule"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SCH-01</div><div class="scenario-title">직접 Schedule 생성</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">스케줄 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">새 스케줄</span><span class="step-arrow">›</span>
+            <span class="step-pill">Item 구성</span><span class="step-arrow">›</span>
+            <span class="step-pill">Feasibility</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE</span><span class="step-arrow">›</span>
+            <span class="step-pill">승인요청</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create / Validate / Request Approval — Campaign 없이도 Feasibility Mandatory</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-schedule">CMS-SCHEDULE</span>
+            <a href="schedule-register-form" class="scenario-start-btn c-schedule">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-schedule"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SCH-02</div><div class="scenario-title">운영 중 Schedule 변경</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Admin 중심</div>
+          <div class="scenario-steps">
+            <span class="step-pill">스케줄 상세(집행중)</span><span class="step-arrow">›</span>
+            <span class="step-pill">새 Revision</span><span class="step-arrow">›</span>
+            <span class="step-pill">변경</span><span class="step-arrow">›</span>
+            <span class="step-pill">재검증</span><span class="step-arrow">›</span>
+            <span class="step-pill">승인</span><span class="step-arrow">›</span>
+            <span class="step-pill">Effective From</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> New Revision / Approve — 덮어쓰기 금지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-schedule">CMS-SCHEDULE</span>
+            <a href="schedule-detail?id=SCH-2025-0041&state=active" class="scenario-start-btn c-schedule">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-schedule"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SCH-03</div><div class="scenario-title">Schedule 승인 반려 → 수정 → 재승인</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">스케줄 상세(반려)</span><span class="step-arrow">›</span>
+            <span class="step-pill">반려 사유 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">수정 Revision</span><span class="step-arrow">›</span>
+            <span class="step-pill">재검증</span><span class="step-arrow">›</span>
+            <span class="step-pill">재승인 요청</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Revise / Revalidate / Request Approval — 반려 이력 보존</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-schedule">CMS-SCHEDULE</span>
+            <a href="schedule-detail?id=SCH-2025-0039&state=rejected" class="scenario-start-btn c-schedule">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 모니터링 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#FEF2F2;">🔴</div>
+      <div class="domain-title">모니터링</div>
+      <div class="domain-code">CMS-MONITORING</div>
+      <div class="domain-count">3개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-monitor"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MON-01</div><div class="scenario-title">장애 영향 파악 · Incident 처리</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator+</div>
+          <div class="scenario-steps">
+            <span class="step-pill">모니터링 대시보드</span><span class="step-arrow">›</span>
+            <span class="step-pill">Incident Center</span><span class="step-arrow">›</span>
+            <span class="step-pill">Acknowledge</span><span class="step-arrow">›</span>
+            <span class="step-pill">In Progress</span><span class="step-arrow">›</span>
+            <span class="step-pill">Recovered</span><span class="step-arrow">›</span>
+            <span class="step-pill">Close</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Acknowledge / Recover / Close — Product→Media→Device Drill-down</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-monitor">CMS-MONITORING</span>
+            <a href="monitoring-dashboard" class="scenario-start-btn c-monitor">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-monitor"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MON-02</div><div class="scenario-title">원격 제어 수행</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Device 상세/Incident</span><span class="step-arrow">›</span>
+            <span class="step-pill">Capability 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE Precheck</span><span class="step-arrow">›</span>
+            <span class="step-pill">Command 실행</span><span class="step-arrow">›</span>
+            <span class="step-pill">결과 수신</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Execute Command — Level1/Level2 권한 분리</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-monitor">CMS-MONITORING</span>
+            <a href="monitoring-control" class="scenario-start-btn c-monitor">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-monitor"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MON-03</div><div class="scenario-title">P1 Incident → Auto Recovery 실패 → Manual/Escalation</div></div>
+            <span class="partial-tag">부분구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Incident Center(P1)</span><span class="step-arrow">›</span>
+            <span class="step-pill">Recovery Plan</span><span class="step-arrow">›</span>
+            <span class="step-pill">Auto 실패</span><span class="step-arrow">›</span>
+            <span class="step-pill">Manual Recovery</span><span class="step-arrow">›</span>
+            <span class="step-pill">Escalation</span><span class="step-arrow">›</span>
+            <span class="step-pill">Close</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Recover / Escalate / Close — RMS 실행결과 수신</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-monitor">CMS-MONITORING</span>
+            <a href="monitoring-incident" class="scenario-start-btn c-monitor">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 영업 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#FFF7ED;">💼</div>
+      <div class="domain-title">영업 워크스페이스</div>
+      <div class="domain-code">CMS-SALES</div>
+      <div class="domain-count">5개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-sales"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SALES-01</div><div class="scenario-title">신규 영업기회 → 제안</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator + Sales Access</div>
+          <div class="scenario-steps">
+            <span class="step-pill">영업 홈</span><span class="step-arrow">›</span>
+            <span class="step-pill">광고주</span><span class="step-arrow">›</span>
+            <span class="step-pill">Opportunity</span><span class="step-arrow">›</span>
+            <span class="step-pill">Campaign 분석요청</span><span class="step-arrow">›</span>
+            <span class="step-pill">Proposal 발송</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create / Analyze / Send — Sales→Campaign Context 유지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-sales">CMS-SALES</span>
+            <a href="sales-dashboard" class="scenario-start-btn c-sales">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-sales"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SALES-02</div><div class="scenario-title">가격협상 · 계약 체결</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Sales Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Proposal 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">협상 Timeline</span><span class="step-arrow">›</span>
+            <span class="step-pill">내부 승인</span><span class="step-arrow">›</span>
+            <span class="step-pill">Contract Draft</span><span class="step-arrow">›</span>
+            <span class="step-pill">Pre-Sign Feasibility</span><span class="step-arrow">›</span>
+            <span class="step-pill">Signed</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Negotiate / Approve / Sign — Discount와 PDE 분리</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-sales">CMS-SALES</span>
+            <a href="sales-proposal" class="scenario-start-btn c-sales">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-sales"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SALES-03</div><div class="scenario-title">계약 후 운영 이관</div></div>
+            <span class="partial-tag">부분구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Sales / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Contract 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Pre-Handoff Feasibility</span><span class="step-arrow">›</span>
+            <span class="step-pill">Campaign 연결</span><span class="step-arrow">›</span>
+            <span class="step-pill">Schedule</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Recheck / Handoff — 서명 전 Gate와 이관 전 Recheck 별도 단계</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-sales">CMS-SALES</span>
+            <a href="sales-contract" class="scenario-start-btn c-sales">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-sales"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SALES-04</div><div class="scenario-title">계약 변경 (Amendment)</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Sales / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Contract 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Amendment/Revision</span><span class="step-arrow">›</span>
+            <span class="step-pill">변경</span><span class="step-arrow">›</span>
+            <span class="step-pill">승인</span><span class="step-arrow">›</span>
+            <span class="step-pill">Effective From</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create Amendment — Signed 원본 수정 금지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-sales">CMS-SALES</span>
+            <a href="sales-contract-edit" class="scenario-start-btn c-sales">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-sales"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SALES-05</div><div class="scenario-title">Lost Opportunity 종료 · 분석 반영</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator + Sales Access</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Opportunity 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Lost 처리</span><span class="step-arrow">›</span>
+            <span class="step-pill">Lost Reason 입력</span><span class="step-arrow">›</span>
+            <span class="step-pill">Close</span><span class="step-arrow">›</span>
+            <span class="step-pill">영업 분석 반영</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Mark Lost / Close — Lost Reason 구조화, 이력 유지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-sales">CMS-SALES</span>
+            <a href="sales-opportunity" class="scenario-start-btn c-sales">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 광고주 포털 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#F5F3FF;">🌐</div>
+      <div class="domain-title">광고주 포털</div>
+      <div class="domain-code">PORTAL-ADVERTISER</div>
+      <div class="domain-count">4개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card not-impl">
+        <div class="scenario-card-accent c-adv"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-ADV-01</div><div class="scenario-title">Schedule 승인</div></div>
+            <span class="tbd-tag">미구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Portal Approver</div>
+          <div class="scenario-steps">
+            <span class="step-pill">승인 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">승인 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Contract 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">Approve / Reject / Delegate</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Approve / Reject / Delegate — External Web (광고주 포털)</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-adv">PORTAL</span>
+            <a href="#" class="scenario-start-btn c-adv">미구현</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card not-impl">
+        <div class="scenario-card-accent c-adv"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-ADV-02</div><div class="scenario-title">광고 운영 확인</div></div>
+            <span class="tbd-tag">미구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Portal User</div>
+          <div class="scenario-steps">
+            <span class="step-pill">포털 대시보드</span><span class="step-arrow">›</span>
+            <span class="step-pill">광고 운영 현황</span><span class="step-arrow">›</span>
+            <span class="step-pill">상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">송출 증적</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> View / Drill-down — 기기·Fault 정보 미노출</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-adv">PORTAL</span>
+            <a href="#" class="scenario-start-btn c-adv">미구현</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card not-impl">
+        <div class="scenario-card-accent c-adv"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-ADV-03</div><div class="scenario-title">광고 효과 · Report 확인</div></div>
+            <span class="tbd-tag">미구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Portal User</div>
+          <div class="scenario-steps">
+            <span class="step-pill">효과 대시보드</span><span class="step-arrow">›</span>
+            <span class="step-pill">상품별 효과</span><span class="step-arrow">›</span>
+            <span class="step-pill">Report</span><span class="step-arrow">›</span>
+            <span class="step-pill">Download</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> View / Download — Grace Period 접근 가능</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-adv">PORTAL</span>
+            <a href="#" class="scenario-start-btn c-adv">미구현</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card not-impl">
+        <div class="scenario-card-accent c-adv"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-ADV-04</div><div class="scenario-title">광고주 Schedule Reject → 내부 수정 → 재승인</div></div>
+            <span class="tbd-tag">미구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Portal Approver + CMS Operator</div>
+          <div class="scenario-steps">
+            <span class="step-pill">Advertiser Reject</span><span class="step-arrow">›</span>
+            <span class="step-pill">CMS 반려 수신</span><span class="step-arrow">›</span>
+            <span class="step-pill">신규 Revision 수정</span><span class="step-arrow">›</span>
+            <span class="step-pill">재승인 요청</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Reject / Revise / Re-request — Audit 보존</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-adv">PORTAL</span>
+            <a href="#" class="scenario-start-btn c-adv">미구현</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── 설정 ───── -->
+  <div class="domain-section">
+    <div class="domain-header">
+      <div class="domain-icon" style="background:#F9FAFB;">⚙️</div>
+      <div class="domain-title">설정</div>
+      <div class="domain-code">CMS-SETTINGS</div>
+      <div class="domain-count">6개 시나리오</div>
+    </div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-01</div><div class="scenario-title">사용자 생성 · 권한 부여</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">설정 > 조직·사용자</span><span class="step-arrow">›</span>
+            <span class="step-pill">사용자 생성</span><span class="step-arrow">›</span>
+            <span class="step-pill">Role/Scope 부여</span><span class="step-arrow">›</span>
+            <span class="step-pill">활성화</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Create / Assign — Role 고정, Admin Scope 복수 가능</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-org" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-02</div><div class="scenario-title">Login ID 변경</div></div>
+            <span class="partial-tag">부분구현</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> System Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">사용자 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Login ID 변경</span><span class="step-arrow">›</span>
+            <span class="step-pill">재인증</span><span class="step-arrow">›</span>
+            <span class="step-pill">Email 검증</span><span class="step-arrow">›</span>
+            <span class="step-pill">Session 처리</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Re-auth / Verify / Change — High-risk Change</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-security" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-03</div><div class="scenario-title">운영 Parameter 변경</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operation Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">설정 > 운영 설정</span><span class="step-arrow">›</span>
+            <span class="step-pill">Domain Tab</span><span class="step-arrow">›</span>
+            <span class="step-pill">Organization Default 변경</span><span class="step-arrow">›</span>
+            <span class="step-pill">저장</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Change Config — Domain Rule 편집 금지</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-master" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-04</div><div class="scenario-title">Integration Endpoint 변경</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> System Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">설정 > 외부 연동</span><span class="step-arrow">›</span>
+            <span class="step-pill">Endpoint 변경</span><span class="step-arrow">›</span>
+            <span class="step-pill">Test Connection</span><span class="step-arrow">›</span>
+            <span class="step-pill">Activate</span><span class="step-arrow">›</span>
+            <span class="step-pill">Rollback(선택)</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Stage / Test / Activate — CMS→PDE→ADeX→RMS 순서</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-integration" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-05</div><div class="scenario-title">권한 축소 · 계정 잠금</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">사용자 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Role/Scope 축소</span><span class="step-arrow">›</span>
+            <span class="step-pill">저장</span><span class="step-arrow">›</span>
+            <span class="step-pill">Session 자동 무효화</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Change / Lock — 기존 Session 즉시 무효화</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-permission" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-06</div><div class="scenario-title">Audit 조사</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operation / System / Super Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">설정 > Audit</span><span class="step-arrow">›</span>
+            <span class="step-pill">Scope Filter</span><span class="step-arrow">›</span>
+            <span class="step-pill">Event 검색</span><span class="step-arrow">›</span>
+            <span class="step-pill">Before/After Diff</span><span class="step-arrow">›</span>
+            <span class="step-pill">Actor/Reason 확인</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Filter / View — Operation/System Scope 분리</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-audit" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+</body>
+</html>
