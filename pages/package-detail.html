@@ -398,6 +398,38 @@ function switchTab(btn, tabId) {
     };
     var noteEl = document.getElementById('pkg-lc-note');
     if (noteEl) noteEl.textContent = PKG_NOTES[curKey] || '';
+
+    // 수정·삭제 정책 테이블
+    var PKG_POLICY = [
+      { state:'draft',    label:'초안',   edit:'<span class="pol-ok">✅ 직접 편집</span>',     del:'<span class="pol-ok">✅ 가능</span>',    note:'구성 프로덕트·가격 자유 편집' },
+      { state:'review',   label:'검토',   edit:'<span class="pol-warn">⚠ 반려 후 수정</span>', del:'<span class="pol-no">❌ 불가</span>',   note:'반려 처리 후 수정 → 재제출' },
+      { state:'active',   label:'활성',   edit:'<span class="pol-warn">⚠ 새 Revision</span>',  del:'<span class="pol-no">❌ 불가</span>',   note:'구성·가격 변경 시 새 Revision. 기존 계약 Snapshot 보존' },
+      { state:'inactive', label:'비활성', edit:'<span class="pol-ok">✅ 직접 편집</span>',     del:'<span class="pol-warn">⚠ 조건부</span>', note:'미연결 시 삭제 가능. 기존 계약 있으면 불가' },
+    ];
+    var pkgStepperEl = document.getElementById('pkg-lc-stepper');
+    var pkgPolicyWrap = pkgStepperEl ? pkgStepperEl.closest('.lc-stepper-wrap') : null;
+    if (pkgPolicyWrap) {
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'lc-policy-toggle';
+      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'lc-policy-table-wrap';
+      tableWrap.style.display = 'none';
+      var rows = PKG_POLICY.map(function(p) {
+        var isCur = p.state === curKey;
+        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
+          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
+          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
+      }).join('');
+      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      toggleBtn.onclick = function() {
+        var v = tableWrap.style.display === 'none';
+        tableWrap.style.display = v ? 'block' : 'none';
+        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
+      };
+      pkgPolicyWrap.appendChild(toggleBtn);
+      pkgPolicyWrap.appendChild(tableWrap);
+    }
   });
 })();
 </script>

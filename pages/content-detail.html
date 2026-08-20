@@ -971,6 +971,42 @@
     var noteEl = document.getElementById('cnt-lc-note');
     if (noteEl) noteEl.textContent = CNT_NOTES[curKey] || '';
 
+    // 수정·삭제 정책 테이블
+    var CNT_POLICY = [
+      { state:'draft',      label:'초안',     edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-ok">✅ 가능</span>',   note:'파일 교체·메타데이터 자유 편집' },
+      { state:'validating', label:'기술검증',  edit:'<span class="pol-warn">⚠ 제한</span>',         del:'<span class="pol-ok">✅ 가능</span>',   note:'검증 중 파일 교체 불가. 메타데이터만 수정. 검증 취소 후 삭제 가능' },
+      { state:'review',     label:'콘텐츠심의', edit:'<span class="pol-no">❌ 불가</span>',          del:'<span class="pol-no">❌ 불가</span>',   note:'반려 후 초안으로 되돌아가 수정 가능' },
+      { state:'rejected',   label:'반려',      edit:'<span class="pol-ok">✅ 수정 후 재제출</span>', del:'<span class="pol-ok">✅ 가능</span>',   note:'수정 후 기술검증 재요청' },
+      { state:'approved',   label:'승인',      edit:'<span class="pol-warn">⚠ 새 Revision</span>',  del:'<span class="pol-no">❌ 불가</span>',   note:'T-CONT-02: 새 Revision 생성. 기존 Revision Immutable (캠페인 참조 유지)' },
+      { state:'active',     label:'활성',      edit:'<span class="pol-warn">⚠ 새 Revision</span>',  del:'<span class="pol-no">❌ 불가</span>',   note:'캠페인 집행 중. Revision으로만 변경. 비활성화 후 삭제 가능' },
+      { state:'inactive',   label:'비활성',    edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-warn">⚠ 조건부</span>', note:'캠페인 미연결 시 삭제 가능. 연결 중이면 불가' },
+      { state:'archived',   label:'보관',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-no">❌ 불가</span>',   note:'읽기 전용. 보관 해제(unarchive) 후 수정 가능' },
+    ];
+    var cntStepperEl = document.getElementById('cnt-lc-stepper');
+    var cntPolicyWrap = cntStepperEl ? cntStepperEl.closest('.lc-stepper-wrap') : null;
+    if (cntPolicyWrap) {
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'lc-policy-toggle';
+      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'lc-policy-table-wrap';
+      tableWrap.style.display = 'none';
+      var rows = CNT_POLICY.map(function(p) {
+        var isCur = p.state === curKey;
+        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
+          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
+          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
+      }).join('');
+      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      toggleBtn.onclick = function() {
+        var v = tableWrap.style.display === 'none';
+        tableWrap.style.display = v ? 'block' : 'none';
+        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
+      };
+      cntPolicyWrap.appendChild(toggleBtn);
+      cntPolicyWrap.appendChild(tableWrap);
+    }
+
     // Apply state override
     var ov = stateParam && STATE_OVERRIDES_CNT[stateParam] ? STATE_OVERRIDES_CNT[stateParam] : null;
     if (ov) {

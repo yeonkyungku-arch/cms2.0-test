@@ -1204,3 +1204,57 @@ ul, ol { list-style: none; }
   border-radius: 6px;
   padding: 8px 12px;
 }
+
+/* ── Lifecycle Edit/Delete Policy Table ── */
+.lc-policy-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #596066;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 4px 0;
+}
+.lc-policy-toggle:hover { color: #24292E; }
+.lc-policy-table-wrap {
+  margin-top: 10px;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #E5E7EA;
+}
+.lc-policy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.lc-policy-table th {
+  background: #F6F7F9;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #596066;
+  text-align: left;
+  border-bottom: 1px solid #E5E7EA;
+  white-space: nowrap;
+}
+.lc-policy-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #F0F1F3;
+  color: #24292E;
+  vertical-align: top;
+}
+.lc-policy-table tr:last-child td { border-bottom: none; }
+.lc-policy-table tr.current-row td {
+  background: #EAF3FF;
+  font-weight: 600;
+}
+.lc-policy-table tr.current-row td:first-child {
+  border-left: 3px solid #2D84ED;
+}
+.pol-ok   { color: #2E9E34; font-weight: 600; }
+.pol-warn { color: #B45309; font-weight: 600; }
+.pol-no   { color: #C83434; font-weight: 600; }

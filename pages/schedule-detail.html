@@ -873,6 +873,44 @@ function showTab(id, btn) {
     };
     var noteEl = document.getElementById('sch-lc-note');
     if (noteEl) noteEl.textContent = SCH_NOTES[curKey] || '';
+
+    // 수정·삭제 정책 테이블
+    var SCH_POLICY = [
+      { state:'draft',     label:'초안',     edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-ok">✅ 가능</span>',       note:'모든 항목 편집. 수정 후 Feasibility 재실행 필요' },
+      { state:'check',     label:'Feasibility확인', edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>',   note:'수정 시 Feasibility Stale → 재실행 후 승인요청' },
+      { state:'review',    label:'승인요청',  edit:'<span class="pol-warn">⚠ 반려 후 수정</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'반려 처리 → 수정 → Feasibility 재실행 → 재제출' },
+      { state:'pending',   label:'승인대기',  edit:'<span class="pol-warn">⚠ 반려 후 수정</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'반려 처리 → 수정 → Feasibility 재실행 → 재제출' },
+      { state:'approved',  label:'예약',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-warn">⚠ 취소 가능</span>', note:'수정 시 취소 후 재등록. 취소는 광고주 협의 필요' },
+      { state:'scheduled', label:'예약',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-warn">⚠ 취소 가능</span>', note:'취소는 광고주 협의 필요' },
+      { state:'active',    label:'집행중',    edit:'<span class="pol-no">❌ 핵심조건 차단</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'새 Revision → Impact Analysis → 재승인. 강제취소 = 영업팀 승인 필요' },
+      { state:'paused',    label:'일시중지',  edit:'<span class="pol-warn">⚠ Revision 필요</span>', del:'<span class="pol-no">❌ 불가</span>',      note:'핵심조건 변경 → Revision → Feasibility → 재승인' },
+      { state:'completed', label:'완료',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-no">❌ 불가</span>',       note:'읽기 전용. 실적·PoP·정산 근거 보존' },
+    ];
+    var schStepperEl = document.getElementById('sch-lc-stepper');
+    var schPolicyWrap = schStepperEl ? schStepperEl.closest('.lc-stepper-wrap') : null;
+    if (schPolicyWrap) {
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'lc-policy-toggle';
+      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'lc-policy-table-wrap';
+      tableWrap.style.display = 'none';
+      var rows = SCH_POLICY.map(function(p) {
+        var isCur = p.state === curKey;
+        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
+          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
+          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
+      }).join('');
+      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제/취소</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      toggleBtn.onclick = function() {
+        var v = tableWrap.style.display === 'none';
+        tableWrap.style.display = v ? 'block' : 'none';
+        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
+      };
+      schPolicyWrap.appendChild(toggleBtn);
+      schPolicyWrap.appendChild(tableWrap);
+    }
+
     var apprClass = ov ? ov.apprClass : d.apprClass;
     var apprText = ov ? ov.appr : d.appr;
 

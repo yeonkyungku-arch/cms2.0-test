@@ -987,6 +987,41 @@ function showRevisionModal() {
     };
     if (noteEl) noteEl.textContent = NOTES[d.lc] || '';
 
+    // 수정·삭제 정책 테이블
+    var PRD_POLICY = [
+      { state:'draft',     label:'초안',    edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>', note:'모든 필드 자유 편집' },
+      { state:'configured',label:'구성완료', edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>', note:'참조 없을 경우 삭제 가능' },
+      { state:'pde',       label:'PDE 검토', edit:'<span class="pol-warn">⚠ 제한 편집</span>', del:'<span class="pol-no">❌ 불가</span>', note:'Metadata 편집만 허용. 핵심조건 수정 시 PDE 재요청' },
+      { state:'approved',  label:'승인됨',   edit:'<span class="pol-warn">⚠ 재검증 필요</span>', del:'<span class="pol-no">❌ 불가</span>', note:'핵심조건 수정 시 PDE·승인 재검증. Metadata는 직접 수정 가능' },
+      { state:'active',    label:'활성',     edit:'<span class="pol-no">❌ 핵심조건 차단</span>', del:'<span class="pol-no">❌ 불가</span>', note:'Operational·Commercial → P-06 새 Revision. Media Assignment → Product Renewal. Metadata만 직접 수정' },
+      { state:'suspended', label:'중지',     edit:'<span class="pol-no">❌ 핵심조건 차단</span>', del:'<span class="pol-no">❌ 불가</span>', note:'Active와 동일. 재개 후 P-06 진행 or Renewal' },
+      { state:'completed', label:'단종',     edit:'<span class="pol-no">❌ 불가</span>', del:'<span class="pol-no">❌ 불가</span>', note:'읽기 전용. 계약·송출 이력 영구 보존' },
+    ];
+    var prdPolicyWrap = stepperEl ? stepperEl.closest('.lc-stepper-wrap') : null;
+    if (prdPolicyWrap) {
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'lc-policy-toggle';
+      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'lc-policy-table-wrap';
+      tableWrap.style.display = 'none';
+      var curStateKey = d.lc;
+      var rows = PRD_POLICY.map(function(p) {
+        var isCur = (p.state === curStateKey || (curStateKey === 'paused' && p.state === 'suspended') || (curStateKey === 'ready' && p.state === 'configured'));
+        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
+          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
+          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
+      }).join('');
+      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      toggleBtn.onclick = function() {
+        var v = tableWrap.style.display === 'none';
+        tableWrap.style.display = v ? 'block' : 'none';
+        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
+      };
+      prdPolicyWrap.appendChild(toggleBtn);
+      prdPolicyWrap.appendChild(tableWrap);
+    }
+
     // Tab 1: 기본정보 (tab-basic)
     var tabBasic = document.getElementById('tab-basic');
     if (tabBasic) {
