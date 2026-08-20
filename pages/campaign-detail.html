@@ -1181,6 +1181,21 @@
       actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (완료된 캠페인)</span>',
       createdAt: '2025.09.20'
     },
+    'CMP-NEW': {
+      title: '(신규 등록 캠페인)',
+      advertiser: '(광고주 미입력)', agency: '—',
+      manager: '홍길동', contact: '—',
+      sourceType: '직접문의 (Direct)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '—', requestedBudget: '—',
+      period: '—', startDate: '—', endDate: '—',
+      slotDuration: '30초', contentRef: '(미정)',
+      targetAreas: ['(미설정)'], goals: ['(미설정)'],
+      lc: 'draft', lcLabel: '초안',
+      appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
+      pde: 'PDE 미심사', pdeClass: '',
+      actions: '<button class="btn-primary-sm" onclick="goStateCmp(\'review\')">승인요청</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026-08-20', isNew: true
+    },
     'CMP-2025-061': {
       title: '삼성전자 비스포크 가을 이벤트',
       advertiser: '삼성전자', agency: '제일기획 (AGY-011)',
@@ -1213,9 +1228,38 @@
     return arr.map(function(g) { return '<span class="badge" style="background:#EAF3FF;color:#2D84ED;">' + g + '</span>'; }).join(' ');
   }
 
+  function goStateCmp(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
+
+  const STATE_ACTIONS_CMP = {
+    'draft':     '<button class="btn-primary-sm" onclick="goStateCmp(\'review\')">승인요청</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+    'review':    '<button class="btn-primary-sm" onclick="goStateCmp(\'approved\')">승인</button><button class="btn-outline" onclick="goStateCmp(\'rejected\')">반려</button>',
+    'approved':  '<button class="btn-primary-sm" onclick="goStateCmp(\'active\')">집행시작</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+    'active':    '<button class="btn-outline" onclick="goStateCmp(\'paused\')">일시중지</button><button class="btn-danger-outline" onclick="goStateCmp(\'completed\')">종료</button>',
+    'paused':    '<button class="btn-outline" onclick="goStateCmp(\'active\')">재개</button><button class="btn-danger-outline" onclick="goStateCmp(\'completed\')">종료</button>',
+    'completed': '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (완료된 캠페인)</span>',
+    'rejected':  '<span style="font-size:13px;color:#9EA5AD;">반려됨 — 수정 후 재승인 요청하세요.</span>'
+  };
+  const STATE_LC_CMP = {
+    'draft': {lc:'draft', label:'초안'}, 'review': {lc:'review', label:'검토중'},
+    'approved': {lc:'approved', label:'승인됨'}, 'active': {lc:'active', label:'집행중'},
+    'paused': {lc:'paused', label:'일시중지'}, 'completed': {lc:'completed', label:'완료'},
+    'rejected': {lc:'rejected', label:'반려'}
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
-    const id = new URLSearchParams(location.search).get('id') || 'CMP-2026-001';
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'CMP-2026-001';
+    const stateParam = params.get('state');
     const d = CAMPAIGNS[id] || CAMPAIGNS['CMP-2026-001'];
+
+    // Show "just registered" banner
+    if (d.isNew) {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:#EAF3FF;border:1px solid #2D84ED;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#2D84ED;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/></svg> 방금 등록된 항목입니다. Lifecycle: <strong>초안</strong> · 승인요청 버튼을 눌러 검토를 요청하세요.';
+      var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
+      main.insertBefore(banner, main.firstChild);
+    }
 
     // ── Header ──
     const titleEl = document.getElementById('cmp-title');
@@ -1224,8 +1268,12 @@
     const metaEl = document.getElementById('cmp-meta');
     if (metaEl) metaEl.innerHTML = id + ' &nbsp;·&nbsp; 생성일: ' + d.createdAt + ' &nbsp;·&nbsp; 담당자: ' + d.manager;
 
+    // Apply ?state= override
+    var lcInfo = stateParam && STATE_LC_CMP[stateParam] ? STATE_LC_CMP[stateParam] : { lc: d.lc, label: d.lcLabel };
+    var actionsHtml = stateParam && STATE_ACTIONS_CMP[stateParam] ? STATE_ACTIONS_CMP[stateParam] : d.actions;
+
     const lcBadge = document.getElementById('cmp-lc-badge');
-    if (lcBadge) { lcBadge.className = 'badge lc-' + d.lc; lcBadge.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+    if (lcBadge) { lcBadge.className = 'badge lc-' + lcInfo.lc; lcBadge.innerHTML = '<span class="badge-dot"></span>' + lcInfo.label; }
 
     const apprBadge = document.getElementById('cmp-appr-badge');
     if (apprBadge) { apprBadge.textContent = d.appr; apprBadge.setAttribute('style', d.apprStyle); }
@@ -1234,7 +1282,7 @@
     if (pdeBadge) { pdeBadge.textContent = d.pde; pdeBadge.className = 'badge ' + d.pdeClass; }
 
     const actionsEl = document.getElementById('cmp-actions');
-    if (actionsEl) actionsEl.innerHTML = d.actions;
+    if (actionsEl) actionsEl.innerHTML = actionsHtml;
 
     // ── Tab 1: 기본정보 ──
     var c1 = document.getElementById('content1');
@@ -1279,5 +1327,6 @@
   });
 })();
 </script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

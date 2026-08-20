@@ -266,8 +266,8 @@
       <span class="badge appr-approved" id="sch-appr-badge" style="font-size:12px;">승인됨</span>
       <span class="badge pde-approved" id="sch-pde-badge" style="font-size:12px;">PDE 승인</span>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn btn-warn" onclick="if(confirm('스케줄을 일시중지하시겠습니까?'))location.reload()">일시중지</button>
+    <div id="sch-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-warn" onclick="goStateSch('paused')">일시중지</button>
       <button class="btn btn-ghost" onclick="location.href='schedule-edit'">새 Revision</button>
     </div>
   </div>
@@ -804,9 +804,27 @@ function showTab(id, btn) {
     return '<div class="info-label">' + label + '</div><div class="info-value">' + value + '</div>';
   }
 
+  function goStateSch(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
+  const STATE_OVERRIDES_SCH = {
+    'draft':    { lc: 'draft',     label: '초안',    appr: '미요청', apprClass: 'badge appr-none', actions: '<button class="btn" style="background:#E8F8E9;color:#2E9E34;border:1px solid #58C65D;" onclick="alert(\'Feasibility 확인 완료 — 가용 슬롯 확인됨\')">Feasibility 확인</button><button class="btn btn-primary" onclick="goStateSch(\'review\')">승인요청</button>' },
+    'review':   { lc: 'pending',   label: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', actions: '<button class="btn btn-primary" onclick="goStateSch(\'approved\')">승인</button>' },
+    'approved': { lc: 'scheduled', label: '예약',    appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-primary" onclick="goStateSch(\'active\')">집행시작</button>' },
+    'active':   { lc: 'active',    label: '집행중',  appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-outline" onclick="goStateSch(\'paused\')">일시중지</button><button class="btn" onclick="location.href=\'schedule-edit\'" style="background:#EAF3FF;color:#2D84ED;border:1px solid #2D84ED;">새 Revision</button>' },
+    'paused':   { lc: 'paused',    label: '일시중지', appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-primary" onclick="goStateSch(\'active\')">재개</button>' }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
-    const id = new URLSearchParams(location.search).get('id') || 'SCH-2025-0041';
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'SCH-2025-0041';
+    const stateParam = params.get('state');
     const d = SCHEDULES[id] || SCHEDULES['SCH-2025-0041'];
+
+    // Apply state override
+    var ov = stateParam && STATE_OVERRIDES_SCH[stateParam] ? STATE_OVERRIDES_SCH[stateParam] : null;
+    var lcVal = ov ? ov.lc : d.lc;
+    var lcLabel = ov ? ov.label : d.lcLabel;
+    var apprClass = ov ? ov.apprClass : d.apprClass;
+    var apprText = ov ? ov.appr : d.appr;
 
     // Header
     const titleEl = document.getElementById('sch-title');
@@ -816,10 +834,14 @@ function showTab(id, btn) {
     if (metaEl) metaEl.textContent = id + ' · ' + d.advertiser + ' · ' + d.period;
 
     const lcEl = document.getElementById('sch-lc-badge');
-    if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.style.cssText = 'font-size:13px; padding:4px 12px;'; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+    if (lcEl) { lcEl.className = 'badge lc-' + lcVal; lcEl.style.cssText = 'font-size:13px; padding:4px 12px;'; lcEl.innerHTML = '<span class="badge-dot"></span>' + lcLabel; }
 
     const apprEl = document.getElementById('sch-appr-badge');
-    if (apprEl) { apprEl.className = d.apprClass; apprEl.style.cssText = 'font-size:12px;'; apprEl.textContent = d.appr; }
+    if (apprEl) { apprEl.className = apprClass; apprEl.style.cssText = 'font-size:12px;'; apprEl.textContent = apprText; }
+
+    // Render state-transition action buttons if action container exists
+    var actEl = document.getElementById('sch-actions');
+    if (actEl && ov) actEl.innerHTML = ov.actions;
 
     const pdeEl = document.getElementById('sch-pde-badge');
     if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.style.cssText = 'font-size:12px;'; pdeEl.textContent = d.pde; }
@@ -861,5 +883,6 @@ function showTab(id, btn) {
   });
 })();
 </script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

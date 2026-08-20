@@ -310,8 +310,8 @@
           <span>승인</span>
           <span>PDE</span>
         </div>
-        <!-- Active state → allowed transition: 비활성화 -->
-        <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+        <!-- State transition actions (rendered dynamically) -->
+        <div class="action-group" id="med-action-group" style="display:flex;align-items:center;gap:8px;margin-top:10px;">
           <button class="btn btn-outline" onclick="confirmTransition('비활성화', '미디어를 비활성화하면 운영에서 제외됩니다.')">비활성화</button>
           <button class="btn btn-primary" onclick="location.href='media-edit'">수정</button>
         </div>
@@ -814,16 +814,37 @@ function confirmTransition(action, message) {
     'MED-005': { name: '서울역 환승통로 B', address: '서울 중구 통일로 1', mediaType: 'IFC (실내고정근접)', assetCode: 'AST-JG-005', installType: '고정', registeredAt: '2024-02-28', manager: '박민서', revision: 3, tags: ['서울역', '환승', '실내'], lc: 'inactive', lcLabel: '비활성', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 10', size: '55인치', height: '2.1m' },
     'MED-006': { name: '합정역 메가폴 광고판', address: '서울 마포구 합정역로 10', mediaType: 'OF (옥외고정)', assetCode: 'AST-MP-006', installType: '고정', registeredAt: '2026-08-01', manager: '홍길동', revision: 1, tags: ['합정', '신규', '옥외'], lc: 'registered', lcLabel: '등록', ops: 'normal', opsLabel: '정상', pde: 'PDE 검토중', pdeClass: 'pde-deferred', os: 'Android 13', size: '65인치', height: '5.0m' },
     'MED-007': { name: '광화문광장 디지털 사이니지', address: '서울 종로구 세종대로 175', mediaType: 'OF (옥외고정)', assetCode: 'AST-JR-007', installType: '고정', registeredAt: '2024-01-10', manager: '이민지', revision: 11, tags: ['광화문', '광장', '프리미엄'], lc: 'active', lcLabel: '활성', ops: 'normal', opsLabel: '정상', pde: 'PDE 승인', pdeClass: 'pde-approved', os: 'Android 12', size: '65인치', height: '3.5m' },
-    'MED-008': { name: '건대입구역 버스 광고 1', address: '서울 광진구 능동로 210', mediaType: 'VF (차량고정)', assetCode: 'AST-GJ-008', installType: '고정', registeredAt: '2022-06-15', manager: '김영수', revision: 18, tags: ['버스', '폐기', '광진'], lc: 'retired', lcLabel: '폐기', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '40인치', height: '—' }
+    'MED-008': { name: '건대입구역 버스 광고 1', address: '서울 광진구 능동로 210', mediaType: 'VF (차량고정)', assetCode: 'AST-GJ-008', installType: '고정', registeredAt: '2022-06-15', manager: '김영수', revision: 18, tags: ['버스', '폐기', '광진'], lc: 'retired', lcLabel: '폐기', ops: 'offline', opsLabel: '오프라인', pde: 'PDE 제한', pdeClass: 'pde-restricted', os: 'Android 9', size: '40인치', height: '—' },
+    'MED-NEW': { name: '신규 등록 미디어', address: '(주소 미입력)', mediaType: 'OF (옥외고정)', assetCode: '(자동 발급 예정)', installType: '고정', registeredAt: '2026-08-20', manager: '홍길동', revision: 1, tags: ['신규'], lc: 'registered', lcLabel: '등록', ops: 'normal', opsLabel: '정상', pde: 'PDE 미심사', pdeClass: '', os: 'Android 13', size: '55인치', height: '—', isNew: true }
   };
 
   function fg(label, value) {
     return '<div class="field-group"><div class="field-label">' + label + '</div><div class="field-value">' + value + '</div></div>';
   }
 
+  // State override map for ?state= param
+  const STATE_OVERRIDES_MEDIA = {
+    'registered': { lc: 'registered', lcLabel: '등록', actions: '<button class="btn btn-primary" onclick="goState(\'active\')">활성화</button>' },
+    'active':     { lc: 'active',     lcLabel: '활성', actions: '<button class="btn btn-outline" onclick="goState(\'inactive\')">비활성화</button><button class="btn btn-primary" onclick="location.href=\'media-edit\'">수정</button>' },
+    'inactive':   { lc: 'inactive',   lcLabel: '비활성', actions: '<button class="btn btn-primary" onclick="goState(\'active\')">활성화</button><button class="btn btn-outline" onclick="goState(\'deprecated\')" style="color:#C83434;border-color:#E97474;">폐기</button>' },
+    'deprecated': { lc: 'retired',    lcLabel: '폐기', actions: '<span style="font-size:13px;color:#9EA5AD;">폐기된 미디어 — 읽기 전용</span>' }
+  };
+  function goState(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
+
   document.addEventListener('DOMContentLoaded', function() {
-    const id = new URLSearchParams(location.search).get('id') || 'MED-001';
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'MED-001';
+    const stateParam = params.get('state');
     const d = MEDIA[id] || MEDIA['MED-001'];
+
+    // Show "just registered" banner for MED-NEW
+    if (d.isNew) {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:#EAF3FF;border:1px solid #2D84ED;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#2D84ED;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/></svg> 방금 등록된 항목입니다. Lifecycle: <strong>등록</strong> · PDE 심사 전 · 활성화 버튼을 눌러 운영에 투입하세요.';
+      var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
+      main.insertBefore(banner, main.firstChild);
+    }
 
     // Header
     const titleEl = document.getElementById('med-title');
@@ -832,8 +853,22 @@ function confirmTransition(action, message) {
     const subEl = document.getElementById('med-subtitle');
     if (subEl) subEl.textContent = id + ' · ' + d.address + ' · OS: ' + d.os + ' · ' + d.size + ' · ' + d.height;
 
+    // Apply state override from ?state= param
+    var stateOv = stateParam ? STATE_OVERRIDES_MEDIA[stateParam] : null;
+    var lcVal = stateOv ? stateOv.lc : d.lc;
+    var lcLabelVal = stateOv ? stateOv.lcLabel : d.lcLabel;
+
     const lcEl = document.getElementById('med-lc-badge');
-    if (lcEl) { lcEl.className = 'state-badge lc-' + d.lc; lcEl.innerHTML = '<span class="state-dot"></span>' + d.lcLabel; }
+    if (lcEl) { lcEl.className = 'state-badge lc-' + lcVal; lcEl.innerHTML = '<span class="state-dot"></span>' + lcLabelVal; }
+
+    // Apply action buttons
+    var actGrp = document.getElementById('med-action-group');
+    if (actGrp && stateOv) { actGrp.innerHTML = stateOv.actions; }
+    else if (actGrp && !stateOv) {
+      // Default actions by data lc
+      var defaultActions = STATE_OVERRIDES_MEDIA[d.lc];
+      if (defaultActions) actGrp.innerHTML = defaultActions.actions;
+    }
 
     const opsEl = document.getElementById('med-ops-badge');
     if (opsEl) { opsEl.className = 'op-badge op-' + d.ops; opsEl.innerHTML = '<span class="op-dot"></span>' + d.opsLabel; }
@@ -866,5 +901,6 @@ function confirmTransition(action, message) {
   });
 })();
 </script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

@@ -889,16 +889,47 @@
     'CNT-005': { title: '판교 IT 박람회 영상', advertiser: 'SK하이닉스', adType: '일반광고', duration: '45초', uploader: '홍길동', uploadedAt: '2025-07-20', sourceType: '파일 (동영상)', tags: ['SK하이닉스', 'IT', '박람회', '45초'], lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '', stateActions: '<button class="btn-blue" onclick="location.href=\'content-edit\'">검증 제출</button><button class="btn-outline">삭제</button>', stateNote: '초안 상태 — 검증 제출 전' },
     'CNT-006': { title: '공익광고 교통안전', advertiser: '서울시', adType: '공익광고', duration: '30초', uploader: '박민서', uploadedAt: '2025-06-30', sourceType: '파일 (동영상)', tags: ['공익', '교통안전', '서울시', '30초'], lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-amber-outline" onclick="if(confirm(\'비활성화하시겠습니까?\'))location.reload()">비활성화 (Inactive)</button>', stateNote: 'Retention 만료 임박 — 갱신 필요' },
     'CNT-007': { title: '여름 시즌 프로모션', advertiser: '롯데마트', adType: '일반광고', duration: '20초', uploader: '김영수', uploadedAt: '2025-08-05', sourceType: '파일 (동영상)', tags: ['롯데마트', '여름', '프로모션', '20초'], lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '', stateActions: '<button class="btn-blue" onclick="location.href=\'content-edit\'">검증 제출</button><button class="btn-outline">삭제</button>', stateNote: '초안 상태 — 콘텐츠 검토 전' },
-    'CNT-008': { title: '브랜드 자체 광고', advertiser: 'MNM Networks', adType: '자체광고', duration: '10초', uploader: '홍길동', uploadedAt: '2025-05-10', sourceType: '파일 (동영상)', tags: ['자체광고', 'MNM', '브랜드'], lc: 'inactive', lcLabel: '비활성', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-outline" onclick="if(confirm(\'재활성화하시겠습니까?\'))location.reload()">재활성화 (Active)</button><button class="btn-outline" onclick="location.reload()">보관 (Archive)</button>', stateNote: '비활성 상태 — 재활성화 또는 보관 선택 가능' }
+    'CNT-008': { title: '브랜드 자체 광고', advertiser: 'MNM Networks', adType: '자체광고', duration: '10초', uploader: '홍길동', uploadedAt: '2025-05-10', sourceType: '파일 (동영상)', tags: ['자체광고', 'MNM', '브랜드'], lc: 'inactive', lcLabel: '비활성', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-outline" onclick="if(confirm(\'재활성화하시겠습니까?\'))location.reload()">재활성화 (Active)</button><button class="btn-outline" onclick="location.reload()">보관 (Archive)</button>', stateNote: '비활성 상태 — 재활성화 또는 보관 선택 가능' },
+    'CNT-NEW': { title: '(신규 등록 콘텐츠)', advertiser: '(광고주 미입력)', adType: '일반광고', duration: '—', uploader: '홍길동', uploadedAt: '2026-08-20', sourceType: '파일 (동영상)', tags: ['신규'], lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '', stateActions: '', stateNote: '초안 상태 — 기술검증 요청을 눌러 검증을 시작하세요.', isNew: true }
   };
 
   function ii(label, value) {
     return '<div class="info-item"><div class="info-label">' + label + '</div><div class="info-value">' + value + '</div></div>';
   }
 
+  function goStateCnt(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
+
+  const STATE_OVERRIDES_CNT = {
+    'draft':      { lc: 'draft',      label: '초안',    appr: '미제출',  apprStyle: 'background:#F0F1F3;color:#9EA5AD;', actions: '<button class="btn-blue" onclick="goStateCnt(\'validating\')">기술검증 요청</button><button class="btn-outline" onclick="location.href=\'content-edit\'">수정</button>', note: '초안 상태 — 기술검증 요청을 눌러 검증을 시작하세요.' },
+    'validating': { lc: 'validating', label: '검증중',  appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', actions: '<button class="btn-blue" onclick="goStateCnt(\'review\')">승인요청</button>', note: '기술 검증 완료 — 승인요청을 눌러 검토를 요청하세요.' },
+    'review':     { lc: 'review',     label: '검토대기', appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', actions: '<button class="btn-blue" onclick="goStateCnt(\'approved\')">승인</button><button class="btn-outline" onclick="goStateCnt(\'rejected\')">반려</button>', note: '검토 담당자의 최종 승인 대기 중' },
+    'approved':   { lc: 'approved',   label: '승인',    appr: '승인됨',  apprStyle: 'background:#E8F8E9;color:#2E9E34;', actions: '<button class="btn-blue" onclick="goStateCnt(\'active\')">활성화</button><button class="btn-outline" onclick="location.href=\'content-edit\'">새 Revision</button>', note: '승인 완료 — 집행 가능 상태' },
+    'active':     { lc: 'active',     label: '활성',    appr: '승인됨',  apprStyle: 'background:#E8F8E9;color:#2E9E34;', actions: '<button class="btn-outline" onclick="goStateCnt(\'inactive\')">비활성화</button>', note: '활성 상태 — 캠페인에 사용 중' },
+    'inactive':   { lc: 'inactive',   label: '비활성',  appr: '승인됨',  apprStyle: 'background:#E8F8E9;color:#2E9E34;', actions: '<button class="btn-outline" onclick="goStateCnt(\'active\')">재활성화</button>', note: '비활성 상태 — 재활성화 또는 보관 선택 가능' },
+    'rejected':   { lc: 'draft',      label: '초안(반려)',appr: '반려',  apprStyle: 'background:#FEE2E2;color:#C83434;', actions: '<button class="btn-outline" onclick="location.href=\'content-edit\'">수정 후 재제출</button>', note: '반려됨 — 내용 수정 후 다시 검증 요청하세요.' }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
-    const id = new URLSearchParams(location.search).get('id') || 'CNT-001';
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'CNT-001';
+    const stateParam = params.get('state');
     const d = CONTENTS[id] || CONTENTS['CNT-001'];
+
+    if (d.isNew) {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:#EAF3FF;border:1px solid #2D84ED;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#2D84ED;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/></svg> 방금 등록된 항목입니다. Lifecycle: <strong>초안</strong> · PDE 미심사 · 기술검증 요청 버튼을 눌러 다음 단계로 진행하세요.';
+      var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
+      main.insertBefore(banner, main.firstChild);
+    }
+
+    // Apply state override
+    var ov = stateParam && STATE_OVERRIDES_CNT[stateParam] ? STATE_OVERRIDES_CNT[stateParam] : null;
+    if (ov) {
+      d.lc = ov.lc; d.lcLabel = ov.label;
+      d.appr = ov.appr; d.apprStyle = ov.apprStyle;
+      d.stateActions = ov.actions; d.stateNote = ov.note;
+    }
 
     // Header
     const titleEl = document.getElementById('cnt-title');
@@ -946,5 +977,6 @@
   });
 })();
 </script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>
