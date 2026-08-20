@@ -331,6 +331,13 @@
     </div>
 
     <!-- ── Tabs ── -->
+    <!-- Lifecycle 프로세스 스테퍼 -->
+    <div class="lc-stepper-wrap" style="margin-bottom:12px;">
+      <div class="lc-stepper-title">Lifecycle 프로세스 (T-MED-01 · T-MED-02)</div>
+      <div class="lc-stepper" id="med-lc-stepper"><!-- JS가 채움 --></div>
+      <div class="lc-note" id="med-lc-note"></div>
+    </div>
+
     <div class="tabs" id="tabs">
       <button class="tab-btn active" onclick="switchTab('basic')">기본정보</button>
       <button class="tab-btn" onclick="switchTab('ad')">광고물정보</button>
@@ -852,6 +859,43 @@ function confirmTransition(action, message) {
 
     const subEl = document.getElementById('med-subtitle');
     if (subEl) subEl.textContent = id + ' · ' + d.address + ' · OS: ' + d.os + ' · ' + d.size + ' · ' + d.height;
+
+    // Lifecycle 프로세스 스테퍼
+    var MED_FLOW = [
+      { key:'registered',   icon:'1', label:'등록',     gate:'기본정보 입력\n자산코드·위치 설정' },
+      { key:'field_check',  icon:'🔍', label:'현장점검',  gate:'설치 확인\n디스플레이·플레이어 검증' },
+      { key:'active',       icon:'▶', label:'활성',      gate:'광고 운영 중\n모니터링 연동' },
+      { key:'maintenance',  icon:'🔧', label:'점검',      gate:'점검 완료 후\n재활성화' },
+      { key:'inactive',     icon:'⏸', label:'비활성',    gate:'재활성화 or\n폐기' },
+      { key:'deprecated',   icon:'■', label:'폐기',      gate:'운영 종료\n이력 보존' },
+    ];
+    var MED_IDX = { registered:0, field_check:1, active:2, maintenance:3, inactive:4, deprecated:5 };
+    var curMedKey = stateParam || d.lc || 'registered';
+    var curMedIdx = MED_IDX[curMedKey] !== undefined ? MED_IDX[curMedKey] : 0;
+    var stepperEl = document.getElementById('med-lc-stepper');
+    if (stepperEl) {
+      var html = '';
+      MED_FLOW.forEach(function(s, i) {
+        var cls = i < curMedIdx ? 'done' : (i === curMedIdx ? 'current' : '');
+        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
+        if (i < MED_FLOW.length - 1) {
+          html += '<div class="lc-arrow ' + (i < curMedIdx ? 'done' : '') + '"><div class="lc-arrow-line"></div></div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var MED_NOTES = {
+      registered:'등록됨 — 현장점검을 완료하고 활성화하세요.',
+      field_check:'현장점검 — 설치 위치·디스플레이·플레이어 동작을 확인합니다.',
+      active:'활성 — 광고 운영 중. 모니터링 연동(T-MON-01) 상태를 확인하세요.',
+      maintenance:'점검 중 — 점검 완료 후 활성화로 복귀합니다.',
+      inactive:'비활성 — 재활성화하거나 폐기(T-MED-02) 처리하세요.',
+      deprecated:'폐기됨 — 운영 종료. 이력 데이터는 보존됩니다.',
+    };
+    var medNoteEl = document.getElementById('med-lc-note');
+    if (medNoteEl) medNoteEl.textContent = MED_NOTES[curMedKey] || '';
 
     // Apply state override from ?state= param
     var stateOv = stateParam ? STATE_OVERRIDES_MEDIA[stateParam] : null;

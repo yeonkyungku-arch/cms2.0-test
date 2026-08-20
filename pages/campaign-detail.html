@@ -487,6 +487,13 @@
       <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;color:#9EA5AD;"><span>Lifecycle</span><span>추천모드</span><span>승인</span><span>PDE</span></div>
     </div>
 
+    <!-- Lifecycle 프로세스 스테퍼 -->
+    <div class="lc-stepper-wrap" id="cmp-lc-stepper-wrap">
+      <div class="lc-stepper-title">Lifecycle 프로세스 (T-CAM-01 · P-03)</div>
+      <div class="lc-stepper" id="cmp-lc-stepper"><!-- JS가 채움 --></div>
+      <div class="lc-note" id="cmp-lc-note"></div>
+    </div>
+
     <!-- PDE Panel Card (amber left-border for non-approved; green for approved) -->
     <div class="pde-top-card approved">
       <div class="pde-top-card-left">
@@ -1271,6 +1278,45 @@
     // Apply ?state= override
     var lcInfo = stateParam && STATE_LC_CMP[stateParam] ? STATE_LC_CMP[stateParam] : { lc: d.lc, label: d.lcLabel };
     var actionsHtml = stateParam && STATE_ACTIONS_CMP[stateParam] ? STATE_ACTIONS_CMP[stateParam] : d.actions;
+
+    // Lifecycle 프로세스 스테퍼
+    var CMP_FLOW = [
+      { key:'draft',     icon:'1', label:'초안',     gate:'기본정보 입력\n상품/콘텐츠 선택' },
+      { key:'review',    icon:'2', label:'승인요청',  gate:'Feasibility FRESH\n확인 필수 (T-CAM-02)' },
+      { key:'approved',  icon:'✓', label:'승인됨',    gate:'집행 시작\n확인' },
+      { key:'active',    icon:'▶', label:'집행중',    gate:'일시중지 or\n종료 가능' },
+      { key:'paused',    icon:'⏸', label:'일시중지',  gate:'재개 or\n종료' },
+      { key:'completed', icon:'■', label:'종료',      gate:'집행 완료\n성과분석 가능' },
+    ];
+    var curKey = stateParam || d.lc || 'draft';
+    var CMP_IDX = { draft:0, review:1, approved:2, active:3, paused:4, completed:5, rejected:1 };
+    var curIdx = CMP_IDX[curKey] !== undefined ? CMP_IDX[curKey] : 0;
+    var stepperEl = document.getElementById('cmp-lc-stepper');
+    if (stepperEl) {
+      var html = '';
+      CMP_FLOW.forEach(function(s, i) {
+        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
+        if (curKey === 'rejected' && i === 1) cls = 'blocked';
+        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
+        if (i < CMP_FLOW.length - 1) {
+          html += '<div class="lc-arrow ' + (i < curIdx ? 'done' : '') + '"><div class="lc-arrow-line"></div></div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var CMP_NOTES = {
+      draft:'초안 — 기본정보·광고주 요구사항·집행 기간을 입력하세요. Feasibility FRESH 확인 후 승인요청이 가능합니다.',
+      review:'승인요청 — 검토 담당자의 승인을 기다리는 중. 반려 시 수정 후 재요청합니다.',
+      rejected:'반려됨 — 반려 사유를 확인하고 수정 후 재승인요청 하세요.',
+      approved:'승인됨 — 집행시작 버튼으로 실제 스케줄 집행을 시작하세요.',
+      active:'집행중 — 스케줄이 운영 중. 일시중지 또는 종료가 가능합니다.',
+      paused:'일시중지 — 스케줄 집행이 중단됨. 재개하거나 종료를 선택하세요.',
+      completed:'종료 — 집행 완료. 성과 분석 리포트를 확인하세요.',
+    };
+    var noteEl = document.getElementById('cmp-lc-note');
+    if (noteEl) noteEl.textContent = CMP_NOTES[curKey] || '';
 
     const lcBadge = document.getElementById('cmp-lc-badge');
     if (lcBadge) { lcBadge.className = 'badge lc-' + lcInfo.lc; lcBadge.innerHTML = '<span class="badge-dot"></span>' + lcInfo.label; }

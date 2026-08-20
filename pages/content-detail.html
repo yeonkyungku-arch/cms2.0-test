@@ -392,6 +392,13 @@
       <div style="font-size:12px;color:#9EA5AD;" id="cnt-meta">content.id: CNT-001 &nbsp;·&nbsp; Revision: <strong style="color:#596066;">R1</strong> (Immutable) &nbsp;·&nbsp; Retention: <span class="badge ret-normal" style="font-size:11px;padding:1px 8px;">정상</span></div>
     </div>
 
+    <!-- Lifecycle 프로세스 스테퍼 -->
+    <div class="lc-stepper-wrap" style="margin-bottom:12px;">
+      <div class="lc-stepper-title">Lifecycle 프로세스 (T-CONT-01 · T-CONT-03)</div>
+      <div class="lc-stepper" id="cnt-lc-stepper"><!-- JS가 채움 --></div>
+      <div class="lc-note" id="cnt-lc-note"></div>
+    </div>
+
     <!-- Tabs -->
     <div class="tabs-wrap">
       <input class="tab-inputs" type="radio" name="tabs" id="tab1" checked>
@@ -922,6 +929,47 @@
       var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
       main.insertBefore(banner, main.firstChild);
     }
+
+    // Lifecycle 프로세스 스테퍼
+    var CNT_FLOW = [
+      { key:'draft',      icon:'1', label:'초안',     gate:'파일 업로드\n메타데이터 입력' },
+      { key:'validating', icon:'V', label:'기술검증',  gate:'포맷·해상도·용량\nFPS 자동 검증' },
+      { key:'review',     icon:'2', label:'콘텐츠심의', gate:'콘텐츠 적합성\n검토자 승인' },
+      { key:'approved',   icon:'✓', label:'승인',      gate:'활성화\n(캠페인 연결 가능)' },
+      { key:'active',     icon:'▶', label:'활성',      gate:'캠페인 집행 중\n비활성화 가능' },
+      { key:'inactive',   icon:'⏸', label:'비활성',    gate:'재활성화 or\n보관 처리' },
+      { key:'archived',   icon:'📦', label:'보관',     gate:'읽기 전용\n이력 보존' },
+    ];
+    var CNT_IDX = { draft:0, validating:1, review:2, approved:3, active:4, inactive:5, archived:6, rejected:2 };
+    var curKey = stateParam || d.lc || 'draft';
+    var curIdx = CNT_IDX[curKey] !== undefined ? CNT_IDX[curKey] : 0;
+    var stepperEl = document.getElementById('cnt-lc-stepper');
+    if (stepperEl) {
+      var html = '';
+      CNT_FLOW.forEach(function(s, i) {
+        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
+        if (curKey === 'rejected' && i === 2) cls = 'blocked';
+        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
+        if (i < CNT_FLOW.length - 1) {
+          html += '<div class="lc-arrow ' + (i < curIdx ? 'done' : '') + '"><div class="lc-arrow-line"></div></div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var CNT_NOTES = {
+      draft:'초안 — 소재 파일 업로드 후 기술검증을 요청하세요.',
+      validating:'기술검증 중 — 포맷·해상도·용량·FPS를 자동 검증합니다. 완료 시 콘텐츠심의 요청이 가능합니다.',
+      review:'콘텐츠심의 — 검토자의 승인 또는 반려를 기다리는 중.',
+      rejected:'반려됨 — 반려 사유를 확인하고 소재를 수정한 뒤 재제출하세요.',
+      approved:'승인됨 — 활성화하면 캠페인에 연결할 수 있습니다.',
+      active:'활성 — 캠페인에 사용 중. 비활성화 또는 새 Revision(T-CONT-02) 가능합니다.',
+      inactive:'비활성 — 재활성화하거나 보관 처리(T-CONT-03)할 수 있습니다.',
+      archived:'보관 — 읽기 전용. 보관된 콘텐츠는 수정·집행할 수 없습니다.',
+    };
+    var noteEl = document.getElementById('cnt-lc-note');
+    if (noteEl) noteEl.textContent = CNT_NOTES[curKey] || '';
 
     // Apply state override
     var ov = stateParam && STATE_OVERRIDES_CNT[stateParam] ? STATE_OVERRIDES_CNT[stateParam] : null;

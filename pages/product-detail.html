@@ -377,11 +377,12 @@
         <button class="action-btn action-btn-resume" onclick="location.href='product-edit'">새 Revision</button>
       </div>
     </div>
-    <!-- Product 상태 흐름 note -->
-    <div style="font-size:11px;color:#9EA5AD;margin-top:4px;padding:0 4px;">
-      상태 흐름: 초안 → 구성완료 → <span style="color:#7C5CBF;">PDE 검토</span> → 승인됨 → <span style="color:#58C65D;font-weight:600;">활성 ✓ 현재</span> → 중지 / 종료
+    <!-- Lifecycle 프로세스 스테퍼 -->
+    <div class="lc-stepper-wrap" style="margin-top:12px;">
+      <div class="lc-stepper-title">Lifecycle 프로세스 (T-PROD-01 · P-05 / T-PROD-02 · P-06)</div>
+      <div class="lc-stepper" id="prd-lc-stepper"><!-- JS가 채움 --></div>
+      <div class="lc-note" id="prd-lc-note"></div>
     </div>
-    <div style="display:none;"><!-- Draft/Configured state: show Product 활성화 플로우 section --></div>
     <div class="axis-labels" style="padding:0 0 4px 0;"><span>Lifecycle</span><span>운영상태</span><span>승인</span><span>PDE</span></div>
 
     <!-- PDE amber panel -->
@@ -942,6 +943,49 @@ function showRevisionModal() {
 
     const pdeEl = document.getElementById('prd-pde-badge');
     if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.textContent = d.pde; }
+
+    // Lifecycle 프로세스 스테퍼
+    var PRD_FLOW = [
+      { key:'draft',     icon:'1', label:'초안',    gate:'기본정보 입력\nMedia Assignment' },
+      { key:'configured',icon:'2', label:'구성완료', gate:'PDE 심사\n(P-05 S3)' },
+      { key:'pde',       icon:'P', label:'PDE 검토', gate:'내부 승인요청\nFeasibility' },
+      { key:'approved',  icon:'✓', label:'승인됨',   gate:'활성화 확인' },
+      { key:'active',    icon:'▶', label:'활성',     gate:'새 Revision:\nP-06 S1~S7' },
+      { key:'suspended', icon:'⏸', label:'중지',     gate:'Feasibility 재검증\n→ 재개 or 단종' },
+      { key:'completed', icon:'■', label:'단종',     gate:'신규 연결 차단\n이력 보존' },
+    ];
+    var LC_DONE_ORDER = ['draft','configured','pde','approved','active'];
+    var curIdx = { draft:0, configured:1, pde:2, approved:3, active:4, paused:4, ready:1, suspended:5, completed:6 }[d.lc] || 0;
+    var stepperEl = document.getElementById('prd-lc-stepper');
+    var noteEl = document.getElementById('prd-lc-note');
+    if (stepperEl) {
+      var html = '';
+      PRD_FLOW.forEach(function(s, i) {
+        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
+        html += '<div class="lc-step ' + cls + '">'
+          + '<div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div>'
+          + '</div>';
+        if (i < PRD_FLOW.length - 1) {
+          var arrowCls = i < curIdx ? 'done' : '';
+          html += '<div class="lc-arrow ' + arrowCls + '"><div class="lc-arrow-line"></div></div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var NOTES = {
+      draft:'초안 상태 — 기본정보·Media Assignment·Product Option을 입력하고 구성을 완료하세요.',
+      configured:'구성완료 — PDE(미디어사 상품정책 검증)를 요청하세요.',
+      pde:'PDE 심사 중 — 결과 대기. Approved → 내부 승인 요청 단계로 진행됩니다.',
+      approved:'승인됨 — 활성화하면 스케줄 연결 및 판매가 가능합니다.',
+      active:'활성 — 운영 중. 핵심조건(Operational·Commercial) 변경은 P-06 신규 Revision, Media Assignment 변경은 Product Renewal.',
+      paused:'중지(Suspended) — 운영 일시정지. Feasibility 재검증 후 재개하거나 단종을 선택하세요.',
+      ready:'구성완료 — PDE 심사를 요청하세요.',
+      suspended:'중지(Suspended) — 운영 일시정지. Feasibility 재검증 후 재개하거나 단종을 선택하세요.',
+      completed:'단종 — 신규 캠페인·스케줄 연결이 차단됩니다. 기존 계약·이력은 보존됩니다.',
+    };
+    if (noteEl) noteEl.textContent = NOTES[d.lc] || '';
 
     // Tab 1: 기본정보 (tab-basic)
     var tabBasic = document.getElementById('tab-basic');

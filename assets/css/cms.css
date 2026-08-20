@@ -1078,3 +1078,129 @@ ul, ol { list-style: none; }
   flex-wrap: wrap;
 }
 .list-option .ml-auto { margin-left: auto; }
+
+/* ── Lifecycle Process Stepper (공통) ── */
+.lc-stepper-wrap {
+  background: #fff;
+  border: 1px solid #E5E7EA;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.lc-stepper-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9EA5AD;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.lc-stepper {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0;
+  padding-bottom: 4px;
+}
+.lc-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  position: relative;
+}
+.lc-step-node {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #CED2D6;
+  background: #F6F7F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9EA5AD;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.lc-step.current .lc-step-node {
+  background: #2D84ED;
+  border-color: #2D84ED;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(45,132,237,.15);
+}
+.lc-step.done .lc-step-node {
+  background: #E8F8E9;
+  border-color: #58C65D;
+  color: #2E9E34;
+}
+.lc-step.blocked .lc-step-node {
+  background: #FFF5F5;
+  border-color: #E97474;
+  color: #E97474;
+}
+.lc-step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9EA5AD;
+  margin-top: 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+.lc-step.current .lc-step-label { color: #2D84ED; }
+.lc-step.done    .lc-step-label { color: #2E9E34; }
+.lc-step.blocked .lc-step-label { color: #E97474; }
+.lc-step-gate {
+  font-size: 10px;
+  color: #9EA5AD;
+  text-align: center;
+  margin-top: 3px;
+  max-width: 80px;
+  white-space: normal;
+  line-height: 1.3;
+}
+.lc-step.current .lc-step-gate { color: #596066; }
+.lc-arrow {
+  flex: 1;
+  min-width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+}
+.lc-arrow-line {
+  width: 100%;
+  height: 2px;
+  background: #E5E7EA;
+  position: relative;
+}
+.lc-arrow-line::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -4px;
+  border: 5px solid transparent;
+  border-left: 7px solid #E5E7EA;
+}
+.lc-arrow.done .lc-arrow-line { background: #58C65D; }
+.lc-arrow.done .lc-arrow-line::after { border-left-color: #58C65D; }
+.lc-arrow-gate {
+  font-size: 10px;
+  color: #9EA5AD;
+  text-align: center;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+.lc-arrow.mandatory .lc-arrow-gate { color: #E97474; font-weight: 600; }
+.lc-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #596066;
+  background: #F6F7F9;
+  border-radius: 6px;
+  padding: 8px 12px;
+}

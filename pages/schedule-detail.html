@@ -272,6 +272,13 @@
     </div>
   </div>
 
+  <!-- Lifecycle 프로세스 스테퍼 -->
+  <div class="lc-stepper-wrap" style="margin-bottom:12px;">
+    <div class="lc-stepper-title">Lifecycle 프로세스 (T-SCH-01 · P-04)</div>
+    <div class="lc-stepper" id="sch-lc-stepper"><!-- JS가 채움 --></div>
+    <div class="lc-note" id="sch-lc-note"></div>
+  </div>
+
   <!-- ── Tabs ── -->
   <div class="tab-bar">
     <button class="tab-btn active" onclick="showTab('basic',this)">기본정보</button>
@@ -823,6 +830,49 @@ function showTab(id, btn) {
     var ov = stateParam && STATE_OVERRIDES_SCH[stateParam] ? STATE_OVERRIDES_SCH[stateParam] : null;
     var lcVal = ov ? ov.lc : d.lc;
     var lcLabel = ov ? ov.label : d.lcLabel;
+
+    // Lifecycle 프로세스 스테퍼
+    var SCH_FLOW = [
+      { key:'draft',    icon:'1', label:'초안',     gate:'기본정보·매체·\n콘텐츠 설정' },
+      { key:'check',    icon:'F', label:'Feasibility\n확인',  gate:'FRESH Feasibility\n필수 Gate (T-SCH-01)' },
+      { key:'review',   icon:'2', label:'승인요청',  gate:'검토자 승인\n(T-SCH-02)' },
+      { key:'approved', icon:'✓', label:'예약',      gate:'집행 시작\n확인' },
+      { key:'active',   icon:'▶', label:'집행중',    gate:'일시중지 or\n새 Revision' },
+      { key:'paused',   icon:'⏸', label:'일시중지',  gate:'재개\n(Feasibility 재검증)' },
+      { key:'completed',icon:'■', label:'완료',      gate:'실적 분석\n(T-MON-01)' },
+    ];
+    var SCH_IDX = { draft:0, check:1, pending:2, review:2, approved:3, scheduled:3, active:4, paused:5, completed:6 };
+    var curKey = stateParam || d.lc || 'draft';
+    var curIdx = SCH_IDX[curKey] !== undefined ? SCH_IDX[curKey] : 0;
+    var stepperEl = document.getElementById('sch-lc-stepper');
+    if (stepperEl) {
+      var html = '';
+      SCH_FLOW.forEach(function(s, i) {
+        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
+        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label.replace(/\n/g,'<br>') + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
+        if (i < SCH_FLOW.length - 1) {
+          var mandatory = (i === 1) ? 'mandatory' : '';
+          html += '<div class="lc-arrow ' + (i < curIdx ? 'done' : '') + ' ' + mandatory + '"><div class="lc-arrow-line"></div>'
+            + (mandatory ? '<div class="lc-arrow-gate">필수 Gate</div>' : '') + '</div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var SCH_NOTES = {
+      draft:'초안 — 기본정보·매체·콘텐츠를 설정하세요. Feasibility 확인이 승인요청 전 필수입니다.',
+      check:'Feasibility 확인 중 — 슬롯 가용성·보장횟수 충족 여부를 검증합니다. FRESH 상태여야 합니다.',
+      review:'승인요청 — 검토자 승인을 기다리는 중.',
+      pending:'승인요청 — 검토자 승인을 기다리는 중.',
+      approved:'예약(Approved) — 집행 시작을 확인하세요.',
+      scheduled:'예약(Approved) — 집행 시작을 확인하세요.',
+      active:'집행중 — 스케줄 운영 중. 일시중지 또는 새 Revision이 가능합니다.',
+      paused:'일시중지 — Feasibility 재검증 후 재개하거나 종료를 선택하세요.',
+      completed:'완료 — 집행 종료. 모니터링·실적 분석 리포트를 확인하세요.',
+    };
+    var noteEl = document.getElementById('sch-lc-note');
+    if (noteEl) noteEl.textContent = SCH_NOTES[curKey] || '';
     var apprClass = ov ? ov.apprClass : d.apprClass;
     var apprText = ov ? ov.appr : d.appr;
 
