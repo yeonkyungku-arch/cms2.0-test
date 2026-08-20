@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>프로덕트 생성 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
     /* ── 페이지 헤더 ── */
     .page-hd {
@@ -373,7 +374,6 @@
       margin-top: 0;
     }
     .btn-ghost {
-      height: 36px; padding: 0 16px;
       background: #fff; border: 1px solid #CED2D6;
       border-radius: 6px; font-size: 13px; color: #596066;
       cursor: pointer; font-family: inherit;
@@ -387,7 +387,6 @@
     }
     .btn-draft:hover { background: #F6F7F9; }
     .btn-primary {
-      height: 36px; padding: 0 20px;
       background: #58C65D; border: none; border-radius: 6px;
       font-size: 13px; font-weight: 600; color: #fff;
       cursor: pointer; font-family: inherit;
@@ -397,7 +396,6 @@
     .btn-primary:disabled { background: #CED2D6; cursor: not-allowed; }
 
     .btn-sm {
-      height: 30px; padding: 0 12px;
       font-size: 12px; border-radius: 5px; cursor: pointer;
       font-family: inherit;
     }
@@ -468,6 +466,15 @@
       .form-row { grid-template-columns: 1fr; gap: 6px; }
       .form-label { padding-bottom: 0; }
     }
+    /* ── 요일 칩 ── */
+    .day-chip-item input { display: none; }
+    .day-chip-item label {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid #CED2D6;
+      font-size: 13px; font-weight: 600; color: #596066; cursor: pointer; transition: all .15s;
+    }
+    .day-chip-item input:checked + label { background: #58C65D; border-color: #58C65D; color: #fff; }
+
     @media (max-width: 700px) {
       .section-body { padding: 16px; }
       .section-head { padding: 14px 16px 10px; }
@@ -479,24 +486,58 @@
 
 <!-- ① GNB -->
 <nav class="gnb">
-  <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
-  </div>
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
     <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
-    <li><a href="product-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li class="gnb-has-sub"><a href="product-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
     <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
     <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
     <div class="gnb-sub">
     <div class="gnb-sub-title">편성표</div>
     <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
     <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
-  </div>
-  </li>
+    </div>
+    </li>
     <div class="gnb-divider"></div>
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
@@ -511,9 +552,9 @@
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
     </div>
     <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
+      <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-name">홍길동</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
@@ -838,6 +879,231 @@
       </div>
     </div>
 
+    <!-- ─────────────────── 5. 운영 정보 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">운영 정보</div>
+      </div>
+      <div class="section-body">
+
+        <!-- product.operatingDays -->
+        <div class="form-row">
+          <div class="form-label">운영 요일 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <div class="day-chip-item"><input type="checkbox" id="pd1" checked><label for="pd1">월</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd2" checked><label for="pd2">화</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd3" checked><label for="pd3">수</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd4" checked><label for="pd4">목</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd5" checked><label for="pd5">금</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd6"><label for="pd6">토</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="pd7"><label for="pd7">일</label></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- product.operatingStartTime / endTime -->
+        <div class="form-row">
+          <div class="form-label">운영 시간 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="time" class="input" style="width:140px;" value="09:00">
+              <span style="color:#9EA5AD;">~</span>
+              <input type="time" class="input" style="width:140px;" value="22:00">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#596066;cursor:pointer;">
+                <input type="checkbox"> 익일 종료
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- product.regularClosing / holidayOperation -->
+        <div class="form-row">
+          <div class="form-label">정기 휴무</div>
+          <div class="form-field">
+            <input type="text" class="input" placeholder="예: 매주 일요일, 매월 마지막 주 토요일" style="max-width:400px;">
+            <div class="input-hint">반복 규칙을 텍스트로 입력하세요 (선택)</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">공휴일 운영 <span class="req">*</span></div>
+          <div class="form-field">
+            <select class="select" style="max-width:260px;">
+              <option value="">선택</option>
+              <option selected>운영</option>
+              <option>미운영</option>
+              <option>별도 정책</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- product.maxContentDuration -->
+        <div class="form-row">
+          <div class="form-label">콘텐츠 최대 길이 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" class="input" style="width:120px;" value="30" min="1">
+              <span style="font-size:14px;color:#596066;">초</span>
+            </div>
+            <div class="input-hint">이 프로덕트에 편성 가능한 콘텐츠의 최대 재생시간</div>
+          </div>
+        </div>
+
+        <!-- product.slotDurations / totalSlotCount -->
+        <div class="form-row">
+          <div class="form-label">슬롯 시간 구성 <span class="req">*</span></div>
+          <div class="form-field">
+            <div id="slotChipsWrap" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+              <span class="tag-item">15초 <button onclick="this.parentNode.remove()">×</button></span>
+              <span class="tag-item">30초 <button onclick="this.parentNode.remove()">×</button></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" class="input" id="slotInput" style="width:100px;" placeholder="초" min="1">
+              <button class="btn btn-ghost" style="font-size:13px;" onclick="addSlot()">+ 슬롯 추가</button>
+            </div>
+            <div class="input-hint">광고주가 선택할 수 있는 슬롯 시간 목록</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">총 슬롯 수 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" class="input" style="width:120px;" value="6" min="1" id="totalSlotCount" onchange="updateLoopKPI()">
+              <span style="font-size:14px;color:#596066;">개</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference Loop KPI (read-only, computed) -->
+        <div class="form-row" style="border-bottom:none;">
+          <div class="form-label">기준 루프 산출</div>
+          <div class="form-field">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:10px 16px;min-width:160px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">기준 슬롯 시간 (RSD)</div>
+                <div style="font-size:16px;font-weight:700;color:#24292E;" id="kpiRSD">30초</div>
+                <div style="font-size:10px;color:#9EA5AD;">MAX(슬롯 시간)</div>
+              </div>
+              <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:10px 16px;min-width:160px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">기준 루프 시간 (RLD)</div>
+                <div style="font-size:16px;font-weight:700;color:#24292E;" id="kpiRLD">180초</div>
+                <div style="font-size:10px;color:#9EA5AD;">RSD × 총슬롯수</div>
+              </div>
+              <div style="background:#F6F7F9;border:1px solid #E5E7EA;border-radius:8px;padding:10px 16px;min-width:180px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">예상 최소 집행횟수/일</div>
+                <div style="font-size:16px;font-weight:700;color:#58C65D;" id="kpiPlays">234회</div>
+                <div style="font-size:10px;color:#9EA5AD;">FLOOR(유효운영시간 ÷ RLD)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────────── 6. 가격 정보 ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">가격 정보</div>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-label">기준 가격 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="text" class="input" style="width:200px;" placeholder="0" value="3,000,000">
+              <select class="select" style="width:100px;">
+                <option selected>KRW</option>
+                <option>USD</option>
+                <option>JPY</option>
+                <option>기타</option>
+              </select>
+              <span style="font-size:14px;color:#596066;">/</span>
+              <select class="select" style="width:120px;">
+                <option>일(Day)</option>
+                <option>주(Week)</option>
+                <option selected>월(Month)</option>
+                <option>분기(Quarter)</option>
+                <option>년(Year)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 7. 상품 옵션 (선택) ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="section-title">상품 옵션 <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
+          <div style="font-size:12px;color:#9EA5AD;margin-top:2px;">운영시간, 슬롯, 타깃 등 추가 옵션을 설정합니다</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:13px;" onclick="addOption()">+ 옵션 추가</button>
+      </div>
+      <div class="section-body" id="optionsWrap">
+        <!-- Sample option -->
+        <div style="border:1px solid #E5E7EA;border-radius:8px;padding:16px;margin-bottom:10px;" class="option-item">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션명 <span class="req">*</span></div>
+              <input type="text" class="input" value="프라임타임 패키지">
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션 유형 <span class="req">*</span></div>
+              <select class="select">
+                <option selected>운영시간</option><option>슬롯</option><option>노출횟수</option><option>조건광고</option><option>타깃</option><option>콘텐츠운영</option><option>리포트</option><option>기타</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">가격 유형</div>
+              <select class="select">
+                <option selected>정액(Fixed)</option><option>비율(Percentage)</option><option>회당(Per Play)</option><option>기간당(Per Period)</option><option>별도견적(Custom Quote)</option>
+              </select>
+            </div>
+            <button style="width:32px;height:32px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;color:#9EA5AD;font-size:16px;" onclick="this.closest('.option-item').remove()">×</button>
+          </div>
+          <div style="margin-top:10px;">
+            <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션 가격</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="text" class="input" style="width:180px;" value="500,000">
+              <select class="select" style="width:100px;"><option selected>KRW</option><option>USD</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── 8. 매체 제작 가이드 (선택) ─────────────────── -->
+    <div class="form-card">
+      <div class="section-head">
+        <div class="section-title">매체 제작 가이드 <span style="font-size:12px;font-weight:400;color:#9EA5AD;">(선택)</span></div>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-label">추가 가이드</div>
+          <div class="form-field">
+            <textarea class="textarea" placeholder="광고소재 제작 시 주의사항, 해상도 요건, 파일 형식 등을 입력하세요" style="width:100%;min-height:80px;"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">가이드 파일</div>
+          <div class="form-field">
+            <div style="border:2px dashed #CED2D6;border-radius:6px;padding:20px;text-align:center;cursor:pointer;color:#9EA5AD;font-size:13px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 6px;"><path d="M12 4v12M8 8l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 18h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              파일 업로드 (PDF, PPTX, DOCX, ZIP)
+            </div>
+          </div>
+        </div>
+        <div class="form-row" style="border-bottom:none;">
+          <div class="form-label">참조 URL</div>
+          <div class="form-field">
+            <input type="url" class="input" placeholder="https://..." style="max-width:500px;">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ─────────────────── 하단 액션 바 ─────────────────── -->
     <div class="form-actions">
       <a href="product-list" class="btn-ghost" style="display:flex;align-items:center;text-decoration:none;height:36px;padding:0 16px;font-size:13px;border:1px solid #CED2D6;border-radius:6px;color:#596066;">취소</a>
@@ -929,7 +1195,6 @@ function renderMediaList(filter = '', statusFilter = '') {
           <th>미디어명</th>
           <th>설치유형</th>
           <th>운영시간</th>
-          <th>사이클</th>
           <th>기준슬롯</th>
           <th>센서</th>
           <th>상태</th>
@@ -946,7 +1211,6 @@ function renderMediaList(filter = '', statusFilter = '') {
             </td>
             <td class="media-td-val">${m.installType}</td>
             <td class="media-td-val">${m.opsHours}</td>
-            <td class="media-td-val">${m.cycleMax}초</td>
             <td class="media-td-val">${m.refSlotSec}초 × ${m.refSlots}</td>
             <td>${(m.sensors || []).map(s => `<span class="sensor-badge sensor-${s}">${SENSOR_LABEL[s] || s}</span>`).join(' ')}</td>
             <td><span class="status-dot ${m.status}" style="margin:0 auto;display:block;"></span></td>
@@ -1452,7 +1716,7 @@ function submitForm() {
     return;
   }
   showToast('프로덕트가 등록되었습니다.');
-  setTimeout(() => { location.href = 'product-detail'; }, 900);
+  setTimeout(() => { location.href = 'product-detail?id=PRD-NEW'; }, 900);
 }
 
 function showToast(msg) {
@@ -1475,7 +1739,54 @@ renderMediaList();
 renderChips();
 updateMediaCount();
 renderMediaMap();
+
+/* ── 슬롯 추가 ── */
+function addSlot() {
+  const v = document.getElementById('slotInput').value;
+  if (!v || isNaN(v) || v < 1) return;
+  const wrap = document.getElementById('slotChipsWrap');
+  const chip = document.createElement('span');
+  chip.className = 'tag-item';
+  chip.innerHTML = v + '초 <button onclick="this.parentNode.remove();updateLoopKPI()">×</button>';
+  wrap.appendChild(chip);
+  document.getElementById('slotInput').value = '';
+  updateLoopKPI();
+}
+
+/* ── 기준 루프 KPI 산출 ── */
+function updateLoopKPI() {
+  const chips = document.querySelectorAll('#slotChipsWrap .tag-item');
+  const slots = Array.from(chips).map(c => parseInt(c.textContent));
+  if (!slots.length) return;
+  const rsd = Math.max(...slots);
+  const total = parseInt(document.getElementById('totalSlotCount').value) || 1;
+  const rld = rsd * total;
+  const opsSeconds = 13 * 3600; // 09:00~22:00 = 13h
+  const plays = Math.floor(opsSeconds / rld);
+  document.getElementById('kpiRSD').textContent = rsd + '초';
+  document.getElementById('kpiRLD').textContent = rld + '초';
+  document.getElementById('kpiPlays').textContent = plays + '회';
+}
+
+/* ── 상품 옵션 추가 ── */
+let optCount = 1;
+function addOption() {
+  optCount++;
+  const wrap = document.getElementById('optionsWrap');
+  const el = document.createElement('div');
+  el.className = 'option-item';
+  el.style.cssText = 'border:1px solid #E5E7EA;border-radius:8px;padding:16px;margin-bottom:10px;';
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;">
+      <div><div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션명 <span style="color:#E97474;">*</span></div><input type="text" class="input" placeholder="옵션명"></div>
+      <div><div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">옵션 유형</div><select class="select"><option selected>운영시간</option><option>슬롯</option><option>노출횟수</option><option>조건광고</option><option>타깃</option><option>콘텐츠운영</option><option>리포트</option><option>기타</option></select></div>
+      <div><div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:5px;">가격 유형</div><select class="select"><option>정액</option><option>비율</option><option>회당</option><option>기간당</option><option>별도견적</option></select></div>
+      <button style="width:32px;height:32px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;color:#9EA5AD;font-size:16px;" onclick="this.closest('.option-item').remove()">×</button>
+    </div>`;
+  wrap.appendChild(el);
+}
 </script>
 <script src="../assets/js/cms.js"></script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

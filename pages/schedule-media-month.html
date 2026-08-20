@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>미디어 편성표 – 월간 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif; background: #F6F7F9; color: #24292E; font-size: 14px; }
@@ -12,6 +13,7 @@
 
     /* Breadcrumb */
     .bcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #9EA5AD; margin-bottom: 20px; }
+    .content { padding-top: 68px; }
     .bcrumb a { color: #596066; }
     .bcrumb a:hover { color: #58C65D; }
     .bcrumb-sep { color: #C9CDD2; }
@@ -114,20 +116,49 @@
 
     .schedule-card { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 5px; background: #fff; }
     .schedule-card:hover { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .schedule-card.hovered { border-color: #58C65D; box-shadow: 0 2px 8px rgba(88,198,93,0.12); }
+    .cal-cell.sched-highlight .cal-cell-body { background: #F0FDF4; }
+    .cal-cell.sched-highlight .cal-date-link { background: #D1FAE5; }
     .schedule-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .schedule-card-name { font-size: 13px; font-weight: 600; color: #24292E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .product-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; white-space: nowrap; }
     .prod-a { background: #EEF2FF; color: #3730A3; }
     .prod-b { background: #FFF7ED; color: #9A3412; }
+    .prod-c { background: #F5F3FF; color: #5B21B6; }
     .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
-    .badge-green { background: #D1FAE5; color: #065F46; }
-    .badge-blue  { background: #DBEAFE; color: #1E40AF; }
+    .badge-confirmed   { background: #D1FAE5; color: #065F46; }
+    .badge-unconfirmed { background: #FEF9C3; color: #713F12; }
+    .badge-reserved    { background: #F0F9FF; color: #0369A1; }
+    .badge-ended       { background: #F3F4F6; color: #6B7280; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .badge-dot-green { background: #10B981; }
-    .badge-dot-blue  { background: #3B82F6; }
+    .badge-dot-confirmed   { background: #10B981; }
+    .badge-dot-unconfirmed { background: #F59E0B; }
+    .badge-dot-reserved    { background: #7DD3FC; }
+    .badge-dot-ended       { background: #D1D5DB; }
     .schedule-card-meta { font-size: 11px; color: #9EA5AD; display: flex; align-items: center; gap: 4px; }
     .schedule-card-meta .sep { color: #D1D5DB; }
     .schedule-card-advertiser { font-size: 12px; color: #596066; font-weight: 500; }
+    .scard-fields { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin-top: 6px; }
+    .scard-label { font-size: 11px; color: #9EA5AD; white-space: nowrap; }
+    .scard-val   { font-size: 11px; color: #596066; }
+    /* 광고 유형 */
+    .adtype-tag { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+    .adtype-tag-commercial { background: #F0FDF4; color: #166534; }
+    .adtype-tag-public     { background: #EFF6FF; color: #1E40AF; }
+    .adtype-tag-art        { background: #F5F3FF; color: #5B21B6; }
+    .adtype-tag-house      { background: #FFFBEB; color: #92400E; }
+    /* 광고 유형 분포 바 (패널 상단) */
+    .adtype-summary { }
+    .adtype-summary-label { font-size: 11px; color: #9EA5AD; margin-bottom: 6px; }
+    .adtype-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; gap: 1px; margin-bottom: 6px; }
+    .adtype-bar-seg { height: 100%; }
+    .adtype-bar-commercial { background: #58C65D; }
+    .adtype-bar-public     { background: #2D84ED; }
+    .adtype-bar-art        { background: #A855F7; }
+    .adtype-bar-house      { background: #F59E0B; }
+    .adtype-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+    .adtype-legend-item { display: flex; align-items: center; gap: 3px; font-size: 11px; color: #596066; }
+    .adtype-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 
     .panel-day-link { font-size: 11px; color: #2D84ED; text-decoration: none; white-space: nowrap; }
     .panel-day-link:hover { text-decoration: underline; }
@@ -138,42 +169,58 @@
 
 <!-- GNB -->
 <nav class="gnb">
-  <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
-  </div>
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
-    <li class="gnb-disabled"><a href="#">
-      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
-      대시보드
-    </a></li>
-    <li><a href="media-list">
-      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>
-      미디어
-    </a></li>
-    <li><a href="product-list">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>
-      프로덕트
-    </a></li>
-    <li class="gnb-disabled"><a href="#">
-      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>
-      콘텐츠
-    </a></li>
-    <li><a href="schedule-list">
-      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M7 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-      스케줄
-    </a></li>
-    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
     <div class="gnb-sub">
     <div class="gnb-sub-title">편성표</div>
     <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
     <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
-  </div>
-  </li>
+    </div>
+    </li>
     <div class="gnb-divider"></div>
-    <li class="gnb-disabled"><a href="#">
-      <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-      모니터링
-    </a></li>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
@@ -232,7 +279,6 @@
       <div style="display:flex;gap:20px;flex-wrap:wrap;">
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">설치 유형</div><div id="infoInstall" style="font-size:12px;font-weight:600;color:#24292E;">실외 · 세로형</div></div>
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">운영 시간</div><div id="infoHours" style="font-size:12px;font-weight:600;color:#24292E;">07:00–22:00</div></div>
-        <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">사이클 최대</div><div id="infoCycleMax" style="font-size:12px;font-weight:600;color:#24292E;">600초</div></div>
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">기준 슬롯</div><div id="infoSlot" style="font-size:12px;font-weight:600;color:#24292E;">30초 × 20개</div></div>
         <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">최소 보장</div><div id="infoGuarantee" style="font-size:12px;font-weight:600;color:#24292E;">90회/일</div></div>
       </div>
@@ -298,6 +344,8 @@
           <div id="panelDayLinkWrap" style="display:none; padding:8px 16px 4px; border-bottom:1px solid #F0F1F3;">
             <a href="schedule-media-day" class="panel-day-link">일간 편성표 보기 →</a>
           </div>
+          <!-- 광고 유형 분포 -->
+          <div id="adTypeSummaryWrap" style="display:none; padding:10px 14px 8px; border-bottom:1px solid #F0F1F3;"></div>
           <div class="schedule-list" id="scheduleList"></div>
         </div>
 
@@ -330,7 +378,6 @@
     document.getElementById('infoMediaAddr').textContent  = m.addr;
     document.getElementById('infoInstall').textContent    = m.install;
     document.getElementById('infoHours').textContent      = m.hours;
-    document.getElementById('infoCycleMax').textContent   = m.cycle;
     document.getElementById('infoSlot').textContent       = m.slot;
     document.getElementById('infoGuarantee').textContent  = m.guarantee;
     var statusEl = document.getElementById('infoStatus');
@@ -345,37 +392,37 @@
 
   /* ── 스케줄 데이터 (날짜별 매핑) ── */
   var schedules = [
-    { product: '프로덕트 가', prodClass: 'prod-a', name: '나이키 6월 캠페인',  code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아', status: 'running',  statusLabel: '운영 중',  dates: [1,2,3,5,9,10,14,15,16,21,22,23,28,29,30] },
-    { product: '프로덕트 가', prodClass: 'prod-a', name: '삼성 여름 광고',      code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',   status: 'running',  statusLabel: '운영 중',  dates: [1,2,5,9,14,15,21,22,28] },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '현대 날씨 조건',      code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차', status: 'upcoming', statusLabel: '운영 예정', dates: [3,10,17,23] },
-    { product: '프로덕트 가', prodClass: 'prod-a', name: 'LG 가전 캠페인',      code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',    status: 'upcoming', statusLabel: '운영 예정', dates: [2,5,9,14,16,22,25,29] },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '롯데 여름 프로모',    code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',   status: 'running',  statusLabel: '운영 중',  dates: [4,8,12,15,18,21,25,28] },
-    { product: '프로덕트 다', prodClass: 'prod-c', name: '애플 신제품 런칭',    code: '다-1', duration: '15초', type: '일반', advertiser: '애플코리아', status: 'running',  statusLabel: '운영 중',  dates: [9,14,15,21,22] },
-    { product: '프로덕트 다', prodClass: 'prod-c', name: '카카오 브랜드 광고',  code: '다-2', duration: '30초', type: '일반', advertiser: '카카오',     status: 'upcoming', statusLabel: '운영 예정', dates: [14,15,21,22,28,29] },
-    { product: '프로덕트 나', prodClass: 'prod-b', name: '배달의민족 여름 특집', code: '나-5', duration: '20초', type: '조건', advertiser: '우아한형제들', status: 'running', statusLabel: '운영 중',  dates: [9,14,21,22] },
+    { product: '강남 A지구 패키지',    prodClass: 'prod-a', name: '나이키 6월 캠페인',   code: '가-2', duration: '30초', type: '일반', advertiser: '나이키코리아',  status: 'confirmed',   statusLabel: '확정',  dates: [1,2,3,5,9,10,14,15,16,21,22,23,28,29,30], adType: 'commercial' },
+    { product: '강남 A지구 패키지',    prodClass: 'prod-a', name: '삼성 여름 광고',       code: '가-1', duration: '20초', type: '일반', advertiser: '삼성전자',     status: 'confirmed',   statusLabel: '확정',  dates: [1,2,5,9,14,15,21,22,28],               adType: 'commercial' },
+    { product: '홍대 입구역 프리미엄', prodClass: 'prod-b', name: '현대 날씨 조건',       code: '나-4', duration: '40초', type: '조건', advertiser: '현대자동차',   status: 'unconfirmed', statusLabel: '미확정', dates: [3,10,17,23],                            adType: 'commercial' },
+    { product: '강남 A지구 패키지',    prodClass: 'prod-a', name: 'LG 가전 캠페인',       code: '가-3', duration: '15초', type: '일반', advertiser: 'LG전자',       status: 'reserved',    statusLabel: '예약',  dates: [2,5,9,14,16,22,25,29],                 adType: 'commercial' },
+    { product: '홍대 입구역 프리미엄', prodClass: 'prod-b', name: '롯데 여름 프로모',     code: '나-2', duration: '30초', type: '일반', advertiser: '롯데쇼핑',     status: 'confirmed',   statusLabel: '확정',  dates: [4,8,12,15,18,21,25,28],                adType: 'public'     },
+    { product: '삼성역 COEX 프리미엄', prodClass: 'prod-c', name: '애플 신제품 런칭',     code: '다-1', duration: '15초', type: '일반', advertiser: '애플코리아',   status: 'confirmed',   statusLabel: '확정',  dates: [9,14,15,21,22],                         adType: 'art'        },
+    { product: '삼성역 COEX 프리미엄', prodClass: 'prod-c', name: '카카오 브랜드 광고',   code: '다-2', duration: '30초', type: '일반', advertiser: '카카오',       status: 'reserved',    statusLabel: '예약',  dates: [14,15,21,22,28,29],                    adType: 'house'      },
+    { product: '홍대 입구역 프리미엄', prodClass: 'prod-b', name: '배달의민족 여름 특집', code: '나-5', duration: '20초', type: '조건', advertiser: '우아한형제들', status: 'confirmed',   statusLabel: '확정',  dates: [9,14,21,22],                            adType: 'public'     },
+    { product: '강남 A지구 패키지',    prodClass: 'prod-a', name: '5월 봄 기획전',        code: '가-0', duration: '20초', type: '일반', advertiser: '이마트',       status: 'ended',       statusLabel: '종료',  dates: [1,2,3,4,5],                             adType: 'house'      },
+    { product: '홍대 입구역 프리미엄', prodClass: 'prod-b', name: '여름철 물놀이 안전',   code: '나-6', duration: '30초', type: '일반', advertiser: '행정안전부',   status: 'confirmed',   statusLabel: '확정',  dates: [1,3,6,8,11,13,16,18,20,23,25,27],      adType: 'public'     },
+    { product: '삼성역 COEX 프리미엄', prodClass: 'prod-c', name: '금연 캠페인 2025',     code: '다-3', duration: '20초', type: '일반', advertiser: '보건복지부',   status: 'confirmed',   statusLabel: '확정',  dates: [2,5,7,10,12,15,17,19,22,24,26,29],     adType: 'public'     },
+    { product: '홍대 입구역 프리미엄', prodClass: 'prod-b', name: '탄소중립 생활실천',    code: '나-7', duration: '40초', type: '일반', advertiser: '환경부',       status: 'unconfirmed', statusLabel: '미확정', dates: [4,9,14,19,24,29],                       adType: 'public'     },
+    { product: '삼성역 COEX 프리미엄', prodClass: 'prod-c', name: '안전운전 습관 캠페인', code: '다-4', duration: '30초', type: '조건', advertiser: '교통안전공단', status: 'reserved',    statusLabel: '예약',  dates: [6,8,13,15,20,22,27,29],                adType: 'public'     },
   ];
 
-  /* ── 캘린더 데이터 ── */
-  const calData = {
-    '2026-06-01': { sec: 540, slot: 18 }, '2026-06-02': { sec: 480, slot: 16 },
-    '2026-06-03': { sec: 390, slot: 13 }, '2026-06-04': { sec: 600, slot: 20 },
-    '2026-06-05': { sec: 300, slot: 10 }, '2026-06-06': { sec: 240, slot: 9  },
-    '2026-06-07': { sec: 120, slot: 4  }, '2026-06-08': { sec: 60,  slot: 2  },
-    '2026-06-09': { sec: 450, slot: 15 }, '2026-06-10': { sec: 500, slot: 17 },
-    '2026-06-11': { sec: 90,  slot: 3  }, '2026-06-12': { sec: 0,   slot: 0  },
-    '2026-06-13': { sec: 30,  slot: 1  }, '2026-06-14': { sec: 360, slot: 12 },
-    '2026-06-15': { sec: 420, slot: 14 }, '2026-06-16': { sec: 570, slot: 19 },
-    '2026-06-17': { sec: 150, slot: 5  }, '2026-06-18': { sec: 200, slot: 7  },
-    '2026-06-19': { sec: 0,   slot: 0  }, '2026-06-20': { sec: 50,  slot: 2  },
-    '2026-06-21': { sec: 310, slot: 11 }, '2026-06-22': { sec: 430, slot: 14 },
-    '2026-06-23': { sec: 510, slot: 18 }, '2026-06-24': { sec: 80,  slot: 3  },
-    '2026-06-25': { sec: 260, slot: 9  }, '2026-06-26': { sec: 0,   slot: 0  },
-    '2026-06-27': { sec: 40,  slot: 1  }, '2026-06-28': { sec: 580, slot: 20 },
-    '2026-06-29': { sec: 350, slot: 12 }, '2026-06-30': { sec: 190, slot: 6  },
-  };
+  /* 슬롯 설정: "30초 × 20개" → { slotSec: 30, maxSlot: 20 } */
+  function parseSlotConfig(slotStr) {
+    var m = slotStr.match(/(\d+)초\s*×\s*(\d+)개/);
+    return m ? { slotSec: parseInt(m[1]), maxSlot: parseInt(m[2]) } : { slotSec: 30, maxSlot: 20 };
+  }
 
-  const MAX_SEC  = 600;
-  const MAX_SLOT = 20;
+  /* duration 문자열 → 초 */
+  function parseDurSec(durStr) {
+    var m = durStr.match(/(\d+)/);
+    return m ? parseInt(m[1]) : 30;
+  }
+
+  /* 날짜별 사용 슬롯 수 계산 (스케줄 1개 = 슬롯 1개) */
+  function calcUsedSlots(dateKey) {
+    return (dateSchedules[dateKey] || []).length;
+  }
 
   var selectedDate = null;
 
@@ -431,18 +478,17 @@
     }, 80);
   }
 
-  function getStatusColor(sec, slot) {
-    const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
-    if (minPct === 0)  return '#EF4444';
-    if (minPct < 20)   return '#F97316';
-    if (minPct < 50)   return '#F59E0B';
+  /* usedPct: 사용된 슬롯 비율(%) 기준 */
+  function getStatusColor(usedPct) {
+    if (usedPct >= 100) return '#EF4444';
+    if (usedPct >= 80)  return '#F97316';
+    if (usedPct >= 50)  return '#F59E0B';
     return '#10B981';
   }
-  function getStatusLabel(sec, slot) {
-    const minPct = Math.min(sec / MAX_SEC, slot / MAX_SLOT) * 100;
-    if (minPct === 0)  return '등록불가';
-    if (minPct < 20)   return '매우위험';
-    if (minPct < 50)   return '위험';
+  function getStatusLabel(usedPct) {
+    if (usedPct >= 100) return '등록불가';
+    if (usedPct >= 80)  return '매우위험';
+    if (usedPct >= 50)  return '위험';
     return '여유';
   }
 
@@ -470,6 +516,37 @@
     renderPanel();
   }
 
+  var AD_TYPE_LABELS = { commercial: '상업 광고', public: '공익 광고', art: '미디어아트', house: '자사 광고' };
+
+  function renderAdTypeSummary(list) {
+    var wrap = document.getElementById('adTypeSummaryWrap');
+    if (!selectedDate || list.length === 0) { wrap.style.display = 'none'; return; }
+
+    var counts = { commercial: 0, public: 0, art: 0, house: 0 };
+    list.forEach(function(s) { if (s.adType && counts[s.adType] !== undefined) counts[s.adType]++; });
+    var total = list.length;
+    var types = ['commercial', 'public', 'art', 'house'];
+
+    var segs = types.filter(function(t) { return counts[t] > 0; }).map(function(t) {
+      return '<div class="adtype-bar-seg adtype-bar-' + t + '" style="flex:' + counts[t] + ';"></div>';
+    }).join('');
+
+    var legends = types.filter(function(t) { return counts[t] > 0; }).map(function(t) {
+      var pct = Math.round(counts[t] / total * 100);
+      return '<span class="adtype-legend-item">' +
+        '<span class="adtype-legend-dot adtype-bar-' + t + '"></span>' +
+        AD_TYPE_LABELS[t] + ' ' + pct + '%' +
+      '</span>';
+    }).join('');
+
+    wrap.style.display = '';
+    wrap.innerHTML = '<div class="adtype-summary">' +
+      '<div class="adtype-summary-label">광고 유형 분포</div>' +
+      '<div class="adtype-bar">' + segs + '</div>' +
+      '<div class="adtype-legend">' + legends + '</div>' +
+    '</div>';
+  }
+
   function renderPanel() {
     var titleEl  = document.getElementById('panelTitle');
     var countEl  = document.getElementById('panelCount');
@@ -491,6 +568,7 @@
     }
 
     countEl.textContent = list.length + '개 스케줄';
+    renderAdTypeSummary(list);
 
     if (list.length === 0) {
       listEl.innerHTML = '<div class="panel-empty">해당 날짜에 스케줄이 없습니다.</div>';
@@ -498,8 +576,17 @@
     }
 
     list.forEach(function(s) {
-      var badgeCls  = s.status === 'running' ? 'badge-green' : 'badge-blue';
-      var dotCls    = s.status === 'running' ? 'badge-dot-green' : 'badge-dot-blue';
+      var badgeCls = 'badge-' + s.status;
+      var dotCls   = 'badge-dot-' + s.status;
+      var adTagCls = s.adType ? 'adtype-tag adtype-tag-' + s.adType : '';
+      var adTagTxt = s.adType ? AD_TYPE_LABELS[s.adType] : '';
+
+      var sortedDates = s.dates.slice().sort(function(a, b) { return a - b; });
+      var startDay = sortedDates[0];
+      var endDay   = sortedDates[sortedDates.length - 1];
+      var ym = selectedDate ? selectedDate.substring(0, 7) : (currentYear + '-' + (currentMonth < 10 ? '0' + currentMonth : currentMonth));
+      var periodStr = ym + '-' + (startDay < 10 ? '0' + startDay : startDay) + ' ~ ' + ym + '-' + (endDay < 10 ? '0' + endDay : endDay);
+
       var card = document.createElement('div');
       card.className = 'schedule-card';
       card.innerHTML =
@@ -507,15 +594,34 @@
           '<span class="schedule-card-name">' + s.name + '</span>' +
           '<span class="badge ' + badgeCls + '"><span class="badge-dot ' + dotCls + '"></span>' + s.statusLabel + '</span>' +
         '</div>' +
-        '<div class="schedule-card-meta">' +
-          '<span class="product-badge ' + s.prodClass + '">' + s.product + '</span>' +
-          '<span class="sep">·</span>' +
-          '<span>' + s.code + '</span><span class="sep">·</span>' +
-          '<span>' + s.duration + '</span><span class="sep">·</span>' +
-          '<span>' + s.type + '</span>' +
-        '</div>' +
-        '<div class="schedule-card-advertiser">' + s.advertiser + '</div>';
+        '<div class="scard-fields">' +
+          '<span class="scard-label">프로덕트</span><span class="scard-val">' + s.product + '</span>' +
+          '<span class="scard-label">플레이플랜</span><span class="scard-val">' + s.code + '</span>' +
+          '<span class="scard-label">광고 유형</span><span class="scard-val">' + (adTagTxt || '–') + '</span>' +
+          '<span class="scard-label">재생 시간</span><span class="scard-val">' + s.duration + '</span>' +
+          '<span class="scard-label">스케줄 유형</span><span class="scard-val">' + s.type + '</span>' +
+          '<span class="scard-label">광고 기간</span><span class="scard-val">' + periodStr + '</span>' +
+          '<span class="scard-label">광고주</span><span class="scard-val">' + s.advertiser + '</span>' +
+        '</div>';
+
+      card.addEventListener('mouseenter', function() { highlightScheduleDates(s.dates); });
+      card.addEventListener('mouseleave', clearScheduleHighlight);
       listEl.appendChild(card);
+    });
+  }
+
+  function highlightScheduleDates(dates) {
+    clearScheduleHighlight();
+    dates.forEach(function(d) {
+      var key = currentYear + '-' + (currentMonth < 10 ? '0' + currentMonth : currentMonth) + '-' + (d < 10 ? '0' + d : d);
+      var cell = document.querySelector('.cal-cell[data-key="' + key + '"]');
+      if (cell) cell.classList.add('sched-highlight');
+    });
+  }
+
+  function clearScheduleHighlight() {
+    document.querySelectorAll('.cal-cell.sched-highlight').forEach(function(el) {
+      el.classList.remove('sched-highlight');
     });
   }
 
@@ -548,7 +654,6 @@
     cells.forEach(function(c, idx) {
       const colIdx  = idx % 7;
       const dateStr = c.thisMonth ? fmtKey(c.y, c.m, c.day) : null;
-      const data    = dateStr ? (calData[dateStr] || null) : null;
 
       const cell = document.createElement('div');
       cell.className = 'cal-cell';
@@ -583,13 +688,15 @@
         head.addEventListener('mouseenter', function() { showTooltip(cell, dateStr, dateLabel); });
         head.addEventListener('mouseleave', hideTooltip);
 
-        if (data) {
-          const color   = getStatusColor(data.sec, data.slot);
-          const capCls  = { '#10B981':'cap-green', '#F59E0B':'cap-amber', '#F97316':'cap-orange', '#EF4444':'cap-red' }[color] || 'cap-green';
-          const secPct  = Math.round((data.sec  / MAX_SEC)  * 100);
-          const slotPct = Math.round((data.slot / MAX_SLOT) * 100);
+        var slotCfg  = parseSlotConfig(MEDIA_INFO[document.getElementById('mediaSelect').value].slot);
+        var used     = calcUsedSlots(dateStr);
+        var maxSlot  = slotCfg.maxSlot;
+        var usedPct  = Math.round((used / maxSlot) * 100);
 
-          /* cap-dot는 head에 추가 */
+        if (used > 0 || (dateSchedules[dateStr] || []).length > 0) {
+          const color  = getStatusColor(usedPct);
+          const capCls = { '#10B981':'cap-green', '#F59E0B':'cap-amber', '#F97316':'cap-orange', '#EF4444':'cap-red' }[color] || 'cap-green';
+
           const dot = document.createElement('span');
           dot.className = 'cap-dot ' + capCls;
           head.appendChild(dot);
@@ -597,14 +704,9 @@
           body.innerHTML =
             '<div class="cal-bars">' +
               '<div class="cal-bar-row">' +
-                '<span class="cal-bar-label">사이클</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + secPct + '%;background:' + color + '"></div></div>' +
-                '<span class="cal-bar-val">' + data.sec + 's</span>' +
-              '</div>' +
-              '<div class="cal-bar-row">' +
                 '<span class="cal-bar-label">슬롯</span>' +
-                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + slotPct + '%;background:' + color + '"></div></div>' +
-                '<span class="cal-bar-val">' + data.slot + '</span>' +
+                '<div class="cal-bar-track"><div class="cal-bar-fill" style="width:' + Math.min(usedPct, 100) + '%;background:' + color + '"></div></div>' +
+                '<span class="cal-bar-val">' + used + '/' + maxSlot + '</span>' +
               '</div>' +
             '</div>';
         }
@@ -625,11 +727,12 @@
   // 오늘 날짜 자동 선택
   var _today = new Date();
   var _todayKey = fmtKey(_today.getFullYear(), _today.getMonth() + 1, _today.getDate());
-  if (calData[_todayKey]) {
+  if (dateSchedules[_todayKey] || _todayKey.startsWith('2026-06')) {
     selectDate(_todayKey, _today.getDate(), _today.getMonth() + 1, _today.getFullYear());
   }
   renderCalendar(currentYear, currentMonth, true);
 </script>
 <script src="../assets/js/cms.js"></script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

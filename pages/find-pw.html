@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>비밀번호 찾기 — DOOH CMS 2.0</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #24292E;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      width: 400px;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 40px;
+    }
+    .logo-block { text-align: center; margin-bottom: 28px; }
+    .logo-mark { font-size: 32px; font-weight: 700; color: #58C65D; line-height: 1; letter-spacing: -0.5px; }
+    .logo-sub { font-size: 13px; color: #9EA5AD; margin-top: 6px; }
+    .page-title { font-size: 18px; font-weight: 700; color: #24292E; text-align: center; margin-bottom: 8px; }
+    .page-desc { font-size: 13px; color: #9EA5AD; text-align: center; margin-bottom: 28px; line-height: 1.5; }
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 28px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #CED2D6;
+      font-weight: 600;
+    }
+    .step.active { color: #58C65D; }
+    .step.done { color: #9EA5AD; }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #E5E7EA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .step.active .step-num { background: #58C65D; color: #fff; }
+    .step.done .step-num { background: #9EA5AD; color: #fff; }
+    .step-line { width: 32px; height: 1px; background: #E5E7EA; margin: 0 4px; }
+    .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .field-label { font-size: 13px; color: #9EA5AD; }
+    .field-row { display: flex; gap: 8px; }
+    .field-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid #CED2D6;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #24292E;
+      outline: none;
+    }
+    .field-input:focus { border-color: #58C65D; }
+    .field-input::placeholder { color: #CED2D6; }
+    .btn-send {
+      height: 44px;
+      padding: 0 14px;
+      background: #F6F7F9;
+      color: #596066;
+      border: 1px solid #CED2D6;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-send:hover { background: #E5E7EA; }
+    .btn-submit {
+      width: 100%;
+      height: 48px;
+      background: #58C65D;
+      color: #fff;
+      border: 1px solid #58C65D;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.25s;
+    }
+    .btn-submit:hover { background: #fff; color: #58C65D; }
+    .hint { font-size: 12px; color: #9EA5AD; margin-top: 4px; }
+    .success-box {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #E8F8E9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .success-title { font-size: 16px; font-weight: 700; color: #24292E; margin-bottom: 8px; }
+    .success-desc { font-size: 13px; color: #9EA5AD; line-height: 1.6; }
+    .link-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .link-row a { font-size: 12px; color: #9EA5AD; text-decoration: none; transition: color 0.2s; }
+    .link-row a:hover { color: #58C65D; }
+    .link-sep { font-size: 12px; color: #E5E7EA; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-block">
+      <div class="logo-mark">DL</div>
+      <div class="logo-sub">DOOH CMS 2.0</div>
+    </div>
+    <div class="page-title">비밀번호 찾기</div>
+    <div class="page-desc">가입 시 등록한 이메일로 인증 후<br>새 비밀번호를 설정할 수 있습니다.</div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step active" id="step1-ind"><div class="step-num">1</div>본인 확인</div>
+      <div class="step-line"></div>
+      <div class="step" id="step2-ind"><div class="step-num">2</div>인증 확인</div>
+      <div class="step-line"></div>
+      <div class="step" id="step3-ind"><div class="step-num">3</div>비밀번호 재설정</div>
+    </div>
+
+    <!-- Step 1: Identify -->
+    <div id="step1">
+      <form onsubmit="goStep2(event)">
+        <div class="field-group">
+          <label class="field-label">아이디</label>
+          <input class="field-input" type="text" placeholder="아이디를 입력하세요" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label">이메일</label>
+          <div class="field-row">
+            <input class="field-input" type="email" placeholder="가입 시 등록한 이메일" required>
+            <button type="button" class="btn-send" onclick="sendCode()">인증번호 발송</button>
+          </div>
+        </div>
+        <div class="field-group" id="codeGroup" style="display:none;">
+          <label class="field-label">인증번호</label>
+          <input class="field-input" type="text" placeholder="인증번호 6자리" id="codeInput">
+          <div class="hint">인증번호 유효시간: <span id="timer" style="color:#E97474;font-weight:600;">05:00</span></div>
+        </div>
+        <button type="submit" class="btn-submit">다음</button>
+      </form>
+    </div>
+
+    <!-- Step 2: Success msg (auto skip in mock) -->
+    <!-- Step 3: New password -->
+    <div id="step3" style="display:none;">
+      <form onsubmit="goComplete(event)">
+        <div class="field-group">
+          <label class="field-label">새 비밀번호</label>
+          <input class="field-input" type="password" placeholder="8자 이상, 영문·숫자·특수문자 조합" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label">새 비밀번호 확인</label>
+          <input class="field-input" type="password" placeholder="비밀번호를 다시 입력하세요" required>
+        </div>
+        <button type="submit" class="btn-submit">비밀번호 변경</button>
+      </form>
+    </div>
+
+    <!-- Complete -->
+    <div class="success-box" id="successBox">
+      <div class="success-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 14l6 6 10-12" stroke="#58C65D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="success-title">비밀번호가 변경되었습니다</div>
+      <div class="success-desc">새 비밀번호로 로그인해주세요.</div>
+      <button class="btn-submit" style="margin-top:24px;" onclick="location.href='login'">로그인 페이지로</button>
+    </div>
+
+    <div class="link-row">
+      <a href="login">로그인</a>
+      <span class="link-sep">|</span>
+      <a href="find-id">아이디 찾기</a>
+    </div>
+  </div>
+
+  <script>
+    let timerInterval = null;
+    function sendCode() {
+      document.getElementById('codeGroup').style.display = 'block';
+      startTimer(300);
+    }
+    function startTimer(secs) {
+      clearInterval(timerInterval);
+      const el = document.getElementById('timer');
+      timerInterval = setInterval(() => {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        el.textContent = `0${m}:${s < 10 ? '0' : ''}${s}`;
+        if (--secs < 0) { clearInterval(timerInterval); el.textContent = '만료'; }
+      }, 1000);
+    }
+    function goStep2(e) {
+      e.preventDefault();
+      clearInterval(timerInterval);
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step3').style.display = 'block';
+      document.getElementById('step1-ind').classList.replace('active', 'done');
+      document.getElementById('step2-ind').classList.replace('step', 'step done');
+      document.getElementById('step3-ind').classList.add('active');
+    }
+    function goComplete(e) {
+      e.preventDefault();
+      document.getElementById('step3').style.display = 'none';
+      document.getElementById('successBox').style.display = 'block';
+    }
+  </script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

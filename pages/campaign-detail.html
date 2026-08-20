@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>삼성전자 갤럭시 S25 런칭 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* ── Detail header ── */
+    .detail-header {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .detail-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .back-link {
+      color: #596066;
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-link:hover { color: #24292E; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-outline {
+      height: 34px; padding: 0 14px;
+      background: #fff; border: 1px solid #CED2D6; border-radius: 6px;
+      font-size: 13px; color: #24292E; cursor: pointer; font-weight: 500;
+    }
+    .btn-outline:hover { background: #F6F7F9; }
+    .btn-primary-sm {
+      height: 34px; padding: 0 14px;
+      background: #2D84ED; border: none; border-radius: 6px;
+      font-size: 13px; color: #fff; cursor: pointer; font-weight: 600;
+    }
+    .btn-primary-sm:hover { background: #2272d0; }
+    .btn-danger-outline {
+      height: 34px; padding: 0 14px;
+      background: #fff; border: 1px solid #E97474; border-radius: 6px;
+      font-size: 13px; color: #E97474; cursor: pointer; font-weight: 500;
+    }
+    .btn-danger-outline:hover { background: #FFF5F5; }
+    .detail-title { font-size: 20px; font-weight: 700; color: #24292E; margin: 0 0 6px; }
+    .detail-meta { font-size: 12px; color: #9EA5AD; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    /* Lifecycle SSOT */
+    .lc-draft      { background: #F0F1F3; color: #596066; }
+    .lc-draft .badge-dot { background: #9EA5AD; }
+    .lc-review     { background: #EAF3FF; color: #2D84ED; }
+    .lc-review .badge-dot { background: #2D84ED; }
+    .lc-approved   { background: #F0FDF4; color: #16A34A; }
+    .lc-approved .badge-dot { background: #58C65D; }
+    .lc-active     { background: #E0F2FE; color: #0369A1; }
+    .lc-active .badge-dot { background: #0EA5E9; }
+    .lc-completed  { background: #EAEAEA; color: #3A4349; }
+    .lc-completed .badge-dot { background: #596066; }
+    .lc-cancelled  { background: #FEE2E2; color: #991B1B; }
+    .lc-cancelled .badge-dot { background: #E97474; }
+
+    /* Recommendation mode */
+    .rec-auto   { background: #EAF3FF; color: #2D84ED; }
+    .rec-manual { background: #F0F1F3; color: #596066; }
+
+    /* PDE */
+    .pde-approved { background: #E8F8E9; color: #2E9E34; }
+    .pde-limited  { background: #FFF8E6; color: #B45309; }
+    .pde-deferred { background: #FFF4E0; color: #C2620D; }
+    .pde-rejected { background: #FEE2E2; color: #991B1B; }
+
+    .check-pass { color: #2E9E34; font-weight: 700; }
+    .check-warn { color: #B45309; font-weight: 700; }
+    .check-fail { color: #991B1B; font-weight: 700; }
+
+    /* ── PDE Panel card (top of detail) ── */
+    .pde-top-card {
+      border-left: 4px solid #F3BE4A;
+      background: #FFFBF0;
+      border-radius: 0 8px 8px 0;
+      border: 1px solid #FDE68A;
+      border-left: 4px solid #F3BE4A;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pde-top-card.approved {
+      border-left-color: #58C65D;
+      background: #F0FDF4;
+      border-color: #A7F3D0;
+      border-left-color: #58C65D;
+    }
+    .pde-top-card-left { display: flex; align-items: center; gap: 10px; }
+    .pde-top-card-label { font-size: 12px; font-weight: 700; color: #596066; }
+    .pde-top-card-text { font-size: 13px; color: #24292E; }
+
+    /* ── Tabs (8 tabs) ── */
+    .tabs-wrap { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; overflow: hidden; }
+    .tab-inputs { display: none; }
+    .tab-nav {
+      display: flex;
+      border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9;
+      overflow-x: auto;
+    }
+    .tab-label {
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #9EA5AD;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.1s;
+      background: #F6F7F9;
+      user-select: none;
+    }
+    .tab-label:hover { color: #596066; }
+    #tab1:checked ~ .tab-nav label[for="tab1"],
+    #tab2:checked ~ .tab-nav label[for="tab2"],
+    #tab3:checked ~ .tab-nav label[for="tab3"],
+    #tab4:checked ~ .tab-nav label[for="tab4"],
+    #tab5:checked ~ .tab-nav label[for="tab5"],
+    #tab6:checked ~ .tab-nav label[for="tab6"],
+    #tab7:checked ~ .tab-nav label[for="tab7"],
+    #tab8:checked ~ .tab-nav label[for="tab8"] {
+      color: #24292E;
+      border-bottom-color: #24292E;
+      font-weight: 600;
+      background: #fff;
+    }
+    .tab-content { display: none; padding: 24px; }
+    #tab1:checked ~ .tab-body > #content1,
+    #tab2:checked ~ .tab-body > #content2,
+    #tab3:checked ~ .tab-body > #content3,
+    #tab4:checked ~ .tab-body > #content4,
+    #tab5:checked ~ .tab-body > #content5,
+    #tab6:checked ~ .tab-body > #content6,
+    #tab7:checked ~ .tab-body > #content7,
+    #tab8:checked ~ .tab-body > #content8 { display: block; }
+
+    /* ── Info grid ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .info-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .info-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9EA5AD;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 5px;
+    }
+    .info-value { font-size: 14px; color: #24292E; font-weight: 500; }
+
+    /* ── Tab sections ── */
+    .tab-section {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .tab-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .tab-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #24292E;
+      margin-bottom: 16px;
+    }
+
+    /* ── Feasibility checklist ── */
+    .checklist { display: flex; flex-direction: column; gap: 8px; }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #F6F7F9;
+      font-size: 13px;
+    }
+    .check-icon { font-size: 15px; flex-shrink: 0; }
+    .check-item-label { flex: 1; color: #24292E; }
+    .check-item-result { font-size: 12px; font-weight: 600; }
+    .check-item.pass { background: #F0FDF4; }
+    .check-item.warn { background: #FFFBEB; }
+    .check-item.fail { background: #FEF2F2; }
+
+    /* ── Recommendation cards ── */
+    .rec-cards { display: flex; flex-direction: column; gap: 12px; }
+    .rec-card {
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 16px 20px;
+      background: #fff;
+    }
+    .rec-card.rank1 { border-color: #58C65D; border-width: 2px; }
+    .rec-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .rank-badge {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #F0F1F3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #596066;
+      flex-shrink: 0;
+    }
+    .rank-badge.rank1 { background: #FFD700; color: #7A5000; }
+    .rank-badge.rank2 { background: #C0C0C0; color: #3A4349; }
+    .rank-badge.rank3 { background: #CD7F32; color: #fff; }
+    .rec-product-name { font-size: 14px; font-weight: 700; color: #24292E; flex: 1; }
+    .score-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .score-bar-track { flex: 1; height: 8px; background: #E5E7EA; border-radius: 4px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 4px; }
+    .score-label { font-size: 12px; font-weight: 700; color: #24292E; width: 40px; text-align: right; }
+    .rec-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 12px; }
+    .rec-meta-item .label { color: #9EA5AD; margin-bottom: 2px; }
+    .rec-meta-item .value { font-weight: 600; color: #24292E; }
+    .select-btn {
+      height: 32px; padding: 0 16px;
+      background: #58C65D; border: none; border-radius: 6px;
+      font-size: 13px; font-weight: 600; color: #fff; cursor: pointer;
+    }
+    .select-btn:hover { background: #4ab34f; }
+    .select-btn:disabled { background: #CED2D6; cursor: not-allowed; }
+
+    /* ── Score breakdown ── */
+    .score-breakdown {
+      background: #F6F7F9; border-radius: 8px;
+      padding: 12px 16px; margin-top: 8px; font-size: 12px;
+    }
+    .score-breakdown-row {
+      display: flex; justify-content: space-between; align-items: center; padding: 4px 0;
+    }
+    .score-breakdown-row + .score-breakdown-row { border-top: 1px solid #E5E7EA; }
+    .score-breakdown-label { color: #596066; }
+    .score-breakdown-value { font-weight: 700; color: #24292E; }
+
+    /* ── PDE panel (tab 7) ── */
+    .pde-panel {
+      border: 1px solid #E5E7EA;
+      border-left: 4px solid #F3BE4A;
+      border-radius: 0 10px 10px 0;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .pde-panel.approved { border-left-color: #58C65D; }
+    .pde-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; background: #F6F7F9; border-bottom: 1px solid #E5E7EA;
+    }
+    .pde-panel-title { font-size: 14px; font-weight: 700; color: #24292E; }
+    .pde-panel-body { padding: 16px 18px; }
+    .pde-condition {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 8px 0; border-bottom: 1px solid #F0F1F3;
+      font-size: 13px; color: #24292E;
+    }
+    .pde-condition:last-child { border-bottom: none; }
+    .pde-cond-bullet {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #58C65D; flex-shrink: 0; margin-top: 4px;
+    }
+
+    /* ── Snapshot grid ── */
+    .snapshot-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;
+    }
+    .snapshot-item { background: #F6F7F9; border-radius: 8px; padding: 10px 14px; }
+    .snapshot-label { font-size: 11px; font-weight: 600; color: #9EA5AD; margin-bottom: 3px; letter-spacing: 0.03em; }
+    .snapshot-value { font-size: 13px; font-weight: 600; color: #24292E; }
+    .freshness-fresh { color: #2E9E34; background: #E8F8E9; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+    .freshness-stale { color: #B45309; background: #FFF8E6; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+
+    /* ── Selected snapshot (immutable) ── */
+    .selected-snapshot {
+      border: 2px solid #58C65D; border-radius: 10px;
+      padding: 16px 20px; background: #F0FDF4; margin-bottom: 20px;
+    }
+    .selected-snapshot-title { font-size: 13px; font-weight: 700; color: #2E9E34; margin-bottom: 12px; }
+
+    /* ── Selection table (immutable) ── */
+    .immutable-table-wrap { overflow-x: auto; margin-bottom: 20px; }
+    .immutable-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .immutable-table th {
+      background: #F6F7F9; padding: 9px 14px;
+      font-size: 11px; font-weight: 600; color: #9EA5AD;
+      text-align: left; border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .immutable-table td {
+      padding: 10px 14px; border-bottom: 1px solid #F0F1F3;
+      color: #24292E;
+    }
+    .immutable-table tr:last-child td { border-bottom: none; }
+    .immutable-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 700; padding: 1px 7px;
+      border-radius: 10px; background: #F0F1F3; color: #596066;
+    }
+
+    /* ── Audit timeline ── */
+    .timeline { display: flex; flex-direction: column; }
+    .timeline-item {
+      display: flex; gap: 16px; padding: 14px 0;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      flex-shrink: 0; width: 16px;
+    }
+    .timeline-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #2D84ED; border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #BDD9FF; flex-shrink: 0;
+    }
+    .timeline-line { flex: 1; width: 1px; background: #E5E7EA; }
+    .timeline-state { font-size: 13px; font-weight: 600; color: #24292E; margin-bottom: 2px; }
+    .timeline-time { font-size: 11px; color: #9EA5AD; margin-bottom: 4px; }
+    .timeline-user { font-size: 12px; color: #596066; }
+
+    /* ── Map placeholder ── */
+    .map-placeholder {
+      width: 100%; height: 140px;
+      background: linear-gradient(135deg, #e8f1fb 0%, #dceeff 100%);
+      border: 1px solid #E5E7EA; border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      color: #9EA5AD; font-size: 12px; margin-bottom: 12px;
+    }
+
+    /* ── Condition trigger table ── */
+    .trigger-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .trigger-table th {
+      background: #F6F7F9; padding: 8px 12px;
+      font-size: 11px; font-weight: 600; color: #9EA5AD; text-align: left;
+      border-bottom: 1px solid #E5E7EA; white-space: nowrap;
+    }
+    .trigger-table td { padding: 9px 12px; border-bottom: 1px solid #F0F1F3; color: #24292E; }
+    .trigger-table tr:last-child td { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Page Header -->
+    <div class="detail-header">
+      <div class="detail-header-top">
+        <a class="back-link" href="campaign-list">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#596066" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          캠페인 목록
+        </a>
+        <!-- State transition actions for 집행중: Close Campaign -->
+        <div class="header-actions" id="cmp-actions">
+          <button class="btn-outline" onclick="if(confirm('캠페인을 재개하시겠습니까?'))location.reload()">재개(Resume)</button>
+          <button class="btn-danger-outline" onclick="if(confirm('캠페인을 종료하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))location.href='campaign-list'">캠페인 종료</button>
+          <button class="btn-primary-sm" onclick="location.href='campaign-edit'">수정</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <h1 class="detail-title" id="cmp-title">삼성전자 갤럭시 S25 런칭</h1>
+          <div class="detail-meta" id="cmp-meta">CMP-2026-001 &nbsp;·&nbsp; 생성일: 2025.12.20 &nbsp;·&nbsp; 담당자: 홍길동</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;">
+          <!-- Lifecycle State Badge -->
+          <span class="badge lc-active" id="cmp-lc-badge"><span class="badge-dot"></span>집행중</span>
+          <!-- Recommendation mode badge -->
+          <span class="badge rec-auto">자동추천</span>
+          <!-- Approval -->
+          <span class="badge" id="cmp-appr-badge" style="background:#E8F8E9;color:#2E9E34;">승인됨</span>
+          <!-- PDE badge -->
+          <span class="badge pde-approved" id="cmp-pde-badge">PDE 승인</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;color:#9EA5AD;"><span>Lifecycle</span><span>추천모드</span><span>승인</span><span>PDE</span></div>
+    </div>
+
+    <!-- PDE Panel Card (amber left-border for non-approved; green for approved) -->
+    <div class="pde-top-card approved">
+      <div class="pde-top-card-left">
+        <span style="font-size:18px;">✅</span>
+        <div>
+          <div class="pde-top-card-label">PDE Decision</div>
+          <div class="pde-top-card-text">정책 검토 통과 — 모든 후보 적합성이 승인되었습니다. (Policy Version: v2.1.3)</div>
+        </div>
+      </div>
+      <span class="badge pde-approved">승인</span>
+    </div>
+
+    <!-- 8-Tab Structure -->
+    <div class="tabs-wrap">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab1" checked>
+      <input class="tab-inputs" type="radio" name="tabs" id="tab2">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab3">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab4">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab5">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab6">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab7">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab8">
+      <div class="tab-nav">
+        <label class="tab-label" for="tab1">기본정보</label>
+        <label class="tab-label" for="tab2">광고주 요구사항</label>
+        <label class="tab-label" for="tab3">광고효과 요구</label>
+        <label class="tab-label" for="tab4">광고 운영 요구</label>
+        <label class="tab-label" for="tab5">사전검토(Feasibility)</label>
+        <label class="tab-label" for="tab6">추천결과</label>
+        <label class="tab-label" for="tab7">선택결과 &amp; PDE</label>
+        <label class="tab-label" for="tab8">Audit</label>
+      </div>
+      <div class="tab-body">
+
+        <!-- ══ Tab 1: 기본정보 ══ -->
+        <div class="tab-content" id="content1">
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">캠페인명</div>
+              <div class="info-value">삼성전자 갤럭시 S25 런칭</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">캠페인 ID</div>
+              <div class="info-value" style="font-size:13px;color:#9EA5AD;">CMP-2026-001</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Lifecycle 상태</div>
+              <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">광고주 (campaign.advertiserId)</div>
+              <div class="info-value" style="color:#2D84ED;cursor:pointer;">삼성전자</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">대행사 (campaign.agencyId)</div>
+              <div class="info-value">제일기획 <span style="font-size:11px;color:#9EA5AD;">AGY-011</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">내부 담당 (campaign.ownerManagerId)</div>
+              <div class="info-value">홍길동</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">광고주 담당자 (campaign.advertiserContactId)</div>
+              <div class="info-value">박지원 <span style="font-size:11px;color:#9EA5AD;">ADV-001-C01</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">유입경로 (campaign.sourceType)</div>
+              <div class="info-value">직접문의 (Direct)</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">추천방식</div>
+              <div class="info-value"><span class="badge rec-auto">자동추천 (Auto)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 2: 광고주 요구사항 ══ -->
+        <div class="tab-content" id="content2">
+
+          <!-- 캠페인 목표 -->
+          <div class="tab-section">
+            <div class="tab-section-title">캠페인 목표 (campaign.objectives)</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">브랜드 인지도</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">도달 (Reach)</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">반복 노출</span>
+            </div>
+          </div>
+
+          <!-- 기간 -->
+          <div class="tab-section">
+            <div class="tab-section-title">희망 기간</div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">희망 시작일 (campaign.requestedStartDate)</div>
+                <div class="info-value">2026.01.15</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">희망 종료일 (campaign.requestedEndDate)</div>
+                <div class="info-value">2026.02.28</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 타깃 지역 -->
+          <div class="tab-section">
+            <div class="tab-section-title">희망 지역 (campaign.targetAreas)</div>
+            <div class="map-placeholder">
+              <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="16" r="8" stroke="#9EA5AD" stroke-width="1.8"/><path d="M18 24c0 0 8 6 8 10H10c0-4 8-10 8-10z" stroke="#9EA5AD" stroke-width="1.8" stroke-linejoin="round" fill="none"/><circle cx="18" cy="16" r="3" fill="#9EA5AD" opacity=".5"/></svg>
+              지도 뷰 (서울·강남·여의도·판교 권역 선택됨)
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">서울</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">강남구</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">영등포구</span>
+              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">성남시(판교)</span>
+            </div>
+          </div>
+
+          <!-- 상품 선택 방식 -->
+          <div class="tab-section">
+            <div class="tab-section-title">상품 선택 방식 (campaign.selectionMode)</div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">선택 방식</div>
+                <div class="info-value"><span class="badge rec-auto">자동추천 (RECOMMENDATION)</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slot·콘텐츠·예산 -->
+          <div class="tab-section">
+            <div class="tab-section-title">슬롯·소재·예산</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">희망 슬롯 시간 (campaign.requestedSlotDuration)</div>
+                <div class="info-value">30초</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">콘텐츠 참조 (campaign.contentRevisionRef)</div>
+                <div class="info-value" style="color:#2D84ED;cursor:pointer;">CNT-S25-LAUNCH-v2</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">희망 예산 (campaign.requestedBudget)</div>
+                <div class="info-value">KRW 45,000,000 <span style="font-size:11px;color:#9EA5AD;">(참고값·계약가격 아님)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 3: 광고효과 요구 ══ -->
+        <div class="tab-content" id="content3">
+          <div class="tab-section">
+            <div class="tab-section-title">KPI 우선순위 가중치 (campaign.effectWeights)</div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
+                  <span>유동인구 (footTraffic)</span><span style="color:#2D84ED;">1순위</span>
+                </div>
+                <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
+                  <div style="width:90%;height:100%;background:#2D84ED;border-radius:4px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
+                  <span>노출인구 (exposedAudience)</span><span style="color:#58C65D;">2순위</span>
+                </div>
+                <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
+                  <div style="width:70%;height:100%;background:#58C65D;border-radius:4px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
+                  <span>주목인구 (attentionAudience)</span><span style="color:#F3BE4A;">3순위</span>
+                </div>
+                <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
+                  <div style="width:50%;height:100%;background:#F3BE4A;border-radius:4px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;font-weight:600;color:#24292E;">
+                  <span>랭킹 (ranking)</span><span style="color:#9EA5AD;">4순위</span>
+                </div>
+                <div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;">
+                  <div style="width:30%;height:100%;background:#9EA5AD;border-radius:4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-section">
+            <div class="tab-section-title">수용자 세그먼트 (campaign.audience)</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">성별 (audience.gender)</div>
+                <div class="info-value">전체</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">연령대 (audience.ageBands)</div>
+                <div class="info-value">20대 – 40대</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">지역 세그먼트 (audience.regions)</div>
+                <div class="info-value">강남, 여의도, 판교</div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-section">
+            <div class="tab-section-title">효과 데이터 가용성</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="badge" style="background:#E8F8E9;color:#2E9E34;">유동인구 데이터 연동</span>
+              <span class="badge" style="background:#E8F8E9;color:#2E9E34;">노출 집계 가용</span>
+              <span class="badge" style="background:#FFF8E6;color:#B45309;">Eye-tracking 부분 가용</span>
+              <span class="badge" style="background:#F0F1F3;color:#9EA5AD;">랭킹 데이터 미수집</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 4: 광고 운영 요구 ══ -->
+        <div class="tab-content" id="content4">
+          <div class="tab-section">
+            <div class="tab-section-title">운영 방식 (campaign.operationMode)</div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">운영 모드</div>
+                <div class="info-value">일반 Rolling</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">재생 시간</div>
+                <div class="info-value">30초</div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-section">
+            <div class="tab-section-title">조건 광고 트리거 (campaign.conditionalRules)</div>
+            <div style="background:#F6F7F9;border-radius:8px;padding:12px 16px;font-size:13px;color:#9EA5AD;text-align:center;">
+              운영 모드가 일반(Rolling)이므로 조건 광고 규칙이 없습니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 5: 사전검토 (Feasibility) ══ -->
+        <div class="tab-content" id="content5">
+          <div class="tab-section">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+              <div class="tab-section-title" style="margin:0;">Feasibility Snapshot</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;color:#9EA5AD;">평가일: 2025.12.22 10:14</span>
+                <span class="freshness-fresh">FRESH</span>
+              </div>
+            </div>
+            <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <span style="font-size:20px;">✅</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#065F46;">Feasibility 통과</div>
+                <div style="font-size:12px;color:#34D399;margin-top:2px;">4개 항목 모두 통과 — Schedule 생성 가능</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checklist per IA_04 SSOT: 예산충분성/매체가용성/기간합리성/슬롯가용성 -->
+          <div class="tab-section">
+            <div class="tab-section-title">검증 체크리스트</div>
+            <div class="checklist">
+              <div class="check-item pass">
+                <span class="check-icon">✅</span>
+                <span class="check-item-label"><strong>예산충분성</strong> — 희망예산(KRW 45M) 기준 후보 List Price 범위 내 후보 3개 이상 확보</span>
+                <span class="check-item-result check-pass">통과</span>
+              </div>
+              <div class="check-item pass">
+                <span class="check-icon">✅</span>
+                <span class="check-item-label"><strong>매체가용성</strong> — 요청 기간·지역 내 가용 Product/Package 후보 충분</span>
+                <span class="check-item-result check-pass">통과</span>
+              </div>
+              <div class="check-item pass">
+                <span class="check-icon">✅</span>
+                <span class="check-item-label"><strong>기간합리성</strong> — 요청 시작일·종료일 정합성 확인, 최소 집행 기간 충족</span>
+                <span class="check-item-result check-pass">통과</span>
+              </div>
+              <div class="check-item pass">
+                <span class="check-icon">✅</span>
+                <span class="check-item-label"><strong>슬롯가용성</strong> — 30초 Slot Catalog 매칭 확인, 요청 슬롯 충분히 가용</span>
+                <span class="check-item-result check-pass">통과</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Snapshot metadata -->
+          <div class="tab-section">
+            <div class="tab-section-title">평가 스냅샷</div>
+            <div class="snapshot-grid">
+              <div class="snapshot-item">
+                <div class="snapshot-label">SNAPSHOT VERSION</div>
+                <div class="snapshot-value">FSB-SNAP-2025-1222-v1</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">EVALUATED AT</div>
+                <div class="snapshot-value">2025.12.22 10:14</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">INVENTORY VERSION</div>
+                <div class="snapshot-value">INV-20251222-0100</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">PDE POLICY VERSION</div>
+                <div class="snapshot-value">v2.1.3</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">EFFECT DATA AS-OF</div>
+                <div class="snapshot-value">2025.12.21 00:00</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">FRESHNESS</div>
+                <div class="snapshot-value"><span class="freshness-fresh">FRESH</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 6: 추천결과 ══ -->
+        <div class="tab-content" id="content6">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#24292E;">추천 결과 — Top 3 후보 (자동추천)</div>
+              <div style="font-size:12px;color:#9EA5AD;margin-top:2px;">Run: RUN-2025-1222-v2 &nbsp;·&nbsp; Rule: RULE-v1.4.2 &nbsp;·&nbsp; 2025.12.22 10:30</div>
+            </div>
+            <span class="badge rec-auto">자동추천 완료</span>
+          </div>
+          <div class="rec-cards">
+            <!-- Rank 1 (selected) -->
+            <div class="rec-card rank1">
+              <div class="rec-card-header">
+                <div class="rank-badge rank1">1</div>
+                <div class="rec-product-name">강남 프라임 패키지 — 30초 일반</div>
+                <span class="badge pde-approved" style="font-size:11px;">PDE 승인</span>
+                <span style="font-size:12px;background:#E8F8E9;color:#2E9E34;padding:3px 10px;border-radius:20px;font-weight:600;">선택됨</span>
+              </div>
+              <div style="margin-bottom:8px;">
+                <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;font-weight:600;">TOTAL SCORE</div>
+                <div class="score-bar-wrap">
+                  <div class="score-bar-track"><div class="score-bar-fill" style="width:91%;background:#58C65D;"></div></div>
+                  <div class="score-label">91.2</div>
+                </div>
+              </div>
+              <div class="score-breakdown">
+                <div class="score-breakdown-row">
+                  <span class="score-breakdown-label">편성가능성 점수 (Feasibility)</span>
+                  <span class="score-breakdown-value">28.4 / 30</span>
+                </div>
+                <div class="score-breakdown-row">
+                  <span class="score-breakdown-label">광고효과 점수 (Effect)</span>
+                  <span class="score-breakdown-value">36.2 / 40</span>
+                </div>
+                <div class="score-breakdown-row">
+                  <span class="score-breakdown-label">요구 적합도 (RequirementFit)</span>
+                  <span class="score-breakdown-value">17.6 / 20</span>
+                </div>
+                <div class="score-breakdown-row">
+                  <span class="score-breakdown-label">예산 적합도 (BudgetFit) <span style="font-size:10px;color:#9EA5AD;">참고값</span></span>
+                  <span class="score-breakdown-value">9.0 / 10</span>
+                </div>
+              </div>
+              <div class="rec-meta-grid" style="margin-top:12px;">
+                <div class="rec-meta-item"><div class="label">가용률</div><div class="value" style="color:#2E9E34;">87%</div></div>
+                <div class="rec-meta-item"><div class="label">예상 노출</div><div class="value">124,500회/월</div></div>
+                <div class="rec-meta-item"><div class="label">List Price</div><div class="value">₩3,300,000</div></div>
+              </div>
+            </div>
+            <!-- Rank 2 -->
+            <div class="rec-card">
+              <div class="rec-card-header">
+                <div class="rank-badge rank2">2</div>
+                <div class="rec-product-name">여의도 IFC 미디어 — 30초 일반</div>
+                <span class="badge pde-approved" style="font-size:11px;">PDE 승인</span>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:84%;background:#2D84ED;"></div></div>
+                <div class="score-label">84.0</div>
+              </div>
+              <div class="rec-meta-grid" style="margin-top:8px;">
+                <div class="rec-meta-item"><div class="label">가용률</div><div class="value" style="color:#2E9E34;">92%</div></div>
+                <div class="rec-meta-item"><div class="label">예상 노출</div><div class="value">98,200회/월</div></div>
+                <div class="rec-meta-item"><div class="label">List Price</div><div class="value">₩2,800,000</div></div>
+              </div>
+            </div>
+            <!-- Rank 3 -->
+            <div class="rec-card">
+              <div class="rec-card-header">
+                <div class="rank-badge rank3">3</div>
+                <div class="rec-product-name">판교 테크노밸리 DID — 30초 일반</div>
+                <span class="badge pde-approved" style="font-size:11px;">PDE 승인</span>
+              </div>
+              <div class="score-bar-wrap">
+                <div class="score-bar-track"><div class="score-bar-fill" style="width:76%;background:#9EA5AD;"></div></div>
+                <div class="score-label">76.3</div>
+              </div>
+              <div class="rec-meta-grid" style="margin-top:8px;">
+                <div class="rec-meta-item"><div class="label">가용률</div><div class="value" style="color:#2E9E34;">95%</div></div>
+                <div class="rec-meta-item"><div class="label">예상 노출</div><div class="value">76,800회/월</div></div>
+                <div class="rec-meta-item"><div class="label">List Price</div><div class="value">₩2,100,000</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 7: 선택결과 & PDE ══ -->
+        <div class="tab-content" id="content7">
+
+          <!-- Immutable Selection Snapshot table -->
+          <div class="tab-section">
+            <div class="tab-section-title">Campaign Selection Snapshot (Immutable) <span class="immutable-badge">LOCKED</span></div>
+            <div class="immutable-table-wrap">
+              <table class="immutable-table">
+                <thead>
+                  <tr>
+                    <th>Snapshot ID</th>
+                    <th>선택 프로덕트</th>
+                    <th>Score</th>
+                    <th>Rank</th>
+                    <th>선택 일시</th>
+                    <th>선택자</th>
+                    <th>PDE Decision</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-size:11px;color:#9EA5AD;">SEL-SNAP-20260115-001</td>
+                    <td>강남 프라임 패키지 — 30초 일반</td>
+                    <td style="font-weight:700;color:#2E9E34;">91.2</td>
+                    <td style="font-weight:700;">#1</td>
+                    <td style="font-size:12px;">2026.01.15 09:00</td>
+                    <td>홍길동</td>
+                    <td><span class="badge pde-approved">승인</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Version snapshot -->
+          <div class="tab-section">
+            <div class="tab-section-title">버전 Snapshot (campaign.selectionSnapshots)</div>
+            <div class="snapshot-grid">
+              <div class="snapshot-item">
+                <div class="snapshot-label">RUN VERSION</div>
+                <div class="snapshot-value">RUN-2025-1222-v2</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">RULE VERSION</div>
+                <div class="snapshot-value">RULE-v1.4.2</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">MODEL VERSION</div>
+                <div class="snapshot-value">N/A (Rule-based)</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">POLICY VERSION</div>
+                <div class="snapshot-value">v2.1.3</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">DATA AS-OF</div>
+                <div class="snapshot-value">2025.12.21 00:00</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">SNAPSHOT AT</div>
+                <div class="snapshot-value">2026.01.15 09:00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PDE Decision Panel (amber left-border spec; green for approved) -->
+          <div class="pde-panel approved">
+            <div class="pde-panel-header">
+              <div class="pde-panel-title">PDE Decision</div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:12px;color:#9EA5AD;">Policy Version: v2.1.3</span>
+                <span class="badge pde-approved">승인</span>
+              </div>
+            </div>
+            <div class="pde-panel-body">
+              <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:12px;">승인 사유</div>
+              <div class="pde-condition">
+                <div class="pde-cond-bullet"></div>
+                <span>동일 광고주(삼성전자) 동시 집행 정책 충족 — 현재 1개 활성으로 허용 범위 내</span>
+              </div>
+              <div class="pde-condition">
+                <div class="pde-cond-bullet"></div>
+                <span>강남 권역 전자제품 카테고리 시간 제한 여유 충분 — 주간 1시간 20분 잔여 가용</span>
+              </div>
+              <div class="pde-condition">
+                <div class="pde-cond-bullet"></div>
+                <span>콘텐츠 심의 완료 확인 (CNT-S25-LAUNCH-v2) — 모든 정책 요건 통과</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 8: Audit ══ -->
+        <div class="tab-content" id="content8">
+          <div class="tab-section">
+            <div class="tab-section-title">기본 Audit 정보</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">생성일시</div>
+                <div class="info-value">2025.12.20 14:00</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">생성자</div>
+                <div class="info-value">홍길동</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">최종 수정일시</div>
+                <div class="info-value">2026.01.15 09:00</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">최종 수정자</div>
+                <div class="info-value">홍길동</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">현재 담당자</div>
+                <div class="info-value">홍길동</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">현재 Lifecycle</div>
+                <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-section">
+            <div class="tab-section-title">상태 변경 이력</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#0EA5E9;box-shadow:0 0 0 2px #BAE6FD;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">승인 → 집행중 전환</div>
+                  <div class="timeline-time">2026.01.15 09:00</div>
+                  <div class="timeline-user">홍길동 · Schedule 생성 완료 후 집행 시작</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#58C65D;box-shadow:0 0 0 2px #A7F3D0;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">선택완료 → 승인 전환 (PDE 승인)</div>
+                  <div class="timeline-time">2026.01.14 17:30</div>
+                  <div class="timeline-user">시스템 · PDE 자동 검증 통과</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#16A34A;box-shadow:0 0 0 2px #BBF7D0;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">추천완료 → 선택완료 (강남 프라임 패키지 선택)</div>
+                  <div class="timeline-time">2026.01.13 11:05</div>
+                  <div class="timeline-user">홍길동 · 추천 1순위 선택</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#7C5CBF;box-shadow:0 0 0 2px #DDD0F5;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">검토 → 추천완료 (자동추천 Run 완료)</div>
+                  <div class="timeline-time">2025.12.22 10:30</div>
+                  <div class="timeline-user">시스템 · Run RUN-2025-1222-v2 완료</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#2D84ED;box-shadow:0 0 0 2px #BDD9FF;"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">초안 → 검토 전환</div>
+                  <div class="timeline-time">2025.12.22 09:00</div>
+                  <div class="timeline-user">홍길동 · 검토 요청 제출</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot" style="background:#9EA5AD;box-shadow:0 0 0 2px #E5E7EA;"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-state">초안(Draft) 생성</div>
+                  <div class="timeline-time">2025.12.20 14:00</div>
+                  <div class="timeline-user">홍길동 · 캠페인 최초 등록</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-body -->
+    </div><!-- /tabs-wrap -->
+
+  </div>
+</main>
+
+<script src="../assets/js/cms.js"></script>
+<script>
+(function() {
+  const CAMPAIGNS = {
+    'CMP-2026-001': {
+      title: '삼성전자 갤럭시 S25 런칭',
+      advertiser: '삼성전자', agency: '제일기획 (AGY-011)',
+      manager: '홍길동', contact: '박지원 (ADV-001-C01)',
+      sourceType: '직접문의 (Direct)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩480,000,000', requestedBudget: 'KRW 45,000,000',
+      period: '2026.01.15 – 2026.06.30',
+      startDate: '2026.01.15', endDate: '2026.02.28',
+      slotDuration: '30초', contentRef: 'CNT-S25-LAUNCH-v2',
+      targetAreas: ['서울', '강남구', '영등포구', '성남시(판교)'],
+      goals: ['브랜드 인지도', '도달 (Reach)', '반복 노출'],
+      lc: 'active', lcLabel: '집행중',
+      appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
+      pde: 'PDE 승인', pdeClass: 'pde-approved',
+      actions: '<button class="btn-outline" onclick="if(confirm(\'캠페인을 재개하시겠습니까?\'))location.reload()">재개(Resume)</button><button class="btn-danger-outline" onclick="if(confirm(\'캠페인을 종료하시겠습니까?\'))location.href=\'campaign-list\'">캠페인 종료</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2025.12.20'
+    },
+    'CMP-2026-002': {
+      title: 'LG생활건강 봄 시즌 프로모션',
+      advertiser: 'LG생활건강', agency: 'HS애드 (AGY-007)',
+      manager: '김영수', contact: '이수정 (ADV-002-C01)',
+      sourceType: '대행사 (Agency)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩120,000,000', requestedBudget: 'KRW 12,000,000',
+      period: '2026.03.01 – 2026.03.31',
+      startDate: '2026.03.01', endDate: '2026.03.31',
+      slotDuration: '15초', contentRef: 'CNT-LG-SPRING-v1',
+      targetAreas: ['서울', '마포구', '용산구', '서대문구'],
+      goals: ['신제품 인지도', '구매의향 제고'],
+      lc: 'approved', lcLabel: '승인됨',
+      appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
+      pde: 'PDE 제한', pdeClass: 'pde-limited',
+      actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">집행시작</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026.01.25'
+    },
+    'CMP-2026-003': {
+      title: '현대자동차 아이오닉9 브랜드 캠페인',
+      advertiser: '현대자동차', agency: '이노션 (AGY-003)',
+      manager: '이지은', contact: '최병훈 (ADV-003-C02)',
+      sourceType: '직접문의 (Direct)', selectionMode: '직접선택 (MANUAL)',
+      budget: '₩320,000,000', requestedBudget: 'KRW 30,000,000',
+      period: '2026.02.15 – 2026.03.15',
+      startDate: '2026.02.15', endDate: '2026.03.15',
+      slotDuration: '30초', contentRef: 'CNT-HMC-IONIQ9-v2',
+      targetAreas: ['서울', '강남구', '수원시', '용인시'],
+      goals: ['브랜드 프리미엄', '신모델 인지도'],
+      lc: 'review', lcLabel: '검토중',
+      appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;',
+      pde: 'PDE 보류', pdeClass: 'pde-deferred',
+      actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026.02.01'
+    },
+    'CMP-2026-004': {
+      title: '카카오페이 2026 브랜드 어웨어니스',
+      advertiser: '카카오', agency: '직접 (없음)',
+      manager: '박민서', contact: '장하은 (ADV-004-C01)',
+      sourceType: '인바운드 (Inbound)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩85,000,000', requestedBudget: 'KRW 8,500,000',
+      period: '2026.04.01 – 2026.04.30',
+      startDate: '2026.04.01', endDate: '2026.04.30',
+      slotDuration: '15초', contentRef: '(미정)',
+      targetAreas: ['서울', '경기', '판교'],
+      goals: ['앱 인지도', 'MZ세대 도달'],
+      lc: 'draft', lcLabel: '초안',
+      appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
+      pde: 'PDE 미심사', pdeClass: '',
+      actions: '<button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026.02.10'
+    },
+    'CMP-2025-089': {
+      title: '네이버 클라우드 B2B 어웨어니스',
+      advertiser: '네이버', agency: 'TBWA코리아 (AGY-015)',
+      manager: '홍길동', contact: '오민지 (ADV-005-C01)',
+      sourceType: '직접문의 (Direct)', selectionMode: '직접선택 (MANUAL)',
+      budget: '₩200,000,000', requestedBudget: 'KRW 20,000,000',
+      period: '2025.10.01 – 2025.10.31',
+      startDate: '2025.10.01', endDate: '2025.10.31',
+      slotDuration: '30초', contentRef: 'CNT-NAVER-CLOUD-v3',
+      targetAreas: ['서울', '강남구', '여의도', '판교'],
+      goals: ['B2B 인지도', '기업 신뢰도'],
+      lc: 'completed', lcLabel: '완료',
+      appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;',
+      pde: 'PDE 승인', pdeClass: 'pde-approved',
+      actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (완료된 캠페인)</span>',
+      createdAt: '2025.09.20'
+    },
+    'CMP-NEW': {
+      title: '(신규 등록 캠페인)',
+      advertiser: '(광고주 미입력)', agency: '—',
+      manager: '홍길동', contact: '—',
+      sourceType: '직접문의 (Direct)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '—', requestedBudget: '—',
+      period: '—', startDate: '—', endDate: '—',
+      slotDuration: '30초', contentRef: '(미정)',
+      targetAreas: ['(미설정)'], goals: ['(미설정)'],
+      lc: 'draft', lcLabel: '초안',
+      appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
+      pde: 'PDE 미심사', pdeClass: '',
+      actions: '<button class="btn-primary-sm" onclick="goStateCmp(\'review\')">승인요청</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+      createdAt: '2026-08-20', isNew: true
+    },
+    'CMP-2025-061': {
+      title: '삼성전자 비스포크 가을 이벤트',
+      advertiser: '삼성전자', agency: '제일기획 (AGY-011)',
+      manager: '김영수', contact: '박지원 (ADV-001-C01)',
+      sourceType: '대행사 (Agency)', selectionMode: '자동추천 (RECOMMENDATION)',
+      budget: '₩160,000,000', requestedBudget: 'KRW 16,000,000',
+      period: '2025.09.01 – 2025.09.30',
+      startDate: '2025.09.01', endDate: '2025.09.30',
+      slotDuration: '30초', contentRef: 'CNT-BESPOKE-v1',
+      targetAreas: ['서울', '경기'],
+      goals: ['가을 시즌 판매 촉진'],
+      lc: 'cancelled', lcLabel: '취소',
+      appr: '—', apprStyle: 'background:#F0F1F3;color:#9EA5AD;',
+      pde: '—', pdeClass: '',
+      actions: '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (취소된 캠페인)</span>',
+      createdAt: '2025.08.10'
+    }
+  };
+
+  function infoItem(label, value) {
+    return '<div class="info-item"><div class="info-label">' + label + '</div><div class="info-value">' + value + '</div></div>';
+  }
+  function badge(cls, label, dot) {
+    return '<span class="badge ' + cls + '">' + (dot ? '<span class="badge-dot"></span>' : '') + label + '</span>';
+  }
+  function areaBadges(arr) {
+    return arr.map(function(a) { return '<span class="badge" style="background:#EAF3FF;color:#2D84ED;">' + a + '</span>'; }).join(' ');
+  }
+  function goalBadges(arr) {
+    return arr.map(function(g) { return '<span class="badge" style="background:#EAF3FF;color:#2D84ED;">' + g + '</span>'; }).join(' ');
+  }
+
+  function goStateCmp(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
+
+  const STATE_ACTIONS_CMP = {
+    'draft':     '<button class="btn-primary-sm" onclick="goStateCmp(\'review\')">승인요청</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+    'review':    '<button class="btn-primary-sm" onclick="goStateCmp(\'approved\')">승인</button><button class="btn-outline" onclick="goStateCmp(\'rejected\')">반려</button>',
+    'approved':  '<button class="btn-primary-sm" onclick="goStateCmp(\'active\')">집행시작</button><button class="btn-primary-sm" onclick="location.href=\'campaign-edit\'">수정</button>',
+    'active':    '<button class="btn-outline" onclick="goStateCmp(\'paused\')">일시중지</button><button class="btn-danger-outline" onclick="goStateCmp(\'completed\')">종료</button>',
+    'paused':    '<button class="btn-outline" onclick="goStateCmp(\'active\')">재개</button><button class="btn-danger-outline" onclick="goStateCmp(\'completed\')">종료</button>',
+    'completed': '<span style="font-size:13px;color:#9EA5AD;">읽기 전용 (완료된 캠페인)</span>',
+    'rejected':  '<span style="font-size:13px;color:#9EA5AD;">반려됨 — 수정 후 재승인 요청하세요.</span>'
+  };
+  const STATE_LC_CMP = {
+    'draft': {lc:'draft', label:'초안'}, 'review': {lc:'review', label:'검토중'},
+    'approved': {lc:'approved', label:'승인됨'}, 'active': {lc:'active', label:'집행중'},
+    'paused': {lc:'paused', label:'일시중지'}, 'completed': {lc:'completed', label:'완료'},
+    'rejected': {lc:'rejected', label:'반려'}
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'CMP-2026-001';
+    const stateParam = params.get('state');
+    const d = CAMPAIGNS[id] || CAMPAIGNS['CMP-2026-001'];
+
+    // Show "just registered" banner
+    if (d.isNew) {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:#EAF3FF;border:1px solid #2D84ED;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#2D84ED;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/></svg> 방금 등록된 항목입니다. Lifecycle: <strong>초안</strong> · 승인요청 버튼을 눌러 검토를 요청하세요.';
+      var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
+      main.insertBefore(banner, main.firstChild);
+    }
+
+    // ── Header ──
+    const titleEl = document.getElementById('cmp-title');
+    if (titleEl) titleEl.textContent = d.title;
+
+    const metaEl = document.getElementById('cmp-meta');
+    if (metaEl) metaEl.innerHTML = id + ' &nbsp;·&nbsp; 생성일: ' + d.createdAt + ' &nbsp;·&nbsp; 담당자: ' + d.manager;
+
+    // Apply ?state= override
+    var lcInfo = stateParam && STATE_LC_CMP[stateParam] ? STATE_LC_CMP[stateParam] : { lc: d.lc, label: d.lcLabel };
+    var actionsHtml = stateParam && STATE_ACTIONS_CMP[stateParam] ? STATE_ACTIONS_CMP[stateParam] : d.actions;
+
+    const lcBadge = document.getElementById('cmp-lc-badge');
+    if (lcBadge) { lcBadge.className = 'badge lc-' + lcInfo.lc; lcBadge.innerHTML = '<span class="badge-dot"></span>' + lcInfo.label; }
+
+    const apprBadge = document.getElementById('cmp-appr-badge');
+    if (apprBadge) { apprBadge.textContent = d.appr; apprBadge.setAttribute('style', d.apprStyle); }
+
+    const pdeBadge = document.getElementById('cmp-pde-badge');
+    if (pdeBadge) { pdeBadge.textContent = d.pde; pdeBadge.className = 'badge ' + d.pdeClass; }
+
+    const actionsEl = document.getElementById('cmp-actions');
+    if (actionsEl) actionsEl.innerHTML = actionsHtml;
+
+    // ── Tab 1: 기본정보 ──
+    var c1 = document.getElementById('content1');
+    if (c1) {
+      var modeClass = d.selectionMode.indexOf('자동') >= 0 ? 'rec-auto' : 'rec-manual';
+      c1.innerHTML = '<div class="info-grid">'
+        + infoItem('캠페인명', d.title)
+        + infoItem('캠페인 ID', '<span style="font-size:13px;color:#9EA5AD;">' + id + '</span>')
+        + infoItem('Lifecycle 상태', badge('lc-' + d.lc, d.lcLabel, true))
+        + infoItem('광고주 (campaign.advertiserId)', '<span style="color:#2D84ED;cursor:pointer;">' + d.advertiser + '</span>')
+        + infoItem('대행사 (campaign.agencyId)', d.agency)
+        + infoItem('내부 담당 (campaign.ownerManagerId)', d.manager)
+        + infoItem('광고주 담당자 (campaign.advertiserContactId)', d.contact)
+        + infoItem('유입경로 (campaign.sourceType)', d.sourceType)
+        + infoItem('추천방식', badge(modeClass, d.selectionMode, false))
+        + '</div>';
+    }
+
+    // ── Tab 2: 광고주 요구사항 ──
+    var c2 = document.getElementById('content2');
+    if (c2) {
+      c2.innerHTML = '<div class="tab-section"><div class="tab-section-title">캠페인 목표 (campaign.objectives)</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + goalBadges(d.goals) + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">희망 기간</div>'
+        + '<div class="info-grid info-grid-2">'
+        + infoItem('희망 시작일 (campaign.requestedStartDate)', d.startDate)
+        + infoItem('희망 종료일 (campaign.requestedEndDate)', d.endDate)
+        + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">희망 지역 (campaign.targetAreas)</div>'
+        + '<div class="map-placeholder"><svg width="28" height="28" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="16" r="8" stroke="#9EA5AD" stroke-width="1.8"/><path d="M18 24c0 0 8 6 8 10H10c0-4 8-10 8-10z" stroke="#9EA5AD" stroke-width="1.8" stroke-linejoin="round" fill="none"/><circle cx="18" cy="16" r="3" fill="#9EA5AD" opacity=".5"/></svg>'
+        + '지도 뷰 (' + d.targetAreas.join('·') + ' 선택됨)</div>'
+        + '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">' + areaBadges(d.targetAreas) + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">상품 선택 방식 (campaign.selectionMode)</div>'
+        + '<div class="info-grid info-grid-2">' + infoItem('선택 방식', badge(d.selectionMode.indexOf('자동') >= 0 ? 'rec-auto' : 'rec-manual', d.selectionMode, false)) + '</div></div>'
+        + '<div class="tab-section"><div class="tab-section-title">슬롯·소재·예산</div>'
+        + '<div class="info-grid">'
+        + infoItem('희망 슬롯 시간 (campaign.requestedSlotDuration)', d.slotDuration)
+        + infoItem('콘텐츠 참조 (campaign.contentRevisionRef)', '<span style="color:#2D84ED;cursor:pointer;">' + d.contentRef + '</span>')
+        + infoItem('희망 예산 (campaign.requestedBudget)', d.requestedBudget + ' <span style="font-size:11px;color:#9EA5AD;">(참고값·계약가격 아님)</span>')
+        + '</div></div>';
+    }
+  });
+})();
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

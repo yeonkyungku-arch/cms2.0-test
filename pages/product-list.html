@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>프로덕트 목록 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
     /* ── Toolbar ── */
-    .toolbar {
+    .toolbar-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .toolbar-search {
       flex: 1;
+      min-width: 220px;
       position: relative;
     }
     .toolbar-search svg {
@@ -48,6 +51,7 @@
       appearance: none;
       cursor: pointer;
       white-space: nowrap;
+      flex-shrink: 0;
     }
     .btn-primary {
       height: 36px;
@@ -63,8 +67,42 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
     }
     .btn-primary:hover { background: #4ab34f; }
+
+    /* ── Status summary chips ── */
+    .status-chips {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #E5E7EA;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .status-chip:hover { background: #F6F7F9; }
+    .status-chip.selected { border-color: #2D84ED; background: #EAF3FF; color: #2D84ED; }
+    .chip-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .chip-all      { background: #596066; }
+    .chip-ready    { background: #2D84ED; }
+    .chip-approved { background: #7C5CBF; }
+    .chip-active   { background: #58C65D; }
+    .chip-paused   { background: #F3BE4A; }
 
     /* ── Table ── */
     .table-card {
@@ -73,19 +111,19 @@
       border-radius: 10px;
       overflow: hidden;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
     thead th {
       background: #F6F7F9;
-      padding: 10px 16px;
+      padding: 10px 14px;
       font-size: 12px;
       font-weight: 600;
       color: #596066;
       text-align: left;
       border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap;
     }
+    thead th.right { text-align: right; }
     thead th.center { text-align: center; }
     tbody tr {
       border-bottom: 1px solid #E5E7EA;
@@ -94,42 +132,21 @@
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #F6F7F9; }
     tbody td {
-      padding: 13px 16px;
+      padding: 13px 14px;
       font-size: 13px;
       color: #24292E;
       vertical-align: middle;
     }
+    tbody td.right  { text-align: right; }
     tbody td.center { text-align: center; }
     .product-name-link {
       color: #24292E;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
     }
     .product-name-link:hover { color: #2D84ED; text-decoration: underline; }
 
-    /* ── Tooltip ── */
-    .tooltip-wrap {
-      position: relative;
-      display: inline-block;
-    }
-    .tooltip-wrap .tooltip-box {
-      display: none;
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #24292E;
-      color: #fff;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      white-space: nowrap;
-      z-index: 100;
-      pointer-events: none;
-    }
-    .tooltip-wrap:hover .tooltip-box { display: block; }
-
-    /* ── Status badges ── */
+    /* ── Lifecycle badges ── */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -139,137 +156,50 @@
       font-size: 12px;
       font-weight: 600;
     }
-    .badge-active   { background: #E8F8E9; color: #2E9E34; }
-    .badge-inactive { background: #F0F1F3; color: #596066; }
-    .badge-draft    { background: #FFF8E6; color: #B45309; }
-    .badge-adex     { background: #EAF3FF; color: #2D84ED; border: 1px solid #BDD9FF; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 4px; }
-    .badge-adex svg { flex-shrink: 0; }
-    .badge-no-adex  { background: #F1F2F4; color: #9EA5AD; border: 1px solid #E5E7EA; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    .badge-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-    }
-    .badge-active .badge-dot   { background: #58C65D; }
-    .badge-inactive .badge-dot { background: #9EA5AD; }
-    .badge-draft .badge-dot    { background: #E8841A; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .lc-draft    { background: #F0F1F3; color: #596066; }
+    .lc-draft    .badge-dot { background: #9EA5AD; }
+    .lc-ready    { background: #EAF3FF; color: #2D84ED; }
+    .lc-ready    .badge-dot { background: #2D84ED; }
+    .lc-approved { background: #F0EAFA; color: #7C5CBF; }
+    .lc-approved .badge-dot { background: #7C5CBF; }
+    .lc-active   { background: #E8F8E9; color: #2E9E34; }
+    .lc-active   .badge-dot { background: #58C65D; }
+    .lc-paused   { background: #FFFBE6; color: #B45309; }
+    .lc-paused   .badge-dot { background: #F3BE4A; }
+    .lc-ended    { background: #FFF0F0; color: #B03030; }
+    .lc-ended    .badge-dot { background: #E97474; }
 
-    /* ── Bulk action bar ── */
-    .bulk-bar {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      background: #EAF3FF;
-      border: 1px solid #BDD9FF;
-      border-radius: 8px;
-      margin-bottom: 12px;
-    }
-    .bulk-bar.show { display: flex; }
-    .bulk-bar-count {
-      font-size: 13px;
-      font-weight: 600;
-      color: #24292E;
-      flex: 1;
-    }
-    .btn-bulk {
-      height: 32px;
-      padding: 0 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-    }
-    .btn-bulk-activate {
-      background: #E8F8E9; color: #2E9E34; border-color: #B2DFB3;
-    }
-    .btn-bulk-activate:hover { background: #d4f0d5; }
-    .btn-bulk-deactivate {
-      background: #F0F1F3; color: #596066; border-color: #D0D4D8;
-    }
-    .btn-bulk-deactivate:hover { background: #e4e6e9; }
-    .btn-bulk-delete {
-      background: #FEE2E2; color: #991B1B; border-color: #FECACA;
-    }
-    .btn-bulk-delete:hover { background: #fdd5d5; }
-    .btn-bulk-delete:disabled {
-      opacity: .45; cursor: not-allowed;
-    }
-
-    /* ── Checkbox styles ── */
-    .row-check, .all-check {
-      width: 16px; height: 16px; cursor: pointer; accent-color: #58C65D;
-    }
-    tbody tr.selected { background: #F0F7FF; }
-    tbody tr.selected:hover { background: #E6F0FD; }
-
-    /* ── 현황판 ── */
-    .dashboard-board {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-      align-items: stretch;
-    }
-    .board-section {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-    }
-    .board-section-title {
+    /* ── Slot chips ── */
+    .slot-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+    .slot-chip {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
-      color: #9EA5AD;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .board-cards {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
-      flex: 1;
-    }
-    .board-card {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1.5px solid transparent;
-      cursor: pointer;
-      transition: border-color .15s, background .15s;
       background: #F6F7F9;
-    }
-    .board-card:hover { background: #EDEEF0; }
-    .board-card.active-filter { border-color: #58C65D; background: #F0FDF4; }
-    .board-card-label {
-      font-size: 11px;
+      border: 1px solid #E5E7EA;
       color: #596066;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
-    .board-card-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
+
+    /* ── Numeric cells ── */
+    .num { font-variant-numeric: tabular-nums; }
+
+    /* ── Media type tag ── */
+    .media-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #EAF3FF;
+      color: #2D84ED;
     }
-    .board-card-count {
-      font-size: 22px;
-      font-weight: 700;
-      color: #24292E;
-      line-height: 1;
-    }
-    .board-card-sub {
-      font-size: 10px;
-      color: #B0B7BE;
-    }
+
+    /* ── Muted text ── */
+    .muted { color: #9EA5AD; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -278,20 +208,56 @@
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
-    <li class="gnb-disabled"><a href="#">대시보드 <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
     <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
-    <li><a href="product-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
+    <li class="gnb-has-sub"><a href="product-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
     <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
     <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
     <div class="gnb-sub">
     <div class="gnb-sub-title">편성표</div>
     <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
     <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
-  </div>
-  </li>
+    </div>
+    </li>
     <div class="gnb-divider"></div>
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
@@ -307,9 +273,9 @@
       <span class="dot-badge"></span>
     </div>
     <div class="topbar-profile">
-      <div class="topbar-avatar">구</div>
+      <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
-        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-name">홍길동</div>
         <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
@@ -319,362 +285,271 @@
 <!-- ③ Main content -->
 <main class="content">
   <div class="content-inner">
-  <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">프로덕트</div>
 
-  <!-- 현황판 -->
-  <div class="dashboard-board">
-    <!-- 편성 상태 -->
-    <div class="board-section">
-      <div class="board-section-title">편성 상태</div>
-      <div class="board-cards">
-        <div class="board-card" id="bc-sched-all" onclick="filterByBoard('sched','')">
-          <div class="board-card-label">전체</div>
-          <div class="board-card-count" id="cnt-sched-all">0</div>
-        </div>
-        <div class="board-card" id="bc-sched-on" onclick="filterByBoard('sched','true')">
-          <div class="board-card-label"><span class="board-card-dot" style="background:#10B981;"></span>편성 중</div>
-          <div class="board-card-count" id="cnt-sched-on">0</div>
-          <div class="board-card-sub">스케줄 있음</div>
-        </div>
-        <div class="board-card" id="bc-sched-off" onclick="filterByBoard('sched','false')">
-          <div class="board-card-label"><span class="board-card-dot" style="background:#D1D5DB;"></span>미편성</div>
-          <div class="board-card-count" id="cnt-sched-off">0</div>
-          <div class="board-card-sub">스케줄 없음</div>
-        </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">프로덕트</div>
+    </div>
+
+    <!-- Status summary chips -->
+    <div class="status-chips">
+      <button class="status-chip selected" id="chip-all" onclick="chipFilter('')">
+        <span class="chip-dot chip-all"></span>전체 <strong>18</strong>
+      </button>
+      <button class="status-chip" id="chip-ready" onclick="chipFilter('ready')">
+        <span class="chip-dot chip-ready"></span>구성완료 <strong>4</strong>
+      </button>
+      <button class="status-chip" id="chip-approved" onclick="chipFilter('approved')">
+        <span class="chip-dot chip-approved"></span>승인됨 <strong>3</strong>
+      </button>
+      <button class="status-chip" id="chip-active" onclick="chipFilter('active')">
+        <span class="chip-dot chip-active"></span>활성 <strong>8</strong>
+      </button>
+      <button class="status-chip" id="chip-paused" onclick="chipFilter('paused')">
+        <span class="chip-dot chip-paused"></span>중지 <strong>3</strong>
+      </button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar-row">
+      <div class="toolbar-search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="searchInput" placeholder="프로덕트명 검색" oninput="filterTable()">
+      </div>
+      <select class="filter-select" id="lcFilter" onchange="filterTable()">
+        <option value="">Lifecycle 전체</option>
+        <option value="draft">초안</option>
+        <option value="ready">구성완료</option>
+        <option value="approved">승인됨</option>
+        <option value="active">활성</option>
+        <option value="paused">중지</option>
+        <option value="ended">종료</option>
+      </select>
+      <select class="filter-select" id="mediaTypeFilter" onchange="filterTable()">
+        <option value="">미디어유형 전체</option>
+        <option value="옥외">옥외</option>
+        <option value="디지털">디지털</option>
+        <option value="실내">실내</option>
+        <option value="교통">교통</option>
+      </select>
+      <select class="filter-select" id="priceFilter" onchange="filterTable()">
+        <option value="">Price Range 전체</option>
+        <option value="low">~500만원</option>
+        <option value="mid">500~1,000만원</option>
+        <option value="high">1,000만원~</option>
+      </select>
+      <select class="filter-select" id="tagFilter" onchange="filterTable()">
+        <option value="">태그 전체</option>
+        <option value="강남">강남</option>
+        <option value="서울">서울</option>
+        <option value="부산">부산</option>
+        <option value="프리미엄">프리미엄</option>
+      </select>
+      <button class="btn-primary" onclick="location.href='product-register'">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        프로덕트 등록
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-scroll">
+      <table id="productTable">
+        <thead>
+          <tr>
+            <th>프로덕트명</th>
+            <th class="center">미디어 구성(수)</th>
+            <th>슬롯시간</th>
+            <th class="right">기준루프(RLD)</th>
+            <th class="right">예상최소집행횟수/일</th>
+            <th class="right">기준가격</th>
+            <th class="center">Lifecycle</th>
+            <th>수정일</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+
+          <!-- Row 1: 활성 -->
+          <tr data-lc="active" data-mediatype="옥외" data-price="high" data-tags="강남,프리미엄" onclick="location.href='product-detail?id=PRD-001'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-001" onclick="event.stopPropagation()">강남 프리미엄 패키지</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-001</span></td>
+            <td class="center">3</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip">15초</span>
+                <span class="slot-chip">30초</span>
+              </div>
+            </td>
+            <td class="right num">180초</td>
+            <td class="right num">480회</td>
+            <td class="right num">₩3,000,000/월</td>
+            <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+            <td class="muted">2026-08-10</td>
+          </tr>
+
+          <!-- Row 2: 활성 -->
+          <tr data-lc="active" data-mediatype="교통" data-price="high" data-tags="서울,프리미엄" onclick="location.href='product-detail?id=PRD-002'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-002" onclick="event.stopPropagation()">공항 프리미엄 네트워크</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-002</span></td>
+            <td class="center">5</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip">15초</span>
+              </div>
+            </td>
+            <td class="right num">300초</td>
+            <td class="right num">576회</td>
+            <td class="right num">₩5,200,000/월</td>
+            <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+            <td class="muted">2026-08-07</td>
+          </tr>
+
+          <!-- Row 3: 구성완료 -->
+          <tr data-lc="ready" data-mediatype="디지털" data-price="mid" data-tags="서울" onclick="location.href='product-detail?id=PRD-003'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-003" onclick="event.stopPropagation()">홍대·신촌 청년 네트워크</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-003</span></td>
+            <td class="center">2</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip">10초</span>
+                <span class="slot-chip">15초</span>
+                <span class="slot-chip">30초</span>
+              </div>
+            </td>
+            <td class="right num">600초</td>
+            <td class="right num">144회</td>
+            <td class="right num">₩800,000/월</td>
+            <td class="center"><span class="badge lc-ready"><span class="badge-dot"></span>구성완료</span></td>
+            <td class="muted">2026-08-12</td>
+          </tr>
+
+          <!-- Row 4: 승인됨 -->
+          <tr data-lc="approved" data-mediatype="실내" data-price="high" data-tags="부산,프리미엄" onclick="location.href='product-detail?id=PRD-004'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-004" onclick="event.stopPropagation()">부산 센텀 프리미엄</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-004</span></td>
+            <td class="center">4</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip">30초</span>
+              </div>
+            </td>
+            <td class="right num">1,440초</td>
+            <td class="right num">60회</td>
+            <td class="right num">₩4,500,000/월</td>
+            <td class="center"><span class="badge lc-approved"><span class="badge-dot"></span>승인됨</span></td>
+            <td class="muted">2026-08-05</td>
+          </tr>
+
+          <!-- Row 5: 활성 -->
+          <tr data-lc="active" data-mediatype="실내" data-price="mid" data-tags="서울" onclick="location.href='product-detail?id=PRD-005'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-005" onclick="event.stopPropagation()">코엑스몰 스탠다드</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-005</span></td>
+            <td class="center">1</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip">10초</span>
+              </div>
+            </td>
+            <td class="right num">1,440초</td>
+            <td class="right num">144회</td>
+            <td class="right num">₩550,000/월</td>
+            <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+            <td class="muted">2026-07-28</td>
+          </tr>
+
+          <!-- Row 6: 중지 -->
+          <tr data-lc="paused" data-mediatype="옥외" data-price="mid" data-tags="강남" onclick="location.href='product-detail?id=PRD-006'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-006" onclick="event.stopPropagation()">판교 IT 특화 스팟</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-006</span></td>
+            <td class="center">2</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip">15초</span>
+                <span class="slot-chip">30초</span>
+              </div>
+            </td>
+            <td class="right num">720초</td>
+            <td class="right num">120회</td>
+            <td class="right num">₩1,200,000/월</td>
+            <td class="center"><span class="badge lc-paused"><span class="badge-dot"></span>중지</span></td>
+            <td class="muted">2026-07-15</td>
+          </tr>
+
+          <!-- Row 7: 초안 -->
+          <tr data-lc="draft" data-mediatype="교통" data-price="high" data-tags="서울" onclick="location.href='product-detail?id=PRD-007'">
+            <td><a class="product-name-link" href="product-detail?id=PRD-007" onclick="event.stopPropagation()">서울역 환승 허브</a>
+              <span class="muted" style="margin-left:4px;font-family:monospace;">PRD-007</span></td>
+            <td class="center">3</td>
+            <td>
+              <div class="slot-chips">
+                <span class="slot-chip" style="color:#9EA5AD;border-color:#E5E7EA;">—</span>
+              </div>
+            </td>
+            <td class="right muted">—</td>
+            <td class="right muted">—</td>
+            <td class="right num">₩2,800,000/월</td>
+            <td class="center"><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
+            <td class="muted">2026-08-18</td>
+          </tr>
+
+        </tbody>
+      </table>
       </div>
     </div>
-    <!-- 프로덕트 상태 -->
-    <div class="board-section">
-      <div class="board-section-title">프로덕트 상태</div>
-      <div class="board-cards">
-        <div class="board-card" id="bc-status-all" onclick="filterByBoard('status','')">
-          <div class="board-card-label">전체</div>
-          <div class="board-card-count" id="cnt-status-all">0</div>
-        </div>
-        <div class="board-card" id="bc-status-active" onclick="filterByBoard('status','active')">
-          <div class="board-card-label"><span class="board-card-dot" style="background:#58C65D;"></span>활성</div>
-          <div class="board-card-count" id="cnt-status-active">0</div>
-        </div>
-        <div class="board-card" id="bc-status-inactive" onclick="filterByBoard('status','inactive')">
-          <div class="board-card-label"><span class="board-card-dot" style="background:#9CA3AF;"></span>비활성</div>
-          <div class="board-card-count" id="cnt-status-inactive">0</div>
-        </div>
-        <div class="board-card" id="bc-status-draft" onclick="filterByBoard('status','draft')">
-          <div class="board-card-label"><span class="board-card-dot" style="background:#F59E0B;"></span>임시저장</div>
-          <div class="board-card-count" id="cnt-status-draft">0</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="toolbar-search">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <input type="text" id="searchInput" placeholder="프로덕트명 검색" oninput="filterTable()">
-    </div>
-    <select class="filter-select" id="statusFilter" onchange="filterTable()">
-      <option value="">상태 전체</option>
-      <option value="active">활성</option>
-      <option value="inactive">비활성</option>
-      <option value="draft">임시저장</option>
-    </select>
-    <select class="filter-select" id="mediaFilter" onchange="filterTable()">
-      <option value="">미디어 전체</option>
-      <option value="강남역">강남역</option>
-      <option value="홍대입구역">홍대입구역</option>
-      <option value="신촌역">신촌역</option>
-      <option value="여의도역">여의도역</option>
-      <option value="삼성역">삼성역</option>
-    </select>
-    <button class="btn-primary" onclick="location.href='product-register'">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-      프로덕트 생성
-    </button>
-  </div>
-
-  <!-- Bulk action bar -->
-  <div class="bulk-bar" id="bulkBar">
-    <span class="bulk-bar-count" id="bulkCount">0개 선택됨</span>
-    <button class="btn-bulk btn-bulk-activate" onclick="bulkActivate()">활성화</button>
-    <button class="btn-bulk btn-bulk-deactivate" onclick="bulkDeactivate()">비활성화</button>
-    <button class="btn-bulk btn-bulk-delete" id="btnBulkDelete" onclick="bulkDelete()">삭제</button>
-  </div>
-
-  <!-- Table -->
-  <div class="table-card">
-    <table id="productTable">
-      <thead>
-        <tr>
-          <th style="width:40px;text-align:center;"><input type="checkbox" class="all-check" id="checkAll" onchange="toggleAll(this)"></th>
-          <th>프로덕트명</th>
-          <th style="width:200px;">포함 미디어</th>
-          <th class="center" style="width:130px;">플레이플랜 수</th>
-          <th class="center" style="width:110px;">ADeX 연동</th>
-          <th class="center" style="width:130px;">상태</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <tr data-status="active" data-media="강남역" data-has-schedule="true">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">강남 A지구 패키지</a></td>
-          <td>
-            <div class="tooltip-wrap">
-              강남역 1번출구 A <span style="color:#9EA5AD;">외 2개</span>
-              <div class="tooltip-box">강남역 1번출구 A<br>강남역 1번출구 B<br>강남역 2번출구</div>
-            </div>
-          </td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              3개
-              <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
-          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
-        </tr>
-        <tr data-status="active" data-media="홍대입구역" data-has-schedule="true">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">홍대 입구역 프리미엄</a></td>
-          <td>
-            <div class="tooltip-wrap">
-              홍대입구역 A <span style="color:#9EA5AD;">외 1개</span>
-              <div class="tooltip-box">홍대입구역 A<br>홍대입구역 B</div>
-            </div>
-          </td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              2개
-              <div class="tooltip-box">30초 일반<br>20초 일반</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-no-adex">미연동</span></td>
-          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
-        </tr>
-        <tr data-status="draft" data-media="신촌역" data-has-schedule="false">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-register">신촌 역세권 디스플레이</a></td>
-          <td>신촌역 메인</td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              1개
-              <div class="tooltip-box">30초 일반</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-no-adex">미연동</span></td>
-          <td class="center"><span class="badge badge-draft"><span class="badge-dot"></span>임시저장</span></td>
-        </tr>
-        <tr data-status="inactive" data-media="여의도역" data-has-schedule="false">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">여의도 금융가 패키지</a></td>
-          <td>
-            <div class="tooltip-wrap">
-              여의도역 A <span style="color:#9EA5AD;">외 3개</span>
-              <div class="tooltip-box">여의도역 A<br>여의도역 B<br>여의도역 C<br>여의도역 D</div>
-            </div>
-          </td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              4개
-              <div class="tooltip-box">30초 일반<br>20초 일반<br>30초 조건<br>15초 일반</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-no-adex">미연동</span></td>
-          <td class="center"><span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span></td>
-        </tr>
-        <tr data-status="active" data-media="삼성역" data-has-schedule="true">
-          <td class="center"><input type="checkbox" class="row-check" onchange="onRowCheck(this)"></td>
-          <td><a class="product-name-link" href="product-detail">삼성역 COEX 프리미엄</a></td>
-          <td>
-            <div class="tooltip-wrap">
-              삼성역 코엑스 광장 <span style="color:#9EA5AD;"></span>
-              <div class="tooltip-box">삼성역 코엑스 광장<br>삼성역 코엑스 B1</div>
-            </div>
-          </td>
-          <td class="center">
-            <div class="tooltip-wrap">
-              2개
-              <div class="tooltip-box">30초 일반<br>20초 조건</div>
-            </div>
-          </td>
-          <td class="center"><span class="badge-adex"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="5" cy="5" r="4" stroke="#2D84ED" stroke-width="1"/></svg>연동</span></td>
-          <td class="center"><span class="badge badge-active"><span class="badge-dot"></span>활성</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
   </div><!-- /content-inner -->
 </main>
 
 <script>
-/* ── 현황판 카운트 & 필터 연동 ── */
-var boardSchedFilter  = '';
-var boardStatusFilter = '';
+var chipActive = '';
+var chipIds = ['all','ready','approved','active','paused'];
 
-function initBoard() {
-  const rows = document.querySelectorAll('#tableBody tr');
-  let total = rows.length, schedOn = 0, schedOff = 0;
-  let statusActive = 0, statusInactive = 0, statusDraft = 0;
-  rows.forEach(row => {
-    const s  = row.dataset.status;
-    const hs = row.dataset.hasSchedule;
-    if (hs === 'true') schedOn++; else schedOff++;
-    if (s === 'active')   statusActive++;
-    if (s === 'inactive') statusInactive++;
-    if (s === 'draft')    statusDraft++;
+function chipFilter(val) {
+  chipActive = val;
+  chipIds.forEach(function(id) {
+    var chip = document.getElementById('chip-' + id);
+    if (!chip) return;
+    var chipVal = id === 'all' ? '' : id;
+    chip.classList.toggle('selected', chipVal === val);
   });
-  document.getElementById('cnt-sched-all').textContent  = total;
-  document.getElementById('cnt-sched-on').textContent   = schedOn;
-  document.getElementById('cnt-sched-off').textContent  = schedOff;
-  document.getElementById('cnt-status-all').textContent    = total;
-  document.getElementById('cnt-status-active').textContent = statusActive;
-  document.getElementById('cnt-status-inactive').textContent = statusInactive;
-  document.getElementById('cnt-status-draft').textContent  = statusDraft;
-}
-
-function filterByBoard(type, value) {
-  if (type === 'sched') {
-    boardSchedFilter = (boardSchedFilter === value) ? '' : value;
-    ['all','on','off'].forEach(k => {
-      const map = {all:'',on:'true',off:'false'};
-      document.getElementById('bc-sched-'+k).classList.toggle('active-filter', boardSchedFilter === map[k] && boardSchedFilter !== '');
-    });
-    if (boardSchedFilter === '') document.getElementById('bc-sched-all').classList.add('active-filter');
-  } else {
-    boardStatusFilter = (boardStatusFilter === value) ? '' : value;
-    ['all','active','inactive','draft'].forEach(k => {
-      const map = {all:'',active:'active',inactive:'inactive',draft:'draft'};
-      document.getElementById('bc-status-'+k).classList.toggle('active-filter', boardStatusFilter === map[k] && boardStatusFilter !== '');
-    });
-    if (boardStatusFilter === '') document.getElementById('bc-status-all').classList.add('active-filter');
-    document.getElementById('statusFilter').value = boardStatusFilter;
-  }
+  document.getElementById('lcFilter').value = val;
   filterTable();
 }
 
-/* ── 필터 ── */
 function filterTable() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const status = boardStatusFilter || document.getElementById('statusFilter').value;
-  const media  = document.getElementById('mediaFilter').value;
-  const rows   = document.querySelectorAll('#tableBody tr');
-  rows.forEach(row => {
-    const name      = row.querySelector('.product-name-link').textContent.toLowerCase();
-    const rowStatus = row.dataset.status;
-    const rowMedia  = row.dataset.media;
-    const rowSched  = row.dataset.hasSchedule;
-    const matchSearch = !search || name.includes(search);
-    const matchStatus = !status || rowStatus === status;
-    const matchMedia  = !media  || rowMedia  === media;
-    const matchSched  = !boardSchedFilter || rowSched === boardSchedFilter;
-    row.style.display = (matchSearch && matchStatus && matchMedia && matchSched) ? '' : 'none';
-    if (row.style.display === 'none') {
-      const cb = row.querySelector('.row-check');
-      if (cb) { cb.checked = false; }
-      row.classList.remove('selected');
-    }
+  var search    = document.getElementById('searchInput').value.toLowerCase();
+  var lc        = document.getElementById('lcFilter').value;
+  var mediaType = document.getElementById('mediaTypeFilter').value;
+  var price     = document.getElementById('priceFilter').value;
+  var tag       = document.getElementById('tagFilter').value;
+  var rows      = document.querySelectorAll('#tableBody tr');
+
+  rows.forEach(function(row) {
+    var text     = row.textContent.toLowerCase();
+    var rowLc    = row.dataset.lc || '';
+    var rowMtype = row.dataset.mediatype || '';
+    var rowPrice = row.dataset.price || '';
+    var rowTags  = row.dataset.tags || '';
+    var ok = true;
+    if (search    && !text.includes(search))   ok = false;
+    if (lc        && rowLc    !== lc)          ok = false;
+    if (mediaType && rowMtype !== mediaType)   ok = false;
+    if (price     && rowPrice !== price)       ok = false;
+    if (tag       && !rowTags.includes(tag))   ok = false;
+    row.style.display = ok ? '' : 'none';
   });
-  updateBulkBar();
 }
 
-/* 기존 상태 셀렉트 변경 시 보드 초기화 */
-document.getElementById('statusFilter').addEventListener('change', function() {
-  boardStatusFilter = '';
-  ['all','active','inactive','draft'].forEach(k =>
-    document.getElementById('bc-status-'+k).classList.remove('active-filter'));
+document.getElementById('lcFilter').addEventListener('change', function() {
+  chipActive = this.value;
+  chipIds.forEach(function(id) {
+    var chip = document.getElementById('chip-' + id);
+    if (!chip) return;
+    var chipVal = id === 'all' ? '' : id;
+    chip.classList.toggle('selected', chipVal === chipActive);
+  });
 });
-
-/* ── 전체 선택 ── */
-function toggleAll(allCb) {
-  const rows = document.querySelectorAll('#tableBody tr');
-  rows.forEach(row => {
-    if (row.style.display === 'none') return;
-    const cb = row.querySelector('.row-check');
-    if (cb) {
-      cb.checked = allCb.checked;
-      row.classList.toggle('selected', allCb.checked);
-    }
-  });
-  updateBulkBar();
-}
-
-/* ── 개별 체크 ── */
-function onRowCheck(cb) {
-  cb.closest('tr').classList.toggle('selected', cb.checked);
-  const visibleChecks = [...document.querySelectorAll('#tableBody tr:not([style*="none"]) .row-check')];
-  const allChecked = visibleChecks.length > 0 && visibleChecks.every(c => c.checked);
-  document.getElementById('checkAll').checked = allChecked;
-  updateBulkBar();
-}
-
-/* ── 일괄 작업 바 업데이트 ── */
-function updateBulkBar() {
-  const selected = getSelectedRows();
-  const bar = document.getElementById('bulkBar');
-  const count = document.getElementById('bulkCount');
-  const btnDelete = document.getElementById('btnBulkDelete');
-
-  if (selected.length === 0) {
-    bar.classList.remove('show');
-    return;
-  }
-  bar.classList.add('show');
-  count.textContent = selected.length + '개 선택됨';
-
-  // 삭제 가능 조건: 선택된 모든 항목이 비활성 또는 임시저장이고 등록된 스케줄 없음
-  const canDelete = selected.every(row =>
-    (row.dataset.status === 'inactive' || row.dataset.status === 'draft') &&
-    row.dataset.hasSchedule === 'false'
-  );
-  btnDelete.disabled = !canDelete;
-  btnDelete.title = canDelete ? '' : '비활성화 또는 임시저장 상태이며 등록된 스케줄이 없는 프로덕트만 삭제 가능합니다.';
-}
-
-function getSelectedRows() {
-  return [...document.querySelectorAll('#tableBody tr')].filter(row =>
-    row.querySelector('.row-check')?.checked
-  );
-}
-
-/* ── 활성화 ── */
-function bulkActivate() {
-  getSelectedRows().forEach(row => {
-    row.dataset.status = 'active';
-    const badgeCell = row.querySelector('td:last-child');
-    badgeCell.innerHTML = '<span class="badge badge-active"><span class="badge-dot"></span>활성</span>';
-  });
-  resetSelection();
-  alert('선택한 프로덕트를 활성화했습니다.');
-}
-
-/* ── 비활성화 ── */
-function bulkDeactivate() {
-  getSelectedRows().forEach(row => {
-    row.dataset.status = 'inactive';
-    const badgeCell = row.querySelector('td:last-child');
-    badgeCell.innerHTML = '<span class="badge badge-inactive"><span class="badge-dot"></span>비활성</span>';
-  });
-  resetSelection();
-  alert('선택한 프로덕트를 비활성화했습니다.');
-}
-
-/* ── 삭제 ── */
-function bulkDelete() {
-  const rows = getSelectedRows();
-  if (!confirm(rows.length + '개 프로덕트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
-  rows.forEach(row => row.remove());
-  resetSelection();
-}
-
-function resetSelection() {
-  document.getElementById('checkAll').checked = false;
-  document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
-  document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('selected'));
-  updateBulkBar();
-}
-
-initBoard();
 </script>
 <script src="../assets/js/cms.js"></script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

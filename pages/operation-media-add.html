@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>운영설정 미디어 추가 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/reset.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: #24292E; background: #24292E; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
+
+    /* ── GNB ── */
+    .gnb {
+      position: fixed; left: 0; top: 0; width: 93px; height: 100vh;
+      background: #454C52; display: flex; flex-direction: column;
+      align-items: center; padding: 16px 0; z-index: 200;
+      overflow: hidden;
+    }
+    .gnb-logo {
+      margin-bottom: 24px;
+    }
+    .gnb-nav {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-direction: column; gap: 2px; width: 100%;
+    }
+    .gnb-nav li { width: 100%; }
+    .gnb-nav a {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 5px; padding: 10px 6px;
+      color: #9EA5AD; font-size: 11px; font-weight: 500;
+      border-radius: 6px; margin: 0 6px; width: calc(100% - 12px);
+      transition: background 0.15s, color 0.15s; cursor: pointer;
+    }
+    .gnb-nav a svg { flex-shrink: 0; }
+    .gnb-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .gnb-nav a.active { background: rgba(88,198,93,0.18); color: #58C65D; }
+    .gnb-disabled a { opacity: 0.4; pointer-events: none; }
+    .gnb-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 8px 12px; }
+
+    /* Sub nav popup */
+    .gnb-has-sub { position: relative; }
+    .gnb-sub {
+      display: none; position: absolute; left: 100%; top: 0;
+      background: #383F45; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 10px 8px; min-width: 160px;
+      box-shadow: 4px 4px 20px rgba(0,0,0,0.4); z-index: 300;
+    }
+    .gnb-has-sub:hover .gnb-sub { display: block; }
+    .gnb-sub-title { font-size: 11px; color: #9EA5AD; padding: 4px 8px 8px; font-weight: 600; }
+    .gnb-sub a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 8px; border-radius: 6px;
+      color: #E5E7EA; font-size: 12px; margin: 0;
+    }
+    .gnb-sub a:hover { background: rgba(255,255,255,0.08); }
+    .gnb-sub-icon {
+      width: 24px; height: 24px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: fixed; top: 0; left: 93px; right: 0; height: 60px;
+      background: #383F45; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px;
+      z-index: 100;
+    }
+    .topbar-search {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; padding: 0 12px; height: 36px; width: 260px;
+    }
+    .topbar-search input {
+      background: transparent; border: none; outline: none;
+      color: #fff; font-size: 13px; flex: 1;
+    }
+    .topbar-search input::placeholder { color: #9EA5AD; }
+    .topbar-user { display: flex; align-items: center; gap: 12px; }
+    .topbar-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .topbar-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #58C65D; color: #fff; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .topbar-profile-name { font-size: 13px; color: #fff; font-weight: 600; }
+    .topbar-profile-org { font-size: 11px; color: #9EA5AD; }
+
+    /* ── Breadcrumb ── */
+    .bcrumb {
+      position: fixed; top: 60px; left: 93px; right: 0; height: 40px;
+      background: #383F45; border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 20px; z-index: 100;
+    }
+    .bcrumb a, .bcrumb span { font-size: 12px; color: #9EA5AD; }
+    .bcrumb .bcrumb-back {
+      color: #9EA5AD; font-size: 18px; line-height: 1;
+      margin-right: 4px; cursor: pointer; padding: 0 4px;
+    }
+    .bcrumb .bcrumb-back:hover { color: #fff; }
+    .bcrumb .sep { color: rgba(255,255,255,0.2); }
+    .bcrumb .cur { color: #E5E7EA; font-weight: 500; }
+
+    /* ── Main content ── */
+    .content {
+      margin-left: 93px; padding-top: 100px; background: #F6F7F9;
+      min-height: 100vh; padding-bottom: 80px;
+    }
+    .content-inner { padding: 24px 28px; }
+
+    /* ── Page header ── */
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 20px; gap: 12px;
+    }
+    .eyebrow { margin: 0 0 2px; font-size: 11px; color: #9EA5AD; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
+    .page-header h1 { margin: 0; font-size: 20px; font-weight: 700; color: #24292E; }
+
+    /* ── Card ── */
+    .card {
+      background: #fff; border: 1px solid #E5E7EA;
+      border-radius: 8px; overflow: hidden;
+    }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid #E5E7EA;
+    }
+    .card-head-title { font-size: 14px; font-weight: 600; color: #24292E; margin: 0; }
+    .card-head-count { font-size: 13px; color: #9EA5AD; }
+
+    /* ── Split layout ── */
+    .split-wrap { display: flex; gap: 20px; align-items: flex-start; }
+    .split-main { flex: 1; min-width: 0; }
+    .split-side { width: 300px; flex-shrink: 0; position: sticky; top: 120px; }
+
+    /* ── Search bar ── */
+    .search-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px; background: #F6F7F9; border-radius: 6px; margin-bottom: 12px;
+    }
+    .search-inp {
+      flex: 1; height: 36px; padding: 0 10px;
+      background: #fff; border: 1px solid #CED2D6; border-radius: 4px; font-size: 14px;
+      font-family: inherit; color: #24292E;
+    }
+    .search-inp:focus { outline: none; border-color: #58C65D; }
+    .btn-search {
+      height: 36px; padding: 0 14px;
+      background: #58C65D; color: #fff; border: none;
+      border-radius: 4px; font-size: 13px; cursor: pointer;
+      white-space: nowrap; font-family: inherit;
+    }
+    .btn-search:hover { background: #4ab34e; }
+
+    /* ── Filter row ── */
+    .filter-row {
+      display: flex; gap: 8px; padding: 0 12px 12px;
+    }
+    .filter-row select {
+      height: 34px; padding: 0 10px;
+      border: 1px solid #CED2D6; border-radius: 4px;
+      background: #fff; font-size: 12px; color: #24292E;
+      cursor: pointer; font-family: inherit;
+    }
+    .filter-row select:focus { outline: none; border-color: #58C65D; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    .media-table { width: 100%; border-collapse: collapse; }
+    .media-table th, .media-table td {
+      padding: 10px 12px; border: none;
+      border-bottom: 1px solid #E5E7EA;
+      text-align: left; vertical-align: middle;
+      font-size: 13px;
+    }
+    .media-table th {
+      background: #F6F7F9; color: #9EA5AD;
+      font-weight: 500; font-size: 12px;
+    }
+    .media-table tbody tr:hover { background: #FAFBFC; }
+    .media-table tbody tr:last-child td { border-bottom: none; }
+    .media-table tbody tr.is-selected { background: rgba(88,198,93,0.05); }
+    input[type="checkbox"] { width: 15px; height: 15px; accent-color: #58C65D; cursor: pointer; }
+    .col-check { width: 40px; }
+
+    /* ── Badges ── */
+    .badge {
+      border-radius: 6px; padding: 0 8px; height: 20px; font-size: 12px;
+      display: inline-flex; align-items: center;
+    }
+    .badge-ok { background: rgba(88,198,93,0.1); color: #58C65D; border: 1px solid #C1E9C3; }
+    .badge-warn { background: rgba(233,116,116,0.1); color: #E97474; border: 1px solid #f5c0c0; }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex; align-items: center; justify-content: center;
+      gap: 4px; padding: 16px;
+    }
+    .pg-btn {
+      min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid #E5E7EA; border-radius: 4px; background: #fff;
+      font-size: 13px; color: #24292E; cursor: pointer; font-family: inherit;
+    }
+    .pg-btn:hover { border-color: #58C65D; color: #58C65D; }
+    .pg-btn.is-active { background: #58C65D; border-color: #58C65D; color: #fff; font-weight: 600; }
+    .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+
+    /* ── Selected panel ── */
+    .sel-list {
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 12px; min-height: 200px;
+    }
+    .sel-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px; background: #F6F7F9; border-radius: 6px; font-size: 13px;
+    }
+    .sel-item-info { flex: 1; min-width: 0; }
+    .sel-item-name { font-weight: 600; color: #24292E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sel-item-addr { color: #9EA5AD; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sel-item-remove {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid #CED2D6; background: #fff; color: #9EA5AD;
+      cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-left: 8px; line-height: 1;
+      font-family: inherit;
+    }
+    .sel-item-remove:hover { border-color: #E97474; color: #E97474; background: rgba(233,116,116,0.08); }
+    .sel-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; min-height: 200px; color: #9EA5AD; font-size: 13px;
+    }
+    .sel-empty svg { opacity: 0.4; }
+
+    /* ── Footer action bar ── */
+    .footer-bar {
+      position: fixed; bottom: 0; left: 93px; right: 0;
+      height: 64px; background: #fff;
+      border-top: 1px solid #E5E7EA;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; z-index: 150;
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+    }
+    .footer-bar-right { display: flex; gap: 8px; }
+
+    /* ── Buttons ── */
+    .btn-ghost {
+      height: 38px; padding: 0 18px;
+      background: #fff; border: 1px solid #CED2D6; border-radius: 6px;
+      font-size: 14px; color: #24292E; cursor: pointer; font-family: inherit;
+    }
+    .btn-ghost:hover { background: #F6F7F9; }
+    .btn-primary {
+      height: 38px; padding: 0 18px;
+      background: #58C65D; border: none; border-radius: 6px;
+      font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; font-family: inherit;
+    }
+    .btn-primary:hover { background: #4ab34e; }
+    .btn-primary:disabled { background: #CED2D6; cursor: default; }
+
+    /* ── Muted text ── */
+    .muted { color: #9EA5AD; }
+  </style>
+</head>
+<body>
+
+<!-- ① GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- ② Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div>
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ③ Breadcrumb -->
+<div class="bcrumb">
+  <a class="bcrumb-back" href="javascript:history.back()">‹</a>
+  <a href="media-list">미디어</a>
+  <span class="sep">›</span>
+  <span>운영설정</span>
+  <span class="sep">›</span>
+  <span class="cur">미디어 추가</span>
+</div>
+
+<!-- ④ Content -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Operation Settings</p>
+        <h1>미디어 추가</h1>
+      </div>
+    </div>
+
+    <!-- Split panels -->
+    <div class="split-wrap">
+
+      <!-- Left: 미디어 선택 -->
+      <div class="split-main">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-head-title">미디어 선택</span>
+            <span class="card-head-count" id="result-count">전체 10개</span>
+          </div>
+
+          <!-- Search -->
+          <div style="padding:12px 12px 0;">
+            <div class="search-bar">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input class="search-inp" id="search-input" type="text" placeholder="미디어명, 주소로 검색">
+              <button class="btn-search" onclick="applySearch()">검색</button>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="filter-row">
+            <select id="filter-type" onchange="applySearch()">
+              <option value="">미디어 유형 전체</option>
+              <option value="가로">가로형</option>
+              <option value="세로">세로형</option>
+            </select>
+            <select id="filter-status" onchange="applySearch()">
+              <option value="">상태 전체</option>
+              <option value="운영중">운영중</option>
+              <option value="점검중">점검중</option>
+              <option value="설치예정">설치예정</option>
+            </select>
+            <select id="filter-region" onchange="applySearch()">
+              <option value="">지역 전체</option>
+              <option value="강남구">강남구</option>
+              <option value="마포구">마포구</option>
+              <option value="영등포구">영등포구</option>
+              <option value="서대문구">서대문구</option>
+              <option value="송파구">송파구</option>
+              <option value="용산구">용산구</option>
+              <option value="종로구">종로구</option>
+            </select>
+          </div>
+
+          <!-- Table -->
+          <div class="table-wrap">
+            <table class="media-table">
+              <thead>
+                <tr>
+                  <th class="col-check"><input type="checkbox" id="check-all"></th>
+                  <th>미디어명</th>
+                  <th>설치주소</th>
+                  <th>디스플레이</th>
+                  <th>운영시간</th>
+                  <th>상태</th>
+                </tr>
+              </thead>
+              <tbody id="media-tbody">
+                <tr data-id="1" data-name="강남 스타필드 A01" data-addr="강남구 테헤란로 507" data-display="1920×1080 가로" data-hours="09:00~22:00" data-status="운영중" data-region="강남구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>강남 스타필드 A01</td>
+                  <td class="muted">강남구 테헤란로 507</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">09:00~22:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="2" data-name="홍대 메가박스 B03" data-addr="마포구 양화로 45" data-display="1080×1920 세로" data-hours="10:00~23:00" data-status="운영중" data-region="마포구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>홍대 메가박스 B03</td>
+                  <td class="muted">마포구 양화로 45</td>
+                  <td>1080×1920 세로</td>
+                  <td class="muted">10:00~23:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="3" data-name="여의도 IFC C02" data-addr="영등포구 국제금융로 10" data-display="1920×1080 가로" data-hours="08:00~22:00" data-status="운영중" data-region="영등포구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>여의도 IFC C02</td>
+                  <td class="muted">영등포구 국제금융로 10</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">08:00~22:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="4" data-name="신촌 현대백화점 D01" data-addr="서대문구 신촌로 83" data-display="1920×1080 가로" data-hours="10:00~21:00" data-status="점검중" data-region="서대문구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>신촌 현대백화점 D01</td>
+                  <td class="muted">서대문구 신촌로 83</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">10:00~21:00</td>
+                  <td><span class="badge badge-warn">점검중</span></td>
+                </tr>
+                <tr data-id="5" data-name="잠실 롯데월드 E04" data-addr="송파구 올림픽로 240" data-display="1920×1080 가로" data-hours="09:00~23:00" data-status="운영중" data-region="송파구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>잠실 롯데월드 E04</td>
+                  <td class="muted">송파구 올림픽로 240</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">09:00~23:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="6" data-name="이태원 더현대 F02" data-addr="용산구 이태원로 55" data-display="1080×1920 세로" data-hours="10:00~22:00" data-status="운영중" data-region="용산구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>이태원 더현대 F02</td>
+                  <td class="muted">용산구 이태원로 55</td>
+                  <td>1080×1920 세로</td>
+                  <td class="muted">10:00~22:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="7" data-name="광화문 교보타워 G01" data-addr="종로구 종로 1" data-display="1920×1080 가로" data-hours="07:00~21:00" data-status="운영중" data-region="종로구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>광화문 교보타워 G01</td>
+                  <td class="muted">종로구 종로 1</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">07:00~21:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="8" data-name="강남 코엑스 H03" data-addr="강남구 영동대로 513" data-display="1920×1080 가로" data-hours="09:00~22:00" data-status="점검중" data-region="강남구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>강남 코엑스 H03</td>
+                  <td class="muted">강남구 영동대로 513</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">09:00~22:00</td>
+                  <td><span class="badge badge-warn">점검중</span></td>
+                </tr>
+                <tr data-id="9" data-name="마포 CGV 홍대 I01" data-addr="마포구 어울마당로 149" data-display="1080×1920 세로" data-hours="10:00~24:00" data-status="운영중" data-region="마포구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>마포 CGV 홍대 I01</td>
+                  <td class="muted">마포구 어울마당로 149</td>
+                  <td>1080×1920 세로</td>
+                  <td class="muted">10:00~24:00</td>
+                  <td><span class="badge badge-ok">운영중</span></td>
+                </tr>
+                <tr data-id="10" data-name="영등포 타임스퀘어 J02" data-addr="영등포구 영중로 15" data-display="1920×1080 가로" data-hours="10:00~22:00" data-status="설치예정" data-region="영등포구">
+                  <td class="col-check"><input type="checkbox" class="row-check"></td>
+                  <td>영등포 타임스퀘어 J02</td>
+                  <td class="muted">영등포구 영중로 15</td>
+                  <td>1920×1080 가로</td>
+                  <td class="muted">10:00~22:00</td>
+                  <td><span class="badge badge-warn">설치예정</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <button class="pg-btn" disabled>‹</button>
+            <button class="pg-btn is-active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">›</button>
+          </div>
+        </div>
+      </div><!-- /split-main -->
+
+      <!-- Right: 선택된 미디어 -->
+      <div class="split-side">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-head-title">선택된 미디어 (<span id="sel-count">0</span>개)</span>
+          </div>
+          <div class="sel-list" id="sel-list">
+            <div class="sel-empty" id="sel-empty">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <rect x="6" y="6" width="24" height="24" rx="4" stroke="#CED2D6" stroke-width="1.5"/>
+                <path d="M12 18h12M18 12v12" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              미디어를 선택하세요
+            </div>
+          </div>
+        </div>
+      </div><!-- /split-side -->
+
+    </div><!-- /split-wrap -->
+
+  </div>
+</main>
+
+<!-- ⑤ Footer action bar -->
+<div class="footer-bar">
+  <button class="btn-ghost" onclick="location.href='media-list'">취소</button>
+  <div class="footer-bar-right">
+    <button class="btn-ghost">운영설정 선택</button>
+    <button class="btn-primary" id="btn-add" disabled onclick="handleAdd()">
+      <span id="btn-add-label">미디어 추가</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  // ── Data store ──
+  const selectedMap = new Map(); // id → { name, addr }
+
+  // ── DOM refs ──
+  const checkAll   = document.getElementById('check-all');
+  const tbody      = document.getElementById('media-tbody');
+  const selList    = document.getElementById('sel-list');
+  const selEmpty   = document.getElementById('sel-empty');
+  const selCount   = document.getElementById('sel-count');
+  const btnAdd     = document.getElementById('btn-add');
+  const btnLabel   = document.getElementById('btn-add-label');
+  const resultCount = document.getElementById('result-count');
+
+  // ── Helpers ──
+  function visibleRows() {
+    return [...tbody.querySelectorAll('tr')].filter(r => r.style.display !== 'none');
+  }
+
+  function updateSelPanel() {
+    const count = selectedMap.size;
+    selCount.textContent = count;
+
+    // Remove all sel-items (keep empty msg)
+    selList.querySelectorAll('.sel-item').forEach(el => el.remove());
+
+    if (count === 0) {
+      selEmpty.style.display = 'flex';
+    } else {
+      selEmpty.style.display = 'none';
+      selectedMap.forEach((data, id) => {
+        const item = document.createElement('div');
+        item.className = 'sel-item';
+        item.dataset.id = id;
+        item.innerHTML = `
+          <div class="sel-item-info">
+            <div class="sel-item-name">${data.name}</div>
+            <div class="sel-item-addr">${data.addr}</div>
+          </div>
+          <button class="sel-item-remove" title="제거">×</button>
+        `;
+        item.querySelector('.sel-item-remove').addEventListener('click', () => removeItem(id));
+        selList.appendChild(item);
+      });
+    }
+
+    // Footer button
+    if (count === 0) {
+      btnAdd.disabled = true;
+      btnLabel.textContent = '미디어 추가';
+    } else {
+      btnAdd.disabled = false;
+      btnLabel.textContent = `${count}개 미디어 추가`;
+    }
+  }
+
+  function removeItem(id) {
+    selectedMap.delete(id);
+    // Uncheck row
+    const row = tbody.querySelector(`tr[data-id="${id}"]`);
+    if (row) {
+      row.querySelector('.row-check').checked = false;
+      row.classList.remove('is-selected');
+    }
+    syncSelectAll();
+    updateSelPanel();
+  }
+
+  function syncSelectAll() {
+    const visible = visibleRows();
+    const checked = visible.filter(r => r.querySelector('.row-check').checked);
+    checkAll.indeterminate = checked.length > 0 && checked.length < visible.length;
+    checkAll.checked = visible.length > 0 && checked.length === visible.length;
+  }
+
+  // ── Row checkbox ──
+  tbody.addEventListener('change', (e) => {
+    if (!e.target.classList.contains('row-check')) return;
+    const row = e.target.closest('tr');
+    const id  = row.dataset.id;
+    if (e.target.checked) {
+      selectedMap.set(id, { name: row.dataset.name, addr: row.dataset.addr });
+      row.classList.add('is-selected');
+    } else {
+      selectedMap.delete(id);
+      row.classList.remove('is-selected');
+    }
+    syncSelectAll();
+    updateSelPanel();
+  });
+
+  // ── Select all ──
+  checkAll.addEventListener('change', () => {
+    const visible = visibleRows();
+    visible.forEach(row => {
+      const cb  = row.querySelector('.row-check');
+      const id  = row.dataset.id;
+      cb.checked = checkAll.checked;
+      if (checkAll.checked) {
+        selectedMap.set(id, { name: row.dataset.name, addr: row.dataset.addr });
+        row.classList.add('is-selected');
+      } else {
+        selectedMap.delete(id);
+        row.classList.remove('is-selected');
+      }
+    });
+    updateSelPanel();
+  });
+
+  // ── Search / Filter ──
+  document.getElementById('search-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') applySearch();
+  });
+
+  function applySearch() {
+    const query   = document.getElementById('search-input').value.trim().toLowerCase();
+    const type    = document.getElementById('filter-type').value;
+    const status  = document.getElementById('filter-status').value;
+    const region  = document.getElementById('filter-region').value;
+
+    const rows = [...tbody.querySelectorAll('tr')];
+    let visible = 0;
+    rows.forEach(row => {
+      const name    = row.dataset.name.toLowerCase();
+      const addr    = row.dataset.addr.toLowerCase();
+      const display = row.dataset.display;
+      const st      = row.dataset.status;
+      const reg     = row.dataset.region;
+
+      const matchQ  = !query  || name.includes(query) || addr.includes(query);
+      const matchT  = !type   || display.includes(type);
+      const matchS  = !status || st === status;
+      const matchR  = !region || reg === region;
+
+      const show = matchQ && matchT && matchS && matchR;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    resultCount.textContent = `전체 ${visible}개`;
+    syncSelectAll();
+  }
+
+  // ── Footer add action ──
+  function handleAdd() {
+    const count = selectedMap.size;
+    if (count === 0) return;
+    alert(`${count}개 미디어가 운영설정에 추가되었습니다.`);
+    location.href = 'media-list';
+  }
+
+  // ── Init ──
+  updateSelPanel();
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

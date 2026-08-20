@@ -2,1331 +2,1432 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 등록 — CMS 2.0</title>
-  <link rel="stylesheet" href="../assets/css/reset.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>미디어 등록 — D'ooh CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* ============================================================
-       design.md 토큰
-       green=#58C65D  |  grayscale-900=#24292E  |  grayscale-800=#383F45
-       grayscale-700=#454C52  |  grayscale-600=#596066  |  grayscale-400=#9EA5AD
-       grayscale-300=#CED2D6  |  grayscale-200=#E5E7EA
-       surface-bg=#F6F7F9  |  surface-card=#FFFFFF
-       danger=#E97474
-    ============================================================ */
+    /* ── Design tokens ── */
+    :root {
+      --green:  #58C65D;
+      --dark:   #24292E;
+      --main:   #2D84ED;
+      --warn:   #F3BE4A;
+      --danger: #E97474;
+      --bg:     #F6F7F9;
+      --border: #E5E7EA;
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%; height: 100%;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-      font-size: 14px;
-      background: #24292E;     /* grayscale-900 — body bg behind shell */
-      color: #24292E;
+      --text-primary:   #24292E;
+      --text-secondary: #596066;
+      --text-muted:     #9EA5AD;
+      --surface:        #ffffff;
+      --surface-sub:    #F6F7F9;
+      --border-color:   #E5E7EA;
+      --border-input:   #CED2D6;
+      --accent:         #58C65D;
+      --accent-hover:   #43B049;
+      --accent-bg:      #F0F9F1;
+      --focus-ring:     rgba(88,198,93,0.14);
     }
-    a { text-decoration: none; color: inherit; }
-    button { font-family: inherit; cursor: pointer; border: none; background: none; }
-    ul, ol { list-style: none; }
-
-    /* ── 스크롤바 (content only) ──────────────────── */
-    .content::-webkit-scrollbar { width: 6px; }
-    .content::-webkit-scrollbar-track { background: transparent; }
-    .content::-webkit-scrollbar-thumb { background: #CED2D6; border-radius: 3px; }
-
-    /* ============================================================
-       ZONE 1 — GNB Sidebar
-       fixed, left:0, width:93px, bg:#454C52
-    ============================================================ */
-    .gnb {
-      position: fixed;
-      top: 0; left: 0;
-      width: 93px; height: 100vh;
-      background: #454C52;      /* grayscale-700 */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 0 24px;
-      z-index: 300;
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --text-primary:   #E6EAF0;
+        --text-secondary: #9EA5AD;
+        --text-muted:     #6B7280;
+        --surface:        #1C2128;
+        --surface-sub:    #161B22;
+        --border-color:   #30363D;
+        --border-input:   #444C56;
+        --accent-bg:      #1A3A1C;
+        --bg:             #0D1117;
+      }
     }
-
-    /* 로고 */
-    .gnb-logo {
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 32px;
-    }
-    .gnb-logo svg text { font-weight: 700; }
-
-    /* 네비 아이템 */
-    .gnb-nav { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-    .gnb-nav a {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 10px 0;
-      color: #9EA5AD;           /* grayscale-400: 비활성 */
-      font-size: 10px;
-      transition: all 0.25s ease;
-      position: relative;
-    }
-    .gnb-nav a svg { fill: #9EA5AD; transition: fill 0.25s ease; }
-    .gnb-nav a:hover { color: #fff; background: #596066; }
-    .gnb-nav a:hover svg { fill: #fff; }
-    /* 활성: 흰색 아이콘 + 왼쪽 그린 인디케이터 */
-    .gnb-nav a.active {
-      color: #fff;
-      background: rgba(88,198,93,0.12);
-    }
-    .gnb-nav a.active svg { fill: #fff; }
-    .gnb-nav a.active::before {
-      content: '';
-      position: absolute; left: 0; top: 50%;
-      transform: translateY(-50%);
-      width: 3px; height: 32px;
-      background: #58C65D;
-      border-radius: 0 2px 2px 0;
+    :root[data-theme="dark"] {
+      --text-primary:   #E6EAF0;
+      --text-secondary: #9EA5AD;
+      --text-muted:     #6B7280;
+      --surface:        #1C2128;
+      --surface-sub:    #161B22;
+      --border-color:   #30363D;
+      --border-input:   #444C56;
+      --accent-bg:      #1A3A1C;
+      --bg:             #0D1117;
     }
 
-    .gnb-divider {
-      width: 40px; height: 1px;
-      background: #596066;
-      margin: 8px auto;
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      margin: 0;
     }
 
-    /* ============================================================
-       ZONE 2 — Topbar
-       fixed, top:0, left:93px, right:0, height:60px, bg:#383F45
-    ============================================================ */
-    .topbar {
-      position: fixed;
-      top: 0; left: 93px; right: 0;
-      height: 60px;
-      background: #383F45;      /* grayscale-800 */
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 200;
-    }
+    /* ── State inputs (hidden) ── */
+    .state { position: absolute; opacity: 0; pointer-events: none; }
 
-    /* 검색 */
-    .topbar-search {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #454C52;
-      border: 1px solid #596066;
-      border-radius: 4px;
-      padding: 0 12px;
-      height: 36px;
-      width: 240px;
-      transition: border-color 0.25s ease;
-    }
-    .topbar-search:focus-within { border-color: #58C65D; }
-    .topbar-search input {
-      background: none; border: none; outline: none;
-      font-size: 14px; color: #fff; width: 100%;
-    }
-    .topbar-search input::placeholder { color: #596066; }
-    .topbar-search svg { fill: #9EA5AD; flex-shrink: 0; }
-
-    /* 유저 영역 */
-    .topbar-user {
-      display: flex; align-items: center; gap: 20px;
-    }
-    .topbar-icon-btn {
-      position: relative;
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background 0.25s ease;
-    }
-    .topbar-icon-btn:hover { background: #454C52; }
-    .topbar-icon-btn svg { stroke: #9EA5AD; }
-    .topbar-icon-btn .badge {
-      position: absolute; top: 2px; right: 2px;
-      width: 7px; height: 7px;
-      background: #E97474;
-      border-radius: 50%;
-      border: 1px solid #383F45;
-    }
-
-    .topbar-profile {
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer;
-      position: relative;
-    }
-    .topbar-avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: #596066;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600; color: #fff;
-    }
-    .topbar-profile-info { line-height: 1.3; }
-    .topbar-profile-name { font-size: 14px; color: #fff; font-weight: 400; }
-    .topbar-profile-org  { font-size: 11px; color: #9EA5AD; }
-    .topbar-caret svg { fill: #9EA5AD; transition: transform 0.2s ease; }
-
-    /* 드롭다운 */
-    .profile-dropdown {
-      display: none;
-      position: absolute;
-      top: calc(100% + 10px); right: 0;
-      width: 160px;
-      background: #383F45;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      padding: 6px 0;
-      z-index: 999;
-    }
-    .profile-dropdown.open { display: block; }
-    .profile-dropdown a {
-      display: block;
-      padding: 9px 16px;
-      font-size: 13px;
-      color: #fff;
-      transition: background 0.2s ease;
-    }
-    .profile-dropdown a:hover { background: #454C52; }
-    .profile-dropdown .logout { color: #9EA5AD; }
-
-    /* ============================================================
-       ZONE 3 — Breadcrumb Bar
-       fixed, top:60px, left:93px, right:0, height:40px, bg:#383F45
-    ============================================================ */
-    .breadcrumb-bar {
-      position: fixed;
-      top: 60px; left: 93px; right: 0;
-      height: 40px;
-      background: #383F45;
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-      gap: 6px;
-      z-index: 100;
-      border-top: 1px solid #454C52;
-    }
-    .breadcrumb-back {
-      display: flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px;
-      border-radius: 4px;
-      color: #9EA5AD;
-      font-size: 16px;
-      transition: all 0.25s ease;
-      cursor: pointer;
-      margin-right: 4px;
-    }
-    .breadcrumb-back:hover { background: #454C52; color: #fff; }
-    .breadcrumb-item {
-      font-size: 12px;
-      color: #9EA5AD;
-    }
-    .breadcrumb-item.link:hover { color: #fff; cursor: pointer; }
-    .breadcrumb-sep {
-      font-size: 12px;
-      color: #596066;
-    }
-    .breadcrumb-item.current { color: #CED2D6; }
-
-    /* ============================================================
-       ZONE 4 — Content Area
-       margin-left:93px, padding-top:100px, bg:#F6F7F9
-    ============================================================ */
-    .content {
-      margin-left: 93px;
-      padding-top: 100px;       /* 60px topbar + 40px breadcrumb */
-      min-height: 100vh;
-      background: #F6F7F9;
-      overflow-y: auto;
-      padding-bottom: 48px;
-    }
-
-    .content-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 32px;
-    }
-
-    /* ============================================================
-       Page Card (white on light-gray)
-    ============================================================ */
-    .page-card {
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    /* 카드 헤더 */
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid #E5E7EA;
-    }
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #24292E;
-    }
-
-    /* ============================================================
-       폼 레이아웃
-    ============================================================ */
-    .form-body { padding: 24px; }
-
-    /* 섹션 블록 */
-    .form-section {
-      margin-bottom: 36px;
-    }
-    .form-section:last-child { margin-bottom: 0; }
-
-    /* 섹션 헤더 */
-    .form-section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #24292E;
-      padding-bottom: 12px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #E5E7EA;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .form-section-title .section-icon {
-      width: 6px; height: 6px;
-      background: #58C65D;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* 필드 행 */
-    .form-row {
-      display: flex;
-      align-items: flex-start;
-      min-height: 40px;
+    /* ── Page header ── */
+    .page-hd {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 18px 24px;
       margin-bottom: 16px;
-    }
-    .form-row:last-child { margin-bottom: 0; }
-
-    /* 레이블 */
-    .form-label {
-      flex: 0 0 160px;
-      font-size: 14px;
-      font-weight: 400;
-      color: #596066;
-      line-height: 40px;       /* 인풋 높이에 맞춤 */
-      padding-right: 20px;
-      white-space: nowrap;
-    }
-    .form-label .req {
-      color: #E97474;
-      margin-left: 2px;
-    }
-
-    /* 인풋 영역 */
-    .form-control {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      min-height: 40px;
-    }
-
-    /* ── 텍스트 / 숫자 인풋 ─────────────────── */
-    .inp {
-      height: 40px;
-      padding: 0 12px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #24292E;
-      transition: border-color 0.25s ease;
-    }
-    .inp::placeholder { color: #CED2D6; }
-    .inp:focus { outline: none; border-color: #58C65D; }
-    .inp[readonly], .inp[disabled] {
-      background: #F6F7F9;
-      color: #9EA5AD;
-    }
-    .inp-full  { width: 100%; max-width: 520px; }
-    .inp-lg    { width: 320px; }
-    .inp-md    { width: 220px; }
-    .inp-sm    { width: 120px; }
-    .inp-xs    { width: 80px; }
-
-    /* ── 셀렉트 ─────────────────────────────── */
-    .sel {
-      height: 40px;
-      padding: 0 32px 0 12px;
-      background: #fff url('../assets/images/select_arrow.svg') no-repeat right 10px center;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #24292E;
-      appearance: none;
-      cursor: pointer;
-      transition: border-color 0.25s ease;
-    }
-    .sel:focus { outline: none; border-color: #58C65D; }
-    .sel.sel-md { width: 220px; }
-    .sel.sel-sm { width: 160px; }
-    .sel.sel-xs { width: 120px; }
-
-    /* ── 텍스트에어리어 ─────────────────────── */
-    .textarea {
-      width: 100%; max-width: 520px;
-      padding: 10px 12px;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #24292E;
-      resize: vertical;
-      min-height: 80px;
-      line-height: 1.6;
-      transition: border-color 0.25s ease;
-    }
-    .textarea::placeholder { color: #CED2D6; }
-    .textarea:focus { outline: none; border-color: #58C65D; }
-
-    /* ── 인풋 단위 서픽스 ───────────────────── */
-    .inp-suffix {
-      font-size: 14px;
-      color: #9EA5AD;
-      line-height: 40px;
-    }
-
-    /* ── 힌트 텍스트 ────────────────────────── */
-    .hint {
-      width: 100%;
-      font-size: 12px;
-      color: #9EA5AD;
-      line-height: 1.5;
-      margin-top: 4px;
-    }
-    .hint.green { color: #58C65D; }
-
-    /* ── 체크박스 그룹 ──────────────────────── */
-    .check-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 20px;
-      align-items: center;
-      min-height: 40px;
-    }
-    .check-group label {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      color: #24292E;
-      cursor: pointer;
+      justify-content: space-between;
+    }
+    .page-hd-left { display: flex; align-items: center; gap: 12px; }
+    .back-link {
+      color: var(--text-secondary); text-decoration: none; font-size: 13px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .back-link:hover { color: var(--text-primary); }
+    .page-hd-title { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+    .page-hd-actions { display: flex; gap: 8px; align-items: center; }
+    .sep-line { width: 1px; height: 20px; background: var(--border-color); }
+
+    /* ── Step tabs ── */
+    .step-tabs {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 16px;
+      gap: 2px;
+    }
+    .step-tab-label {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 16px; border-radius: 7px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      transition: background 0.15s, color 0.15s;
       user-select: none;
     }
-    .check-group input[type="checkbox"] {
-      width: 15px; height: 15px;
-      accent-color: #58C65D;
-      cursor: pointer;
+    .step-tab-label:hover { background: var(--surface-sub); color: var(--text-primary); }
+    .step-tab-num {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--border-color); color: var(--text-muted);
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.15s, color 0.15s;
     }
 
-    /* ── btn-wrap 세그먼트 ──────────────────── */
-    .seg {
-      display: inline-flex;
-      height: 40px;
+    /* Active step tab: driven by CSS state machine */
+    #step-1:checked ~ .content .step-tab-label[for="step-1"],
+    #step-2:checked ~ .content .step-tab-label[for="step-2"],
+    #step-3:checked ~ .content .step-tab-label[for="step-3"] {
+      background: var(--accent-bg); color: var(--accent); font-weight: 600;
     }
-    .seg-btn {
-      height: 40px;
-      padding: 0 18px;
-      font-size: 14px;
-      color: #596066;
-      background: #fff;
-      border: 1px solid #CED2D6;
-      border-left: none;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      white-space: nowrap;
+    #step-1:checked ~ .content .step-tab-label[for="step-1"] .step-tab-num,
+    #step-2:checked ~ .content .step-tab-label[for="step-2"] .step-tab-num,
+    #step-3:checked ~ .content .step-tab-label[for="step-3"] .step-tab-num {
+      background: var(--accent); color: #fff;
     }
-    .seg-btn:first-child {
-      border-left: 1px solid #CED2D6;
-      border-radius: 4px 0 0 4px;
-    }
-    .seg-btn:last-child { border-radius: 0 4px 4px 0; }
-    .seg-btn.on {
-      background: rgba(88,198,93,0.1);
-      border-color: #C1E9C3;
-      color: #58C65D;
-      font-weight: 500;
-    }
-    .seg-btn:hover:not(.on) { background: #F6F7F9; }
 
-    /* ── 토글 스위치 ────────────────────────── */
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      height: 40px;
-    }
-    .toggle-track {
-      width: 38px; height: 22px;
-      border-radius: 100px;
-      background: #CED2D6;
-      position: relative;
-      cursor: pointer;
-      transition: background 0.25s ease;
-      flex-shrink: 0;
-    }
-    .toggle-track.on { background: #58C65D; }
-    .toggle-thumb {
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      position: absolute;
-      top: 3px; left: 3px;
-      transition: left 0.25s ease-in;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    .toggle-track.on .toggle-thumb { left: calc(100% - 19px); }
-    .toggle-label { font-size: 14px; color: #24292E; }
+    /* Step panels */
+    .step-panel { display: none; }
+    #step-1:checked ~ .content #panel-step-1 { display: block; }
+    #step-2:checked ~ .content #panel-step-2 { display: block; }
+    #step-3:checked ~ .content #panel-step-3 { display: block; }
 
-    /* ── 주소 검색 ──────────────────────────── */
-    .addr-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 8px;
-    }
-    .addr-row .inp { flex: 1; }
-
-    /* ── 연결 상태 뱃지 ─────────────────────── */
-    .conn-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      height: 40px;
-      padding: 0 14px;
-      border-radius: 4px;
-      font-size: 13px;
-      background: #F6F7F9;
-      border: 1px solid #CED2D6;
-      color: #9EA5AD;
-      white-space: nowrap;
-    }
-    .conn-badge .dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #CED2D6;
-      flex-shrink: 0;
-    }
-    .conn-badge.online  { background: rgba(88,198,93,0.08); border-color: #C1E9C3; color: #58C65D; }
-    .conn-badge.online .dot  { background: #58C65D; }
-    .conn-badge.checking { background: rgba(88,198,93,0.05); border-color: #C1E9C3; color: #58C65D; }
-    .conn-badge.checking .dot { background: #58C65D; opacity: 0.5; }
-
-    /* ── 지도 플레이스홀더 ──────────────────── */
-    .map-holder {
-      width: 100%; max-width: 520px;
-      height: 220px;
-      background: #EFF0F2;
-      border: 1px solid #CED2D6;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      color: #9EA5AD;
-      font-size: 13px;
-      position: relative;
+    /* ── Form card ── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      margin-bottom: 14px;
       overflow: hidden;
     }
-    .map-pin {
-      width: 20px; height: 20px;
-      fill: #58C65D;
-      opacity: 0.6;
+    .section-head {
+      padding: 14px 24px 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .section-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .section-desc  { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .section-body  { padding: 18px 24px; }
+
+    /* ── Form rows ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 0;
+      padding: 10px 0;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--surface-sub);
+    }
+    .form-row:last-child { border-bottom: none; }
+    .form-label {
+      font-size: 12px; font-weight: 500; color: var(--text-secondary);
+      padding-top: 10px; flex-shrink: 0; line-height: 1.4;
+    }
+    .form-label .req { color: var(--danger); margin-left: 2px; }
+    .form-field { min-width: 0; }
+    .form-field-row { display: flex; align-items: center; gap: 8px; }
+    .input-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+    /* ── Form controls ── */
+    .input, .select, .textarea {
+      width: 100%; height: 36px;
+      border: 1px solid var(--border-input); border-radius: 6px;
+      padding: 0 11px;
+      font-size: 13px; color: var(--text-primary);
+      font-family: inherit; background: var(--surface); outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input:focus, .select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+    .input.readonly, .input[readonly] {
+      background: var(--surface-sub); color: var(--text-secondary);
+      cursor: default;
+    }
+    .textarea {
+      height: auto; padding: 9px 11px;
+      resize: vertical; min-height: 72px; line-height: 1.5;
+    }
+    .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+    .select { cursor: pointer; }
+
+    .input-unit {
+      display: flex; align-items: center;
+      border: 1px solid var(--border-input); border-radius: 6px; overflow: hidden;
+      background: var(--surface);
+      transition: border-color 0.15s;
+    }
+    .input-unit:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+    .input-unit input {
+      border: none; outline: none; background: transparent;
+      height: 36px; padding: 0 11px;
+      font-size: 13px; color: var(--text-primary);
+      font-family: inherit; width: 100%;
+    }
+    .input-unit-label {
+      padding: 0 11px; background: var(--surface-sub);
+      border-left: 1px solid var(--border-input);
+      font-size: 12px; color: var(--text-secondary); white-space: nowrap;
+      height: 36px; display: flex; align-items: center;
     }
 
-    /* ── 시간 선택 ──────────────────────────── */
-    .time-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      height: 40px;
+    /* ── Tag input ── */
+    .tag-input-wrap {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      border: 1px solid var(--border-input); border-radius: 6px;
+      padding: 6px 10px; background: var(--surface); min-height: 38px;
+      align-items: center; cursor: text; transition: border-color 0.15s;
     }
-    .time-sep { font-size: 14px; color: #9EA5AD; }
-    input[type="time"].inp { width: 130px; }
-
-    /* ============================================================
-       버튼
-    ============================================================ */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      height: 40px;
-      padding: 0 20px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.25s ease;
-      white-space: nowrap;
+    .tag-input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+    .tag-item {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--accent-bg); border: 1px solid #C1E9C3;
+      border-radius: 10px; padding: 2px 8px 2px 10px;
+      font-size: 12px; color: #2E9E34;
     }
-    /* 기본 CTA — green fill */
-    .btn-primary {
-      background: #58C65D;
-      border-color: #58C65D;
-      color: #fff;
+    .tag-item button {
+      background: none; border: none; color: #82C987; cursor: pointer;
+      font-size: 13px; line-height: 1; padding: 0;
     }
-    .btn-primary:hover {
-      background: #fff;
-      color: #58C65D;
-    }
-    /* 보조 — 아웃라인 그린 */
-    .btn-outline {
-      background: #fff;
-      border-color: #C1E9C3;
-      color: #58C65D;
-    }
-    .btn-outline:hover {
-      background: rgba(88,198,93,0.08);
-    }
-    /* 취소 — gray */
-    .btn-ghost {
-      background: #fff;
-      border-color: #CED2D6;
-      color: #596066;
-    }
-    .btn-ghost:hover { background: #F6F7F9; }
-    /* 작은 버튼 */
-    .btn-sm {
-      height: 36px;
-      padding: 0 16px;
-      font-size: 13px;
+    .tag-item button:hover { color: var(--danger); }
+    .tag-input-wrap input {
+      border: none; outline: none; background: none;
+      font-size: 13px; color: var(--text-primary); font-family: inherit;
+      min-width: 80px; flex: 1;
     }
 
-    /* ── 폼 액션 바 ─────────────────────────── */
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      padding: 20px 24px;
-      border-top: 1px solid #E5E7EA;
+    /* ── Radio / Checkbox groups ── */
+    .radio-group, .checkbox-group {
+      display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px;
+    }
+    .radio-group label, .checkbox-group label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-primary);
+      cursor: pointer; padding: 6px 12px;
+      border: 1px solid var(--border-input); border-radius: 6px;
+      background: var(--surface);
+      transition: border-color 0.12s, background 0.12s;
+      user-select: none;
+    }
+    .radio-group label:hover, .checkbox-group label:hover {
+      border-color: var(--accent); background: var(--accent-bg);
+    }
+    .radio-group input[type=radio],
+    .checkbox-group input[type=checkbox] {
+      accent-color: var(--accent); cursor: pointer;
     }
 
-    /* ============================================================
-       모달 (popup-light)
-    ============================================================ */
-    .modal-backdrop {
+    /* ── Auto-suggest input row ── */
+    .autosuggest-wrap { position: relative; }
+    .autosuggest-list {
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+      background: var(--surface); border: 1px solid var(--border-input);
+      border-top: none; border-radius: 0 0 6px 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 900;
-      align-items: center;
-      justify-content: center;
     }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      width: 420px;
-      overflow: hidden;
+    .autosuggest-wrap:focus-within .autosuggest-list { display: block; }
+    .autosuggest-item {
+      padding: 8px 12px; font-size: 13px; color: var(--text-primary);
+      cursor: pointer; transition: background 0.1s;
     }
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 20px 14px;
-      border-bottom: 1px solid #E5E7EA;
+    .autosuggest-item:hover { background: var(--surface-sub); }
+    .autosuggest-item strong { color: var(--accent); font-weight: 600; }
+
+    /* ── Multi-classification grid ── */
+    .classify-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
-    .modal-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #24292E;
-    }
-    .modal-close {
-      width: 28px; height: 28px;
-      border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      color: #9EA5AD;
-      font-size: 18px;
-      transition: all 0.2s ease;
-    }
-    .modal-close:hover { background: #F6F7F9; color: #24292E; }
-    .modal-body {
-      padding: 20px;
-      font-size: 14px;
-      color: #596066;
-      line-height: 1.7;
-    }
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      padding: 14px 20px 18px;
-      border-top: 1px solid #E5E7EA;
+    .classify-cell {}
+    .classify-cell .form-label-inline {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 5px; display: block;
     }
 
-    /* ── 성공 모달 ─── */
-    .success-modal .modal-body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 32px 24px;
-      text-align: center;
+    /* ── mediaTypeCode readonly row ── */
+    .mediatype-row { display: flex; align-items: center; gap: 8px; }
+    .mediatype-code {
+      flex: 1; height: 36px; border: 1px solid var(--border-input); border-radius: 6px;
+      padding: 0 11px; background: var(--surface-sub);
+      font-size: 13px; color: var(--text-secondary);
+      display: flex; align-items: center; font-family: 'Pretendard', monospace;
+      letter-spacing: 0.5px; font-weight: 600;
     }
-    .success-icon {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: rgba(88,198,93,0.12);
+    .btn-regen {
+      height: 30px; padding: 0 10px;
+      background: var(--surface); border: 1px solid var(--border-input);
+      border-radius: 5px; font-size: 11px; color: var(--text-secondary);
+      cursor: pointer; font-family: inherit; white-space: nowrap;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .btn-regen:hover { border-color: var(--main); color: var(--main); }
+
+    /* ── Photo upload ── */
+    .photo-upload-area { display: flex; flex-wrap: wrap; gap: 10px; }
+    .photo-thumb {
+      width: 88px; height: 88px; border-radius: 8px;
+      border: 1px dashed var(--border-input); background: var(--surface-sub);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; cursor: pointer; transition: border-color 0.12s, background 0.12s;
+      font-size: 11px; color: var(--text-muted);
+    }
+    .photo-thumb:hover { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+    .photo-thumb svg { opacity: 0.5; }
+    .photo-thumb:hover svg { opacity: 1; }
+
+    /* ── Map placeholder ── */
+    .map-placeholder {
+      width: 100%; height: 200px;
+      background: #E8EDF2;
+      border: 1px solid var(--border-input); border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px;
+      font-size: 13px; color: var(--text-muted);
+      flex-direction: column; gap: 8px;
     }
-    .success-modal .modal-body h3 {
-      font-size: 16px; font-weight: 600;
-      color: #24292E; margin-bottom: 8px;
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .map-placeholder { background: #21282F; }
     }
-    .success-modal .modal-body p {
-      font-size: 13px; color: #9EA5AD;
-      margin-bottom: 24px;
+    :root[data-theme="dark"] .map-placeholder { background: #21282F; }
+    .coord-row { display: flex; gap: 10px; margin-top: 8px; }
+    .coord-row .input-unit { flex: 1; }
+
+    /* ── Toggle switch ── */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; padding-top: 4px; }
+    .toggle-label { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle-label input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0; background: var(--border-input);
+      border-radius: 11px; transition: background 0.2s; cursor: pointer;
+    }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 16px; height: 16px; background: #fff; border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle-label input:checked ~ .toggle-track { background: var(--accent); }
+    .toggle-label input:checked ~ .toggle-track .toggle-thumb { transform: translateX(18px); }
+    .toggle-text { font-size: 13px; color: var(--text-secondary); }
+
+    /* ── Resolution inputs ── */
+    .resolution-row { display: flex; align-items: center; gap: 8px; }
+    .resolution-row .input { text-align: right; }
+    .resolution-sep { font-size: 14px; color: var(--text-muted); }
+    .resolution-unit { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Screen split conditional ── */
+    #split-on:checked ~ .split-count-row { display: flex; }
+    .split-count-row { display: none; margin-top: 8px; align-items: center; gap: 8px; }
+
+    /* ── MCU conditional ── */
+    #mcu-yes:checked ~ .content #panel-step-3 .mcu-cond-fields { display: block; }
+    .mcu-cond-fields { display: none; }
+
+    /* ── Fan conditional ── */
+    #fan-none:checked ~ .content #panel-step-3 .fan-count-row { display: none; }
+    .fan-count-row { margin-top: 8px; }
+
+    /* ── Address search row ── */
+    .addr-search-row { display: flex; gap: 8px; }
+    .addr-search-row .input { flex: 1; }
+
+    /* ── Sensor grid ── */
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+    }
+    .sensor-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-sub); border-radius: 6px; padding: 8px 10px;
+      border: 1px solid var(--border-color);
+    }
+    .sensor-name {
+      font-size: 12px; font-weight: 600; color: var(--text-secondary);
+      width: 64px; flex-shrink: 0;
+    }
+    .sensor-row .select { height: 30px; font-size: 12px; flex: 1; }
+    .sensor-loc {
+      height: 30px; border: 1px solid var(--border-input); border-radius: 5px;
+      padding: 0 9px; font-size: 12px; font-family: inherit;
+      background: var(--surface); color: var(--text-primary); outline: none;
+      width: 90px; flex-shrink: 0;
+      transition: border-color 0.12s;
+    }
+    .sensor-loc:focus { border-color: var(--accent); }
+
+    /* ── Peripheral checkbox cols ── */
+    .checkbox-cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 6px; padding-top: 4px;
+    }
+    .checkbox-cols label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-primary);
+      cursor: pointer; padding: 7px 11px;
+      border: 1px solid var(--border-input); border-radius: 6px;
+      background: var(--surface); transition: border-color 0.12s, background 0.12s;
+    }
+    .checkbox-cols label:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .checkbox-cols input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+
+    /* ── Attached devices multi-select ── */
+    .attached-row { display: flex; gap: 8px; align-items: flex-start; }
+    .attached-chips {
+      flex: 1; display: flex; flex-wrap: wrap; gap: 6px;
+      border: 1px solid var(--border-input); border-radius: 6px;
+      padding: 7px 10px; background: var(--surface); min-height: 38px;
+    }
+    .attached-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      border-radius: 10px; padding: 2px 9px;
+      font-size: 12px; color: #1D4ED8;
+    }
+    .attached-chip button { background: none; border: none; color: #93C5FD; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+    .attached-chip button:hover { color: var(--danger); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border-radius: 6px; font-family: inherit; cursor: pointer;
+      text-decoration: none; transition: background 0.15s, border-color 0.15s, color 0.15s;
+      font-size: 13px; height: 36px; padding: 0 16px; border: 1px solid transparent;
+      font-weight: 500;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-ghost {
+      background: var(--surface); color: var(--text-secondary); border-color: var(--border-input);
+    }
+    .btn-ghost:hover { background: var(--surface-sub); color: var(--text-primary); }
+    .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 5px; }
+    .btn-add {
+      height: 30px; padding: 0 12px;
+      background: var(--accent-bg); color: #2E9E34;
+      border: 1px solid #C1E9C3; border-radius: 5px;
+      font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+    .btn-add:hover { background: #D8F0DA; }
+
+    /* ── Sticky action bar ── */
+    .form-actions {
+      position: sticky; bottom: 0; z-index: 30;
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+      padding: 14px 24px;
+      background: var(--surface); border-top: 1px solid var(--border-color);
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+      margin-top: 0;
+    }
+
+    /* ── Info box ── */
+    .info-box {
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      border-radius: 6px; padding: 9px 13px;
+      font-size: 12px; color: #1D4ED8; margin-top: 10px;
+      display: flex; gap: 7px; align-items: flex-start;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .info-box { background: #1E2D45; border-color: #2A4A6B; color: #93C5FD; }
+    }
+    :root[data-theme="dark"] .info-box { background: #1E2D45; border-color: #2A4A6B; color: #93C5FD; }
+
+    /* ── Step nav row (prev/next inside panel) ── */
+    .step-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 24px;
+      background: var(--surface); border: 1px solid var(--border-color);
+      border-radius: 10px; margin-bottom: 14px;
+    }
+    .step-nav-info { font-size: 12px; color: var(--text-muted); }
+    .step-nav-btns { display: flex; gap: 8px; }
+
+    /* ── Content wrapper ── */
+    .content-inner { max-width: 860px; margin: 0 auto; padding: 24px 24px 40px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .form-row { grid-template-columns: 1fr; gap: 5px; }
+      .form-label { padding-top: 0; }
+      .classify-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- ================================================================
-     ZONE 1 — GNB Sidebar (dark #454C52, 93px)
-================================================================ -->
-<aside class="gnb">
+  <!-- ── CSS State Machine inputs ── -->
+  <!-- Step tabs -->
+  <input class="state" type="radio" name="step" id="step-1" checked>
+  <input class="state" type="radio" name="step" id="step-2">
+  <input class="state" type="radio" name="step" id="step-3">
 
-  <!-- DL 로고 -->
-  <div class="gnb-logo">
-    <svg width="44" height="44" viewBox="0 0 44 44">
-      <rect width="44" height="44" rx="10" fill="rgba(255,255,255,0.12)"/>
-      <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle"
-            fill="#58C65D" font-size="14" font-weight="700" font-family="sans-serif">DL</text>
-    </svg>
-  </div>
+  <!-- MCU enabled -->
+  <input class="state" type="radio" name="mcu-enabled" id="mcu-no" checked>
+  <input class="state" type="radio" name="mcu-enabled" id="mcu-yes">
 
-  <nav class="gnb-nav">
-    <!-- 대시보드 -->
-    <a href="dashboard" title="대시보드">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/>
-      </svg>
-      <span style="font-size:10px;">대시보드</span>
-    </a>
-    <!-- 미디어 (active) -->
-    <a href="media-list" title="미디어" class="active">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M4 3a2 2 0 00-2 2v11a2 2 0 002 2h6v2H8v1.5h8V20h-2v-2h6a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 1.5h16a.5.5 0 01.5.5v11a.5.5 0 01-.5.5H4a.5.5 0 01-.5-.5V5a.5.5 0 01.5-.5z"/>
-      </svg>
-      <span style="font-size:10px;">미디어</span>
-    </a>
-    <!-- 미디어그룹 -->
-    <a href="#" title="미디어그룹">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M2 6h14v2H2V6zm0 5h14v2H2v-2zm0 5h14v2H2v-2zm16-8v10l6-5-6-5z"/>
-      </svg>
-      <span style="font-size:10px;">미디어그룹</span>
-    </a>
-    <!-- 콘텐츠 -->
-    <a href="contents" title="콘텐츠">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h5v1.5H8V16zm0-6h3v1.5H8V10z"/>
-      </svg>
-      <span style="font-size:10px;">콘텐츠</span>
-    </a>
-    <!-- 스케줄 -->
-    <a href="schedule-list" title="스케줄">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M17 2v2h2a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V2h1.5v2h7V2H17zM5 9v11h14V9H5zm2 2h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2z"/>
-      </svg>
-      <span style="font-size:10px;">스케줄</span>
-    </a>
-    <!-- 모니터링 -->
-    <a href="#" title="모니터링">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M3 3h18v14H3V3zm2 2v10h14V5H5zm-2 12h18v2H3v-2zm5-8h2v5H8v-5zm3-2h2v7h-2V7zm3 3h2v4h-2v-4z"/>
-      </svg>
-      <span style="font-size:10px;">모니터링</span>
-    </a>
+  <!-- Fan type -->
+  <input class="state" type="radio" name="fan-type" id="fan-none" checked>
+  <input class="state" type="radio" name="fan-type" id="fan-normal">
+  <input class="state" type="radio" name="fan-type" id="fan-rpm">
 
+  <!-- Screen split toggle -->
+  <input class="state" type="checkbox" id="split-on">
+
+  <!-- ① GNB — identical to existing file (active on media-list) -->
+  <nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
     <div class="gnb-divider"></div>
-
-    <!-- 태그검색 -->
-    <a href="#" title="태그검색">
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/>
-      </svg>
-      <span style="font-size:10px;">태그검색</span>
-    </a>
-  </nav>
-</aside>
-
-<!-- ================================================================
-     ZONE 2 — Topbar (dark #383F45, 60px)
-================================================================ -->
-<header class="topbar">
-
-  <!-- 검색창 -->
-  <div class="topbar-search">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="11" cy="11" r="7" stroke="#9EA5AD" stroke-width="2"/>
-      <path d="M16.5 16.5L21 21" stroke="#9EA5AD" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-    <input type="text" placeholder="검색어를 입력하세요">
-  </div>
-
-  <!-- 유저 영역 -->
-  <div class="topbar-user">
-    <!-- 알림 -->
-    <div class="topbar-icon-btn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2a7 7 0 00-7 7v4l-1.5 2.5h17L19 13V9a7 7 0 00-7-7z" stroke="#9EA5AD" stroke-width="1.5" fill="none"/>
-        <path d="M10 19a2 2 0 004 0" stroke="#9EA5AD" stroke-width="1.5" fill="none"/>
-      </svg>
-      <span class="badge"></span>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
     </div>
-    <!-- 오류 -->
-    <div class="topbar-icon-btn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="#9EA5AD" stroke-width="1.5"/>
-        <line x1="12" y1="7" x2="12" y2="13" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="12" cy="16" r="0.8" fill="#9EA5AD"/>
-      </svg>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
     </div>
-    <!-- 프로필 -->
-    <div class="topbar-profile" onclick="toggleProfile(this)">
-      <div class="topbar-avatar">관리</div>
-      <div class="topbar-profile-info">
-        <div class="topbar-profile-name">관리자</div>
-        <div class="topbar-profile-org">DOOH Service</div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+  <!-- ② Topbar -->
+  <header class="topbar">
+    <div class="topbar-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="전체 검색">
+    </div>
+    <div class="topbar-user">
+      <div class="topbar-icon-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span class="dot-badge"></span>
       </div>
-      <span class="topbar-caret">
-        <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
-      </span>
-      <!-- 드롭다운 -->
-      <div class="profile-dropdown" id="profileDropdown">
-        <a href="#">내 정보</a>
-        <a href="#">비밀번호 변경</a>
-        <a href="login" class="logout">로그아웃</a>
+      <div class="topbar-profile">
+        <div class="topbar-avatar">홍</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name">홍길동</div>
+          <div class="topbar-profile-org">엠앤엠네트웍스</div>
+        </div>
       </div>
     </div>
+  </header>
+
+  <!-- ③ Breadcrumb -->
+  <div class="bcrumb">
+    <a class="bcrumb-back" href="media-list">←</a>
+    <a href="media-list">미디어</a>
+    <span class="sep">›</span>
+    <span class="cur">미디어 등록</span>
   </div>
-</header>
 
-<!-- ================================================================
-     ZONE 3 — Breadcrumb Bar (dark #383F45, 40px)
-================================================================ -->
-<div class="breadcrumb-bar">
-  <span class="breadcrumb-back" onclick="history.back()">&#8249;</span>
-  <span class="breadcrumb-item link" onclick="window.location='#'">미디어</span>
-  <span class="breadcrumb-sep">›</span>
-  <span class="breadcrumb-item link" onclick="window.location='#'">미디어 목록</span>
-  <span class="breadcrumb-sep">›</span>
-  <span class="breadcrumb-item current">미디어 등록</span>
-</div>
+  <!-- ④ Content — CSS state machine targets children of .content -->
+  <main class="content">
+    <div class="content-inner">
 
-<!-- ================================================================
-     ZONE 4 — Content Area (light #F6F7F9)
-================================================================ -->
-<main class="content">
-  <div class="content-inner">
-
-    <!-- Page Card (white) -->
-    <div class="page-card">
-
-      <!-- 카드 헤더 -->
-      <div class="card-header">
-        <h1 class="card-title">미디어 등록</h1>
-        <div style="font-size:12px; color:#9EA5AD;">
-          Media = Display + Settop + Location <span style="margin-left:8px; color:#CED2D6;">1:1:1</span>
+      <!-- Page header -->
+      <div class="page-hd">
+        <div class="page-hd-left">
+          <a href="media-list" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 4l-5 4 5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            목록으로
+          </a>
+          <div class="sep-line"></div>
+          <div class="page-hd-title">미디어 등록</div>
+        </div>
+        <div class="page-hd-actions">
+          <a href="media-list" class="btn btn-ghost">취소</a>
+          <button class="btn btn-primary" onclick="submitForm()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            미디어 등록
+          </button>
         </div>
       </div>
 
-      <!-- ──────────────────────────────────────────
-           폼 본문
-      ────────────────────────────────────────── -->
-      <div class="form-body">
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             1. 기본 정보
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>기본 정보
-          </h2>
-
-          <!-- 미디어명 -->
-          <div class="form-row">
-            <label class="form-label">미디어명<span class="req">*</span></label>
-            <div class="form-control">
-              <input type="text" class="inp inp-full" id="mediaName"
-                     placeholder="미디어 이름을 입력하세요">
-            </div>
-          </div>
-
-          <!-- 미디어 유형 -->
-          <div class="form-row">
-            <label class="form-label">미디어 유형<span class="req">*</span></label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">실내형</button>
-                <button class="seg-btn"    onclick="seg(this)">실외형</button>
-                <button class="seg-btn"    onclick="seg(this)">복합형</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 운영 상태 -->
-          <div class="form-row">
-            <label class="form-label">운영 상태</label>
-            <div class="form-control">
-              <div class="toggle-wrap">
-                <input type="checkbox" id="statusChk" checked style="display:none;"
-                       onchange="syncToggle(this)">
-                <span class="toggle-track on" id="statusTrack"
-                      onclick="document.getElementById('statusChk').click()">
-                  <span class="toggle-thumb"></span>
-                </span>
-                <span class="toggle-label" id="statusLbl">운영 중</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             2. 디스플레이 (Display)
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>디스플레이 (Display)
-          </h2>
-
-          <!-- 해상도 -->
-          <div class="form-row">
-            <label class="form-label">해상도<span class="req">*</span></label>
-            <div class="form-control">
-              <select class="sel sel-md" onchange="toggleCustomRes(this)">
-                <option value="">해상도 선택</option>
-                <option value="1920x1080">1920 × 1080 (FHD 가로)</option>
-                <option value="1080x1920">1080 × 1920 (FHD 세로)</option>
-                <option value="3840x2160">3840 × 2160 (4K 가로)</option>
-                <option value="2160x3840">2160 × 3840 (4K 세로)</option>
-                <option value="custom">직접 입력</option>
-              </select>
-              <span id="customResWrap" style="display:none; align-items:center; gap:8px;">
-                <input type="number" class="inp inp-xs" placeholder="너비" min="1">
-                <span class="inp-suffix">px ×</span>
-                <input type="number" class="inp inp-xs" placeholder="높이" min="1">
-                <span class="inp-suffix">px</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- 화면 방향 -->
-          <div class="form-row">
-            <label class="form-label">화면 방향<span class="req">*</span></label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">가로</button>
-                <button class="seg-btn"    onclick="seg(this)">세로</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 화면 크기 -->
-          <div class="form-row">
-            <label class="form-label">화면 크기</label>
-            <div class="form-control" style="align-items:center;">
-              <input type="number" class="inp inp-xs" placeholder="0" min="1" max="999" step="0.1">
-              <span class="inp-suffix">인치</span>
-            </div>
-          </div>
-
-          <!-- 콘텐츠 재생 포맷 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:2px;">콘텐츠 재생 포맷<span class="req">*</span></label>
-            <div class="form-control">
-              <div class="check-group">
-                <label><input type="checkbox" checked> MP4</label>
-                <label><input type="checkbox" checked> JPG</label>
-                <label><input type="checkbox" checked> PNG</label>
-                <label><input type="checkbox"> GIF</label>
-                <label><input type="checkbox"> WebP</label>
-                <label><input type="checkbox"> AVI</label>
-                <label><input type="checkbox"> MOV</label>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             3. 셋탑 (Settop)
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>셋탑 (Settop)
-          </h2>
-
-          <!-- 셋탑 OS — Android 전용 -->
-          <div class="form-row">
-            <label class="form-label">운영체제 (OS)</label>
-            <div class="form-control">
-              <span style="display:inline-flex; align-items:center; height:40px; padding:0 12px;
-                            background:#F6F7F9; border:1px solid #CED2D6; border-radius:4px;
-                            font-size:14px; color:#24292E; gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#58C65D">
-                  <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-2.5-1C2.67 17 2 17.67 2 18.5v-9C2 8.67 2.67 8 3.5 8S5 8.67 5 9.5v9c0 .83-.67 1.5-1.5 1.5zm17 0c-.83 0-1.5-.67-1.5-1.5v-9c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v9c0 .83-.67 1.5-1.5 1.5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C7.08 3.04 6 4.57 6 6.35V7h12v-.65c0-1.78-1.08-3.31-2.47-4.19zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
-                </svg>
-                Android
-              </span>
-              <span class="hint" style="width:auto; margin-top:0;">본 서비스는 Android 운영체제만 지원합니다</span>
-            </div>
-          </div>
-
-          <!-- 셋탑 S/N -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label">셋탑 S/N<span class="req">*</span></label>
-            <div class="form-control" style="flex-direction:column; align-items:flex-start;">
-              <div style="display:flex; gap:8px; align-items:center;">
-                <input type="text" class="inp inp-md" id="settopSN" placeholder="시리얼 번호 입력">
-                <button class="btn btn-outline btn-sm" onclick="checkConn()">연결 확인</button>
-                <span class="conn-badge" id="connBadge">
-                  <span class="dot"></span>미확인
-                </span>
-              </div>
-              <p class="hint">셋탑 장치에 부착된 S/N 스티커의 번호를 입력하세요.</p>
-            </div>
-          </div>
-
-          <!-- Player 버전 (자동) -->
-          <div class="form-row">
-            <label class="form-label">Player 버전</label>
-            <div class="form-control">
-              <input type="text" class="inp inp-sm" id="playerVer" placeholder="예: v2.4.1" readonly>
-              <span class="hint green" style="width:auto; margin-top:0;">연결 확인 후 자동 조회</span>
-            </div>
-          </div>
-
-          <!-- Updater 버전 (자동) -->
-          <div class="form-row">
-            <label class="form-label">Updater 버전</label>
-            <div class="form-control">
-              <input type="text" class="inp inp-sm" id="updaterVer" placeholder="예: v1.2.0" readonly>
-            </div>
-          </div>
-
-          <!-- 연결 방식 -->
-          <div class="form-row">
-            <label class="form-label">연결 방식</label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">유선 (LAN)</button>
-                <button class="seg-btn"    onclick="seg(this)">무선 (Wi-Fi)</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             4. 설치 위치 (Location)
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>설치 위치 (Location)
-          </h2>
-
-          <!-- 주소 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label">주소<span class="req">*</span></label>
-            <div class="form-control" style="flex-direction:column; align-items:flex-start; gap:8px;">
-              <div class="addr-row">
-                <input type="text" class="inp inp-sm" id="zipCode" placeholder="우편번호" readonly>
-                <button class="btn btn-outline btn-sm" onclick="searchAddr()">주소 검색</button>
-              </div>
-              <input type="text" class="inp inp-full" id="addr1" placeholder="기본 주소" readonly>
-              <input type="text" class="inp inp-full" id="addr2" placeholder="상세 주소 입력">
-            </div>
-          </div>
-
-          <!-- 지역 구분 -->
-          <div class="form-row">
-            <label class="form-label">지역 구분<span class="req">*</span></label>
-            <div class="form-control">
-              <select class="sel sel-sm">
-                <option value="">지역 선택</option>
-                <optgroup label="수도권">
-                  <option>서울</option><option>경기</option><option>인천</option>
-                </optgroup>
-                <optgroup label="충청권">
-                  <option>대전</option><option>세종</option><option>충북</option><option>충남</option>
-                </optgroup>
-                <optgroup label="영남권">
-                  <option>부산</option><option>대구</option><option>울산</option><option>경북</option><option>경남</option>
-                </optgroup>
-                <optgroup label="호남권">
-                  <option>광주</option><option>전북</option><option>전남</option>
-                </optgroup>
-                <optgroup label="기타">
-                  <option>강원</option><option>제주</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
-
-          <!-- 설치 환경 -->
-          <div class="form-row">
-            <label class="form-label">설치 환경</label>
-            <div class="form-control">
-              <div class="seg">
-                <button class="seg-btn on" onclick="seg(this)">실내</button>
-                <button class="seg-btn"    onclick="seg(this)">실외</button>
-                <button class="seg-btn"    onclick="seg(this)">반실외</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 위치 설명 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:10px;">위치 설명</label>
-            <div class="form-control">
-              <textarea class="textarea" rows="3"
-                        placeholder="미디어 설치 위치에 대한 상세 설명을 입력하세요.&#10;예: 2호선 강남역 2번 출구 앞 기둥, 유동인구 밀집 구역"></textarea>
-            </div>
-          </div>
-
-          <!-- 지도 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:10px;">지도</label>
-            <div class="form-control">
-              <div class="map-holder">
-                <svg class="map-pin" viewBox="0 0 24 24">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-                <span>주소 검색 후 지도가 표시됩니다</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             5. 운영 정보
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <section class="form-section">
-          <h2 class="form-section-title">
-            <span class="section-icon"></span>운영 정보
-          </h2>
-
-          <!-- 운영 시간 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label">운영 시간<span class="req">*</span></label>
-            <div class="form-control" style="flex-direction:column; align-items:flex-start; gap:4px;">
-              <div class="time-row">
-                <input type="time" class="inp" value="07:00" id="opStart">
-                <span class="time-sep">~</span>
-                <input type="time" class="inp" value="23:00" id="opEnd">
-              </div>
-              <p class="hint">Play Plan의 기본 기준 시간으로 사용됩니다.</p>
-            </div>
-          </div>
-
-          <!-- 운영 요일 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:2px;">운영 요일</label>
-            <div class="form-control">
-              <div class="check-group">
-                <label><input type="checkbox" checked> 월</label>
-                <label><input type="checkbox" checked> 화</label>
-                <label><input type="checkbox" checked> 수</label>
-                <label><input type="checkbox" checked> 목</label>
-                <label><input type="checkbox" checked> 금</label>
-                <label><input type="checkbox"> 토</label>
-                <label><input type="checkbox"> 일</label>
-                <label><input type="checkbox"> 공휴일</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- 담당자 -->
-          <div class="form-row">
-            <label class="form-label">담당자</label>
-            <div class="form-control">
-              <input type="text" class="inp inp-md" placeholder="담당자 이름">
-              <input type="text" class="inp inp-md" placeholder="연락처 (예: 010-0000-0000)">
-            </div>
-          </div>
-
-          <!-- 비고 -->
-          <div class="form-row" style="align-items:flex-start;">
-            <label class="form-label" style="padding-top:10px;">비고</label>
-            <div class="form-control">
-              <textarea class="textarea" rows="3"
-                        placeholder="기타 특이사항을 입력하세요."></textarea>
-            </div>
-          </div>
-        </section>
-
-      </div><!-- /.form-body -->
-
-      <!-- 액션 버튼 바 -->
-      <div class="form-actions">
-        <button class="btn btn-ghost" onclick="history.back()">취소</button>
-        <button class="btn btn-primary" onclick="submitForm()">등록하기 ›</button>
+      <!-- Step tabs -->
+      <div class="step-tabs">
+        <label class="step-tab-label" for="step-1">
+          <span class="step-tab-num">1</span>
+          기본정보
+        </label>
+        <label class="step-tab-label" for="step-2">
+          <span class="step-tab-num">2</span>
+          광고물 · 위치
+        </label>
+        <label class="step-tab-label" for="step-3">
+          <span class="step-tab-num">3</span>
+          기기정보
+        </label>
       </div>
 
-    </div><!-- /.page-card -->
-  </div><!-- /.content-inner -->
-</main>
+      <!-- ═════════════════════════════════ STEP 1: 기본정보 ═════════════════════════════════ -->
+      <div class="step-panel" id="panel-step-1">
 
-<!-- ================================================================
-     등록 확인 모달
-================================================================ -->
-<div class="modal-backdrop" id="confirmBackdrop">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 class="modal-title">미디어 등록 확인</h2>
-      <button class="modal-close" onclick="closeConfirm()">✕</button>
-    </div>
-    <div class="modal-body">
-      입력한 정보로 미디어를 등록하겠습니까?<br>
-      등록 후 미디어 목록에서 확인할 수 있습니다.
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeConfirm()">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="completeRegister()">확인</button>
-    </div>
-  </div>
-</div>
+        <!-- 1-1. 식별정보 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">식별정보</div>
+              <div class="section-desc">미디어를 구분하는 고유 이름을 설정합니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">미디어명<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="autosuggest-wrap">
+                  <input type="text" class="input" id="inputMediaName" placeholder="예: 강남대로 DID-03" autocomplete="off">
+                  <div class="autosuggest-list">
+                    <div class="autosuggest-item">강남대로 DID-<strong>03</strong></div>
+                    <div class="autosuggest-item">강남역 출구 <strong>0</strong>3</div>
+                    <div class="autosuggest-item">코엑스 광장 <strong>03</strong>번</div>
+                  </div>
+                </div>
+                <div class="input-hint">중복 여부는 저장 시 자동으로 확인됩니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<!-- ================================================================
-     등록 성공 모달
-================================================================ -->
-<div class="modal-backdrop" id="successBackdrop">
-  <div class="modal success-modal">
-    <div class="modal-body">
-      <div class="success-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-          <path d="M5 13l4 4L19 7" stroke="#58C65D" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h3>미디어 등록이 완료되었습니다.</h3>
-      <p>미디어 목록 페이지로 이동합니다.</p>
-      <button class="btn btn-primary" onclick="goToList()">목록으로 이동 ›</button>
-    </div>
-  </div>
-</div>
+        <!-- 1-2. 분류정보 (태그) -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">분류정보</div>
+              <div class="section-desc">태그로 미디어를 분류하고 검색할 수 있습니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">태그</div>
+              <div class="form-field">
+                <div class="tag-input-wrap" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
+                  <span class="tag-item">강남 <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                  <span class="tag-item">실외 <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                  <input type="text" id="tagInput" placeholder="태그 입력 후 Enter" onkeydown="addTag(event)">
+                </div>
+                <div class="input-hint">Enter 또는 콤마(,)로 태그를 추가합니다. 예: 강남, 실외, LED, 고정형</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<!-- ================================================================
-     JavaScript
-================================================================ -->
-<script>
-  /* ── 프로필 드롭다운 ── */
-  function toggleProfile(el) {
-    var dd = document.getElementById('profileDropdown');
-    dd.classList.toggle('open');
-  }
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.topbar-profile')) {
-      document.getElementById('profileDropdown').classList.remove('open');
+        <!-- Step 1 nav -->
+        <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+          <label class="btn btn-primary" for="step-2">다음: 광고물 · 위치 →</label>
+        </div>
+
+      </div><!-- /panel-step-1 -->
+
+      <!-- ═════════════════════════════════ STEP 2: 광고물·위치 ═════════════════════════════════ -->
+      <div class="step-panel" id="panel-step-2">
+
+        <!-- 2-1. 미디어 분류 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">미디어 분류</div>
+              <div class="section-desc">광고물 유형 코드(mediaTypeCode)는 분류값으로 자동 생성됩니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+
+            <div class="classify-grid">
+              <div class="classify-cell">
+                <span class="classify-cell form-label-inline">설치 장소<span class="req" style="color:var(--danger);">*</span></span>
+                <select class="select" id="installationLocation" onchange="regenCode()">
+                  <option value="">선택하세요</option>
+                  <option value="O">옥외 (O)</option>
+                  <option value="I">실내 (I)</option>
+                  <option value="V">기내 (V)</option>
+                </select>
+              </div>
+              <div class="classify-cell">
+                <span class="classify-cell form-label-inline">이동성<span class="req" style="color:var(--danger);">*</span></span>
+                <select class="select" id="mobility" onchange="regenCode()">
+                  <option value="">선택하세요</option>
+                  <option value="M">이동형 (M)</option>
+                  <option value="F">고정형 (F)</option>
+                </select>
+              </div>
+              <div class="classify-cell">
+                <span class="classify-cell form-label-inline">시청 거리<span class="req" style="color:var(--danger);">*</span></span>
+                <select class="select" id="viewingDistance" onchange="regenCode()">
+                  <option value="">선택하세요</option>
+                  <option value="L">먼 거리 (L)</option>
+                  <option value="C">가까운 거리 (C)</option>
+                  <option value="E">근접 (E)</option>
+                </select>
+              </div>
+              <div class="classify-cell">
+                <span class="classify-cell form-label-inline">시청 대상<span class="req" style="color:var(--danger);">*</span></span>
+                <select class="select" id="audienceType" onchange="regenCode()">
+                  <option value="">선택하세요</option>
+                  <option value="PD">보행자 (PD)</option>
+                  <option value="PS">탑승자 (PS)</option>
+                  <option value="DS">모두 (DS)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row" style="margin-top:14px;">
+              <div class="form-label">광고물 유형코드<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">자동 생성</span></div>
+              <div class="form-field">
+                <div class="mediatype-row">
+                  <div class="mediatype-code" id="mediaTypeCode">—</div>
+                  <button type="button" class="btn-regen" onclick="regenCode()">보정 재생성</button>
+                  <select class="select" style="width:160px;flex-shrink:0;" title="코드 수동 보정">
+                    <option value="">코드 보정 선택…</option>
+                    <option value="O-F-L-PD">O-F-L-PD (옥외 고정 원거리 보행)</option>
+                    <option value="I-F-C-DS">I-F-C-DS (실내 고정 근거리 모두)</option>
+                    <option value="V-M-E-PS">V-M-E-PS (기내 이동 근접 탑승자)</option>
+                  </select>
+                </div>
+                <div class="input-hint">설치 장소 · 이동성 · 시청거리 · 시청대상을 선택하면 자동으로 생성됩니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-2. 설치 정보 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">설치 정보</div>
+              <div class="section-desc">현장 사진과 설치 높이를 기록합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">현장 사진</div>
+              <div class="form-field">
+                <div class="photo-upload-area">
+                  <label class="photo-thumb" for="photo-upload-1">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    사진 추가
+                    <input type="file" id="photo-upload-1" accept="image/*" style="display:none">
+                  </label>
+                  <label class="photo-thumb" for="photo-upload-2">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    사진 추가
+                    <input type="file" id="photo-upload-2" accept="image/*" style="display:none">
+                  </label>
+                  <label class="photo-thumb" for="photo-upload-3">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    사진 추가
+                    <input type="file" id="photo-upload-3" accept="image/*" style="display:none">
+                  </label>
+                </div>
+                <div class="input-hint">최대 3장, JPG · PNG · WEBP, 각 10MB 이하</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">설치 높이</div>
+              <div class="form-field">
+                <div class="input-unit" style="max-width:160px;">
+                  <input type="number" placeholder="0.0" step="0.1" min="0">
+                  <span class="input-unit-label">m</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-3. 관리 코드 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">관리 코드</div>
+              <div class="section-desc">사내 자산 관리 코드를 입력합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">자산 코드</div>
+              <div class="form-field">
+                <input type="text" class="input" placeholder="예: ASSET-2024-0042" style="max-width:280px;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-4. 주소 정보 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">주소 정보</div>
+              <div class="section-desc">설치 주소를 검색하여 입력합니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">설치 주소<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="addr-search-row">
+                  <input type="text" class="input readonly" id="addrMain" value="서울 강남구 강남대로 396" readonly>
+                  <button type="button" class="btn btn-ghost btn-sm">주소 검색</button>
+                </div>
+                <input type="text" class="input" style="margin-top:8px;" placeholder="상세 주소 (동, 층, 호 등)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-5. 위치 정보 (지도) -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">위치 정보</div>
+              <div class="section-desc">지도에서 정확한 설치 위치를 선택합니다. 좌표는 자동으로 기록됩니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">지도 위치<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="map-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.4;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                  지도에서 위치를 선택하세요
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">좌표<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">자동 기록</span></div>
+              <div class="form-field">
+                <div class="coord-row">
+                  <div class="input-unit">
+                    <input type="number" value="37.49793" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
+                    <span class="input-unit-label">위도</span>
+                  </div>
+                  <div class="input-unit">
+                    <input type="number" value="127.02762" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
+                    <span class="input-unit-label">경도</span>
+                  </div>
+                </div>
+                <div class="input-hint">지도 핀을 이동하면 자동으로 업데이트됩니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 nav -->
+        <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+          <label class="btn btn-ghost" for="step-1">← 이전: 기본정보</label>
+          <label class="btn btn-primary" for="step-3">다음: 기기정보 →</label>
+        </div>
+
+      </div><!-- /panel-step-2 -->
+
+      <!-- ═════════════════════════════════ STEP 3: 기기정보 ═════════════════════════════════ -->
+      <div class="step-panel" id="panel-step-3">
+
+        <!-- 3-1. 디스플레이 정보 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">디스플레이 정보</div>
+              <div class="section-desc">패널, 화면 크기, 해상도, 기능을 등록합니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+
+            <div class="form-row">
+              <div class="form-label">패널 유형<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="radio-group">
+                  <label><input type="radio" name="panelType" value="LCD"> LCD</label>
+                  <label><input type="radio" name="panelType" value="LED" checked> LED</label>
+                  <label><input type="radio" name="panelType" value="EPD"> 전자종이 (EPD)</label>
+                  <label><input type="radio" name="panelType" value="OTHER"> 기타</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">제조사 · 모델</div>
+              <div class="form-field">
+                <div class="form-field-row">
+                  <select class="select" style="max-width:180px;">
+                    <option value="">제조사 선택</option>
+                    <option>삼성전자</option>
+                    <option>LG전자</option>
+                    <option>기타</option>
+                  </select>
+                  <input type="text" class="input" placeholder="모델명 직접 입력">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">화면 크기<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="input-unit" style="max-width:160px;">
+                  <input type="number" placeholder="55" min="1">
+                  <span class="input-unit-label">px (대각)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">해상도<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="resolution-row">
+                  <input type="number" class="input" placeholder="1920" style="max-width:100px;text-align:right;">
+                  <span class="resolution-sep">×</span>
+                  <input type="number" class="input" placeholder="1080" style="max-width:100px;text-align:right;">
+                  <span class="resolution-unit">px</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">방향<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="radio-group">
+                  <label><input type="radio" name="orientation" value="landscape" checked> 가로형</label>
+                  <label><input type="radio" name="orientation" value="portrait"> 세로형</label>
+                  <label><input type="radio" name="orientation" value="square"> 정사각형</label>
+                  <label><input type="radio" name="orientation" value="custom"> 사용자 정의</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">기준 밝기</div>
+              <div class="form-field">
+                <div class="input-unit" style="max-width:160px;">
+                  <input type="number" placeholder="500" min="0">
+                  <span class="input-unit-label">nit</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">화면 분할</div>
+              <div class="form-field">
+                <div class="toggle-wrap">
+                  <label class="toggle-label">
+                    <input type="checkbox" id="split-on">
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                  </label>
+                  <span class="toggle-text">화면 분할 사용</span>
+                </div>
+                <!-- 분할 수는 toggle 상태에 따라 CSS로 show/hide — 단, split-on이 body 외부의 state input임 -->
+                <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+                  <div class="input-unit" style="max-width:120px;">
+                    <input type="number" placeholder="2" min="2" max="9">
+                    <span class="input-unit-label">분할</span>
+                  </div>
+                  <span style="font-size:12px;color:var(--text-muted);">화면 분할 시 분할 수를 입력합니다</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">기능<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="checkbox-cols">
+                  <label><input type="checkbox" checked> 밝기 제어</label>
+                  <label><input type="checkbox" checked> 전원 제어</label>
+                  <label><input type="checkbox"> 화면 분할</label>
+                  <label><input type="checkbox"> 센서 연동</label>
+                  <label><input type="checkbox"> 오디오</label>
+                  <label><input type="checkbox" checked> 화면 캡처</label>
+                  <label><input type="checkbox" checked> 원격 제어</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3-2. 셋탑/플레이어 정보 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">셋탑 · 플레이어 정보</div>
+              <div class="section-desc">재생 장치의 기본 정보와 네트워크를 입력합니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+
+            <div class="form-row">
+              <div class="form-label">제조사 · 모델<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="form-field-row">
+                  <select class="select" style="max-width:160px;">
+                    <option value="">제조사 선택</option>
+                    <option>Samsung</option>
+                    <option>BrightSign</option>
+                    <option>Raspberry Pi</option>
+                    <option>기타</option>
+                  </select>
+                  <input type="text" class="input" placeholder="모델명 직접 입력">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">MAC 주소</div>
+              <div class="form-field">
+                <input type="text" class="input" placeholder="AA:BB:CC:DD:EE:FF" style="max-width:200px;font-family:'Pretendard',monospace;letter-spacing:0.5px;">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">자산 코드</div>
+              <div class="form-field">
+                <input type="text" class="input" placeholder="플레이어 자산 코드" style="max-width:240px;">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">소프트웨어 버전</div>
+              <div class="form-field">
+                <div class="form-field-row">
+                  <select class="select" style="max-width:160px;">
+                    <option value="">버전 선택</option>
+                    <option>v2.4.1</option>
+                    <option>v2.3.0</option>
+                    <option>v2.2.8</option>
+                  </select>
+                  <input type="text" class="input" placeholder="직접 입력">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">네트워크</div>
+              <div class="form-field">
+                <div class="form-field-row">
+                  <select class="select" style="max-width:160px;">
+                    <option value="">유형 선택</option>
+                    <option>유선 LAN</option>
+                    <option>Wi-Fi</option>
+                    <option>LTE</option>
+                    <option>5G</option>
+                  </select>
+                  <input type="text" class="input" placeholder="SSID · IP · 기타 메모">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">기능<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="checkbox-cols">
+                  <label><input type="checkbox" checked> 원격 재시작</label>
+                  <label><input type="checkbox" checked> 파일 다운로드</label>
+                  <label><input type="checkbox"> 실시간 스트리밍</label>
+                  <label><input type="checkbox" checked> 로그 수집</label>
+                  <label><input type="checkbox"> 화면 캡처 전송</label>
+                  <label><input type="checkbox"> OTA 업데이트</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3-3. 부착기기 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">부착기기</div>
+              <div class="section-desc">미디어에 부착된 외부 장치를 추가합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">부착 장치</div>
+              <div class="form-field">
+                <div class="attached-row">
+                  <div class="attached-chips" id="attachedChips">
+                    <span class="attached-chip">카메라 <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                    <span class="attached-chip">스피커 <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                  </div>
+                  <button type="button" class="btn-add">+ 추가</button>
+                </div>
+                <div class="input-hint">예: 카메라, 스피커, IR 수신기, NFC 리더</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-4. MCU -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">MCU</div>
+              <div class="section-desc">마이크로컨트롤러 유닛 탑재 여부를 선택합니다</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">MCU 탑재<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="radio-group">
+                  <label><input type="radio" name="mcu-enabled-field" value="yes" onchange="document.getElementById('mcu-yes').checked=true"> 있음</label>
+                  <label><input type="radio" name="mcu-enabled-field" value="no" checked onchange="document.getElementById('mcu-no').checked=true"> 없음</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conditional fields — shown when mcu-yes state is checked -->
+            <div class="mcu-cond-fields">
+              <div class="form-row">
+                <div class="form-label">제조사 · 모델</div>
+                <div class="form-field">
+                  <div class="form-field-row">
+                    <select class="select" style="max-width:160px;">
+                      <option value="">제조사 선택</option>
+                      <option>Arduino</option>
+                      <option>STMicroelectronics</option>
+                      <option>Espressif</option>
+                      <option>기타</option>
+                    </select>
+                    <input type="text" class="input" placeholder="모델명 직접 입력">
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-label">MCU 기능</div>
+                <div class="form-field">
+                  <div class="checkbox-cols">
+                    <label><input type="checkbox"> 전원 제어</label>
+                    <label><input type="checkbox"> 온도 모니터링</label>
+                    <label><input type="checkbox"> 팬 제어</label>
+                    <label><input type="checkbox"> 도어 잠금</label>
+                    <label><input type="checkbox"> 센서 데이터 수집</label>
+                    <label><input type="checkbox"> GPIO 제어</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3-5. 센서(Sensor) -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">센서 (Sensor)</div>
+              <div class="section-desc">탑재된 센서 유형과 설치 위치를 입력합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="sensor-grid">
+              <div class="sensor-row">
+                <span class="sensor-name">충격</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>있음</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">PIR 모션</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>있음</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">온도</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>내부</option>
+                  <option>외부</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">습도</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>내부</option>
+                  <option>외부</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">도어</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>있음</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">PM10</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>있음</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">PM2.5</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>있음</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">조도</span>
+                <select class="select">
+                  <option value="">없음</option>
+                  <option>있음</option>
+                </select>
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+              <div class="sensor-row">
+                <span class="sensor-name">기타</span>
+                <input type="text" class="input" placeholder="유형 직접 입력" style="height:30px;font-size:12px;flex:1;">
+                <input type="text" class="sensor-loc" placeholder="위치">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-6. 팬(Fan) -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">팬 (Fan)</div>
+              <div class="section-desc">냉각 팬 유형과 수량을 입력합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">팬 유형</div>
+              <div class="form-field">
+                <div class="radio-group">
+                  <label><input type="radio" name="fan-type-field" value="none" checked onchange="document.getElementById('fan-none').checked=true"> 없음</label>
+                  <label><input type="radio" name="fan-type-field" value="normal" onchange="document.getElementById('fan-normal').checked=true"> 일반 팬</label>
+                  <label><input type="radio" name="fan-type-field" value="rpm" onchange="document.getElementById('fan-rpm').checked=true"> RPM 팬</label>
+                </div>
+                <div class="fan-count-row" style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+                  <div class="input-unit" style="max-width:120px;">
+                    <input type="number" placeholder="2" min="1">
+                    <span class="input-unit-label">개</span>
+                  </div>
+                  <span style="font-size:12px;color:var(--text-muted);">팬 수량</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-7. 주변기기(Peripheral) -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">주변기기 (Peripheral)</div>
+              <div class="section-desc">연결된 주변 제어 장치와 지원 명령을 선택합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">주변기기 유형</div>
+              <div class="form-field">
+                <div class="checkbox-cols">
+                  <label><input type="checkbox"> 전원 제어기</label>
+                  <label><input type="checkbox"> 조명</label>
+                  <label><input type="checkbox"> 냉각</label>
+                  <label><input type="checkbox"> 도어 잠금</label>
+                  <label><input type="checkbox"> 외부 디스플레이 제어기</label>
+                  <label><input type="checkbox"> 기타</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">지원 명령</div>
+              <div class="form-field">
+                <div class="checkbox-cols">
+                  <label><input type="checkbox"> ON</label>
+                  <label><input type="checkbox"> OFF</label>
+                  <label><input type="checkbox"> 재시작</label>
+                  <label><input type="checkbox"> 열기</label>
+                  <label><input type="checkbox"> 닫기</label>
+                  <label><input type="checkbox"> 단계 제어</label>
+                  <label><input type="checkbox"> 기타</label>
+                </div>
+                <div class="input-hint">주변기기 유형 선택 후 해당 장치가 지원하는 명령을 선택합니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 nav -->
+        <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+          <label class="btn btn-ghost" for="step-2">← 이전: 광고물 · 위치</label>
+          <button type="button" class="btn btn-primary" onclick="submitForm()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            미디어 등록
+          </button>
+        </div>
+
+      </div><!-- /panel-step-3 -->
+
+    </div><!-- /content-inner -->
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    /* ── Tag input ── */
+    function addTag(e) {
+      if (e.key !== 'Enter' && e.key !== ',') return;
+      e.preventDefault();
+      const input = e.target;
+      const val = input.value.replace(',', '').trim();
+      if (!val) return;
+      const wrap = document.getElementById('tagWrap');
+      const chip = document.createElement('span');
+      chip.className = 'tag-item';
+      chip.innerHTML = `${val} <button type="button" onclick="this.parentNode.remove()">×</button>`;
+      wrap.insertBefore(chip, input);
+      input.value = '';
     }
-  });
 
-  /* ── 세그먼트 컨트롤 (btn-wrap) ── */
-  function seg(btn) {
-    var parent = btn.parentElement;
-    parent.querySelectorAll('.seg-btn').forEach(function(b) { b.classList.remove('on'); });
-    btn.classList.add('on');
-  }
-
-  /* ── 해상도 직접 입력 ── */
-  function toggleCustomRes(sel) {
-    var w = document.getElementById('customResWrap');
-    w.style.display = sel.value === 'custom' ? 'flex' : 'none';
-  }
-
-  /* ── 토글 스위치 ── */
-  function syncToggle(chk) {
-    var track = document.getElementById('statusTrack');
-    var lbl   = document.getElementById('statusLbl');
-    if (chk.checked) {
-      track.classList.add('on');
-      lbl.textContent = '운영 중';
-    } else {
-      track.classList.remove('on');
-      lbl.textContent = '운영 중지';
+    /* ── mediaTypeCode auto-generation ── */
+    function regenCode() {
+      const loc  = document.getElementById('installationLocation').value;
+      const mob  = document.getElementById('mobility').value;
+      const vd   = document.getElementById('viewingDistance').value;
+      const aud  = document.getElementById('audienceType').value;
+      const el   = document.getElementById('mediaTypeCode');
+      if (loc && mob && vd && aud) {
+        el.textContent = `${loc}-${mob}-${vd}-${aud}`;
+        el.style.color = 'var(--text-primary)';
+      } else {
+        el.textContent = '—';
+        el.style.color = 'var(--text-muted)';
+      }
     }
-  }
 
-  /* ── 셋탑 연결 확인 (시뮬레이션) ── */
-  function checkConn() {
-    var sn = document.getElementById('settopSN').value.trim();
-    if (!sn) { alert('셋탑 S/N을 입력하세요.'); return; }
-    var badge = document.getElementById('connBadge');
-    badge.className = 'conn-badge checking';
-    badge.innerHTML = '<span class="dot"></span>확인 중...';
-    setTimeout(function() {
-      badge.className = 'conn-badge online';
-      badge.innerHTML = '<span class="dot"></span>온라인';
-      document.getElementById('playerVer').value  = 'v2.4.1';
-      document.getElementById('updaterVer').value = 'v1.2.0';
-    }, 1200);
-  }
+    /* ── MCU conditional via inline radio change ──
+       The CSS #mcu-yes ~ .content relies on structural positioning.
+       Since the state input and content are siblings under body, we use
+       a JS fallback to show/hide .mcu-cond-fields directly. */
+    function syncMcu() {
+      const yes = document.getElementById('mcu-yes');
+      const fields = document.querySelectorAll('.mcu-cond-fields');
+      fields.forEach(f => f.style.display = yes && yes.checked ? 'block' : 'none');
+    }
+    document.querySelectorAll('input[name="mcu-enabled-field"]').forEach(r => {
+      r.addEventListener('change', syncMcu);
+    });
+    syncMcu();
 
-  /* ── 주소 검색 (시뮬레이션 — 실제: Kakao 우편번호 API) ── */
-  function searchAddr() {
-    document.getElementById('zipCode').value = '06141';
-    document.getElementById('addr1').value   = '서울특별시 강남구 테헤란로 212';
-    document.getElementById('addr2').focus();
-  }
+    /* ── Fan count conditional ── */
+    function syncFan() {
+      const none = document.querySelector('input[name="fan-type-field"][value="none"]');
+      const fanCountRows = document.querySelectorAll('.fan-count-row');
+      fanCountRows.forEach(r => r.style.display = none && none.checked ? 'none' : 'flex');
+    }
+    document.querySelectorAll('input[name="fan-type-field"]').forEach(r => {
+      r.addEventListener('change', syncFan);
+    });
+    syncFan();
 
-  /* ── 폼 유효성 ── */
-  function validateForm() {
-    var err = [];
-    if (!document.getElementById('mediaName').value.trim()) err.push('미디어명을 입력하세요.');
-    if (!document.getElementById('settopSN').value.trim())  err.push('셋탑 S/N을 입력하세요.');
-    if (!document.getElementById('addr1').value.trim())     err.push('주소를 검색하여 입력하세요.');
-    if (err.length) { alert(err.join('\n')); return false; }
-    return true;
-  }
-
-  /* ── 등록 버튼 ── */
-  function submitForm() {
-    if (!validateForm()) return;
-    document.getElementById('confirmBackdrop').classList.add('open');
-  }
-
-  /* ── 확인 모달 닫기 ── */
-  function closeConfirm() {
-    document.getElementById('confirmBackdrop').classList.remove('open');
-  }
-
-  /* ── 등록 완료 ── */
-  function completeRegister() {
-    closeConfirm();
-    setTimeout(function() {
-      document.getElementById('successBackdrop').classList.add('open');
-    }, 150);
-  }
-
-  /* ── 목록으로 ── */
-  function goToList() {
-    window.location.href = '#';
-  }
-</script>
-
+    /* ── Form submit ── */
+    function submitForm() {
+      const name = document.getElementById('inputMediaName').value.trim();
+      if (!name) {
+        document.getElementById('step-1').checked = true;
+        document.getElementById('inputMediaName').focus();
+        document.getElementById('inputMediaName').style.borderColor = 'var(--danger)';
+        return;
+      }
+      window.location.href = 'media-detail?id=MED-NEW';
+    }
+  </script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>

@@ -3,1111 +3,327 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>미디어 조회 — D'ooh CMS</title>
+  <title>미디어 목록 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
   <style>
     :root {
-      --green: #58C65D; --green-dark: #4ab34e;
-      --main: #2d84ed; --danger: #E97474;
-      --shell-900: #24292E; --shell-800: #383F45;
-      --shell-700: #454C52; --shell-600: #596066; --shell-400: #9EA5AD;
-      --bg: #F6F7F9; --card: #FFFFFF;
-      --line: #E5E7EA; --border: #CED2D6;
-      --text: #24292E; --muted: #9EA5AD;
-      --warn: #F3BE4A; --near: #F08A4B;
-      --radius: 8px;
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
     }
-
     /* ── Toolbar ── */
-    .toolbar {
-      display: grid;
-      gap: 10px;
-      padding: 16px;
-      background: var(--bg);
-      border-radius: var(--radius);
-      margin-bottom: 16px;
+    .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .toolbar-search { flex:1; min-width:220px; position:relative; }
+    .toolbar-search svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); pointer-events:none; }
+    .toolbar-search input {
+      width:100%; height:36px; padding:0 12px 0 34px;
+      border:1px solid #CED2D6; border-radius:6px; font-size:13px;
+      color:#24292E; background:#fff; box-sizing:border-box;
     }
-    .searchbar {
-      display: flex;
-      min-height: 42px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
+    .toolbar-search input::placeholder { color:#9EA5AD; }
+    .filter-select {
+      height:36px; padding:0 28px 0 10px; border:1px solid #CED2D6;
+      border-radius:6px; font-size:13px; color:#24292E;
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+      -webkit-appearance:none; appearance:none; cursor:pointer; white-space:nowrap;
     }
-    .searchbar:focus-within { border-color: var(--green); }
-    .searchbar select {
-      width: 120px; border: 0;
-      border-right: 1px solid var(--border);
-      padding: 0 12px; background: #fff;
-      font-size: 13px; color: var(--text);
+    .btn-primary {
+      height:36px; padding:0 16px; background:#58C65D; color:#fff;
+      border:none; border-radius:6px; font-size:13px; font-weight:600;
+      cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:6px;
+      text-decoration:none;
     }
-    .searchbar input {
-      flex: 1; border: 0; padding: 0 12px;
-      font-size: 13px; background: #fff;
-    }
-    .searchbar input:focus { outline: 0; }
-    .searchbar button {
-      min-width: 42px; background: #fff;
-      color: var(--muted); border: 0;
-      border-left: 1px solid var(--line);
-      cursor: pointer; font-size: 16px;
-    }
-    .filter-grid {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(100px, 1fr));
-      gap: 8px;
-    }
-    .filter-grid select {
-      height: 36px; padding: 0 10px;
-      border: 1px solid var(--border); border-radius: 4px;
-      background: #fff; font-size: 12px; color: var(--text);
-      cursor: pointer;
-    }
-    .filter-grid select:focus { outline: 0; border-color: var(--green); }
+    .btn-primary:hover { background:#4ab34f; }
 
-    /* ── Viewbar ── */
-    .viewbar {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      gap: 16px; margin-bottom: 16px;
-      flex-wrap: wrap;
+    /* ── Summary chips ── */
+    .summary-chips { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .summary-chip {
+      height:32px; display:inline-flex; align-items:center; gap:6px;
+      padding:0 14px; border-radius:20px; font-size:12px; font-weight:600;
+      background:#F6F7F9; color:#596066; border:1px solid #E5E7EA;
+      cursor:pointer; transition:background 0.12s, border-color 0.12s;
     }
-    .summary-strip {
-      display: flex; gap: 8px; flex: 1; flex-wrap: wrap;
-    }
-    .summary-strip button {
-      min-height: 56px;
-      display: flex; align-items: center; gap: 10px;
-      padding: 0 18px;
-      background: #fff; border: 1px solid var(--line);
-      border-radius: var(--radius);
-      color: var(--muted); cursor: pointer;
-      transition: all 0.2s; white-space: nowrap;
-    }
-    .summary-strip button:hover,
-    .summary-strip button.is-active {
-      border-color: var(--green);
-      background: rgba(88,198,93,0.07);
-      color: var(--green);
-    }
-    .summary-strip button span {
-      font-size: 22px; font-weight: 700; color: var(--text);
-    }
-    .summary-strip button.is-active span { color: var(--green); }
-    .segmented {
-      display: inline-flex; padding: 3px;
-      border: 1px solid var(--border); border-radius: 4px;
-      background: #fff;
-    }
-    .segmented button {
-      min-height: 30px; padding: 0 14px;
-      border: 0; background: transparent;
-      border-radius: 3px; color: var(--muted);
-      font-size: 13px; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .segmented button.is-active {
-      background: var(--green); color: #fff; font-weight: 600;
-    }
+    .summary-chip:hover { border-color:#58C65D; }
+    .chip-count { font-size:14px; font-weight:700; color:#24292E; }
+    .chip-count.green { color:#2E9E34; }
 
     /* ── Table ── */
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
+    .table-card { background:#fff; border:1px solid #E5E7EA; border-radius:10px; overflow:hidden; }
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; min-width:1100px; border-collapse:collapse; }
+    thead th {
+      background:#F6F7F9; padding:10px 14px; font-size:12px; font-weight:600;
+      color:#596066; text-align:left; border-bottom:1px solid #E5E7EA; white-space:nowrap;
     }
-    .media-table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-    .media-table th, .media-table td {
-      padding: 12px 12px; border: none;
-      border-bottom: 1px solid var(--line);
-      text-align: left; vertical-align: middle;
-      font-size: 13px;
-    }
-    .media-table th {
-      background: var(--bg); color: var(--muted);
-      font-weight: 500; border-top: 1px solid var(--line);
-    }
-    .media-table tbody tr:hover { background: #FAFBFC; }
-    .media-table tbody tr:last-child td { border-bottom: none; }
-    .col-check { width: 40px; }
-    .col-more { width: 48px; }
-    input[type="checkbox"] {
-      width: 15px; height: 15px;
-      accent-color: var(--green); cursor: pointer;
-    }
+    tbody tr { border-bottom:1px solid #E5E7EA; transition:background 0.12s; cursor:pointer; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:#F6F7F9; }
+    tbody td { padding:12px 14px; font-size:13px; color:#24292E; vertical-align:middle; }
+    .media-name-link { color:#24292E; font-weight:500; text-decoration:none; }
+    .media-name-link:hover { color:#58C65D; text-decoration:underline; }
+    .muted-text { color:#9EA5AD; font-size:12px; }
 
-    .link {
-      color: var(--green); text-decoration: none; cursor: pointer;
-      background: transparent; border: 0; padding: 0;
-      font: inherit; font-size: 13px;
+    /* ── Badges ── */
+    .badge {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:2px 9px; border-radius:20px; font-size:12px;
+      font-weight:600; white-space:nowrap;
     }
-    .link:hover { text-decoration: underline; }
-    .muted-text { color: var(--muted); }
-
-    .status {
-      display: inline-flex; align-items: center;
-      min-height: 20px; padding: 2px 8px;
-      border-radius: 6px; font-size: 12px;
-      white-space: nowrap;
-    }
-    .status-ok { background: rgba(88,198,93,0.14); color: #319236; }
-    .status-warn { background: rgba(243,190,74,0.18); color: #A67000; }
-    .status-near { background: rgba(240,138,75,0.16); color: #B95817; }
-    .status-neutral { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
-
-    .op-hours { font-size: 11px; color: var(--muted); margin-left: 4px; }
-
-    .has-tooltip { position: relative; cursor: default; }
-    .has-tooltip::after {
-      content: attr(data-tooltip);
-      position: absolute; bottom: calc(100% + 6px); left: 50%;
-      transform: translateX(-50%);
-      background: var(--shell-900); color: #fff;
-      font-size: 11px; padding: 6px 10px;
-      border-radius: 4px; white-space: pre;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.15s; z-index: 100;
-    }
-    .has-tooltip:hover::after { opacity: 1; }
-
-    /* more menu */
-    .more-wrap { position: relative; }
-    .btn-more {
-      width: 32px; height: 32px;
-      background: transparent; border: 1px solid transparent;
-      border-radius: 4px; cursor: pointer; color: var(--muted);
-      font-size: 16px; display: flex; align-items: center; justify-content: center;
-    }
-    .btn-more:hover { background: var(--bg); border-color: var(--border); }
-    .more-menu {
-      position: absolute; right: 0; top: 36px;
-      background: #fff; border: 1px solid var(--border);
-      border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-      min-width: 120px; z-index: 50; display: none;
-    }
-    .more-wrap:hover .more-menu { display: block; }
-    .more-menu button {
-      display: block; width: 100%;
-      padding: 9px 14px; text-align: left;
-      background: transparent; border: 0;
-      font-size: 13px; cursor: pointer; color: var(--text);
-    }
-    .more-menu button:hover { background: var(--bg); }
-    .more-menu button.danger { color: var(--danger); }
-
-    /* ── Bulk action bar ── */
-    .bulk-action-bar {
-      position: sticky; bottom: 16px;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px;
-      background: var(--shell-800);
-      color: #fff; border-radius: var(--radius);
-      padding: 12px 18px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      margin-top: 12px;
-    }
-    .bulk-action-bar__count { font-size: 14px; }
-    .bulk-action-bar__count strong { font-size: 18px; font-weight: 700; }
-    .bulk-action-bar__actions { display: flex; gap: 8px; align-items: center; }
-    .btn-bulk {
-      height: 34px; padding: 0 14px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 4px; color: #fff;
-      font-size: 13px; cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-bulk:hover { background: rgba(255,255,255,0.22); }
-
-    /* ── Card view ── */
-    .media-view { display: none; }
-    .media-view.is-active { display: block; }
-    .media-view-card.is-active { display: grid; }
-    .media-card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-    .media-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-    }
-    .media-card--no-op {
-      background: linear-gradient(180deg, rgba(246,247,249,0.7) 0%, #fff 100%);
-    }
-    .media-card__head {
-      display: flex; justify-content: space-between;
-      align-items: flex-start; gap: 10px; margin-bottom: 4px;
-    }
-    .media-card h3 { margin: 0; font-size: 15px; font-weight: 600; }
-    .media-card__addr { font-size: 12px; color: var(--muted); margin: 4px 0 10px; }
-    .media-card dl {
-      display: grid; grid-template-columns: 90px 1fr;
-      gap: 6px 10px; margin: 0 0 12px;
-    }
-    .media-card dt { font-size: 12px; color: var(--muted); }
-    .media-card dd { margin: 0; font-size: 12px; color: var(--text); }
-    .mini-stats {
-      display: flex; gap: 6px; align-items: center;
-      flex-wrap: wrap; margin-bottom: 12px;
-    }
-    .mini-stats span:not(.status) {
-      height: 24px; display: inline-flex; align-items: center;
-      padding: 0 8px; border-radius: 4px;
-      background: var(--bg); font-size: 12px; color: var(--shell-600);
-    }
-    .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-    .btn-card {
-      height: 30px; padding: 0 10px;
-      border: 1px solid var(--border); border-radius: 4px;
-      background: #fff; font-size: 12px; color: var(--text);
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn-card:hover { background: var(--bg); }
-    .btn-card-dark {
-      background: var(--shell-800); color: #fff; border-color: var(--shell-800);
-    }
-    .btn-card-dark:hover { background: var(--shell-700); }
-
-    /* ── Map view ── */
-    .map-shell {
-      position: relative;
-      min-height: 520px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: linear-gradient(135deg, rgba(88,198,93,0.1), rgba(45,132,237,0.07)), #EFF0F2;
-    }
-    .map-grid {
-      position: absolute; inset: 0;
-      background-image: linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 52px 52px; opacity: 0.6;
-    }
-    .pin {
-      position: absolute; width: 16px; height: 16px;
-      border-radius: 50%; border: 2.5px solid #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .pin:hover, .pin.is-selected {
-      transform: scale(1.6);
-      box-shadow: 0 0 0 6px rgba(88,198,93,0.2), 0 2px 8px rgba(0,0,0,0.3);
-    }
-    .pin-ok { background: var(--green); }
-    .pin-warn { background: var(--warn); }
-    .pin-near { background: var(--near); }
-    .pin-card {
-      position: absolute; right: 20px; bottom: 20px;
-      width: min(320px, calc(100% - 40px));
-      background: #fff; border-radius: var(--radius);
-      padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-    .pin-card h3 { margin: 0 0 4px; font-size: 15px; }
-    .pin-card p { margin: 0 0 10px; font-size: 12px; color: var(--muted); }
-    .pin-card dl {
-      display: grid; grid-template-columns: 90px 1fr;
-      gap: 6px; margin: 0 0 12px;
-    }
-    .pin-card dt { font-size: 12px; color: var(--muted); }
-    .pin-card dd { margin: 0; font-size: 12px; }
-    .btn-pin-detail {
-      display: block; width: 100%; height: 34px;
-      background: var(--green); color: #fff;
-      border: 0; border-radius: 4px; font-size: 13px;
-      font-weight: 600; cursor: pointer; text-align: center;
-      line-height: 34px; text-decoration: none;
-    }
-
-    /* ── page header ── */
-    .page-header {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 16px;
-      margin-bottom: 20px;
-    }
-    .page-header h1 { margin: 4px 0 0; font-size: 22px; }
-    .eyebrow { margin: 0; font-size: 12px; color: var(--muted); }
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-ghost {
-      height: 36px; padding: 0 14px;
-      border: 1px solid var(--border); border-radius: 4px;
-      background: #fff; color: var(--text); font-size: 13px;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn-ghost:hover { background: var(--bg); }
-    .btn-primary-med {
-      height: 36px; padding: 0 16px;
-      background: var(--green); color: #fff;
-      border: none; border-radius: 4px; font-size: 13px;
-      font-weight: 600; cursor: pointer; transition: background 0.15s;
-    }
-    .btn-primary-med:hover { background: var(--green-dark); }
-
-    /* ── Tabs ── */
-    .tabs {
-      display: flex; gap: 24px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 20px;
-    }
-    .tabs button {
-      padding: 0 0 10px; background: transparent;
-      border: 0; border-bottom: 2px solid transparent;
-      font-size: 14px; color: var(--muted); cursor: pointer;
-      transition: all 0.15s;
-    }
-    .tabs button.is-active {
-      color: var(--text); border-bottom-color: var(--green);
-      font-weight: 600;
-    }
-    .tab-panel { display: none; }
-    .tab-panel.is-active { display: block; }
-
-    /* ── Operation panel ── */
-    .op-filter-row {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .op-filter-row select {
-      height: 34px; padding: 0 10px;
-      border: 1px solid var(--border); border-radius: 4px;
-      background: #fff; font-size: 12px; cursor: pointer;
-    }
-    .op-list { display: grid; gap: 10px; }
-    details.op-item {
-      border: 1px solid var(--line); border-radius: var(--radius);
-      background: #fff; overflow: hidden;
-    }
-    details.op-item summary {
-      display: grid;
-      grid-template-columns: 160px 80px 160px 120px 80px 60px 60px 1fr 40px;
-      align-items: center; gap: 12px;
-      padding: 14px 18px; cursor: pointer;
-      list-style: none; min-height: 56px;
-      font-size: 13px;
-    }
-    details.op-item summary::-webkit-details-marker { display: none; }
-    details.op-item[open] summary { border-bottom: 1px solid var(--line); }
-    .op-item__body { padding: 16px 18px; }
-    .op-item .op-media-table { width: 100%; border-collapse: collapse; }
-    .op-item .op-media-table th,
-    .op-item .op-media-table td {
-      padding: 8px 10px; border-bottom: 1px solid var(--line);
-      font-size: 12px; text-align: left;
-    }
-    .op-item .op-media-table th { background: var(--bg); color: var(--muted); font-weight: 500; }
-    .op-add-btn {
-      margin-top: 10px; height: 30px; padding: 0 12px;
-      border: 1px solid var(--border); border-radius: 4px;
-      background: #fff; font-size: 12px; cursor: pointer;
-    }
+    .lc-registered { background:#F0F1F3; color:#9EA5AD; }
+    .lc-active     { background:#E8F8E9; color:#2E9E34; }
+    .lc-inactive   { background:#FFF8E6; color:#B45309; }
+    .lc-retired    { background:#FEE2E2; color:#C83434; }
+    .op-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+    .op-normal   { background:rgba(88,198,93,.12);  color:#319236; }
+    .op-warn     { background:rgba(243,190,74,.15); color:#A67000; }
+    .op-critical { background:rgba(233,116,116,.14); color:#C83434; }
+    .op-offline  { background:#F0F1F3; color:#9EA5AD; }
+    .op-normal   .op-dot { background:#58C65D; }
+    .op-warn     .op-dot { background:#F3BE4A; }
+    .op-critical .op-dot { background:#E97474; }
+    .op-offline  .op-dot { background:#9EA5AD; }
   </style>
 </head>
 <body>
 
-<!-- ① GNB -->
+<!-- GNB -->
 <nav class="gnb">
-  <div class="gnb-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
-  </div>
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
-    <li class="gnb-disabled"><a href="#">대시보드<svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></a></li>
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
     <li><a href="media-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
-    <li><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a></li>
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a></li>
-    <li class="gnb-has-sub"><a href="javascript:void(0)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
-      <div class="gnb-sub">
-        <div class="gnb-sub-title">편성표</div>
-        <a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
-        <a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
-      </div>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
     </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
     <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
     <div class="gnb-divider"></div>
-    <li class="gnb-disabled"><a href="#"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
-<!-- ② Topbar -->
+<!-- Topbar -->
 <header class="topbar">
-  <div class="topbar-search"></div>
-  <div class="topbar-right">
-    <div class="user-info">
-      <div class="user-avatar">A</div>
-      <div class="user-meta">
-        <strong>Admin</strong>
-        <span>D'ooh CMS</span>
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
   </div>
 </header>
 
-<!-- ③ Content -->
-<main class="content-area">
-  <div class="page-wrap">
+<!-- Main content -->
+<main class="content">
+  <div class="content-inner">
 
     <!-- Page header -->
-    <div class="page-header">
-      <div>
-        <p class="eyebrow">Media Management</p>
-        <h1>미디어 조회</h1>
-      </div>
-      <div class="header-actions">
-        <button class="btn-ghost" onclick="alert('운영 설정 추가')">운영 설정 추가</button>
-        <button class="btn-primary-med" onclick="location.href='media-register'">미디어 등록</button>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">미디어</div>
+      <a href="media-register" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        미디어 등록
+      </a>
     </div>
 
-    <!-- Tabs -->
-    <nav class="tabs">
-      <button class="is-active" data-tab="media">미디어</button>
-      <button data-tab="operation">운영 설정</button>
-    </nav>
+    <!-- 상태 요약 칩 -->
+    <div class="summary-chips">
+      <span class="summary-chip">전체 <span class="chip-count">28</span></span>
+      <span class="summary-chip">활성 <span class="chip-count green">18</span></span>
+      <span class="summary-chip">비활성 <span class="chip-count">6</span></span>
+      <span class="summary-chip">등록 <span class="chip-count">3</span></span>
+      <span class="summary-chip">폐기 <span class="chip-count">1</span></span>
+    </div>
 
-    <!-- ── 미디어 탭 ── -->
-    <div class="tab-panel is-active" id="panel-media">
-
-      <!-- Toolbar -->
-      <div class="toolbar">
-        <form class="searchbar" onsubmit="return false">
-          <select>
-            <option>전체</option>
-            <option>미디어명</option>
-            <option>주소</option>
-            <option>Player</option>
-          </select>
-          <input type="search" placeholder="미디어명, 주소, Player 정보를 검색해 주세요.">
-          <button type="reset">×</button>
-        </form>
-        <div class="filter-grid">
-          <select><option>운영 설정 적용 여부</option><option>적용</option><option>미적용</option></select>
-          <select><option>운영 미디어 여부</option><option>운영 미디어</option><option>일반 미디어</option></select>
-          <select><option>상태 전체</option><option>운영 가능</option><option>운영 설정 필요</option></select>
-          <select><option>위치 전체</option><option>서울</option><option>부산</option><option>인천</option><option>대전</option></select>
-          <select><option>프로덕트 연결</option><option>연결 있음</option><option>없음</option></select>
-          <select><option>스케줄 연결</option><option>연결 있음</option><option>없음</option></select>
-        </div>
+    <!-- 검색·필터 툴바 -->
+    <div class="toolbar">
+      <div class="toolbar-search">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" placeholder="미디어명, 위치, 자산코드 검색">
       </div>
+      <select class="filter-select">
+        <option>생애주기 전체</option>
+        <option>등록</option>
+        <option>활성</option>
+        <option>비활성</option>
+        <option>폐기</option>
+      </select>
+      <select class="filter-select">
+        <option>운영상태 전체</option>
+        <option>정상</option>
+        <option>경고</option>
+        <option>심각</option>
+        <option>오프라인</option>
+      </select>
+      <select class="filter-select">
+        <option>미디어유형 전체</option>
+        <option>OF (옥외고정)</option>
+        <option>IFC (실내고정근접)</option>
+        <option>VF (차량고정)</option>
+        <option>OM (옥외이동)</option>
+      </select>
+      <select class="filter-select">
+        <option>설치위치 전체</option>
+        <option>옥외(Outdoor)</option>
+        <option>실내(Indoor)</option>
+        <option>기내(Vehicle)</option>
+      </select>
+    </div>
 
-      <!-- Viewbar -->
-      <div class="viewbar">
-        <div class="summary-strip">
-          <button class="is-active" data-status-filter="all">
-            <span>8</span> 전체 미디어
-          </button>
-          <button data-status-filter="ok">
-            <span>6</span> 운영 가능
-          </button>
-          <button data-status-filter="warn">
-            <span>2</span> 운영 설정 필요
-          </button>
-        </div>
-        <div class="segmented" id="view-toggle">
-          <button class="is-active" data-view="list">리스트</button>
-          <button data-view="card">카드</button>
-          <button data-view="map">지도</button>
-        </div>
-      </div>
+    <!-- 테이블 -->
+    <div class="table-card table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>미디어명</th>
+            <th>미디어유형</th>
+            <th>위치</th>
+            <th>운영상태</th>
+            <th>생애주기</th>
+            <th>설치정보</th>
+            <th>기기(플레이어)</th>
+            <th>마지막수정일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="location.href='media-detail?id=MED-001'">
+            <td><a class="media-name-link" href="media-detail?id=MED-001">강남역 1번출구 A</a><div class="muted-text">MED-001</div></td>
+            <td>OF</td>
+            <td>서울 강남구 강남대로 396</td>
+            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
+            <td><span class="badge lc-active">활성</span></td>
+            <td class="muted-text">옥외 / 고정 / 4.2m</td>
+            <td class="muted-text">Android 11</td>
+            <td class="muted-text">2025-08-15</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-002'">
+            <td><a class="media-name-link" href="media-detail?id=MED-002">홍대입구역 2번출구 광고판</a><div class="muted-text">MED-002</div></td>
+            <td>OF</td>
+            <td>서울 마포구 양화로 45</td>
+            <td><span class="badge op-warn"><span class="op-dot"></span>경고</span></td>
+            <td><span class="badge lc-active">활성</span></td>
+            <td class="muted-text">옥외 / 고정 / 3.8m</td>
+            <td class="muted-text">Android 12</td>
+            <td class="muted-text">2025-08-14</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-003'">
+            <td><a class="media-name-link" href="media-detail?id=MED-003">신촌역 스탠드형 A</a><div class="muted-text">MED-003</div></td>
+            <td>IFC</td>
+            <td>서울 서대문구 신촌역로 77</td>
+            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
+            <td><span class="badge lc-active">활성</span></td>
+            <td class="muted-text">실내 / 고정 / 1.5m</td>
+            <td class="muted-text">Windows 10</td>
+            <td class="muted-text">2025-08-12</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-004'">
+            <td><a class="media-name-link" href="media-detail?id=MED-004">잠실역 대형 LED</a><div class="muted-text">MED-004</div></td>
+            <td>OF</td>
+            <td>서울 송파구 올림픽로 240</td>
+            <td><span class="badge op-critical"><span class="op-dot"></span>심각</span></td>
+            <td><span class="badge lc-active">활성</span></td>
+            <td class="muted-text">옥외 / 고정 / 6.0m</td>
+            <td class="muted-text">Android 11</td>
+            <td class="muted-text">2025-08-10</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-005'">
+            <td><a class="media-name-link" href="media-detail?id=MED-005">서울역 환승통로 B</a><div class="muted-text">MED-005</div></td>
+            <td>IFC</td>
+            <td>서울 중구 통일로 1</td>
+            <td><span class="badge op-offline"><span class="op-dot"></span>오프라인</span></td>
+            <td><span class="badge lc-inactive">비활성</span></td>
+            <td class="muted-text">실내 / 고정 / 2.1m</td>
+            <td class="muted-text">Android 10</td>
+            <td class="muted-text">2025-08-08</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-006'">
+            <td><a class="media-name-link" href="media-detail?id=MED-006">합정역 메가폴 광고판</a><div class="muted-text">MED-006</div></td>
+            <td>OF</td>
+            <td>서울 마포구 합정역로 10</td>
+            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
+            <td><span class="badge lc-registered">등록</span></td>
+            <td class="muted-text">옥외 / 고정 / 5.0m</td>
+            <td class="muted-text">Android 13</td>
+            <td class="muted-text">2025-08-18</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-007'">
+            <td><a class="media-name-link" href="media-detail?id=MED-007">광화문광장 디지털 사이니지</a><div class="muted-text">MED-007</div></td>
+            <td>OF</td>
+            <td>서울 종로구 세종대로 175</td>
+            <td><span class="badge op-normal"><span class="op-dot"></span>정상</span></td>
+            <td><span class="badge lc-active">활성</span></td>
+            <td class="muted-text">옥외 / 고정 / 3.5m</td>
+            <td class="muted-text">Android 12</td>
+            <td class="muted-text">2025-08-11</td>
+          </tr>
+          <tr onclick="location.href='media-detail?id=MED-008'">
+            <td><a class="media-name-link" href="media-detail?id=MED-008">건대입구역 버스 광고 1</a><div class="muted-text">MED-008</div></td>
+            <td>VF</td>
+            <td>서울 광진구 능동로 210</td>
+            <td><span class="badge op-offline"><span class="op-dot"></span>오프라인</span></td>
+            <td><span class="badge lc-retired">폐기</span></td>
+            <td class="muted-text">기내 / 고정 / —</td>
+            <td class="muted-text">Android 9</td>
+            <td class="muted-text">2025-06-30</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      <!-- List View -->
-      <div class="media-view is-active" id="view-list">
-        <div class="table-wrap">
-          <table class="media-table">
-            <thead>
-              <tr>
-                <th class="col-check"><input type="checkbox" id="check-all"></th>
-                <th>미디어명</th>
-                <th>설치 주소</th>
-                <th>Display</th>
-                <th>셋탑 코드</th>
-                <th>운영 설정</th>
-                <th>운영 시간</th>
-                <th>슬롯 구성</th>
-                <th>보장 횟수</th>
-                <th>프로덕트</th>
-                <th>스케줄</th>
-                <th>상태</th>
-                <th class="col-more"></th>
-              </tr>
-            </thead>
-            <tbody id="media-tbody">
-              <tr data-status="ok">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">강남대로 DID 01</button></td>
-                <td>서울 강남구 강남대로 396</td>
-                <td>LCD 55" FHD</td>
-                <td>STB001</td>
-                <td>운영설정①</td>
-                <td>09:00~18:00<span class="op-hours">(9H)</span></td>
-                <td>20초 | 30슬롯</td>
-                <td>54회</td>
-                <td class="has-tooltip" data-tooltip="스타벅스 오후 광고&#10;삼성전자 브랜드 캠페인&#10;현대자동차 이벤트">12개</td>
-                <td class="has-tooltip" data-tooltip="평일 오전 기본 스케줄&#10;평일 오후 스케줄&#10;주말 전일 스케줄">7개</td>
-                <td><span class="status status-ok">운영 중</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button onclick="location.href='schedule-media-month'">편성표 이동</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="warn">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">코엑스몰 LED Wall</button></td>
-                <td>서울 강남구 영동대로 513</td>
-                <td>LED 6144×1728</td>
-                <td>STB002</td>
-                <td><span class="muted-text">미적용</span></td>
-                <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-                <td><span class="status status-warn">설정 필요</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>운영 설정 적용</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="ok">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">부산역 게이트 03</button></td>
-                <td>부산 동구 중앙대로 206</td>
-                <td>LCD 43" UHD</td>
-                <td>STB003</td>
-                <td>운영설정②</td>
-                <td>08:00~22:00<span class="op-hours">(14H)</span></td>
-                <td>15초 | 30슬롯</td>
-                <td>112회</td>
-                <td class="has-tooltip" data-tooltip="롯데마트 행사 광고&#10;신세계 시즌 캠페인&#10;국민은행 이벤트">6개</td>
-                <td class="has-tooltip" data-tooltip="주말 오전 스케줄&#10;주말 오후 스케줄&#10;평일 야간 스케줄">3개</td>
-                <td><span class="status status-ok">운영 중</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>편성표 이동</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="ok">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">을지로 패널 12</button></td>
-                <td>서울 중구 을지로 100</td>
-                <td>LCD 43" UHD</td>
-                <td>STB004</td>
-                <td>운영설정①</td>
-                <td>09:00~18:00<span class="op-hours">(9H)</span></td>
-                <td>20초 | 30슬롯</td>
-                <td>54회</td>
-                <td class="has-tooltip" data-tooltip="삼성전자 브랜드 캠페인&#10;LG전자 제품 광고&#10;SKT 이벤트">3개</td>
-                <td class="has-tooltip" data-tooltip="평일 기본 스케줄&#10;주말 스케줄">2개</td>
-                <td><span class="status status-ok">운영 중</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>편성표 이동</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="ok">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">홍대입구 미디어보드</button></td>
-                <td>서울 마포구 양화로 160</td>
-                <td>LED 4096×1536</td>
-                <td>STB005</td>
-                <td>운영설정③</td>
-                <td>10:00~23:00<span class="op-hours">(13H)</span></td>
-                <td>20초 | 36슬롯</td>
-                <td>65회</td>
-                <td class="has-tooltip" data-tooltip="현대카드 브랜드&#10;카카오 이벤트&#10;네이버 광고&#10;배달의민족 캠페인&#10;쿠팡 할인 행사">9개</td>
-                <td class="has-tooltip" data-tooltip="평일 저녁 스케줄&#10;주말 전일 스케줄&#10;야간 집중 스케줄">5개</td>
-                <td><span class="status status-ok">운영 중</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>편성표 이동</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="ok">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">잠실 롯데월드몰 2F</button></td>
-                <td>서울 송파구 올림픽로 300</td>
-                <td>LCD 65" UHD</td>
-                <td>STB006</td>
-                <td>운영설정②</td>
-                <td>08:00~22:00<span class="op-hours">(14H)</span></td>
-                <td>15초 | 30슬롯</td>
-                <td>112회</td>
-                <td class="has-tooltip" data-tooltip="롯데백화점 세일&#10;빈폴 시즌 광고&#10;나이키 신상 캠페인&#10;기타 프로모션">14개</td>
-                <td class="has-tooltip" data-tooltip="평일 오전 스케줄&#10;평일 오후 스케줄&#10;주말 전일 스케줄&#10;야간 타임 스케줄">8개</td>
-                <td><span class="status status-ok">운영 중</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>편성표 이동</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="warn">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">대전 둔산 스퀘어</button></td>
-                <td>대전 서구 둔산로 123</td>
-                <td>LCD 49" FHD</td>
-                <td>STB007</td>
-                <td><span class="muted-text">미적용</span></td>
-                <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-                <td><span class="status status-warn">설정 필요</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>운영 설정 적용</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr data-status="ok">
-                <td class="col-check"><input type="checkbox" class="row-check"></td>
-                <td><button class="link">인천공항 T1 Gate A</button></td>
-                <td>인천 중구 공항로 272</td>
-                <td>LED 7680×2160</td>
-                <td>STB008</td>
-                <td>운영설정④</td>
-                <td>00:00~24:00<span class="op-hours">(24H)</span></td>
-                <td>30초 | 30슬롯</td>
-                <td>96회</td>
-                <td class="has-tooltip" data-tooltip="대한항공 브랜드&#10;아시아나항공 광고&#10;면세점 캠페인&#10;외국인 타겟 이벤트">22개</td>
-                <td class="has-tooltip" data-tooltip="출국 시간대 스케줄&#10;입국 시간대 스케줄&#10;심야 스케줄">11개</td>
-                <td><span class="status status-ok">운영 중</span></td>
-                <td class="col-more">
-                  <div class="more-wrap">
-                    <button class="btn-more">···</button>
-                    <div class="more-menu">
-                      <button>편성표 이동</button>
-                      <button>수정</button>
-                      <button class="danger">삭제</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Bulk action bar -->
-        <div class="bulk-action-bar" id="bulk-bar" style="display:none">
-          <span class="bulk-action-bar__count"><strong id="bulk-count">0</strong>개 선택됨</span>
-          <div class="bulk-action-bar__actions">
-            <button class="btn-bulk">운영설정 적용 ▾</button>
-            <button class="btn-bulk" id="bulk-clear">선택 해제</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card View -->
-      <div class="media-view" id="view-card">
-        <div class="media-card-grid">
-          <div class="media-card">
-            <div class="media-card__head">
-              <h3>강남대로 DID 01</h3>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <p class="media-card__addr">서울 강남구 강남대로 396</p>
-            <dl>
-              <dt>Display</dt><dd>LCD 55" FHD</dd>
-              <dt>운영 설정</dt><dd>운영설정① · 평일 09:00~18:00</dd>
-              <dt>슬롯/보장</dt><dd>20초 × 30슬롯 · 54회</dd>
-            </dl>
-            <div class="mini-stats">
-              <span>프로덕트 12</span>
-              <span>스케줄 7</span>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <div class="card-actions">
-              <button class="btn-card btn-card-dark">상세 보기</button>
-              <button class="btn-card">운영 설정 변경</button>
-              <button class="btn-card" onclick="location.href='schedule-media-month'">편성표 보기</button>
-            </div>
-          </div>
-          <div class="media-card media-card--no-op">
-            <div class="media-card__head">
-              <h3>코엑스몰 LED Wall</h3>
-              <span class="status status-warn">설정 필요</span>
-            </div>
-            <p class="media-card__addr">서울 강남구 영동대로 513</p>
-            <dl>
-              <dt>Display</dt><dd>LED 6144×1728</dd>
-              <dt>운영 설정</dt><dd>미적용</dd>
-            </dl>
-            <div class="card-actions">
-              <button class="btn-card btn-card-dark">상세 보기</button>
-              <button class="btn-card">운영 설정 적용</button>
-            </div>
-          </div>
-          <div class="media-card">
-            <div class="media-card__head">
-              <h3>홍대입구 미디어보드</h3>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <p class="media-card__addr">서울 마포구 양화로 160</p>
-            <dl>
-              <dt>Display</dt><dd>LED 4096×1536</dd>
-              <dt>운영 설정</dt><dd>운영설정③ · 매일 10:00~23:00</dd>
-              <dt>슬롯/보장</dt><dd>20초 × 36슬롯 · 65회</dd>
-            </dl>
-            <div class="mini-stats">
-              <span>프로덕트 9</span>
-              <span>스케줄 5</span>
-              <span class="status status-near">임박</span>
-            </div>
-            <div class="card-actions">
-              <button class="btn-card btn-card-dark">상세 보기</button>
-              <button class="btn-card">운영 설정 변경</button>
-              <button class="btn-card" onclick="location.href='schedule-media-month'">편성표 보기</button>
-            </div>
-          </div>
-          <div class="media-card">
-            <div class="media-card__head">
-              <h3>인천공항 T1 Gate A</h3>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <p class="media-card__addr">인천 중구 공항로 272</p>
-            <dl>
-              <dt>Display</dt><dd>LED 7680×2160</dd>
-              <dt>운영 설정</dt><dd>운영설정④ · 매일 00:00~24:00</dd>
-              <dt>슬롯/보장</dt><dd>30초 × 30슬롯 · 96회</dd>
-            </dl>
-            <div class="mini-stats">
-              <span>프로덕트 22</span>
-              <span>스케줄 11</span>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <div class="card-actions">
-              <button class="btn-card btn-card-dark">상세 보기</button>
-              <button class="btn-card">운영 설정 변경</button>
-              <button class="btn-card">편성표 보기</button>
-            </div>
-          </div>
-          <div class="media-card">
-            <div class="media-card__head">
-              <h3>잠실 롯데월드몰 2F</h3>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <p class="media-card__addr">서울 송파구 올림픽로 300</p>
-            <dl>
-              <dt>Display</dt><dd>LCD 65" UHD</dd>
-              <dt>운영 설정</dt><dd>운영설정② · 매일 08:00~22:00</dd>
-              <dt>슬롯/보장</dt><dd>15초 × 30슬롯 · 112회</dd>
-            </dl>
-            <div class="mini-stats">
-              <span>프로덕트 14</span>
-              <span>스케줄 8</span>
-              <span class="status status-ok">운영 중</span>
-            </div>
-            <div class="card-actions">
-              <button class="btn-card btn-card-dark">상세 보기</button>
-              <button class="btn-card">운영 설정 변경</button>
-              <button class="btn-card">편성표 보기</button>
-            </div>
-          </div>
-          <div class="media-card media-card--no-op">
-            <div class="media-card__head">
-              <h3>대전 둔산 스퀘어</h3>
-              <span class="status status-warn">설정 필요</span>
-            </div>
-            <p class="media-card__addr">대전 서구 둔산로 123</p>
-            <dl>
-              <dt>Display</dt><dd>LCD 49" FHD</dd>
-              <dt>운영 설정</dt><dd>미적용</dd>
-            </dl>
-            <div class="card-actions">
-              <button class="btn-card btn-card-dark">상세 보기</button>
-              <button class="btn-card">운영 설정 적용</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Map View -->
-      <div class="media-view" id="view-map">
-        <div class="map-shell">
-          <div class="map-grid"></div>
-
-          <!-- Pins -->
-          <button class="pin pin-ok is-selected" style="left:54%;top:42%" title="강남대로 DID 01" data-media-id="gangnam"></button>
-          <button class="pin pin-warn" style="left:58%;top:46%" title="코엑스몰 LED Wall" data-media-id="coex"></button>
-          <button class="pin pin-ok" style="left:41%;top:66%" title="부산역 게이트 03" data-media-id="busan"></button>
-          <button class="pin pin-near" style="left:50%;top:37%" title="홍대입구 미디어보드" data-media-id="hongdae"></button>
-          <button class="pin pin-ok" style="left:63%;top:52%" title="잠실 롯데월드몰 2F" data-media-id="jamsil"></button>
-          <button class="pin pin-ok" style="left:29%;top:56%" title="인천공항 T1 Gate A" data-media-id="incheon"></button>
-
-          <!-- Pin info card -->
-          <div class="pin-card" id="pin-card">
-            <h3 id="pin-name">강남대로 DID 01</h3>
-            <p id="pin-address">서울 강남구 강남대로 396</p>
-            <dl>
-              <dt>운영 설정</dt><dd id="pin-setting">운영설정① · 평일 09:00~18:00</dd>
-              <dt>슬롯/보장</dt><dd id="pin-info">20초 × 30슬롯 · 54회</dd>
-              <dt>상태</dt><dd id="pin-status"><span class="status status-ok">운영 중</span></dd>
-              <dt>연결 정보</dt><dd id="pin-links">프로덕트 12 · 스케줄 7</dd>
-            </dl>
-            <button class="btn-pin-detail">상세 보기</button>
-          </div>
-        </div>
-      </div>
-    </div><!-- /panel-media -->
-
-    <!-- ── 운영 설정 탭 ── -->
-    <div class="tab-panel" id="panel-operation">
-      <div class="op-filter-row">
-        <select><option>운영 요일 전체</option><option>매일</option><option>평일</option><option>주말</option></select>
-        <select><option>운영 시간 전체</option><option>09:00~18:00</option><option>08:00~22:00</option></select>
-        <select><option>기준 슬롯 재생 시간</option><option>15초</option><option>20초</option><option>30초</option></select>
-        <select><option>적용 미디어 여부</option><option>적용 있음</option><option>적용 없음</option></select>
-        <select><option>상태 전체</option><option>사용 중</option><option>미사용</option></select>
-      </div>
-      <div class="op-list">
-        <details class="op-item" open>
-          <summary>
-            <span><strong>운영설정①</strong></span>
-            <span>평일</span>
-            <span>09:00~18:00<span class="op-hours">(9H)</span></span>
-            <span>20초 | 30슬롯</span>
-            <span>600초</span>
-            <span>54회</span>
-            <span>18개</span>
-            <span class="status status-ok">사용 중</span>
-            <div class="more-wrap">
-              <button class="btn-more">···</button>
-              <div class="more-menu">
-                <button>수정</button>
-                <button class="danger">삭제</button>
-              </div>
-            </div>
-          </summary>
-          <div class="op-item__body">
-            <table class="op-media-table">
-              <thead>
-                <tr><th>미디어명</th><th>설치 주소</th><th>Display</th><th>셋탑 코드</th><th>프로덕트</th><th>스케줄</th><th>상태</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><button class="link">강남대로 DID 01</button></td>
-                  <td>서울 강남구 강남대로 396</td>
-                  <td>LCD 55" FHD</td>
-                  <td>STB001</td>
-                  <td>12개</td><td>7개</td>
-                  <td><span class="status status-ok">운영 중</span></td>
-                </tr>
-                <tr>
-                  <td><button class="link">을지로 패널 12</button></td>
-                  <td>서울 중구 을지로 100</td>
-                  <td>LCD 43" UHD</td>
-                  <td>STB004</td>
-                  <td>3개</td><td>2개</td>
-                  <td><span class="status status-ok">운영 중</span></td>
-                </tr>
-              </tbody>
-            </table>
-            <button class="op-add-btn">+ 미디어 추가</button>
-          </div>
-        </details>
-
-        <details class="op-item">
-          <summary>
-            <span><strong>운영설정②</strong></span>
-            <span>주말</span>
-            <span>08:00~22:00<span class="op-hours">(14H)</span></span>
-            <span>15초 | 30슬롯</span>
-            <span>450초</span>
-            <span>112회</span>
-            <span>2개</span>
-            <span class="status status-ok">사용 중</span>
-            <div class="more-wrap">
-              <button class="btn-more">···</button>
-              <div class="more-menu">
-                <button>수정</button>
-                <button class="danger">삭제</button>
-              </div>
-            </div>
-          </summary>
-          <div class="op-item__body">
-            <table class="op-media-table">
-              <thead>
-                <tr><th>미디어명</th><th>설치 주소</th><th>Display</th><th>셋탑 코드</th><th>프로덕트</th><th>스케줄</th><th>상태</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><button class="link">부산역 게이트 03</button></td>
-                  <td>부산 동구 중앙대로 206</td>
-                  <td>LCD 43" UHD</td>
-                  <td>STB003</td>
-                  <td>6개</td><td>3개</td>
-                  <td><span class="status status-ok">운영 중</span></td>
-                </tr>
-                <tr>
-                  <td><button class="link">잠실 롯데월드몰 2F</button></td>
-                  <td>서울 송파구 올림픽로 300</td>
-                  <td>LCD 65" UHD</td>
-                  <td>STB006</td>
-                  <td>14개</td><td>8개</td>
-                  <td><span class="status status-ok">운영 중</span></td>
-                </tr>
-              </tbody>
-            </table>
-            <button class="op-add-btn">+ 미디어 추가</button>
-          </div>
-        </details>
-
-        <details class="op-item">
-          <summary>
-            <span><strong>운영설정③</strong></span>
-            <span>월·화·수·목</span>
-            <span>10:00~23:00<span class="op-hours">(13H)</span></span>
-            <span>20초 | 36슬롯</span>
-            <span>720초</span>
-            <span>65회</span>
-            <span>1개</span>
-            <span class="status status-ok">사용 중</span>
-            <div class="more-wrap">
-              <button class="btn-more">···</button>
-              <div class="more-menu">
-                <button>수정</button>
-                <button class="danger">삭제</button>
-              </div>
-            </div>
-          </summary>
-          <div class="op-item__body">
-            <table class="op-media-table">
-              <thead>
-                <tr><th>미디어명</th><th>설치 주소</th><th>Display</th><th>셋탑 코드</th><th>프로덕트</th><th>스케줄</th><th>상태</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><button class="link">홍대입구 미디어보드</button></td>
-                  <td>서울 마포구 양화로 160</td>
-                  <td>LED 4096×1536</td>
-                  <td>STB005</td>
-                  <td>9개</td><td>5개</td>
-                  <td><span class="status status-ok">운영 중</span></td>
-                </tr>
-              </tbody>
-            </table>
-            <button class="op-add-btn">+ 미디어 추가</button>
-          </div>
-        </details>
-      </div>
-    </div><!-- /panel-operation -->
-
-  </div><!-- /page-wrap -->
+  </div>
 </main>
 
-<script>
-// Tab switching
-document.querySelectorAll('.tabs button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('is-active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    document.getElementById('panel-' + btn.dataset.tab).classList.add('is-active');
-  });
-});
-
-// View toggle
-const viewToggle = document.getElementById('view-toggle');
-const views = { list: document.getElementById('view-list'), card: document.getElementById('view-card'), map: document.getElementById('view-map') };
-viewToggle.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    viewToggle.querySelectorAll('button').forEach(b => b.classList.remove('is-active'));
-    Object.values(views).forEach(v => v.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    views[btn.dataset.view].classList.add('is-active');
-  });
-});
-
-// Checkbox / bulk bar
-const checkAll = document.getElementById('check-all');
-const bulkBar = document.getElementById('bulk-bar');
-const bulkCount = document.getElementById('bulk-count');
-function updateBulk() {
-  const checked = document.querySelectorAll('.row-check:checked').length;
-  bulkCount.textContent = checked;
-  bulkBar.style.display = checked > 0 ? 'flex' : 'none';
-}
-checkAll.addEventListener('change', () => {
-  document.querySelectorAll('.row-check').forEach(c => c.checked = checkAll.checked);
-  updateBulk();
-});
-document.querySelectorAll('.row-check').forEach(c => c.addEventListener('change', updateBulk));
-document.getElementById('bulk-clear').addEventListener('click', () => {
-  document.querySelectorAll('.row-check').forEach(c => c.checked = false);
-  checkAll.checked = false;
-  updateBulk();
-});
-
-// Summary strip filter
-const pinData = {
-  gangnam: { name:'강남대로 DID 01', address:'서울 강남구 강남대로 396', setting:'운영설정① · 평일 09:00~18:00', info:'20초 × 30슬롯 · 54회', status:'<span class="status status-ok">운영 중</span>', links:'프로덕트 12 · 스케줄 7' },
-  coex:    { name:'코엑스몰 LED Wall', address:'서울 강남구 영동대로 513', setting:'미적용', info:'-', status:'<span class="status status-warn">설정 필요</span>', links:'-' },
-  busan:   { name:'부산역 게이트 03', address:'부산 동구 중앙대로 206', setting:'운영설정② · 주말 08:00~22:00', info:'15초 × 30슬롯 · 112회', status:'<span class="status status-ok">운영 중</span>', links:'프로덕트 6 · 스케줄 3' },
-  hongdae: { name:'홍대입구 미디어보드', address:'서울 마포구 양화로 160', setting:'운영설정③ · 매일 10:00~23:00', info:'20초 × 36슬롯 · 65회', status:'<span class="status status-near">임박</span>', links:'프로덕트 9 · 스케줄 5' },
-  jamsil:  { name:'잠실 롯데월드몰 2F', address:'서울 송파구 올림픽로 300', setting:'운영설정② · 매일 08:00~22:00', info:'15초 × 30슬롯 · 112회', status:'<span class="status status-ok">운영 중</span>', links:'프로덕트 14 · 스케줄 8' },
-  incheon: { name:'인천공항 T1 Gate A', address:'인천 중구 공항로 272', setting:'운영설정④ · 매일 00:00~24:00', info:'30초 × 30슬롯 · 96회', status:'<span class="status status-ok">운영 중</span>', links:'프로덕트 22 · 스케줄 11' }
-};
-
-document.querySelectorAll('.pin').forEach(pin => {
-  pin.addEventListener('click', () => {
-    document.querySelectorAll('.pin').forEach(p => p.classList.remove('is-selected'));
-    pin.classList.add('is-selected');
-    const d = pinData[pin.dataset.mediaId];
-    if (!d) return;
-    document.getElementById('pin-name').textContent = d.name;
-    document.getElementById('pin-address').textContent = d.address;
-    document.getElementById('pin-setting').textContent = d.setting;
-    document.getElementById('pin-info').textContent = d.info;
-    document.getElementById('pin-status').innerHTML = d.status;
-    document.getElementById('pin-links').textContent = d.links;
-  });
-});
-
-// Status filter
-document.querySelectorAll('.summary-strip button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.summary-strip button').forEach(b => b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    const filter = btn.dataset.statusFilter;
-    document.querySelectorAll('#media-tbody tr').forEach(row => {
-      row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
-    });
-  });
-});
-</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>
