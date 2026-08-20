@@ -890,25 +890,32 @@
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#596066" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         프로덕트 목록
       </a>
-      <div class="header-actions">
-        <button class="btn-outline" onclick="alert('편집 모드 (목업)')">편집</button>
-        <button class="btn-danger-outline" onclick="alert('삭제 확인 (목업)')">삭제</button>
+      <div class="header-actions" id="hdr-actions">
+        <!-- JS가 상태에 따라 채움 -->
       </div>
     </div>
     <div class="detail-title-row">
       <div>
-        <h1 class="detail-title">강남 A지구 패키지</h1>
-        <div class="reg-date">등록일: 2025.09.01</div>
+        <h1 class="detail-title" id="prd-title">강남 A지구 패키지</h1>
+        <div class="reg-date">등록일: 2025.09.01 &nbsp;|&nbsp; ID: PRD-2025-001 &nbsp;|&nbsp; Rev: v3</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="badge-adex"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#2D84ED" stroke-width="1.2"/><path d="M3 6h6M6 3v6" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg>ADeX 연동</span>
-        <div class="status-toggle-wrap" onclick="toggleProductStatus()" title="클릭하여 활성/비활성 전환">
-        <div class="status-toggle-track on" id="statusTrack">
-          <div class="status-toggle-thumb"></div>
-        </div>
-        <span class="status-toggle-label" id="statusLabel">활성</span>
-        </div>
-      </div>
+    </div>
+    <!-- 4-axis 상태 배지 -->
+    <div id="prd-badges" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+    <!-- 상태 전환 링크 (프로토타입 시뮬레이션용) -->
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+      <span style="font-size:11px;color:#9EA5AD;">상태 시뮬레이션:</span>
+      <a href="?state=draft" style="font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #E5E7EA;text-decoration:none;color:#596066;">Draft</a>
+      <a href="?state=configured" style="font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #E5E7EA;text-decoration:none;color:#596066;">Configured</a>
+      <a href="?state=approved" style="font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #E5E7EA;text-decoration:none;color:#596066;">Approved</a>
+      <a href="?state=active" style="font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #E5E7EA;text-decoration:none;color:#596066;">Active</a>
+      <a href="?state=suspended" style="font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #E5E7EA;text-decoration:none;color:#596066;">Suspended</a>
+      <a href="?state=completed" style="font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #E5E7EA;text-decoration:none;color:#596066;">Completed</a>
+    </div>
+    <!-- Active/Suspended 핵심조건 직접 저장 차단 배너 -->
+    <div id="rev-banner" style="display:none;margin-top:12px;background:#FFF8EC;border:1px solid #F3BE4A;border-radius:8px;padding:10px 14px;font-size:13px;color:#856406;display:flex;align-items:center;gap:8px;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L1 14h14L8 1z" stroke="#F3BE4A" stroke-width="1.5" fill="none"/><path d="M8 6v4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11.5" r=".75" fill="#F3BE4A"/></svg>
+      <span id="rev-banner-msg"></span>
     </div>
   </div>
 
@@ -1690,6 +1697,108 @@
     </div><!-- /padding -->
   </div>
 
+  <!-- ─── 리비전 이력 섹션 ─── -->
+  <div class="section-card" id="rev-history-section">
+    <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
+      <h2 class="section-title">리비전 이력</h2>
+      <span style="font-size:12px;color:#9EA5AD;">P-06 · T-PROD-02</span>
+    </div>
+    <div style="padding:16px 20px;">
+      <!-- 리비전 타임라인 -->
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <!-- v3 — Effective (현재) -->
+        <div style="display:flex;gap:16px;">
+          <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#E8F8E9;border:2px solid #58C65D;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#2E9E34;flex-shrink:0;">v3</div>
+            <div style="width:2px;flex:1;background:#E5E7EA;margin-top:4px;margin-bottom:4px;"></div>
+          </div>
+          <div style="flex:1;padding-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:13px;font-weight:700;color:#24292E;">운영시간 변경 Revision</span>
+              <span style="background:#E8F8E9;color:#2E9E34;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;">Effective</span>
+              <span style="font-size:11px;color:#9EA5AD;">2026.07.15 ~ 현재</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#F6F7F9;border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:8px;">
+              <div><span style="color:#9EA5AD;">변경 Field:</span> <span style="font-weight:600;">operatingStart/EndTime</span> <span style="background:#EAF3FF;color:#2D84ED;padding:1px 6px;border-radius:4px;font-size:11px;">Operational</span></div>
+              <div><span style="color:#9EA5AD;">변경 사유:</span> 동절기 운영시간 단축</div>
+              <div><span style="color:#9EA5AD;">v2 → v3:</span> 07:00~23:00 → 08:00~22:00</div>
+              <div><span style="color:#9EA5AD;">적용 기준일:</span> 2026.07.15</div>
+            </div>
+            <!-- P-06 Gate 상태 -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:11px;">
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S1 Revision 생성</span>
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S2 기존 Revision 고정</span>
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S3 핵심조건 변경</span>
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S4 Validation·영향도분석</span>
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S5 PDE — Approved</span>
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S6 승인 완료</span>
+              <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-weight:600;">✓ S7 Effective</span>
+            </div>
+            <!-- 참조 Schedule Impact -->
+            <div style="margin-top:8px;font-size:12px;color:#596066;">
+              영향 스케줄: <a href="schedule-detail?id=SCH-2026-015" style="color:#2D84ED;text-decoration:none;">SCH-2026-015</a>, <a href="schedule-detail?id=SCH-2026-018" style="color:#2D84ED;text-decoration:none;">SCH-2026-018</a>
+              &nbsp;·&nbsp; Feasibility 재검증: <span style="color:#2E9E34;font-weight:600;">PASS</span>
+              &nbsp;·&nbsp; 계약 Snapshot: v2 고정
+            </div>
+          </div>
+        </div>
+
+        <!-- v2 — Effective (종료) -->
+        <div style="display:flex;gap:16px;">
+          <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#F6F7F9;border:2px solid #CED2D6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#596066;flex-shrink:0;">v2</div>
+            <div style="width:2px;flex:1;background:#E5E7EA;margin-top:4px;margin-bottom:4px;"></div>
+          </div>
+          <div style="flex:1;padding-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:13px;font-weight:700;color:#24292E;">List Price 인상 Revision</span>
+              <span style="background:#F6F7F9;color:#596066;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;">종료 (Immutable)</span>
+              <span style="font-size:11px;color:#9EA5AD;">2026.01.01 ~ 2026.07.14</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#F6F7F9;border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:8px;">
+              <div><span style="color:#9EA5AD;">변경 Field:</span> <span style="font-weight:600;">listPrice</span> <span style="background:#FFF0F0;color:#C0392B;padding:1px 6px;border-radius:4px;font-size:11px;">Commercial</span></div>
+              <div><span style="color:#9EA5AD;">변경 사유:</span> 2026년 단가 인상</div>
+              <div><span style="color:#9EA5AD;">v1 → v2:</span> 5,000,000원 → 6,200,000원/월</div>
+              <div><span style="color:#9EA5AD;">기존 계약:</span> v1 Snapshot 고정 (소급 적용 없음)</div>
+            </div>
+            <div style="font-size:12px;color:#9EA5AD;">기존 계약·Schedule은 v1 Snapshot 참조 유지 · 신규 판매부터 v2 기준 적용</div>
+          </div>
+        </div>
+
+        <!-- v1 — Initial Effective -->
+        <div style="display:flex;gap:16px;">
+          <div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#F6F7F9;border:2px solid #CED2D6;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#596066;flex-shrink:0;">v1</div>
+          </div>
+          <div style="flex:1;padding-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:700;color:#24292E;">최초 등록 (Initial Revision)</span>
+              <span style="background:#F6F7F9;color:#596066;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;">종료 (Immutable)</span>
+              <span style="font-size:11px;color:#9EA5AD;">2025.09.01 ~ 2025.12.31</span>
+            </div>
+            <div style="font-size:12px;color:#9EA5AD;">T-PROD-01 · P-05 최초 활성화</div>
+          </div>
+        </div>
+
+      </div><!-- /timeline -->
+
+      <!-- 새 리비전 생성 안내 (Active/Suspended 상태일 때 표시) -->
+      <div id="new-rev-cta" style="display:none;margin-top:16px;border:1.5px dashed #2D84ED;border-radius:10px;padding:16px 20px;background:#F5FAFF;">
+        <div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:6px;">새 리비전 생성 (P-06 S1)</div>
+        <div style="font-size:12px;color:#596066;margin-bottom:12px;">
+          Active/Suspended Product의 핵심조건 변경은 현재 값을 직접 덮어쓰지 않습니다.<br>
+          변경 Field 분류: <span style="font-weight:600;">Commercial</span> · <span style="font-weight:600;">Operational</span> → 신규 Revision &nbsp;|&nbsp;
+          <span style="font-weight:600;">Structural</span> (Media Assignment 변경) → Product Renewal
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="startNewRevision()" style="height:34px;padding:0 16px;background:#2D84ED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">새 리비전 생성 (Operational/Commercial)</button>
+          <button onclick="startRenewal()" style="height:34px;padding:0 16px;background:#fff;border:1px solid #E97474;color:#E97474;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Product Renewal (Structural)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </div><!-- /content-inner -->
 </main>
 
@@ -2279,6 +2388,92 @@ function toggleCondFields() {
   const adType = document.querySelector('input[name="adType"]:checked').value;
   const condSection = document.getElementById('condSection');
   condSection.style.display = adType === 'cond' ? 'block' : 'none';
+}
+
+/* ── Product Revision 정책 반영 (Policy v1.1) ── */
+(function() {
+  const params = new URLSearchParams(location.search);
+  const state = (params.get('state') || 'active').toLowerCase();
+
+  /* Lifecycle 배지 매핑 */
+  const LC = {
+    draft:       { label:'Draft',       cls:'background:#EAF3FF;color:#2D84ED;' },
+    configured:  { label:'Configured',  cls:'background:#FFF8EC;color:#856406;' },
+    approved:    { label:'Approved',    cls:'background:#F0FFF4;color:#276749;' },
+    active:      { label:'Active',      cls:'background:#E8F8E9;color:#2E9E34;' },
+    suspended:   { label:'Suspended',   cls:'background:#FFF5F5;color:#C53030;' },
+    completed:   { label:'Completed',   cls:'background:#F6F7F9;color:#596066;' },
+  };
+  const lc = LC[state] || LC.active;
+
+  /* 4-axis 배지 렌더 */
+  const pdeMap = {
+    draft:'–', configured:'–', approved:'Approved', active:'Approved', suspended:'Restricted', completed:'–'
+  };
+  const apprMap = {
+    draft:'–', configured:'–', approved:'Approved', active:'Approved', suspended:'Pending', completed:'–'
+  };
+  const opMap = {
+    draft:'Off-air', configured:'Off-air', approved:'Off-air', active:'On-air', suspended:'Paused', completed:'Off-air'
+  };
+  const pdeClr = { '–':'color:#9EA5AD;', Approved:'color:#2E9E34;', Restricted:'color:#E97474;', Pending:'color:#F3BE4A;' };
+
+  document.getElementById('prd-badges').innerHTML = `
+    <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;${lc.cls}">Lifecycle: ${lc.label}</span>
+    <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#F6F7F9;${pdeClr[pdeMap[state]]||'color:#596066;'}">PDE: ${pdeMap[state]}</span>
+    <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#F6F7F9;color:#596066;">Approval: ${apprMap[state]}</span>
+    <span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:#F6F7F9;color:#596066;">Operational: ${opMap[state]}</span>
+  `;
+
+  /* 헤더 액션 버튼 — 상태별 분기 */
+  const actionsEl = document.getElementById('hdr-actions');
+  const immutable = ['active','suspended'].includes(state);
+  const completed = state === 'completed';
+
+  if (immutable) {
+    /* Active/Suspended: 직접 저장 차단 → 새 리비전 생성 */
+    actionsEl.innerHTML = `
+      <button class="btn-outline" onclick="startNewRevision()" style="border-color:#2D84ED;color:#2D84ED;">새 리비전 생성</button>
+      <button class="btn-outline" onclick="startRenewal()">Product Renewal</button>
+      ${state==='active'?'<button class="btn-outline" onclick="goState(\'suspended\')">운영 일시정지</button>':''}
+      ${state==='suspended'?'<button class="btn-outline" onclick="goState(\'active\')">운영 재개</button>':''}
+    `;
+    /* 배너 표시 */
+    const banner = document.getElementById('rev-banner');
+    banner.style.display = 'flex';
+    document.getElementById('rev-banner-msg').textContent =
+      '⚠ ' + lc.label + ' Product: 핵심조건(Operational·Commercial)은 직접 저장이 차단됩니다. "새 리비전 생성"으로 변경하거나, 구성 미디어 변경이라면 "Product Renewal"을 선택하세요.';
+    /* 리비전 CTA 표시 */
+    document.getElementById('new-rev-cta').style.display = 'block';
+  } else if (completed) {
+    actionsEl.innerHTML = `<span style="font-size:12px;color:#9EA5AD;padding:0 8px;">단종 — 신규 연결 불가</span>`;
+  } else if (state === 'approved') {
+    actionsEl.innerHTML = `
+      <button class="btn-outline" onclick="alert('편집 (Approved 상태 — 핵심조건 재검증 필요)')">편집</button>
+      <button class="btn-primary" onclick="goState('active')">Active 전환</button>
+    `;
+  } else {
+    /* Draft / Configured */
+    actionsEl.innerHTML = `
+      <button class="btn-outline" onclick="alert('편집 모드 (목업)')">편집</button>
+      <button class="btn-primary" onclick="goState('approved')">승인 요청</button>
+      <button class="btn-danger-outline" onclick="alert('삭제 확인 (목업)')">삭제</button>
+    `;
+  }
+
+  function goState(s) {
+    var u = new URL(location.href);
+    u.searchParams.set('state', s);
+    location.href = u.toString();
+  }
+  window.goState = goState;
+})();
+
+function startNewRevision() {
+  alert('새 리비전 생성 (P-06 S1)\n\n1. 변경 사유 입력\n2. 핵심조건 Field 선택 (Commercial/Operational)\n3. Validation → Impact Analysis → PDE → 승인 → Effective\n\n※ 기존 Revision은 Immutable 상태로 보존됩니다.');
+}
+function startRenewal() {
+  alert('Product Renewal\n\nMedia Assignment 변경 등 Structural 변경은\n신규 Product ID를 생성하고 계보(renewedFrom)를 기록합니다.\n기존 Product·Schedule은 자동 전환되지 않습니다.');
 }
 </script>
 
