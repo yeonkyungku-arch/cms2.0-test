@@ -593,6 +593,39 @@
         </div>
       </div>
     </div>
+
+    <!-- 정책 적용·재검증 card -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">정책 적용 · 재검증 (Policy Revalidation)</span>
+        <span id="pde-revalidation-status" style="font-size:12px; color:#2E9E34; font-weight:600;">최신 정책 적용 완료</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3;">
+          <div>
+            <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:2px;">현재 적용 PDE 버전</div>
+            <div style="font-size:12px; color:#9EA5AD;">PDE Engine v2025.10.02 — 2025-10-13 적용</div>
+          </div>
+          <span style="font-size:11px; padding:2px 9px; border-radius:20px; background:#E8F8E9; color:#2E9E34; font-weight:600;">최신</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3;">
+          <div>
+            <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:2px;">PDE 최신 배포 버전</div>
+            <div style="font-size:12px; color:#9EA5AD;">v2025.10.02 — 2025-10-13 배포 · 정책 5건 포함</div>
+          </div>
+          <span style="font-size:11px; padding:2px 9px; border-radius:20px; background:#E8F8E9; color:#2E9E34; font-weight:600;">일치</span>
+        </div>
+        <div style="padding:12px 0;">
+          <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:8px;">정책 변경 시 재검증</div>
+          <div style="font-size:12px; color:#596066; margin-bottom:12px;">PDE 정책이 새로 업데이트되거나 수동으로 재검증이 필요한 경우 아래 버튼을 실행하세요. 재검증 결과에 따라 Schedule 상태가 변경될 수 있습니다.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button onclick="runPdeRevalidation()" id="pde-reval-btn" style="height:34px;padding:0 16px;background:#2D84ED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">PDE 재검증 실행</button>
+            <a href="settings-policy" style="height:34px;padding:0 16px;background:#F6F7F9;color:#596066;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;">정책 관리</a>
+          </div>
+          <div id="pde-reval-result" style="display:none; margin-top:12px; padding:10px 14px; border-radius:6px; font-size:12px;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ===== TAB 6: 운영 상태 ===== -->
@@ -970,6 +1003,30 @@ function showTab(id, btn) {
     }
   });
 })();
+
+function runPdeRevalidation() {
+  var btn = document.getElementById('pde-reval-btn');
+  btn.textContent = '검증 중...';
+  btn.disabled = true;
+  var result = document.getElementById('pde-reval-result');
+  result.style.display = 'none';
+  setTimeout(function() {
+    result.style.display = 'block';
+    result.style.background = '#F0FAF1';
+    result.style.color = '#2E9E34';
+    result.style.border = '1px solid #A7F3AD';
+    result.innerHTML = '✅ PDE 재검증 완료 (v2025.10.02)<br>'
+      + '· 업종 제한 정책 — PASS<br>'
+      + '· 경쟁사 독점 정책 — PASS<br>'
+      + '· 지역 규제 정책 — PASS<br>'
+      + '· 콘텐츠 등급 정책 — PASS<br>'
+      + '· 인벤토리 루프 정책 — PASS<br>'
+      + '<strong>결과: 승인 유지 (모든 정책 충족)</strong>';
+    document.getElementById('pde-revalidation-status').textContent = '재검증 완료 ✓';
+    btn.textContent = '✓ 재검증 완료';
+    btn.style.background = '#58C65D';
+  }, 1800);
+}
 </script>
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>

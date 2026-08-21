@@ -168,9 +168,9 @@
   <div class="guide-hero">
     <div class="guide-hero-eyebrow">D'ooh CMS 2.0 Prototype</div>
     <h1>시나리오 가이드</h1>
-    <p>IA Task Flow 기준 전체 31개 시나리오를 도메인별로 정리합니다. 각 카드의 <strong style="color:#fff;">시작</strong> 버튼을 눌러 해당 플로우를 탐색하세요. 상세 페이지 내 상태 전환 버튼으로 라이프사이클을 시뮬레이션할 수 있습니다.</p>
+    <p>IA Task Flow 기준 전체 33개 시나리오를 도메인별로 정리합니다. 각 카드의 <strong style="color:#fff;">시작</strong> 버튼을 눌러 해당 플로우를 탐색하세요. 상세 페이지 내 상태 전환 버튼으로 라이프사이클을 시뮬레이션할 수 있습니다.</p>
     <div class="guide-hero-meta">
-      <div class="guide-hero-stat"><div class="guide-hero-stat-val">31</div><div class="guide-hero-stat-lbl">전체 Task Flow</div></div>
+      <div class="guide-hero-stat"><div class="guide-hero-stat-val">33</div><div class="guide-hero-stat-lbl">전체 Task Flow</div></div>
       <div class="guide-hero-stat"><div class="guide-hero-stat-val">9</div><div class="guide-hero-stat-lbl">도메인</div></div>
       <div class="guide-hero-stat"><div class="guide-hero-stat-val">60+</div><div class="guide-hero-stat-lbl">구현 페이지</div></div>
     </div>
@@ -864,7 +864,7 @@
       <div class="domain-icon" style="background:#F9FAFB;">⚙️</div>
       <div class="domain-title">설정</div>
       <div class="domain-code">CMS-SETTINGS</div>
-      <div class="domain-count">6개 시나리오</div>
+      <div class="domain-count">8개 시나리오</div>
     </div>
     <div class="scenario-grid">
 
@@ -999,6 +999,52 @@
           <div class="scenario-footer">
             <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
             <a href="settings-audit" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-07</div><div class="scenario-title">PDE 정책 등록 · 검증 · 적용</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operation Admin / System Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">정책 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">정책 등록</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE Validation</span><span class="step-arrow">›</span>
+            <span class="step-pill">PDE 적용</span><span class="step-arrow">›</span>
+            <span class="step-pill">Schedule 재검증</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Canonical Policy Schema 등록 → PDE Engine Validation → 적용 → 영향 Schedule 재검증</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-policy" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-settings"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-SET-08</div><div class="scenario-title">알림 이벤트 구성 · 채널 설정</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> System Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">이벤트 On/Off</span><span class="step-arrow">›</span>
+            <span class="step-pill">채널 설정</span><span class="step-arrow">›</span>
+            <span class="step-pill">수신자 지정</span><span class="step-arrow">›</span>
+            <span class="step-pill">Throttle</span><span class="step-arrow">›</span>
+            <span class="step-pill">테스트 발송</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> 이벤트 토글 · 채널 연결 — PDE·Incident·영업·광고주 이벤트 독립 구성</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-settings">CMS-SETTINGS</span>
+            <a href="settings-notification" class="scenario-start-btn c-settings">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
         </div>
       </div>

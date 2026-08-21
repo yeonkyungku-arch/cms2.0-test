@@ -195,7 +195,10 @@
         <span style="color:#9EA5AD;">›</span>
         <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">Close</span>
       </div>
-      <div style="font-size:12px;color:#92400E;margin-top:8px;">👉 잠실역 대형 LED (#INC-2026-0231) — P1 Incident, Auto Recovery 3회 실패. [Recovery Plan] 버튼을 클릭하여 Manual 복구를 진행하세요.</div>
+      <div style="font-size:12px;color:#92400E;margin-top:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span>👉 잠실역 대형 LED (#INC-2026-0231) — P1 Incident, Auto Recovery 3회 실패. [Recovery Plan] 버튼을 클릭하여 Manual 복구를 진행하세요.</span>
+        <button onclick="openPDE()" style="height:28px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FDE68A;background:#FFF8E6;color:#A67000;display:inline-flex;align-items:center;gap:4px;">🔍 PDE 판단 확인</button>
+      </div>
     </div>
 
     <!-- Page header -->
@@ -448,12 +451,106 @@
   </div>
 </div>
 
+<!-- PDE Decision Drawer overlay -->
+<div id="pde-overlay" onclick="closePDE()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;"></div>
+
+<!-- PDE Decision Drawer -->
+<div id="pde-drawer" style="position:fixed;top:0;right:-640px;width:640px;height:100vh;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.18);z-index:501;display:flex;flex-direction:column;transition:right .28s cubic-bezier(.4,0,.2,1);">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #E5E7EA;flex-shrink:0;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#E97474;text-transform:uppercase;margin-bottom:2px;">PDE Decision Viewer</div>
+      <div style="font-size:15px;font-weight:700;color:#24292E;">#INC-2026-0231 — PDE 정책 판단 내역</div>
+    </div>
+    <div onclick="closePDE()" style="width:32px;height:32px;border-radius:6px;border:1px solid #E5E7EA;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#596066;">✕</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+
+    <!-- PDE Context -->
+    <div style="background:#F6F7F9;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:2px;">PDE Engine 버전</div><div style="font-size:13px;font-weight:600;color:#24292E;">v2025.10.02</div></div>
+      <div><div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:2px;">판단 일시</div><div style="font-size:13px;color:#24292E;">2026-08-18 03:14:22</div></div>
+      <div><div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:2px;">대상 Schedule</div><div style="font-size:13px;font-weight:600;color:#2D84ED;font-family:monospace;">SCH-2025-0041</div></div>
+      <div><div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:2px;">매체</div><div style="font-size:13px;color:#24292E;">잠실역 대형 LED (#DEV-0093)</div></div>
+    </div>
+
+    <!-- Incident trigger -->
+    <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:#C83434;margin-bottom:6px;">⚠ Incident 발생 — PDE 정책 재검증 트리거</div>
+      <div style="font-size:12px;color:#596066;line-height:1.6;">
+        장애 발생 시각: <strong>2026-08-18 03:10:07</strong><br>
+        장애 유형: <strong>기기 무응답 (Device Offline)</strong><br>
+        송출 중단: <strong>SCH-2025-0041 · 잠실역 대형 LED 외 3개소</strong><br>
+        PDE 자동 재검증: <strong>트리거됨 (Incident 발생 즉시)</strong>
+      </div>
+    </div>
+
+    <!-- PDE Decision result -->
+    <div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:8px;">PDE 정책 재검증 결과</div>
+    <div style="border-left:4px solid #58C65D;background:#F0FAF1;border-radius:0 8px 8px 0;padding:14px 18px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:700;color:#2E9E34;margin-bottom:6px;">🟢 PDE Decision: 복구 후 재집행 허용 (Resume Approved)</div>
+      <div style="font-size:12px;color:#596066;">장애 복구 완료 시 해당 Schedule은 정책 위반 없이 재집행을 재개할 수 있습니다.</div>
+    </div>
+
+    <!-- Policy check list -->
+    <div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:8px;">정책별 검증 결과</div>
+    <div style="border:1px solid #E5E7EA;border-radius:8px;overflow:hidden;margin-bottom:16px;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr style="background:#F6F7F9;"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">정책명</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">유형</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">판정</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">비고</th></tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:9px 12px;font-weight:600;">삼성전자 업종 독점 정책</td><td style="padding:9px 12px;color:#1D6DBF;">업종 제한</td><td style="padding:9px 12px;color:#2E9E34;font-weight:600;">✓ PASS</td><td style="padding:9px 12px;color:#9EA5AD;font-size:11px;">경쟁 Schedule 없음</td></tr>
+          <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:9px 12px;font-weight:600;">서울 OOH 지역 규제 정책</td><td style="padding:9px 12px;color:#C83434;">지역 규제</td><td style="padding:9px 12px;color:#2E9E34;font-weight:600;">✓ PASS</td><td style="padding:9px 12px;color:#9EA5AD;font-size:11px;">송파구 OOH 허용</td></tr>
+          <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:9px 12px;font-weight:600;">콘텐츠 등급 야간 제한 정책</td><td style="padding:9px 12px;color:#6B21A8;">콘텐츠 등급</td><td style="padding:9px 12px;color:#2E9E34;font-weight:600;">✓ PASS</td><td style="padding:9px 12px;color:#9EA5AD;font-size:11px;">전체 이용가 콘텐츠</td></tr>
+          <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:9px 12px;font-weight:600;">인벤토리 루프 보장 정책</td><td style="padding:9px 12px;color:#166534;">인벤토리</td><td style="padding:9px 12px;color:#A67000;font-weight:600;">⚠ WARNING</td><td style="padding:9px 12px;color:#A67000;font-size:11px;">장애 중 루프 중단 — 복구 시 자동 재개</td></tr>
+          <tr><td style="padding:9px 12px;font-weight:600;">강남역 경쟁사 독점 정책</td><td style="padding:9px 12px;color:#A67000;">경쟁사 독점</td><td style="padding:9px 12px;color:#2E9E34;font-weight:600;">✓ PASS</td><td style="padding:9px 12px;color:#9EA5AD;font-size:11px;">적용 매체 미포함</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Warning detail -->
+    <div style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:#A67000;margin-bottom:6px;">⚠ 인벤토리 루프 보장 정책 — 조건부 허용</div>
+      <div style="font-size:12px;color:#596066;line-height:1.6;">
+        장애 기간 중 루프 보장 의무가 일시 중단되었습니다.<br>
+        복구 완료 후 자동으로 루프 보장이 재개됩니다.<br>
+        미집행 슬롯은 PDE 정책 기준 <strong>보정 집행(Make-good) 불필요</strong>로 판정합니다.
+      </div>
+    </div>
+
+    <!-- PDE Engine trace -->
+    <div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:8px;">PDE Engine 처리 이력</div>
+    <div style="background:#F6F7F9;border-radius:6px;padding:10px 12px;font-size:12px;line-height:1.8;font-family:monospace;color:#596066;">
+      <div><span style="color:#2E9E34;font-weight:600;">[03:14:22]</span> PDE.revalidate() triggered — reason: INCIDENT_DETECTED</div>
+      <div><span style="color:#2E9E34;font-weight:600;">[03:14:22]</span> Loading policy set: v2025.10.02 (5 policies)</div>
+      <div><span style="color:#2E9E34;font-weight:600;">[03:14:22]</span> Evaluating SCH-2025-0041 × DEV-0093</div>
+      <div><span style="color:#F3BE4A;font-weight:600;">[03:14:23]</span> WARNING: inventory_loop_guarantee suspended (device offline)</div>
+      <div><span style="color:#2E9E34;font-weight:600;">[03:14:23]</span> All other policies: PASS</div>
+      <div><span style="color:#2E9E34;font-weight:600;">[03:14:23]</span> Decision: RESUME_APPROVED — resume on recovery</div>
+    </div>
+
+  </div>
+  <div style="padding:14px 22px;border-top:1px solid #E5E7EA;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;">
+    <button onclick="closePDE()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">닫기</button>
+    <button onclick="goToPolicy()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;">정책 관리로 이동</button>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
 
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 
 <script>
+function openPDE() {
+  document.getElementById('pde-overlay').style.display = 'block';
+  document.getElementById('pde-drawer').style.right = '0';
+}
+function closePDE() {
+  document.getElementById('pde-overlay').style.display = 'none';
+  document.getElementById('pde-drawer').style.right = '-640px';
+}
+function goToPolicy() {
+  window.location.href = 'settings-policy';
+}
 function openRP() {
   document.getElementById('rp-overlay').style.display = 'block';
   document.getElementById('rp-drawer').style.right = '0';

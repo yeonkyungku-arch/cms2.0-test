@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDE 정책 관리 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
+    }
+    .settings-layout { display:flex; gap:0; }
+    .settings-sidebar {
+      width:200px; flex-shrink:0; background:#fff; border:1px solid var(--border);
+      border-radius:10px; padding:8px; height:fit-content;
+    }
+    .settings-sidebar a {
+      display:block; padding:8px 12px; border-radius:6px; font-size:13px;
+      color:#596066; text-decoration:none; margin-bottom:2px; transition:background 0.1s;
+    }
+    .settings-sidebar a:hover { background:var(--bg); color:var(--dark); }
+    .settings-sidebar a.active { background:#E8F8E9; color:#2E9E34; font-weight:600; }
+    .settings-main { flex:1; min-width:0; padding-left:20px; }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .b-active   { background:#E8F8E9; color:#2E9E34; }
+    .b-draft    { background:#F6F7F9; color:#9EA5AD; }
+    .b-archived { background:#FEF2F2; color:#C83434; }
+    .b-warning  { background:#FFF8E6; color:#A67000; }
+    .b-main     { background:#EFF6FF; color:#1D6DBF; }
+
+    .table-card { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+    .table-toolbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); gap:8px; flex-wrap:wrap; }
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    thead th { background:var(--bg); padding:10px 14px; font-size:12px; font-weight:600; color:#596066; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+    tbody tr { border-bottom:1px solid var(--border); transition:background 0.12s; cursor:pointer; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:var(--bg); }
+    tbody td { padding:11px 14px; font-size:13px; color:var(--dark); vertical-align:middle; }
+
+    .btn { height:34px; padding:0 14px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; border:none; display:inline-flex; align-items:center; gap:6px; }
+    .btn-primary { background:#58C65D; color:#fff; }
+    .btn-primary:hover { background:#4ab34f; }
+    .btn-secondary { background:#fff; color:#596066; border:1px solid #CED2D6; }
+    .btn-secondary:hover { background:var(--bg); }
+    .btn-sm { height:28px; padding:0 12px; border-radius:5px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #CED2D6; background:#fff; color:#596066; display:inline-flex; align-items:center; gap:4px; }
+    .btn-sm:hover { background:var(--bg); }
+    .btn-sm.blue { background:#EFF6FF; color:#1D6DBF; border-color:#BFDBFE; }
+    .btn-sm.green { background:#E8F8E9; color:#2E9E34; border-color:#A7F3AD; }
+    .btn-sm.danger { background:#FEF2F2; color:#C83434; border-color:#FECACA; }
+
+    .search-input {
+      height:34px; padding:0 12px 0 34px; border:1px solid #CED2D6;
+      border-radius:6px; font-size:13px; color:var(--dark); background:#fff; box-sizing:border-box; min-width:220px;
+    }
+    .search-wrap { position:relative; }
+    .search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); pointer-events:none; }
+    .filter-select {
+      height:34px; padding:0 26px 0 10px; border:1px solid #CED2D6; border-radius:6px; font-size:13px; color:var(--dark);
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+      -webkit-appearance:none; appearance:none; cursor:pointer;
+    }
+
+    /* Scenario banner */
+    .scenario-banner {
+      background:linear-gradient(90deg,#1A3A5C 0%,#24292E 100%);
+      border-radius:10px; padding:14px 20px; margin-bottom:16px;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    }
+    .scenario-banner-left { display:flex; align-items:center; gap:12px; }
+    .scenario-task-label { font-size:10px; font-weight:700; letter-spacing:.1em; color:#58C65D; text-transform:uppercase; }
+    .scenario-title-text { font-size:14px; font-weight:700; color:#fff; margin-top:2px; }
+    .scenario-steps-row { display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-top:6px; }
+    .s-pill { font-size:11px; padding:2px 8px; border-radius:4px; background:rgba(255,255,255,.12); color:rgba(255,255,255,.8); }
+    .s-pill.current { background:#58C65D; color:#fff; font-weight:600; }
+    .s-arrow { font-size:10px; color:rgba(255,255,255,.4); }
+
+    /* Detail drawer */
+    .drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:200; display:none; }
+    .drawer-overlay.open { display:block; }
+    .drawer {
+      position:fixed; top:0; right:-620px; width:620px; height:100vh;
+      background:#fff; box-shadow:-4px 0 24px rgba(0,0,0,.18); z-index:201;
+      display:flex; flex-direction:column; transition:right .28s cubic-bezier(.4,0,.2,1);
+    }
+    .drawer.open { right:0; }
+    .drawer-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 22px; border-bottom:1px solid var(--border); flex-shrink:0;
+    }
+    .drawer-header h3 { font-size:15px; font-weight:700; color:var(--dark); margin:0; }
+    .drawer-close { width:28px; height:28px; border:none; background:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+    .drawer-close:hover { background:var(--bg); }
+    .drawer-body { flex:1; overflow-y:auto; padding:20px 22px; }
+    .drawer-footer { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:8px; justify-content:flex-end; flex-shrink:0; }
+
+    .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:16px; }
+    .info-cell { padding:10px 14px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); }
+    .info-cell:nth-child(even) { border-right:none; }
+    .info-cell:nth-last-child(-n+2) { border-bottom:none; }
+    .info-label { font-size:11px; color:#9EA5AD; font-weight:600; margin-bottom:3px; }
+    .info-value { font-size:13px; color:var(--dark); font-weight:500; }
+
+    .section-title { font-size:13px; font-weight:700; color:var(--dark); margin:16px 0 8px; }
+
+    /* Policy rule table */
+    .rule-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .rule-table th { background:var(--bg); padding:7px 10px; text-align:left; font-size:11px; font-weight:600; color:#596066; border-bottom:1px solid var(--border); }
+    .rule-table td { padding:8px 10px; border-bottom:1px solid #F0F1F3; color:var(--dark); vertical-align:top; }
+    .rule-table tr:last-child td { border-bottom:none; }
+
+    /* PDE version chip */
+    .pde-version-chip { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; background:#E8F8E9; border-radius:20px; font-size:11px; font-weight:600; color:#2E9E34; }
+
+    /* Diff viewer */
+    .diff-block { background:var(--bg); border-radius:6px; padding:10px 12px; font-size:12px; font-family:monospace; line-height:1.6; }
+    .diff-add { color:#2E9E34; }
+    .diff-del { color:#C83434; }
+    .diff-ctx { color:#596066; }
+
+    /* Validation result */
+    .val-result { border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    .val-row { display:flex; align-items:center; gap:10px; padding:8px 14px; border-bottom:1px solid #F0F1F3; font-size:12px; }
+    .val-row:last-child { border-bottom:none; }
+    .val-icon { font-size:14px; flex-shrink:0; }
+    .val-label { flex:1; color:#596066; }
+    .val-ok { color:#2E9E34; font-weight:600; }
+    .val-fail { color:#C83434; font-weight:600; }
+
+    /* Apply flow */
+    .apply-step { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--bg); border-radius:6px; margin-bottom:6px; font-size:12px; }
+    .apply-step-num { width:20px; height:20px; border-radius:50%; background:#2D84ED; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .apply-step-done { background:#58C65D; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <div class="gnb-divider"></div>
+    <li><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    <li><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a></li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="content">
+  <div class="content-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+    </div>
+
+    <!-- T-SET-07 Scenario banner -->
+    <div class="scenario-banner" style="margin-bottom:16px;">
+      <div class="scenario-banner-left">
+        <div>
+          <div class="scenario-task-label">T-SET-07 · Policy Management</div>
+          <div class="scenario-title-text">PDE 정책 등록 · 검증 · 적용</div>
+          <div class="scenario-steps-row">
+            <span class="s-pill">정책 목록</span><span class="s-arrow">›</span>
+            <span class="s-pill current">정책 상세 · 검증</span><span class="s-arrow">›</span>
+            <span class="s-pill">PDE 적용</span><span class="s-arrow">›</span>
+            <span class="s-pill">영향 Schedule 재검증</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" onclick="openDrawer('POL-2025-003','신규','대기')">정책 상세 보기</button>
+      </div>
+    </div>
+
+    <div class="settings-layout">
+      <nav class="settings-sidebar">
+        <a href="settings-org">조직·사용자</a>
+        <a href="settings-permission">권한</a>
+        <a href="settings-master">공통 기준정보</a>
+        <a href="#" class="active">PDE 정책 관리</a>
+        <a href="settings-notification">알림 설정</a>
+        <a href="settings-integration">외부 연동</a>
+        <a href="settings-security">보안·접근</a>
+        <a href="settings-audit">감사·변경이력</a>
+      </nav>
+
+      <div class="settings-main">
+
+        <!-- KPI row -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">전체 정책</div>
+            <div style="font-size:22px;font-weight:700;color:#24292E;">24</div>
+          </div>
+          <div style="background:#E8F8E9;border:1px solid #A7F3AD;border-radius:10px;padding:14px 16px;">
+            <div style="font-size:11px;color:#2E9E34;font-weight:600;margin-bottom:4px;">PDE 적용중</div>
+            <div style="font-size:22px;font-weight:700;color:#2E9E34;">19</div>
+          </div>
+          <div style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:10px;padding:14px 16px;">
+            <div style="font-size:11px;color:#A67000;font-weight:600;margin-bottom:4px;">검증 대기</div>
+            <div style="font-size:22px;font-weight:700;color:#A67000;">3</div>
+          </div>
+          <div style="background:#F6F7F9;border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">보관됨</div>
+            <div style="font-size:22px;font-weight:700;color:#9EA5AD;">2</div>
+          </div>
+        </div>
+
+        <!-- Policy list -->
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div style="font-size:14px;font-weight:700;color:#24292E;">정책 목록</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <select class="filter-select">
+                <option>전체 유형</option>
+                <option>업종 제한</option>
+                <option>경쟁사 독점</option>
+                <option>지역 규제</option>
+                <option>콘텐츠 등급</option>
+                <option>인벤토리</option>
+              </select>
+              <select class="filter-select">
+                <option>전체 상태</option>
+                <option>적용중</option>
+                <option>검증 대기</option>
+                <option>보관됨</option>
+              </select>
+              <div class="search-wrap">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="#9EA5AD" stroke-width="1.4"/><path d="M10 10l2 2" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <input type="text" class="search-input" placeholder="정책명 검색">
+              </div>
+              <button class="btn btn-primary" onclick="openDrawer('NEW','신규','대기')">+ 정책 등록</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>정책 ID</th>
+                  <th>정책명</th>
+                  <th>유형</th>
+                  <th>PDE 버전</th>
+                  <th>상태</th>
+                  <th>영향 Schedule</th>
+                  <th>최종 수정</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="openDrawer('POL-2025-001','삼성전자 업종 독점 정책','업종 제한')">
+                  <td style="font-family:monospace;font-size:12px;color:#9EA5AD;">POL-2025-001</td>
+                  <td style="font-weight:600;">삼성전자 업종 독점 정책</td>
+                  <td><span class="badge b-main">업종 제한</span></td>
+                  <td><span class="pde-version-chip">v2025.10.02</span></td>
+                  <td><span class="badge b-active">적용중</span></td>
+                  <td style="color:#2E9E34;font-weight:600;">12개</td>
+                  <td style="font-size:12px;color:#9EA5AD;">2025-10-02</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-sm blue" onclick="openDrawer('POL-2025-001','삼성전자 업종 독점 정책','업종 제한')">상세</button></td>
+                </tr>
+                <tr onclick="openDrawer('POL-2025-002','강남역 경쟁사 독점 정책','경쟁사 독점')">
+                  <td style="font-family:monospace;font-size:12px;color:#9EA5AD;">POL-2025-002</td>
+                  <td style="font-weight:600;">강남역 경쟁사 독점 정책</td>
+                  <td><span class="badge b-warning">경쟁사 독점</span></td>
+                  <td><span class="pde-version-chip">v2025.10.02</span></td>
+                  <td><span class="badge b-active">적용중</span></td>
+                  <td style="color:#2E9E34;font-weight:600;">5개</td>
+                  <td style="font-size:12px;color:#9EA5AD;">2025-10-02</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-sm blue" onclick="openDrawer('POL-2025-002','강남역 경쟁사 독점 정책','경쟁사 독점')">상세</button></td>
+                </tr>
+                <tr onclick="openDrawer('POL-2025-003','콘텐츠 등급 야간 제한 정책','콘텐츠 등급')">
+                  <td style="font-family:monospace;font-size:12px;color:#9EA5AD;">POL-2025-003</td>
+                  <td style="font-weight:600;">콘텐츠 등급 야간 제한 정책</td>
+                  <td><span class="badge" style="background:#F0F0FF;color:#6B21A8;">콘텐츠 등급</span></td>
+                  <td style="color:#9EA5AD;font-size:12px;">미적용</td>
+                  <td><span class="badge b-warning">검증 대기</span></td>
+                  <td style="color:#9EA5AD;">—</td>
+                  <td style="font-size:12px;color:#9EA5AD;">2025-10-14</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-sm" onclick="openDrawer('POL-2025-003','콘텐츠 등급 야간 제한 정책','콘텐츠 등급')">검증</button></td>
+                </tr>
+                <tr onclick="openDrawer('POL-2025-004','서울 OOH 지역 규제 정책','지역 규제')">
+                  <td style="font-family:monospace;font-size:12px;color:#9EA5AD;">POL-2025-004</td>
+                  <td style="font-weight:600;">서울 OOH 지역 규제 정책</td>
+                  <td><span class="badge" style="background:#FEF2F2;color:#C83434;">지역 규제</span></td>
+                  <td><span class="pde-version-chip">v2025.09.15</span></td>
+                  <td><span class="badge b-active">적용중</span></td>
+                  <td style="color:#2E9E34;font-weight:600;">8개</td>
+                  <td style="font-size:12px;color:#9EA5AD;">2025-09-15</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-sm blue" onclick="openDrawer('POL-2025-004','서울 OOH 지역 규제 정책','지역 규제')">상세</button></td>
+                </tr>
+                <tr onclick="openDrawer('POL-2025-005','인벤토리 루프 보장 정책','인벤토리')">
+                  <td style="font-family:monospace;font-size:12px;color:#9EA5AD;">POL-2025-005</td>
+                  <td style="font-weight:600;">인벤토리 루프 보장 정책</td>
+                  <td><span class="badge" style="background:#F0FDF4;color:#166534;">인벤토리</span></td>
+                  <td><span class="pde-version-chip">v2025.10.02</span></td>
+                  <td><span class="badge b-active">적용중</span></td>
+                  <td style="color:#2E9E34;font-weight:600;">19개</td>
+                  <td style="font-size:12px;color:#9EA5AD;">2025-10-02</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-sm blue" onclick="openDrawer('POL-2025-005','인벤토리 루프 보장 정책','인벤토리')">상세</button></td>
+                </tr>
+                <tr onclick="openDrawer('POL-2024-018','(구)광고 노출 빈도 제한 정책','인벤토리')">
+                  <td style="font-family:monospace;font-size:12px;color:#9EA5AD;">POL-2024-018</td>
+                  <td style="font-weight:600;color:#9EA5AD;">(구)광고 노출 빈도 제한 정책</td>
+                  <td><span class="badge" style="background:#F0FDF4;color:#166534;">인벤토리</span></td>
+                  <td style="color:#9EA5AD;font-size:12px;">폐기</td>
+                  <td><span class="badge b-archived">보관됨</span></td>
+                  <td style="color:#9EA5AD;">—</td>
+                  <td style="font-size:12px;color:#9EA5AD;">2024-12-01</td>
+                  <td onclick="event.stopPropagation()"><button class="btn-sm" onclick="openDrawer('POL-2024-018','(구)광고 노출 빈도 제한 정책','인벤토리')">이력</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- settings-main -->
+    </div><!-- settings-layout -->
+  </div>
+</main>
+
+<!-- Policy Detail Drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="policyDrawer">
+  <div class="drawer-header">
+    <h3 id="drawerTitle">정책 상세</h3>
+    <button class="drawer-close" onclick="closeDrawer()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="#596066" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer" id="drawerFooter"></div>
+</div>
+
+<script>
+function openDrawer(id, name, type) {
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('policyDrawer').classList.add('open');
+  document.getElementById('drawerTitle').textContent = id + ' — ' + name;
+
+  const isDraft = (id === 'POL-2025-003' || id === 'NEW');
+  const isNew = (id === 'NEW');
+
+  document.getElementById('drawerBody').innerHTML = `
+    <div style="margin-bottom:14px;">
+      <span class="pde-version-chip">PDE Engine v2025.10.02</span>
+      ${isDraft ? '<span class="badge b-warning" style="margin-left:8px;">검증 대기</span>' : '<span class="badge b-active" style="margin-left:8px;">적용중</span>'}
+    </div>
+
+    <div class="info-grid">
+      <div class="info-cell"><div class="info-label">정책 ID</div><div class="info-value" style="font-family:monospace;">${isNew ? '자동 발급' : id}</div></div>
+      <div class="info-cell"><div class="info-label">정책 유형</div><div class="info-value">${type}</div></div>
+      <div class="info-cell"><div class="info-label">등록자</div><div class="info-value">홍길동 (Operation Admin)</div></div>
+      <div class="info-cell"><div class="info-label">등록일시</div><div class="info-value">${isNew ? '—' : '2025-10-14 10:22:41'}</div></div>
+      <div class="info-cell"><div class="info-label">적용 대상</div><div class="info-value">전체 Organization</div></div>
+      <div class="info-cell"><div class="info-label">우선순위</div><div class="info-value">P2 (High)</div></div>
+    </div>
+
+    <div class="section-title">정책 규칙 (Canonical Policy Schema)</div>
+    <div style="background:#F6F7F9;border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+      <table class="rule-table">
+        <thead><tr><th>규칙 Key</th><th>조건</th><th>값</th><th>처리</th></tr></thead>
+        <tbody>
+          <tr><td style="font-family:monospace;color:#2D84ED;">industry_type</td><td>포함</td><td>전자기기, 가전</td><td>허용 우선</td></tr>
+          <tr><td style="font-family:monospace;color:#2D84ED;">competitor_exclusion</td><td>동일 기간</td><td>동종 업종 1사 독점</td><td>충돌 시 거부</td></tr>
+          <tr><td style="font-family:monospace;color:#2D84ED;">time_restriction</td><td>야간(22:00~06:00)</td><td>등급 19+ 콘텐츠</td><td>BLOCK</td></tr>
+          <tr><td style="font-family:monospace;color:#2D84ED;">region_rule</td><td>지역</td><td>강남구·마포구</td><td>허용</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    ${isDraft ? `
+    <div class="section-title">정책 검증 (PDE Validation)</div>
+    <div class="val-result" style="margin-bottom:14px;" id="valResult">
+      <div style="padding:10px 14px;background:#FFF8E6;font-size:12px;color:#A67000;font-weight:600;">⚠ PDE 엔진 검증 미완료 — 적용 전 검증이 필요합니다.</div>
+    </div>
+    <button class="btn btn-primary" onclick="runValidation()" id="valBtn" style="margin-bottom:14px;">PDE 엔진 검증 실행</button>
+    ` : `
+    <div class="section-title">정책 검증 결과</div>
+    <div class="val-result" style="margin-bottom:14px;">
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">Schema 구조 유효성</span><span class="val-ok">PASS</span></div>
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">규칙 충돌 검사</span><span class="val-ok">PASS — 기존 19개 정책과 충돌 없음</span></div>
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">적용 대상 Scope 확인</span><span class="val-ok">PASS</span></div>
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">영향 Schedule 재검증</span><span class="val-ok">PASS — 12개 Schedule 모두 허용</span></div>
+    </div>
+    `}
+
+    ${isDraft ? '' : `
+    <div class="section-title">PDE 적용 이력</div>
+    <div style="font-size:12px;color:#596066;background:var(--bg);border-radius:6px;padding:10px 12px;">
+      <div style="margin-bottom:6px;"><span style="color:#2E9E34;font-weight:600;">✓</span> 2025-10-02 15:41 — PDE 엔진 배포 (v2025.10.02) · 홍길동</div>
+      <div style="margin-bottom:6px;"><span style="color:#2E9E34;font-weight:600;">✓</span> 2025-10-02 15:40 — 영향 Schedule 12개 재검증 완료</div>
+      <div><span style="color:#2E9E34;font-weight:600;">✓</span> 2025-10-02 15:38 — PDE Validation PASS</div>
+    </div>
+    `}
+
+    <div class="section-title">변경 이력 (Diff)</div>
+    <div class="diff-block">
+      <div class="diff-ctx">  "policy_id": "${id}",</div>
+      <div class="diff-del">- "time_restriction": null,</div>
+      <div class="diff-add">+ "time_restriction": { "start": "22:00", "end": "06:00", "rating": "19+" },</div>
+      <div class="diff-ctx">  "version": "2025.10.14"</div>
+    </div>
+  `;
+
+  document.getElementById('drawerFooter').innerHTML = isDraft ? `
+    <button class="btn btn-secondary" onclick="closeDrawer()">취소</button>
+    <button class="btn btn-primary" onclick="applyPolicy()" id="applyBtn" disabled style="opacity:.5;cursor:not-allowed;">PDE 적용</button>
+  ` : `
+    <button class="btn btn-secondary" onclick="closeDrawer()">닫기</button>
+    <button class="btn" style="background:#FFF8E6;color:#A67000;border:1px solid #FDE68A;" onclick="revalidate()">영향 Schedule 재검증</button>
+    <button class="btn btn-primary" onclick="alert('정책 버전이 업데이트되었습니다.')">정책 수정</button>
+  `;
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('policyDrawer').classList.remove('open');
+}
+
+function runValidation() {
+  const btn = document.getElementById('valBtn');
+  btn.textContent = '검증 중...';
+  btn.disabled = true;
+  setTimeout(() => {
+    document.getElementById('valResult').innerHTML = `
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">Schema 구조 유효성</span><span class="val-ok">PASS</span></div>
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">규칙 충돌 검사</span><span class="val-ok">PASS — 기존 정책과 충돌 없음</span></div>
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">적용 대상 Scope 확인</span><span class="val-ok">PASS</span></div>
+      <div class="val-row"><span class="val-icon">✅</span><span class="val-label">영향 Schedule 재검증</span><span class="val-ok">PASS — 해당 없음 (신규 정책)</span></div>
+    `;
+    btn.textContent = '✓ 검증 완료';
+    btn.style.background = '#58C65D';
+    const applyBtn = document.getElementById('applyBtn');
+    if (applyBtn) { applyBtn.disabled = false; applyBtn.style.opacity = '1'; applyBtn.style.cursor = 'pointer'; }
+  }, 1800);
+}
+
+function applyPolicy() {
+  alert('PDE 엔진에 정책이 적용되었습니다.\n영향 Schedule 재검증을 시작합니다.');
+  closeDrawer();
+}
+
+function revalidate() {
+  alert('영향 Schedule 12개에 대한 재검증이 완료되었습니다.\n모두 허용 상태입니다.');
+}
+</script>
+</body>
+</html>
