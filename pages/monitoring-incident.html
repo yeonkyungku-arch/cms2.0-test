@@ -179,6 +179,25 @@
 <main class="content">
   <div class="content-inner">
 
+    <!-- T-MON-03 Scenario Banner -->
+    <div style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px;">📋 T-MON-03 시나리오: P1 Incident → Auto Recovery 실패 → Manual/Escalation</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#58C65D;color:#fff;">Incident 발생</span>
+        <span style="color:#9EA5AD;">›</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#58C65D;color:#fff;">Auto Recovery 시도</span>
+        <span style="color:#9EA5AD;">›</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E97474;color:#fff;">❌ 실패 감지 ← 현재</span>
+        <span style="color:#9EA5AD;">›</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">Manual Recovery</span>
+        <span style="color:#9EA5AD;">›</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">Escalation</span>
+        <span style="color:#9EA5AD;">›</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">Close</span>
+      </div>
+      <div style="font-size:12px;color:#92400E;margin-top:8px;">👉 잠실역 대형 LED (#INC-2026-0231) — P1 Incident, Auto Recovery 3회 실패. [Recovery Plan] 버튼을 클릭하여 Manual 복구를 진행하세요.</div>
+    </div>
+
     <!-- Page header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
       <div>
@@ -331,24 +350,161 @@
       </div>
     </div>
 
-    <!-- Recovery Plan Drawer (concept) -->
-    <!-- NOTE: Recovery Plan drawer panel slides in from the right when [Recovery Plan] button is clicked.
-         It shows: Incident 상세, 원인 분석, 복구 절차(체크리스트), 관련 로그 링크, 담당자 배정 UI.
-         Implementation: fixed right panel, toggled via JS, z-index overlay. -->
-
-    <!-- Capability Precheck Gate (T-MON-02) -->
-    <div style="font-size:12px;color:#596066;border:1px solid #E5E7EA;border-radius:6px;padding:10px 14px;background:#F9FAFB;margin-top:12px;">
-      <strong>실행 전 Precheck</strong>
-      <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
-        <span style="color:#58C65D;">✓ Level 1 권한 확인됨</span>
-        <span style="color:#58C65D;">✓ Device Capability 지원</span>
-        <span style="color:#F3BE4A;">⚠ PDE 위험도: 낮음 — 실행 허용</span>
-      </div>
-    </div>
-
   </div>
 </main>
 
+<!-- Recovery Plan Drawer Overlay -->
+<div id="rp-overlay" onclick="closeRP()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;"></div>
+
+<!-- Recovery Plan Drawer -->
+<div id="rp-drawer" style="position:fixed;top:0;right:-580px;width:580px;height:100%;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);z-index:501;transition:right 0.25s ease;display:flex;flex-direction:column;">
+  <div style="padding:18px 22px 14px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:16px;font-weight:700;" id="rp-inc-id">Recovery Plan — #INC-2026-0231</div>
+      <div style="font-size:12px;color:#9EA5AD;margin-top:2px;" id="rp-inc-sub">잠실역 대형 LED · P1 심각 · 기기 오프라인</div>
+    </div>
+    <div onclick="closeRP()" style="width:32px;height:32px;border-radius:6px;border:1px solid #E5E7EA;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#596066;">✕</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:18px 22px;" id="rp-body">
+    <!-- Incident Info -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Incident 기본정보</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:13px;margin-bottom:16px;">
+      <span style="color:#596066;">Incident ID</span><span style="font-weight:500;">#INC-2026-0231</span>
+      <span style="color:#596066;">미디어</span><span style="font-weight:500;">잠실역 대형 LED (MED-004)</span>
+      <span style="color:#596066;">심각도</span><span><span style="background:#FEE2E2;color:#C83434;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;">P1 심각</span></span>
+      <span style="color:#596066;">유형</span><span>기기 오프라인</span>
+      <span style="color:#596066;">발생시각</span><span>2026-08-18 09:12:34</span>
+      <span style="color:#596066;">담당자</span><span>김운영</span>
+    </div>
+
+    <!-- Cause Analysis -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">원인 분석</div>
+    <div style="background:#F6F7F9;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:16px;border-left:3px solid #E97474;">
+      <div style="font-weight:600;margin-bottom:4px;">기기 오프라인 — 네트워크 단절 감지</div>
+      <div style="color:#596066;font-size:12px;">RMS 수신 데이터 기반 분석: 09:10:12에 마지막 Heartbeat 수신 후 응답 없음. 현장 전력 이상 또는 네트워크 회선 단절로 추정.</div>
+    </div>
+
+    <!-- Auto Recovery Status -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Auto Recovery 결과</div>
+    <div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:700;color:#C83434;margin-bottom:8px;">❌ 자동 복구 실패 (3회 시도, 타임아웃)</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#596066;">
+        <div>🔴 09:14:02 — 1차 원격 재시작 시도 → 타임아웃 (30s)</div>
+        <div>🔴 09:15:10 — 2차 원격 재시작 시도 → 타임아웃 (30s)</div>
+        <div>🔴 09:16:18 — 3차 원격 재시작 시도 → 타임아웃 (30s)</div>
+        <div style="color:#C83434;font-weight:600;">→ 자동 복구 포기. Manual 처리 필요.</div>
+      </div>
+    </div>
+    <div id="rms-status" style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:6px;padding:8px 12px;font-size:12px;color:#A67000;margin-bottom:16px;">
+      🔄 RMS 연동 상태: 복구 실패 응답 수신 완료 (09:16:50)
+    </div>
+
+    <!-- Checklist -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">복구 절차 체크리스트</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#F0F1F3;border:1px solid #E5E7EA;">
+        <div style="width:22px;height:22px;border-radius:50%;background:#E8F8E9;color:#2E9E34;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">✓</div>
+        <div><div style="font-size:13px;font-weight:500;text-decoration:line-through;color:#9EA5AD;">원격 재시작 시도</div><div style="font-size:11px;color:#9EA5AD;">실패 — 3회 시도 후 타임아웃</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#F0F1F3;border:1px solid #E5E7EA;">
+        <div style="width:22px;height:22px;border-radius:50%;background:#E8F8E9;color:#2E9E34;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">✓</div>
+        <div><div style="font-size:13px;font-weight:500;text-decoration:line-through;color:#9EA5AD;">콘텐츠 캐시 초기화 시도</div><div style="font-size:11px;color:#9EA5AD;">실패 — 기기 응답 없음</div></div>
+      </div>
+      <div id="chk-manual" style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#FFF8E6;border:1px solid #FDE68A;">
+        <div style="width:22px;height:22px;border-radius:50%;border:2px solid #F3BE4A;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;color:#A67000;">→</div>
+        <div><div style="font-size:13px;font-weight:600;color:#A67000;">Manual Recovery 수행</div><div style="font-size:11px;color:#596066;">현재 단계 — 아래 액션 중 선택</div></div>
+      </div>
+      <div id="chk-esc" style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#F6F7F9;border:1px solid #E5E7EA;">
+        <div style="width:22px;height:22px;border-radius:50%;border:2px solid #CED2D6;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;color:#9EA5AD;">□</div>
+        <div><div style="font-size:13px;color:#9EA5AD;">Escalation 처리</div><div style="font-size:11px;color:#9EA5AD;">Manual 복구 실패 시 진행</div></div>
+      </div>
+    </div>
+
+    <!-- Manual Recovery Actions -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Manual Recovery 액션</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      <button onclick="doManual('현장 점검 파견')" style="height:34px;padding:0 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #BFDBFE;background:#EFF6FF;color:#1D6DBF;display:inline-flex;align-items:center;gap:6px;">🚗 현장 점검 파견</button>
+      <button onclick="doManual('원격 강제 재시작')" style="height:34px;padding:0 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FDE68A;background:#FFF8E6;color:#A67000;display:inline-flex;align-items:center;gap:6px;">⚡ 원격 강제 재시작</button>
+      <button onclick="doManual('Schedule 일시 중지')" style="height:34px;padding:0 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FECACA;background:#FEE2E2;color:#C83434;display:inline-flex;align-items:center;gap:6px;">⏸ Schedule 일시 중지</button>
+    </div>
+    <div id="manual-result" style="display:none;background:#E8F8E9;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;font-size:13px;color:#14532D;margin-bottom:16px;"></div>
+
+    <!-- Escalation -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Escalation</div>
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:6px 12px;font-size:13px;margin-bottom:10px;">
+      <span style="color:#596066;align-self:center;">등급</span>
+      <select style="height:32px;border:1px solid #CED2D6;border-radius:6px;padding:0 10px;font-size:13px;" id="esc-level"><option>L1 — 운영팀 내부</option><option>L2 — 기술지원팀</option><option>L3 — 미디어사 현장팀</option></select>
+      <span style="color:#596066;align-self:center;">대상</span>
+      <input type="text" value="김운영 / 박관제 / 미디어사 현장팀" style="height:32px;border:1px solid #CED2D6;border-radius:6px;padding:0 10px;font-size:13px;width:100%;">
+    </div>
+    <textarea id="esc-memo" placeholder="Escalation 사유 및 현재 상황을 입력하세요..." style="width:100%;min-height:72px;border:1px solid #CED2D6;border-radius:6px;padding:10px 12px;font-size:13px;resize:vertical;font-family:inherit;margin-bottom:10px;"></textarea>
+    <button onclick="doEscalation()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#E97474;color:#fff;display:inline-flex;align-items:center;gap:6px;">🚨 Escalation 등록</button>
+    <div id="esc-result" style="display:none;background:#E8F8E9;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;font-size:13px;color:#14532D;margin-top:10px;"></div>
+  </div>
+  <!-- Drawer Footer -->
+  <div style="padding:14px 22px;border-top:1px solid #E5E7EA;display:flex;gap:8px;">
+    <button onclick="closeIncident()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#58C65D;color:#fff;display:inline-flex;align-items:center;gap:6px;">✓ Incident Close</button>
+    <button onclick="closeRP()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">취소</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
+
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+function openRP() {
+  document.getElementById('rp-overlay').style.display = 'block';
+  document.getElementById('rp-drawer').style.right = '0';
+}
+function closeRP() {
+  document.getElementById('rp-overlay').style.display = 'none';
+  document.getElementById('rp-drawer').style.right = '-580px';
+}
+// Make all Recovery Plan buttons open the drawer
+document.querySelectorAll('.btn-sm.blue').forEach(function(btn){
+  btn.addEventListener('click', function(e){ e.preventDefault(); openRP(); });
+});
+function doManual(action) {
+  var r = document.getElementById('manual-result');
+  r.style.display = 'block';
+  r.textContent = '✓ "' + action + '" 명령을 전송했습니다. RMS 응답 대기 중...';
+  setTimeout(function(){
+    if (action !== '현장 점검 파견') {
+      r.style.background = '#FEE2E2'; r.style.color = '#7F1D1D'; r.style.borderColor = '#FECACA';
+      r.textContent = '❌ ' + action + ' 실패 — 기기 무응답. Escalation을 진행하세요.';
+      document.getElementById('chk-esc').style.background = '#FFF8E6';
+      document.getElementById('chk-esc').style.borderColor = '#FDE68A';
+      document.getElementById('chk-esc').querySelector('div:first-child').style.borderColor = '#F3BE4A';
+      document.getElementById('chk-esc').querySelector('div:first-child').style.color = '#A67000';
+      document.getElementById('chk-esc').querySelector('..' || 'div:last-child > div').textContent = '진행 필요';
+    } else {
+      r.textContent = '✓ 현장 점검 파견 요청이 등록되었습니다. 담당자에게 알림을 전송했습니다.';
+    }
+    showToast(action + ' 처리 완료');
+  }, 1500);
+}
+function doEscalation() {
+  var level = document.getElementById('esc-level').value;
+  var memo = document.getElementById('esc-memo').value;
+  if (!memo.trim()) { alert('Escalation 사유를 입력하세요.'); return; }
+  var r = document.getElementById('esc-result');
+  r.style.display = 'block';
+  r.textContent = '✓ Escalation ' + level + ' 등록 완료. 대상자에게 알림을 전송했습니다. (2026-08-18 09:22:05)';
+  showToast('Escalation이 등록되었습니다.');
+}
+function closeIncident() {
+  closeRP();
+  showToast('#INC-2026-0231 Incident가 Close 처리되었습니다.');
+}
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display='none'; }, 3500);
+}
+</script>
 </body>
 </html>

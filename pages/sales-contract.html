@@ -297,8 +297,181 @@
       </div>
     </div>
 
+
+    <!-- T-SALES-03 Contract Detail Panel -->
+    <div id="contract-detail" style="margin-top:20px;display:none;">
+      <!-- Scenario Banner -->
+      <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#1E40AF;margin-bottom:8px;">📋 T-SALES-03: 계약 후 운영 이관 시나리오 — CTR-2026-026 삼성전자</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#58C65D;color:#fff;">계약 완료</span>
+          <span style="color:#9EA5AD;">›</span>
+          <span id="step-feasibility" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#2D84ED;color:#fff;">Pre-Handoff Feasibility</span>
+          <span style="color:#9EA5AD;">›</span>
+          <span id="step-campaign" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">Campaign 연결</span>
+          <span style="color:#9EA5AD;">›</span>
+          <span id="step-schedule" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">Schedule 생성</span>
+          <span style="color:#9EA5AD;">›</span>
+          <span id="step-done" style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#E5E7EA;color:#596066;">이관 완료</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <!-- Left: Contract Info -->
+        <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:18px;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px;border-bottom:1px solid #E5E7EA;padding-bottom:10px;">계약 기본정보</div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:13px;">
+            <span style="color:#596066;">계약 ID</span><span style="font-weight:600;">CTR-2026-026</span>
+            <span style="color:#596066;">광고주</span><span>삼성전자</span>
+            <span style="color:#596066;">대리점</span><span style="color:#9EA5AD;">이노션</span>
+            <span style="color:#596066;">계약 금액</span><span style="font-weight:600;">₩320,000,000</span>
+            <span style="color:#596066;">계약 기간</span><span>2026.09.01 ~ 09.30</span>
+            <span style="color:#596066;">상태</span><span><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;" id="contract-status">진행중</span></span>
+            <span style="color:#596066;">담당자</span><span>이수진</span>
+          </div>
+        </div>
+
+        <!-- Right: Feasibility + Campaign + Schedule -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <!-- Pre-Handoff Feasibility -->
+          <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:16px;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+              Pre-Handoff Feasibility Recheck
+              <span id="feasibility-badge" style="background:#FFF8E6;color:#A67000;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">STALE — 재검증 필요</span>
+            </div>
+            <div style="font-size:12px;color:#596066;background:#FFF8E6;border:1px solid #FDE68A;border-radius:6px;padding:8px 12px;margin-bottom:10px;">
+              ⚠ 서명 전 Gate(계약 시 2026-08-10)와 별도 단계입니다. 이관 전 Feasibility를 재검증해야 합니다. (T-SCH 재검증 정책 적용)
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div id="feasibility-status" style="font-size:13px;color:#A67000;">⚠ 마지막 검증: 2026-08-10 (11일 경과, STALE)</div>
+              <button id="btn-feasibility" onclick="runFeasibility()" style="height:30px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;white-space:nowrap;">재검증 실행</button>
+            </div>
+          </div>
+
+          <!-- Campaign 연결 -->
+          <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:16px;" id="campaign-section">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Campaign 연결</div>
+            <div id="campaign-status" style="font-size:13px;color:#9EA5AD;margin-bottom:8px;">연결된 Campaign 없음</div>
+            <button id="btn-campaign" onclick="linkCampaign()" disabled style="height:30px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#F0F1F3;color:#9EA5AD;opacity:.6;" title="Feasibility 재검증 후 활성화">Campaign 연결</button>
+          </div>
+
+          <!-- Schedule 생성 이관 -->
+          <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:16px;" id="schedule-section">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Schedule 생성 및 이관</div>
+            <div style="font-size:12px;color:#596066;margin-bottom:10px;">캠페인 연결 완료 후 Schedule을 생성하고 운영팀으로 이관합니다.</div>
+            <button id="btn-schedule" onclick="createSchedule()" disabled style="height:30px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#F0F1F3;color:#9EA5AD;opacity:.6;" title="Campaign 연결 후 활성화">Schedule 생성 및 이관</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </main>
+
+<!-- Campaign 선택 Mini-Modal -->
+<div id="campaign-modal-overlay" onclick="closeCampaignModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:center;justify-content:center;">
+  <div onclick="event.stopPropagation()" style="background:#fff;border-radius:12px;width:480px;box-shadow:0 8px 32px rgba(0,0,0,.2);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:15px;font-weight:700;">Campaign 선택</div>
+      <div onclick="closeCampaignModal()" style="cursor:pointer;font-size:18px;color:#596066;">✕</div>
+    </div>
+    <div style="padding:16px 20px;">
+      <div style="font-size:13px;color:#596066;margin-bottom:12px;">이 계약(CTR-2026-026)에 연결할 Campaign을 선택하세요.</div>
+      <div onclick="selectCampaign('CAM-2026-089','갤럭시 Z Fold7 런칭 9월')" style="padding:12px 14px;border:1px solid #E5E7EA;border-radius:8px;cursor:pointer;margin-bottom:8px;transition:border-color 0.12s;">
+        <div style="font-size:13px;font-weight:600;">CAM-2026-089 — 갤럭시 Z Fold7 런칭 9월</div>
+        <div style="font-size:12px;color:#596066;margin-top:2px;">기간: 2026.09.01~09.30 | Feasibility: FRESH</div>
+      </div>
+      <div onclick="selectCampaign('CAM-2026-090','삼성 생활가전 하반기')" style="padding:12px 14px;border:1px solid #E5E7EA;border-radius:8px;cursor:pointer;transition:border-color 0.12s;">
+        <div style="font-size:13px;font-weight:600;">CAM-2026-090 — 삼성 생활가전 하반기</div>
+        <div style="font-size:12px;color:#596066;margin-top:2px;">기간: 2026.09.01~10.31 | Feasibility: FRESH</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
+
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+// Click on CTR-2026-026 row to show detail
+document.querySelectorAll('tbody tr').forEach(function(row){
+  row.addEventListener('click', function(){
+    var link = row.querySelector('a');
+    if (link && link.textContent.trim() === 'CTR-2026-026') {
+      document.getElementById('contract-detail').style.display = 'block';
+      document.getElementById('contract-detail').scrollIntoView({behavior:'smooth'});
+    }
+  });
+});
+// Also show by default for demo
+document.getElementById('contract-detail').style.display = 'block';
+
+function runFeasibility() {
+  var btn = document.getElementById('btn-feasibility');
+  var status = document.getElementById('feasibility-status');
+  btn.textContent = '검증 중...'; btn.disabled = true;
+  status.style.color = '#596066'; status.textContent = '⏳ Feasibility 재검증 실행 중...';
+  setTimeout(function(){
+    status.textContent = '✓ Feasibility FRESH — 슬롯 용량 확보 완료 (2026-08-21 재검증)';
+    status.style.color = '#2E9E34';
+    document.getElementById('feasibility-badge').style.background = '#E8F8E9';
+    document.getElementById('feasibility-badge').style.color = '#2E9E34';
+    document.getElementById('feasibility-badge').textContent = 'FRESH ✓';
+    btn.style.display = 'none';
+    // Enable campaign button
+    var cbtn = document.getElementById('btn-campaign');
+    cbtn.disabled = false; cbtn.style.opacity = '1'; cbtn.style.cursor = 'pointer';
+    cbtn.style.background = '#2D84ED'; cbtn.style.color = '#fff'; cbtn.style.borderColor = '#2D84ED';
+    // Update step
+    document.getElementById('step-campaign').style.background = '#2D84ED';
+    document.getElementById('step-campaign').style.color = '#fff';
+    showToast('Feasibility 재검증 완료 — FRESH');
+  }, 1800);
+}
+
+function linkCampaign() {
+  document.getElementById('campaign-modal-overlay').style.display = 'flex';
+}
+function closeCampaignModal() {
+  document.getElementById('campaign-modal-overlay').style.display = 'none';
+}
+function selectCampaign(id, name) {
+  closeCampaignModal();
+  document.getElementById('campaign-status').innerHTML = '<span style="color:#2E9E34;font-weight:600;">✓ ' + id + ' — ' + name + ' 연결됨</span>';
+  document.getElementById('btn-campaign').style.display = 'none';
+  // Enable schedule button
+  var sbtn = document.getElementById('btn-schedule');
+  sbtn.disabled = false; sbtn.style.opacity = '1'; sbtn.style.cursor = 'pointer';
+  sbtn.style.background = '#58C65D'; sbtn.style.color = '#fff'; sbtn.style.borderColor = '#58C65D';
+  document.getElementById('step-schedule').style.background = '#2D84ED';
+  document.getElementById('step-schedule').style.color = '#fff';
+  showToast(id + ' 연결 완료');
+}
+
+function createSchedule() {
+  document.getElementById('btn-schedule').textContent = '이관 처리 중...';
+  document.getElementById('btn-schedule').disabled = true;
+  setTimeout(function(){
+    document.getElementById('btn-schedule').textContent = '✓ 이관 완료';
+    document.getElementById('btn-schedule').style.background = '#58C65D';
+    document.getElementById('contract-status').textContent = '이관됨';
+    document.getElementById('contract-status').style.background = '#EFF6FF';
+    document.getElementById('contract-status').style.color = '#1D6DBF';
+    document.getElementById('step-done').style.background = '#58C65D';
+    document.getElementById('step-done').style.color = '#fff';
+    showToast('Schedule 생성 및 운영팀 이관이 완료되었습니다.');
+  }, 1500);
+}
+
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display='none'; }, 3500);
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>광고 효과 — D'ooh 광고주 포털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#58C65D;--dark:#24292E;--main:#2D84ED;--warn:#F3BE4A;--danger:#E97474;--bg:#F6F7F9;--border:#E5E7EA;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+    .adv-header{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:20px;z-index:200;}
+    .adv-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--dark);text-decoration:none;margin-right:12px;}
+    .adv-nav{display:flex;gap:4px;flex:1;}
+    .adv-nav a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:#596066;text-decoration:none;}
+    .adv-nav a:hover{background:#F6F7F9;}
+    .adv-nav a.active{background:#EFF6FF;color:var(--main);font-weight:600;}
+    .adv-header-right{display:flex;align-items:center;gap:12px;}
+    .adv-avatar{width:32px;height:32px;border-radius:50%;background:var(--main);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    main{padding:80px 24px 40px;max-width:1200px;margin:0 auto;}
+    .page-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+    .page-sub{font-size:13px;color:#596066;margin-bottom:20px;}
+    /* Controls */
+    .controls{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .sel{height:36px;padding:0 28px 0 12px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;color:var(--dark);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;-webkit-appearance:none;appearance:none;cursor:pointer;}
+    /* KPI */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+    @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+    .kpi-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+    .kpi-label{font-size:12px;color:#596066;margin-bottom:6px;}
+    .kpi-value{font-size:24px;font-weight:700;color:var(--dark);}
+    .kpi-delta{font-size:12px;margin-top:4px;color:#2E9E34;}
+    .kpi-sub{font-size:11px;color:#9EA5AD;margin-top:2px;}
+    /* Cards */
+    .card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+    .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:14px;font-weight:600;}
+    .card-body{padding:16px 18px;}
+    /* Chart */
+    .chart-wrap{padding:16px 18px;}
+    .chart-labels{display:flex;justify-content:space-between;font-size:11px;color:#9EA5AD;margin-bottom:4px;padding:0 2px;}
+    .chart-bars{display:flex;align-items:flex-end;gap:10px;height:160px;border-bottom:1px solid var(--border);padding-bottom:0;}
+    .bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .bar{width:100%;background:var(--main);border-radius:4px 4px 0 0;transition:opacity 0.15s;}
+    .bar:hover{opacity:.75;}
+    .bar-label{font-size:11px;color:#9EA5AD;margin-top:6px;}
+    .bar-val{font-size:10px;color:var(--dark);font-weight:600;}
+    /* Table */
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#F6F7F9;padding:10px 14px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:#F6F7F9;}
+    tbody td{padding:11px 14px;font-size:13px;vertical-align:middle;}
+    .muted{color:#9EA5AD;font-size:12px;}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+    .badge-ok{background:#E8F8E9;color:#2E9E34;}
+    .badge-warn{background:#FFF8E6;color:#A67000;}
+    .badge-err{background:#FEE2E2;color:#C83434;}
+    /* Buttons */
+    .btn{height:34px;padding:0 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:#596066;display:inline-flex;align-items:center;gap:6px;}
+    .btn:hover{background:#F6F7F9;}
+    .btn-pdf{background:#FEE2E2;color:#C83434;border-color:#FECACA;}
+    .btn-excel{background:#E8F8E9;color:#2E9E34;border-color:#BBF7D0;}
+    /* Progress bar */
+    .prog{width:120px;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;display:inline-block;vertical-align:middle;}
+    .prog-fill{height:100%;border-radius:4px;background:var(--green);}
+    .prog-fill.warn{background:var(--warn);}
+    /* Note */
+    .note-box{background:#F6F7F9;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:12px;color:#596066;margin-top:12px;}
+  </style>
+</head>
+<body>
+
+<!-- Portal Header -->
+<header class="adv-header">
+  <a href="advertiser-dashboard" class="adv-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
+    광고주 포털
+  </a>
+  <nav class="adv-nav">
+    <a href="advertiser-dashboard">대시보드</a>
+    <a href="advertiser-approval">Schedule 승인</a>
+    <a href="advertiser-operation">운영 확인</a>
+    <a href="advertiser-report" class="active">광고 효과</a>
+  </nav>
+  <div class="adv-header-right">
+    <div class="adv-avatar">삼</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;">삼성전자 광고팀</div>
+      <div style="font-size:12px;color:#596066;">Approver</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-title">광고 효과 · Report</div>
+  <div class="page-sub">T-ADV-03: PoP(Proof of Play) 기반 광고 효과 및 리포트를 확인합니다.</div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <select class="sel">
+      <option>캠페인: 갤럭시 S26 언팩</option>
+      <option>갤럭시 Z Fold7 런칭</option>
+      <option>비스포크 AI 홈</option>
+      <option>Neo QLED 할인</option>
+    </select>
+    <select class="sel">
+      <option>기간: 2026년 8월</option>
+      <option>2026년 7월</option>
+      <option>최근 30일</option>
+      <option>사용자 정의</option>
+    </select>
+    <select class="sel">
+      <option>미디어: 전체</option>
+      <option>강남역 1번출구 A</option>
+      <option>서울역 환승통로 B</option>
+      <option>인천공항 T1 게이트</option>
+    </select>
+    <div style="flex:1;"></div>
+    <button class="btn btn-pdf" onclick="showToast('PDF 리포트를 생성 중입니다...')">📄 PDF 다운로드</button>
+    <button class="btn btn-excel" onclick="showToast('Excel 데이터를 내보내는 중입니다...')">📊 Excel 내보내기</button>
+  </div>
+
+  <!-- KPI Summary -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">총 노출수 (추정)</div>
+      <div class="kpi-value">2,847,392</div>
+      <div class="kpi-delta">▲ 목표 대비 +12.3%</div>
+      <div class="kpi-sub">PoP × 평균 시청 지수 기반</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">총 재생수 (PoP)</div>
+      <div class="kpi-value">1,423,650</div>
+      <div class="kpi-delta">▲ 달성률 94.7%</div>
+      <div class="kpi-sub">계획 재생수: 1,503,000</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">예상 도달 (PoP 기준)</div>
+      <div class="kpi-value">1,204,000</div>
+      <div class="kpi-delta">▲ 전월 대비 +8.2%</div>
+      <div class="kpi-sub">중복 제거 Unique 기준</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">평균 Health Score</div>
+      <div class="kpi-value">96.2%</div>
+      <div class="kpi-delta">▲ 전월 대비 +1.4%p</div>
+      <div class="kpi-sub">미디어 평균 정상 운영률</div>
+    </div>
+  </div>
+
+  <!-- Bar Chart -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">일별 재생수 추이 (최근 7일)</div>
+    </div>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:200px;">
+        <!-- Grid lines -->
+        <line x1="50" y1="20" x2="680" y2="20" stroke="#E5E7EA" stroke-width="1"/>
+        <line x1="50" y1="60" x2="680" y2="60" stroke="#E5E7EA" stroke-width="1"/>
+        <line x1="50" y1="100" x2="680" y2="100" stroke="#E5E7EA" stroke-width="1"/>
+        <line x1="50" y1="140" x2="680" y2="140" stroke="#E5E7EA" stroke-width="1"/>
+        <line x1="50" y1="170" x2="680" y2="170" stroke="#CED2D6" stroke-width="1"/>
+        <!-- Y labels -->
+        <text x="44" y="24" text-anchor="end" font-size="11" fill="#9EA5AD">80K</text>
+        <text x="44" y="64" text-anchor="end" font-size="11" fill="#9EA5AD">60K</text>
+        <text x="44" y="104" text-anchor="end" font-size="11" fill="#9EA5AD">40K</text>
+        <text x="44" y="144" text-anchor="end" font-size="11" fill="#9EA5AD">20K</text>
+        <text x="44" y="174" text-anchor="end" font-size="11" fill="#9EA5AD">0</text>
+        <!-- Bars: 7 days, values in K: 68,72,71,65,70,74,46(장애) -->
+        <!-- 08-15: 68K → height=(68/80)*150=127.5 -->
+        <rect x="64" y="42" width="60" height="128" rx="4" fill="#2D84ED" opacity=".85"/>
+        <text x="94" y="37" text-anchor="middle" font-size="11" fill="#596066">68K</text>
+        <text x="94" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-15</text>
+        <!-- 08-16: 72K -->
+        <rect x="154" y="35" width="60" height="135" rx="4" fill="#2D84ED" opacity=".85"/>
+        <text x="184" y="30" text-anchor="middle" font-size="11" fill="#596066">72K</text>
+        <text x="184" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-16</text>
+        <!-- 08-17: 71K -->
+        <rect x="244" y="37" width="60" height="133" rx="4" fill="#2D84ED" opacity=".85"/>
+        <text x="274" y="32" text-anchor="middle" font-size="11" fill="#596066">71K</text>
+        <text x="274" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-17</text>
+        <!-- 08-18: 65K -->
+        <rect x="334" y="48" width="60" height="122" rx="4" fill="#2D84ED" opacity=".85"/>
+        <text x="364" y="43" text-anchor="middle" font-size="11" fill="#596066">65K</text>
+        <text x="364" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-18</text>
+        <!-- 08-19: 70K -->
+        <rect x="424" y="39" width="60" height="131" rx="4" fill="#2D84ED" opacity=".85"/>
+        <text x="454" y="34" text-anchor="middle" font-size="11" fill="#596066">70K</text>
+        <text x="454" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-19</text>
+        <!-- 08-20: 74K -->
+        <rect x="514" y="31" width="60" height="139" rx="4" fill="#58C65D" opacity=".85"/>
+        <text x="544" y="26" text-anchor="middle" font-size="11" fill="#596066">74K</text>
+        <text x="544" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-20</text>
+        <!-- 08-21: 46K (장애) -->
+        <rect x="604" y="84" width="60" height="86" rx="4" fill="#E97474" opacity=".85"/>
+        <text x="634" y="79" text-anchor="middle" font-size="11" fill="#C83434">46K*</text>
+        <text x="634" y="185" text-anchor="middle" font-size="11" fill="#9EA5AD">08-21</text>
+      </svg>
+      <div style="font-size:11px;color:#9EA5AD;text-align:right;padding-right:4px;">* 08-21: 잠실역 대형 LED 장애로 재생수 감소</div>
+    </div>
+  </div>
+
+  <!-- Media breakdown table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">미디어별 효과 현황</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>미디어</th><th>지역</th><th>재생수</th><th>노출수 (추정)</th><th>달성률</th><th>Health Score</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="font-weight:500;">강남역 1번출구 A</div><div class="muted">MED-001</div></td>
+            <td class="muted">서울 강남</td>
+            <td>418,200</td>
+            <td>836,400</td>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="prog"><div class="prog-fill" style="width:99%;"></div></div>99.0%</div></td>
+            <td>98.4%</td>
+            <td><span class="badge badge-ok">정상</span></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">서울역 환승통로 B</div><div class="muted">MED-005</div></td>
+            <td class="muted">서울 중구</td>
+            <td>312,450</td>
+            <td>624,900</td>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="prog"><div class="prog-fill" style="width:97%;"></div></div>97.2%</div></td>
+            <td>97.1%</td>
+            <td><span class="badge badge-ok">정상</span></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">인천공항 T1 게이트</div><div class="muted">MED-058</div></td>
+            <td class="muted">인천</td>
+            <td>285,600</td>
+            <td>571,200</td>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="prog"><div class="prog-fill" style="width:99%;"></div></div>99.0%</div></td>
+            <td>99.2%</td>
+            <td><span class="badge badge-ok">정상</span></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">신촌역 스탠드형 A</div><div class="muted">MED-003</div></td>
+            <td class="muted">서울 서대문</td>
+            <td>248,400</td>
+            <td>496,800</td>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="prog"><div class="prog-fill warn" style="width:86%;"></div></div><span style="color:#A67000;">86.2%</span></div></td>
+            <td>88.5%</td>
+            <td><span class="badge badge-warn">경고</span></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">잠실역 대형 LED</div><div class="muted">MED-004</div></td>
+            <td class="muted">서울 송파</td>
+            <td>159,000</td>
+            <td>318,000</td>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="prog"><div class="prog-fill warn" style="width:76%;"></div></div><span style="color:#C83434;">76.4%</span></div></td>
+            <td>72.1%</td>
+            <td><span class="badge badge-err">장애</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Download section -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">리포트 다운로드</div></div>
+    <div class="card-body">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+        <button class="btn btn-pdf" style="height:40px;padding:0 20px;font-size:13px;" onclick="showToast('PDF 리포트를 생성 중입니다...')">📄 PDF 리포트 다운로드</button>
+        <button class="btn btn-excel" style="height:40px;padding:0 20px;font-size:13px;" onclick="showToast('Excel 데이터를 내보내는 중입니다...')">📊 Excel 원본 데이터 내보내기</button>
+        <button class="btn" style="height:40px;padding:0 20px;font-size:13px;" onclick="showToast('공유 링크가 복사되었습니다.')">🔗 리포트 공유 링크</button>
+      </div>
+      <div class="note-box">
+        📌 <strong>리포트 기준 안내:</strong> 본 리포트는 D'ooh CMS PoP(Proof of Play) 기준으로 산출됩니다. 노출수(추정)는 PoP × 매체별 평균 시청 지수를 적용한 추정값입니다. 실제 광고 효과 측정은 광고주 측 3rd Party 도구와 병행 사용을 권장합니다.
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
+<a href="scenario-guide" style="position:fixed;bottom:24px;left:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+var toastTimer;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.style.display='none';},3000);
+}
+</script>
+</body>
+</html>
