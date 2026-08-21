@@ -345,6 +345,9 @@
       <button class="tab-btn" onclick="switchTab('display')">디스플레이</button>
       <button class="tab-btn" onclick="switchTab('player')">플레이어</button>
       <button class="tab-btn" onclick="switchTab('sensor')">센서·MCU</button>
+      <button class="tab-btn" onclick="switchTab('ops')">운영 현황</button>
+      <button class="tab-btn" onclick="switchTab('schedule')">Schedule 현황</button>
+      <button class="tab-btn" onclick="switchTab('revision')">Revision</button>
       <button class="tab-btn" onclick="switchTab('audit')">Audit</button>
     </div>
 
@@ -768,6 +771,314 @@
     <!-- ────────────────────────────────────────────── -->
     <!-- TAB 7: Audit -->
     <!-- ────────────────────────────────────────────── -->
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB 운영 현황 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-ops">
+
+      <!-- KPI row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+        <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">오늘 송출 횟수</div>
+          <div style="font-size:22px;font-weight:700;color:#2E9E34;" id="ops-play-today">826</div>
+          <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">목표 대비 <span style="color:#2E9E34;font-weight:600;">+3%</span></div>
+        </div>
+        <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">이번 달 누적</div>
+          <div style="font-size:22px;font-weight:700;color:#24292E;">18,304</div>
+          <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">8월 집행분</div>
+        </div>
+        <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">Health Score</div>
+          <div style="font-size:22px;font-weight:700;color:#2E9E34;" id="ops-health">97</div>
+          <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">정상 운영 중</div>
+        </div>
+        <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:14px 16px;">
+          <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">미해결 Incident</div>
+          <div style="font-size:22px;font-weight:700;color:#24292E;" id="ops-incident">0</div>
+          <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">최근 30일</div>
+        </div>
+      </div>
+
+      <!-- 최근 7일 송출 추이 -->
+      <div class="detail-card" style="margin-bottom:12px;">
+        <div class="detail-card-title">최근 7일 송출 추이</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:80px;padding:8px 0 0;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/15">
+            <div style="background:#2D84ED;border-radius:3px 3px 0 0;width:100%;height:72px;opacity:.7;"></div>
+            <div style="font-size:10px;color:#9EA5AD;">15</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/16">
+            <div style="background:#2D84ED;border-radius:3px 3px 0 0;width:100%;height:65px;opacity:.7;"></div>
+            <div style="font-size:10px;color:#9EA5AD;">16</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/17">
+            <div style="background:#2D84ED;border-radius:3px 3px 0 0;width:100%;height:70px;opacity:.7;"></div>
+            <div style="font-size:10px;color:#9EA5AD;">17</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/18">
+            <div style="background:#E97474;border-radius:3px 3px 0 0;width:100%;height:30px;opacity:.9;"></div>
+            <div style="font-size:10px;color:#E97474;font-weight:600;">18</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/19">
+            <div style="background:#2D84ED;border-radius:3px 3px 0 0;width:100%;height:68px;opacity:.7;"></div>
+            <div style="font-size:10px;color:#9EA5AD;">19</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/20">
+            <div style="background:#2D84ED;border-radius:3px 3px 0 0;width:100%;height:73px;opacity:.7;"></div>
+            <div style="font-size:10px;color:#9EA5AD;">20</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;" title="8/21 오늘">
+            <div style="background:#58C65D;border-radius:3px 3px 0 0;width:100%;height:58px;"></div>
+            <div style="font-size:10px;color:#58C65D;font-weight:600;">21</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:6px;">※ 8/18 일부 Incident로 인한 송출 감소</div>
+      </div>
+
+      <!-- 장치 상태 -->
+      <div class="detail-card" style="margin-bottom:12px;">
+        <div class="detail-card-title">장치 실시간 상태</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">Heartbeat</div>
+            <div style="font-size:13px;font-weight:600;color:#2E9E34;">● 정상</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">마지막: 14:37:02</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">온도</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">42°C</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">임계치 이하 (75°C)</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">밝기 센서</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">1,200 lux → 4,200 nit</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">자동 조절 중</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">네트워크</div>
+            <div style="font-size:13px;font-weight:600;color:#2E9E34;">LTE 연결</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">RSSI -72 dBm</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">팬 상태</div>
+            <div style="font-size:13px;font-weight:600;color:#2E9E34;">정상</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">2,100 RPM</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">앱 버전</div>
+            <div style="font-size:13px;font-weight:600;color:#24292E;">v3.4.1</div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:2px;">최신 버전</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 최근 Incident -->
+      <div class="detail-card">
+        <div class="detail-card-title">최근 Incident 이력</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="background:#F6F7F9;">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">Incident ID</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">유형</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">등급</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">발생 일시</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">상태</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;"></th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#9EA5AD;">INC-2025-0188</td>
+              <td style="padding:10px 12px;">화면 깜빡임</td>
+              <td style="padding:10px 12px;"><span style="background:#FFF8E6;color:#A67000;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">P2</span></td>
+              <td style="padding:10px 12px;font-size:12px;color:#596066;">2025-11-03 08:14</td>
+              <td style="padding:10px 12px;"><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">해결</span></td>
+              <td style="padding:10px 12px;"><a href="monitoring-incident" style="font-size:12px;color:#2D84ED;">상세</a></td>
+            </tr>
+            <tr>
+              <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#9EA5AD;">INC-2025-0092</td>
+              <td style="padding:10px 12px;">네트워크 단절</td>
+              <td style="padding:10px 12px;"><span style="background:#FFF8E6;color:#A67000;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">P2</span></td>
+              <td style="padding:10px 12px;font-size:12px;color:#596066;">2025-08-22 11:30</td>
+              <td style="padding:10px 12px;"><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">해결</span></td>
+              <td style="padding:10px 12px;"><a href="monitoring-incident" style="font-size:12px;color:#2D84ED;">상세</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB Schedule 현황 -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-schedule">
+
+      <!-- 집행 중 -->
+      <div class="detail-card" style="margin-bottom:12px;">
+        <div class="detail-card-title">현재 집행 중 Schedule</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="background:#F6F7F9;">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">Schedule ID</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">캠페인</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">기간</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">슬롯</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">PDE</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">상태</th>
+            <th style="padding:8px 12px;border-bottom:1px solid #E5E7EA;"></th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#9EA5AD;">SCH-2025-0041</td>
+              <td style="padding:10px 12px;font-weight:600;">삼성전자 갤럭시 S25</td>
+              <td style="padding:10px 12px;font-size:12px;color:#596066;">2025-10-15 ~ 12-31</td>
+              <td style="padding:10px 12px;font-size:12px;">15초 × 4회/루프</td>
+              <td style="padding:10px 12px;"><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">승인</span></td>
+              <td style="padding:10px 12px;"><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">● 운영중</span></td>
+              <td style="padding:10px 12px;"><a href="schedule-detail" style="font-size:12px;color:#2D84ED;">상세</a></td>
+            </tr>
+            <tr>
+              <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#9EA5AD;">SCH-2025-0038</td>
+              <td style="padding:10px 12px;font-weight:600;">현대카드 DIGITAL</td>
+              <td style="padding:10px 12px;font-size:12px;color:#596066;">2025-10-01 ~ 11-30</td>
+              <td style="padding:10px 12px;font-size:12px;">30초 × 2회/루프</td>
+              <td style="padding:10px 12px;"><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">승인</span></td>
+              <td style="padding:10px 12px;"><span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">● 운영중</span></td>
+              <td style="padding:10px 12px;"><a href="schedule-detail" style="font-size:12px;color:#2D84ED;">상세</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 예정 -->
+      <div class="detail-card" style="margin-bottom:12px;">
+        <div class="detail-card-title">집행 예정 Schedule</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="background:#F6F7F9;">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">Schedule ID</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">캠페인</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">집행 예정일</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">승인 상태</th>
+            <th style="padding:8px 12px;border-bottom:1px solid #E5E7EA;"></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:#9EA5AD;">SCH-2026-0003</td>
+              <td style="padding:10px 12px;font-weight:600;">LG전자 올레드 TV</td>
+              <td style="padding:10px 12px;font-size:12px;color:#596066;">2026-09-01 ~</td>
+              <td style="padding:10px 12px;"><span style="background:#FFF8E6;color:#A67000;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">승인 대기</span></td>
+              <td style="padding:10px 12px;"><a href="schedule-detail" style="font-size:12px;color:#2D84ED;">상세</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 인벤토리 요약 -->
+      <div class="detail-card">
+        <div class="detail-card-title">인벤토리 현황 (오늘 기준)</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">루프당 슬롯 (총)</div>
+            <div style="font-size:18px;font-weight:700;color:#24292E;">6회</div>
+          </div>
+          <div style="background:#E8F8E9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#2E9E34;font-weight:600;margin-bottom:4px;">사용 중</div>
+            <div style="font-size:18px;font-weight:700;color:#2E9E34;">6회</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;">
+            <div style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:4px;">잔여</div>
+            <div style="font-size:18px;font-weight:700;color:#9EA5AD;">0회</div>
+            <div style="font-size:11px;color:#9EA5AD;">Full 편성</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ────────────────────────────────────────────── -->
+    <!-- TAB Revision -->
+    <!-- ────────────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-revision">
+
+      <div class="detail-card" style="margin-bottom:12px;">
+        <div class="detail-card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Revision 이력 — MED-001 <span style="font-size:11px;color:#9EA5AD;font-weight:400;">현재 rev.14</span></span>
+          <span style="font-size:12px;color:#9EA5AD;">자동 생성 · 읽기 전용</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="background:#F6F7F9;">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;white-space:nowrap;">Rev</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">변경 항목</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">변경 전</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">변경 후</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">변경자</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:#596066;border-bottom:1px solid #E5E7EA;">일시</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F1F3;background:#FFFBF0;">
+              <td style="padding:10px 12px;font-family:monospace;font-weight:700;color:#2D84ED;">r14</td>
+              <td style="padding:10px 12px;font-weight:600;">상세위치</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">강남역 1번출구 우측 2m</td>
+              <td style="padding:10px 12px;font-size:12px;color:#24292E;">강남역 1번출구 우측 3m</td>
+              <td style="padding:10px 12px;font-size:12px;">이민지</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2026-08-19 10:22</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;color:#596066;">r13</td>
+              <td style="padding:10px 12px;">OS 버전</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">Android 10</td>
+              <td style="padding:10px 12px;font-size:12px;color:#24292E;">Android 11</td>
+              <td style="padding:10px 12px;font-size:12px;">시스템</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2025-08-15 03:14</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;color:#596066;">r12</td>
+              <td style="padding:10px 12px;">GPS 좌표</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">37.4979, 127.0276</td>
+              <td style="padding:10px 12px;font-size:12px;color:#24292E;">37.4981, 127.0279</td>
+              <td style="padding:10px 12px;font-size:12px;">이민지</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2025-01-10 14:05</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;color:#596066;">r11</td>
+              <td style="padding:10px 12px;">밝기 설정</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">3,500 nit (수동)</td>
+              <td style="padding:10px 12px;font-size:12px;color:#24292E;">자동 조절 (센서 연동)</td>
+              <td style="padding:10px 12px;font-size:12px;">홍길동</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2024-11-20 09:30</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;color:#596066;">r10</td>
+              <td style="padding:10px 12px;">담당자</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">김영수</td>
+              <td style="padding:10px 12px;font-size:12px;color:#24292E;">홍길동</td>
+              <td style="padding:10px 12px;font-size:12px;">Admin</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2024-09-01 11:00</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F1F3;">
+              <td style="padding:10px 12px;font-family:monospace;color:#596066;">r9</td>
+              <td style="padding:10px 12px;">태그</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">강남, 역세권</td>
+              <td style="padding:10px 12px;font-size:12px;color:#24292E;">강남, 역세권, 프리미엄, 야외노출</td>
+              <td style="padding:10px 12px;font-size:12px;">홍길동</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2024-07-15 16:45</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 12px;font-family:monospace;color:#9EA5AD;">r1</td>
+              <td style="padding:10px 12px;color:#9EA5AD;">최초 등록</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">—</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">초기 데이터 입력</td>
+              <td style="padding:10px 12px;font-size:12px;color:#9EA5AD;">홍길동</td>
+              <td style="padding:10px 12px;font-size:11px;color:#9EA5AD;white-space:nowrap;">2024-03-15 09:00</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding:10px 14px;font-size:12px;color:#9EA5AD;background:#F6F7F9;margin-top:0;border-top:1px solid #E5E7EA;">
+          r2~r8 생략 · 전체 이력은 설정 &gt; <a href="settings-audit" style="color:#2D84ED;">감사·변경이력</a>에서 확인하세요.
+        </div>
+      </div>
+
+    </div>
+
     <div class="tab-panel" id="panel-audit">
 
       <div class="detail-card">
@@ -953,6 +1264,32 @@ function confirmTransition(action, message) {
 
     const pdeEl = document.getElementById('med-pde-badge');
     if (pdeEl) { pdeEl.className = 'pde-badge ' + d.pdeClass; pdeEl.style.cssText = 'display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;'; pdeEl.textContent = d.pde; }
+
+    // Tab 운영현황 KPI — 미디어별 분기
+    var opsKPI = {
+      'MED-001': { play: 826,  health: 97, incident: 0 },
+      'MED-002': { play: 612,  health: 72, incident: 1 },
+      'MED-003': { play: 498,  health: 91, incident: 0 },
+      'MED-004': { play: 0,    health: 18, incident: 1 },
+      'MED-005': { play: 0,    health: 0,  incident: 0 },
+      'MED-007': { play: 740,  health: 95, incident: 0 },
+    };
+    var kpi = opsKPI[id] || { play: 800, health: 90, incident: 0 };
+    var playEl = document.getElementById('ops-play-today');
+    if (playEl) {
+      playEl.textContent = kpi.play.toLocaleString();
+      playEl.style.color = kpi.play > 0 ? '#2E9E34' : '#E97474';
+    }
+    var healthEl = document.getElementById('ops-health');
+    if (healthEl) {
+      healthEl.textContent = kpi.health;
+      healthEl.style.color = kpi.health >= 80 ? '#2E9E34' : kpi.health >= 50 ? '#A67000' : '#C83434';
+    }
+    var incEl = document.getElementById('ops-incident');
+    if (incEl) {
+      incEl.textContent = kpi.incident;
+      incEl.style.color = kpi.incident > 0 ? '#C83434' : '#24292E';
+    }
 
     // Tab 1: 기본정보 (panel-basic)
     var panelBasic = document.getElementById('panel-basic');
