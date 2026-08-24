@@ -168,7 +168,7 @@
   <div class="guide-hero">
     <div class="guide-hero-eyebrow">D'ooh CMS 2.0 Prototype</div>
     <h1>시나리오 가이드</h1>
-    <p>IA Task Flow 기준 전체 33개 시나리오를 도메인별로 정리합니다. 각 카드의 <strong style="color:#fff;">시작</strong> 버튼을 눌러 해당 플로우를 탐색하세요. 상세 페이지 내 상태 전환 버튼으로 라이프사이클을 시뮬레이션할 수 있습니다.</p>
+    <p>IA Task Flow 기준 전체 37개 시나리오를 도메인별로 정리합니다. 각 카드의 <strong style="color:#fff;">시작</strong> 버튼을 눌러 해당 플로우를 탐색하세요. 상세 페이지 내 상태 전환 버튼으로 라이프사이클을 시뮬레이션할 수 있습니다.</p>
     <div class="guide-hero-meta">
       <div class="guide-hero-stat"><div class="guide-hero-stat-val">33</div><div class="guide-hero-stat-lbl">전체 Task Flow</div></div>
       <div class="guide-hero-stat"><div class="guide-hero-stat-val">9</div><div class="guide-hero-stat-lbl">도메인</div></div>
@@ -182,7 +182,7 @@
       <div class="domain-icon" style="background:#EFF6FF;">📺</div>
       <div class="domain-title">미디어</div>
       <div class="domain-code">CMS-MEDIA</div>
-      <div class="domain-count">2개 시나리오</div>
+      <div class="domain-count">4개 시나리오</div>
     </div>
     <div class="scenario-grid">
 
@@ -227,6 +227,51 @@
           <div class="scenario-footer">
             <span class="scenario-domain-badge badge-media">CMS-MEDIA</span>
             <a href="media-list" class="scenario-start-btn c-media">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-media"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MED-03</div><div class="scenario-title">미디어 상세 탭 전체 탐색 (Taxonomy·정책·Audience·Effect)</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">미디어 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Taxonomy·측정</span><span class="step-arrow">›</span>
+            <span class="step-pill">정책 적용 정보</span><span class="step-arrow">›</span>
+            <span class="step-pill">Audience Profile</span><span class="step-arrow">›</span>
+            <span class="step-pill">Advertising Effect</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> PDE Decision 확인 / Jurisdiction Country SSOT / Actual vs Effect Reference 분리</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-media">CMS-MEDIA</span>
+            <a href="media-detail" class="scenario-start-btn c-media">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-media"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MED-04</div><div class="scenario-title">미디어 그룹 / Sync Group 관리</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">미디어 그룹 목록</span><span class="step-arrow">›</span>
+            <span class="step-pill">그룹 상세</span><span class="step-arrow">›</span>
+            <span class="step-pill">Sync Group</span><span class="step-arrow">›</span>
+            <span class="step-pill">동기화 상태 확인</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Media Group ≠ Product/Package ≠ Access Scope / Sync 실행 주체: RMS</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-media">CMS-MEDIA</span>
+            <a href="media-group" class="scenario-start-btn c-media">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
         </div>
       </div>
@@ -551,7 +596,7 @@
       <div class="domain-icon" style="background:#FEF2F2;">🔴</div>
       <div class="domain-title">모니터링</div>
       <div class="domain-code">CMS-MONITORING</div>
-      <div class="domain-count">3개 시나리오</div>
+      <div class="domain-count">5개 시나리오</div>
     </div>
     <div class="scenario-grid">
 
@@ -622,6 +667,50 @@
           <div class="scenario-footer">
             <span class="scenario-domain-badge badge-monitor">CMS-MONITORING</span>
             <a href="monitoring-incident" class="scenario-start-btn c-monitor">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-monitor"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MON-04</div><div class="scenario-title">운영 대시보드 보정·Make-good 현황 확인</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">운영 대시보드</span><span class="step-arrow">›</span>
+            <span class="step-pill">보정·Make-good 섹션</span><span class="step-arrow">›</span>
+            <span class="step-pill">미달 캠페인 확인</span><span class="step-arrow">›</span>
+            <span class="step-pill">상세 보기</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Shortfall 감지 → Make-good 상태 확인 → 처리 이력 조회</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-monitor">CMS-MONITORING</span>
+            <a href="monitoring-dashboard" class="scenario-start-btn c-monitor">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-card">
+        <div class="scenario-card-accent c-monitor"></div>
+        <div class="scenario-card-body">
+          <div class="scenario-card-head">
+            <div><div class="scenario-task-id">T-MON-05</div><div class="scenario-title">Make-good 스케줄 등록 및 최종 이행 확인</div></div>
+            <span class="impl-tag">구현됨</span>
+          </div>
+          <div class="scenario-user"><strong>주요 사용자:</strong> Operator / Admin</div>
+          <div class="scenario-steps">
+            <span class="step-pill">보정·Make-good</span><span class="step-arrow">›</span>
+            <span class="step-pill">미달 현황</span><span class="step-arrow">›</span>
+            <span class="step-pill">Make-good 스케줄</span><span class="step-arrow">›</span>
+            <span class="step-pill">최종 이행 현황</span>
+          </div>
+          <div class="scenario-key-action"><span class="scenario-key-action-lbl">핵심 Action:</span> Shortfall Report → Make-good 등록 → Final Delivery Fulfillment 판정</div>
+          <div class="scenario-footer">
+            <span class="scenario-domain-badge badge-monitor">CMS-MONITORING</span>
+            <a href="monitoring-compensation" class="scenario-start-btn c-monitor">시작 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </div>
         </div>
       </div>

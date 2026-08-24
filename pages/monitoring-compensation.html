@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>보정·Make-good — D'ooh CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
+    }
+    .page-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:20px;
+    }
+    .page-title { font-size:20px; font-weight:700; color:var(--dark); }
+    .breadcrumb { font-size:12px; color:#9EA5AD; margin-bottom:6px; }
+    .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px; }
+    .kpi-card {
+      background:#fff; border:1px solid var(--border); border-radius:10px;
+      padding:16px 18px; display:flex; flex-direction:column; gap:4px;
+    }
+    .kpi-label { font-size:12px; color:#596066; font-weight:500; }
+    .kpi-value { font-size:26px; font-weight:700; color:var(--dark); line-height:1; }
+    .kpi-sub { font-size:11px; color:#9EA5AD; }
+    .section-card {
+      background:#fff; border:1px solid var(--border); border-radius:10px;
+      padding:18px 20px; margin-bottom:16px;
+    }
+    .section-title { font-size:14px; font-weight:700; color:var(--dark); margin-bottom:14px; }
+    .tab-bar { display:flex; gap:4px; margin-bottom:20px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:4px; width:fit-content; }
+    .tab-btn {
+      padding:7px 18px; border:none; border-radius:6px; background:transparent;
+      font-size:13px; font-weight:500; color:#596066; cursor:pointer; transition:all 0.15s;
+    }
+    .tab-btn.active { background:var(--dark); color:#fff; }
+    .status-badge {
+      display:inline-flex; align-items:center; padding:3px 10px;
+      border-radius:20px; font-size:12px; font-weight:500;
+    }
+    .badge-mgpending { background:#FFF8F0; color:#A67000; }
+    .badge-mgdone    { background:#F0FFF4; color:#2E9E34; }
+    .badge-mgreview  { background:#FFF3F3; color:#C83434; }
+    .badge-mgna      { background:#F6F7F9; color:#596066; }
+    .badge-mgactive  { background:#EEF5FF; color:#1A5EC7; }
+    .fulfillment-bar {
+      height:8px; border-radius:4px; background:#E5E7EA; overflow:hidden; margin:4px 0;
+    }
+    .fulfillment-fill { height:100%; border-radius:4px; }
+    .alert-box {
+      background:#FFF8F0; border:1px solid #F3BE4A; border-radius:8px;
+      padding:12px 16px; font-size:13px; color:#7A5900; margin-bottom:16px;
+      display:flex; align-items:flex-start; gap:10px;
+    }
+    /* Drawer */
+    .drawer-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:500; }
+    .drawer-overlay.open { display:block; }
+    .drawer-panel {
+      position:fixed; top:0; right:0; width:640px; height:100vh;
+      background:#fff; box-shadow:-4px 0 24px rgba(0,0,0,0.12); z-index:501;
+      overflow-y:auto; transform:translateX(100%); transition:transform 0.25s ease;
+    }
+    .drawer-overlay.open .drawer-panel { transform:translateX(0); }
+    .drawer-head {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 24px; border-bottom:1px solid var(--border); position:sticky; top:0; background:#fff; z-index:10;
+    }
+    .drawer-title { font-size:16px; font-weight:700; color:var(--dark); }
+    .drawer-close { border:none; background:none; font-size:18px; cursor:pointer; color:#596066; }
+    .drawer-body { padding:24px; }
+    .detail-row { display:flex; gap:8px; margin-bottom:8px; font-size:13px; }
+    .detail-label { color:#9EA5AD; width:130px; flex-shrink:0; }
+    .detail-val { color:var(--dark); font-weight:500; }
+    .timeline-item { display:flex; gap:12px; margin-bottom:14px; font-size:13px; }
+    .tl-dot { width:10px; height:10px; border-radius:50%; margin-top:3px; flex-shrink:0; }
+    .tl-content { flex:1; }
+    .tl-date { font-size:11px; color:#9EA5AD; }
+    /* Scenario banner */
+    .scenario-banner {
+      background:linear-gradient(135deg,#EEF5FF,#F6F7F9); border:1px solid #C4D9FA;
+      border-radius:8px; padding:10px 16px; font-size:12px; color:#1A5EC7;
+      margin-bottom:16px; display:flex; align-items:center; gap:8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- GNB / Topbar (shared layout) -->
+<nav class="gnb">
+  <a href="../index.html" class="gnb-logo">D'ooh</a>
+  <a href="media-list" class="gnb-item" title="미디어"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></a>
+  <a href="campaign-list" class="gnb-item" title="캠페인"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></a>
+  <a href="schedule-list" class="gnb-item" title="스케줄"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></a>
+  <a href="monitoring-dashboard" class="gnb-item active" title="모니터링"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></a>
+  <a href="settings-master" class="gnb-item" title="설정"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+</nav>
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">모니터링</span>
+    <span style="color:#9EA5AD;font-size:13px;margin-left:8px;">/ 보정·Make-good</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-size:13px;color:#596066;">2026-08-24 기준</span>
+    <button style="padding:7px 14px;background:var(--dark);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">보정 처리</button>
+  </div>
+</header>
+
+<main class="main-content">
+  <div style="max-width:1100px;margin:0 auto;">
+
+    <div class="scenario-banner">
+      📋 <strong>T-MON-05</strong>&nbsp; 보정·Make-good 관리 — MON-COMPENSATION 화면 (IA_06 Monitoring v1.9)
+    </div>
+
+    <div class="breadcrumb">모니터링 / 보정·Make-good</div>
+    <div class="page-header">
+      <div class="page-title">보정·Make-good 현황</div>
+      <div style="display:flex;gap:8px;">
+        <select style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--dark);background:#fff;">
+          <option>전체 기간</option>
+          <option selected>2026년 8월</option>
+          <option>2026년 7월</option>
+        </select>
+        <select style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--dark);background:#fff;">
+          <option>전체 상태</option>
+          <option>Make-good 필요</option>
+          <option>Make-good 예정</option>
+          <option>이행 완료</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">전체 캠페인</div>
+        <div class="kpi-value">24</div>
+        <div class="kpi-sub">이번 달 집행 중</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">미달 캠페인</div>
+        <div class="kpi-value warn" style="color:#A67000;">5</div>
+        <div class="kpi-sub">달성률 90% 미만</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Make-good 필요</div>
+        <div class="kpi-value" style="color:#C83434;">2</div>
+        <div class="kpi-sub">광고주 통보 필요</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Make-good 진행</div>
+        <div class="kpi-value" style="color:#1A5EC7;">1</div>
+        <div class="kpi-sub">보정 스케줄 확정</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">이행 완료</div>
+        <div class="kpi-value" style="color:#2E9E34;">3</div>
+        <div class="kpi-sub">이번 달 기준</div>
+      </div>
+    </div>
+
+    <div class="alert-box">
+      ⚠️ <span><strong>현대카드 브랜드 캠페인(SCH-2025-0038)</strong>의 Make-good 스케줄이 아직 확정되지 않았습니다. 영업팀과 광고주 협의가 필요합니다.</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('shortfall')">미달 현황</button>
+      <button class="tab-btn" onclick="switchTab('makegood')">Make-good 스케줄</button>
+      <button class="tab-btn" onclick="switchTab('fulfillment')">최종 이행 현황</button>
+    </div>
+
+    <!-- Panel: 미달 현황 -->
+    <div id="panel-shortfall">
+      <div class="section-card">
+        <div class="section-title">캠페인 미달 현황 — Shortfall Report</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#F6F7F9;">
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">캠페인</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">계약 노출</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">실제 노출</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">달성률</th>
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">미달 원인</th>
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">미달량</th>
+                <th style="padding:10px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">상태</th>
+                <th style="padding:10px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid var(--border);"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openDrawer('scmp01')">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">현대카드 브랜드</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0038 · 광고주: 현대카드</div>
+                </td>
+                <td style="padding:10px 12px;text-align:right;">1,200,000</td>
+                <td style="padding:10px 12px;text-align:right;">1,069,200</td>
+                <td style="padding:10px 12px;text-align:right;">
+                  <div style="font-weight:700;color:#A67000;">89.1%</div>
+                  <div class="fulfillment-bar" style="width:80px;margin-left:auto;">
+                    <div class="fulfillment-fill" style="width:89.1%;background:#F3BE4A;"></div>
+                  </div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">장비 오프라인 (MED-004, 3일)</td>
+                <td style="padding:10px 12px;color:#C83434;font-weight:600;">-130,800</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgpending">Make-good 예정</span></td>
+                <td style="padding:10px 12px;text-align:center;color:#2D84ED;font-size:13px;">상세 →</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openDrawer('scmp02')">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">LG전자 신제품 런칭</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2026-0003 · 광고주: LG전자</div>
+                </td>
+                <td style="padding:10px 12px;text-align:right;">800,000</td>
+                <td style="padding:10px 12px;text-align:right;">704,000</td>
+                <td style="padding:10px 12px;text-align:right;">
+                  <div style="font-weight:700;color:#C83434;">88.0%</div>
+                  <div class="fulfillment-bar" style="width:80px;margin-left:auto;">
+                    <div class="fulfillment-fill" style="width:88%;background:#E97474;"></div>
+                  </div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">PDE 정책 제한 (KR-11 규정)</td>
+                <td style="padding:10px 12px;color:#C83434;font-weight:600;">-96,000</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgreview">검토 중</span></td>
+                <td style="padding:10px 12px;text-align:center;color:#2D84ED;font-size:13px;">상세 →</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">네이버 쇼핑 프로모션</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0051 · 광고주: 네이버</div>
+                </td>
+                <td style="padding:10px 12px;text-align:right;">500,000</td>
+                <td style="padding:10px 12px;text-align:right;">460,000</td>
+                <td style="padding:10px 12px;text-align:right;">
+                  <div style="font-weight:700;color:#A67000;">92.0%</div>
+                  <div class="fulfillment-bar" style="width:80px;margin-left:auto;">
+                    <div class="fulfillment-fill" style="width:92%;background:#F3BE4A;"></div>
+                  </div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">기상 이변 (강수 영향)</td>
+                <td style="padding:10px 12px;color:#A67000;font-weight:600;">-40,000</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgactive">Make-good 진행</span></td>
+                <td style="padding:10px 12px;text-align:center;color:#2D84ED;font-size:13px;">상세 →</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">롯데백화점 세일</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0044 · 광고주: 롯데쇼핑</div>
+                </td>
+                <td style="padding:10px 12px;text-align:right;">300,000</td>
+                <td style="padding:10px 12px;text-align:right;">277,500</td>
+                <td style="padding:10px 12px;text-align:right;">
+                  <div style="font-weight:700;color:#A67000;">92.5%</div>
+                  <div class="fulfillment-bar" style="width:80px;margin-left:auto;">
+                    <div class="fulfillment-fill" style="width:92.5%;background:#F3BE4A;"></div>
+                  </div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">스케줄 충돌</td>
+                <td style="padding:10px 12px;color:#A67000;font-weight:600;">-22,500</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+                <td style="padding:10px 12px;text-align:center;color:#2D84ED;font-size:13px;">상세 →</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">카카오페이 브랜드</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0047 · 광고주: 카카오</div>
+                </td>
+                <td style="padding:10px 12px;text-align:right;">600,000</td>
+                <td style="padding:10px 12px;text-align:right;">555,600</td>
+                <td style="padding:10px 12px;text-align:right;">
+                  <div style="font-weight:700;color:#A67000;">92.6%</div>
+                  <div class="fulfillment-bar" style="width:80px;margin-left:auto;">
+                    <div class="fulfillment-fill" style="width:92.6%;background:#F3BE4A;"></div>
+                  </div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">전력 공급 중단 (1일)</td>
+                <td style="padding:10px 12px;color:#A67000;font-weight:600;">-44,400</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+                <td style="padding:10px 12px;text-align:center;color:#2D84ED;font-size:13px;">상세 →</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Make-good 스케줄 -->
+    <div id="panel-makegood" style="display:none;">
+      <div class="section-card">
+        <div class="section-title">Make-good 보정 스케줄</div>
+        <div style="background:#EEF5FF;border:1px solid #C4D9FA;border-radius:8px;padding:12px 16px;font-size:13px;color:#1A5EC7;margin-bottom:16px;">
+          ℹ️ Make-good는 미달 분량을 동일 또는 동급 미디어에서 추가 집행하여 계약 이행을 완료하는 보정 방식입니다.
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#F6F7F9;">
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">캠페인</th>
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">보정 미디어</th>
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">보정 기간</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">보정 목표량</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">현재 이행량</th>
+                <th style="padding:10px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">현대카드 브랜드</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0038</div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">미확정<br><span style="font-size:11px;color:#9EA5AD;">광고주 협의 필요</span></td>
+                <td style="padding:10px 12px;color:#596066;">협의 중</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;">130,800</td>
+                <td style="padding:10px 12px;text-align:right;color:#9EA5AD;">—</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgpending">협의 중</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">네이버 쇼핑 프로모션</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0051</div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">강남역 1번출구 A (MED-001)<br>강남역 3번출구 B (MED-006)</td>
+                <td style="padding:10px 12px;color:#596066;">2026-08-25 ~ 2026-08-31</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;">40,000</td>
+                <td style="padding:10px 12px;text-align:right;color:#1A5EC7;font-weight:600;">18,200</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgactive">진행 중 (46%)</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">롯데백화점 세일</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0044</div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">신촌역 스탠드형 A (MED-009)</td>
+                <td style="padding:10px 12px;color:#596066;">2026-08-10 ~ 2026-08-15</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;">22,500</td>
+                <td style="padding:10px 12px;text-align:right;color:#2E9E34;font-weight:600;">22,500</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+              </tr>
+              <tr>
+                <td style="padding:10px 12px;">
+                  <div style="font-weight:600;">카카오페이 브랜드</div>
+                  <div style="font-size:11px;color:#9EA5AD;">SCH-2025-0047</div>
+                </td>
+                <td style="padding:10px 12px;color:#596066;">홍대입구역 광고판 (MED-002)</td>
+                <td style="padding:10px 12px;color:#596066;">2026-08-01 ~ 2026-08-07</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;">44,400</td>
+                <td style="padding:10px 12px;text-align:right;color:#2E9E34;font-weight:600;">44,400</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: 최종 이행 현황 -->
+    <div id="panel-fulfillment" style="display:none;">
+      <div class="section-card">
+        <div class="section-title">최종 계약 이행 현황 — Final Delivery Fulfillment</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#F6F7F9;">
+                <th style="padding:10px 12px;text-align:left;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">캠페인</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">계약량</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">1차 집행</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">Make-good</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">최종 합계</th>
+                <th style="padding:10px 12px;text-align:right;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">최종 달성률</th>
+                <th style="padding:10px 12px;text-align:center;font-weight:600;color:#596066;border-bottom:1px solid var(--border);">이행 판정</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;"><div style="font-weight:600;">삼성전자 갤럭시</div><div style="font-size:11px;color:#9EA5AD;">SCH-2025-0041</div></td>
+                <td style="padding:10px 12px;text-align:right;">1,000,000</td>
+                <td style="padding:10px 12px;text-align:right;">1,021,000</td>
+                <td style="padding:10px 12px;text-align:right;color:#9EA5AD;">—</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;">1,021,000</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#2E9E34;">102.1%</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;"><div style="font-weight:600;">롯데백화점 세일</div><div style="font-size:11px;color:#9EA5AD;">SCH-2025-0044</div></td>
+                <td style="padding:10px 12px;text-align:right;">300,000</td>
+                <td style="padding:10px 12px;text-align:right;">277,500</td>
+                <td style="padding:10px 12px;text-align:right;color:#2E9E34;">+22,500</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;">300,000</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#2E9E34;">100.0%</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;"><div style="font-weight:600;">카카오페이 브랜드</div><div style="font-size:11px;color:#9EA5AD;">SCH-2025-0047</div></td>
+                <td style="padding:10px 12px;text-align:right;">600,000</td>
+                <td style="padding:10px 12px;text-align:right;">555,600</td>
+                <td style="padding:10px 12px;text-align:right;color:#2E9E34;">+44,400</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;">600,000</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#2E9E34;">100.0%</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgdone">이행 완료</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;"><div style="font-weight:600;">네이버 쇼핑 프로모션</div><div style="font-size:11px;color:#9EA5AD;">SCH-2025-0051</div></td>
+                <td style="padding:10px 12px;text-align:right;">500,000</td>
+                <td style="padding:10px 12px;text-align:right;">460,000</td>
+                <td style="padding:10px 12px;text-align:right;color:#1A5EC7;">진행 중</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;">478,200</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#A67000;">95.6%</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgactive">Make-good 중</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:10px 12px;"><div style="font-weight:600;">현대카드 브랜드</div><div style="font-size:11px;color:#9EA5AD;">SCH-2025-0038</div></td>
+                <td style="padding:10px 12px;text-align:right;">1,200,000</td>
+                <td style="padding:10px 12px;text-align:right;">1,069,200</td>
+                <td style="padding:10px 12px;text-align:right;color:#9EA5AD;">미확정</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;">1,069,200</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#C83434;">89.1%</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgpending">협의 중</span></td>
+              </tr>
+              <tr>
+                <td style="padding:10px 12px;"><div style="font-weight:600;">LG전자 신제품 런칭</div><div style="font-size:11px;color:#9EA5AD;">SCH-2026-0003</div></td>
+                <td style="padding:10px 12px;text-align:right;">800,000</td>
+                <td style="padding:10px 12px;text-align:right;">704,000</td>
+                <td style="padding:10px 12px;text-align:right;color:#9EA5AD;">검토 중</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;">704,000</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#C83434;">88.0%</td>
+                <td style="padding:10px 12px;text-align:center;"><span class="status-badge badge-mgreview">검토 중</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Drawer: Shortfall Detail -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()">
+  <div class="drawer-panel" onclick="event.stopPropagation()">
+    <div class="drawer-head">
+      <div class="drawer-title" id="drawer-title">보정 상세</div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+</div>
+
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+function switchTab(id) {
+  ['shortfall','makegood','fulfillment'].forEach(t => {
+    document.getElementById('panel-'+t).style.display = t===id ? '' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['shortfall','makegood','fulfillment'][i]===id);
+  });
+}
+
+const DRAWER_DATA = {
+  scmp01: {
+    title: '현대카드 브랜드 — 보정 상세',
+    html: `
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:4px;">캠페인 ID</div>
+        <div style="font-size:15px;font-weight:700;">SCH-2025-0038</div>
+      </div>
+      <div class="detail-row"><div class="detail-label">광고주</div><div class="detail-val">현대카드</div></div>
+      <div class="detail-row"><div class="detail-label">계약 노출량</div><div class="detail-val">1,200,000 회</div></div>
+      <div class="detail-row"><div class="detail-label">실제 노출량</div><div class="detail-val">1,069,200 회</div></div>
+      <div class="detail-row"><div class="detail-label">달성률</div><div class="detail-val" style="color:#A67000;">89.1%</div></div>
+      <div class="detail-row"><div class="detail-label">미달량</div><div class="detail-val" style="color:#C83434;">-130,800 회</div></div>
+      <div class="detail-row"><div class="detail-label">미달 원인</div><div class="detail-val">잠실역 대형 LED (MED-004) 장비 오프라인 3일 (2026-08-15~17)</div></div>
+      <div class="detail-row"><div class="detail-label">Make-good 상태</div><div class="detail-val"><span style="background:#FFF8F0;color:#A67000;padding:2px 8px;border-radius:4px;font-size:12px;">협의 중</span></div></div>
+      <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:12px;">처리 이력</div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:#E97474;"></div>
+        <div class="tl-content">
+          <div style="font-weight:500;">Incident 발생 (MED-004 오프라인)</div>
+          <div class="tl-date">2026-08-15 09:12</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:#F3BE4A;"></div>
+        <div class="tl-content">
+          <div style="font-weight:500;">미달 감지 — Shortfall 자동 생성</div>
+          <div class="tl-date">2026-08-17 23:59</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:#9EA5AD;"></div>
+        <div class="tl-content">
+          <div style="font-weight:500;">영업팀 통보 완료 (담당: 김영업)</div>
+          <div class="tl-date">2026-08-18 10:30</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="tl-dot" style="background:#2D84ED;"></div>
+        <div class="tl-content">
+          <div style="font-weight:500;">광고주 협의 요청 발송</div>
+          <div class="tl-date">2026-08-19 14:00</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <button style="width:100%;padding:11px;background:var(--main);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Make-good 스케줄 등록</button>
+      </div>
+    `
+  },
+  scmp02: {
+    title: 'LG전자 신제품 런칭 — 보정 상세',
+    html: `
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:4px;">캠페인 ID</div>
+        <div style="font-size:15px;font-weight:700;">SCH-2026-0003</div>
+      </div>
+      <div class="detail-row"><div class="detail-label">광고주</div><div class="detail-val">LG전자</div></div>
+      <div class="detail-row"><div class="detail-label">계약 노출량</div><div class="detail-val">800,000 회</div></div>
+      <div class="detail-row"><div class="detail-label">실제 노출량</div><div class="detail-val">704,000 회</div></div>
+      <div class="detail-row"><div class="detail-label">달성률</div><div class="detail-val" style="color:#C83434;">88.0%</div></div>
+      <div class="detail-row"><div class="detail-label">미달량</div><div class="detail-val" style="color:#C83434;">-96,000 회</div></div>
+      <div class="detail-row"><div class="detail-label">미달 원인</div><div class="detail-val">PDE 정책 제한 — KR-11 강남구 규정 (음료·주류 심야 제한) 적용으로 일부 슬롯 집행 불가</div></div>
+      <div class="detail-row"><div class="detail-label">Make-good 상태</div><div class="detail-val"><span style="background:#FFF3F3;color:#C83434;padding:2px 8px;border-radius:4px;font-size:12px;">검토 중</span></div></div>
+      <div style="background:#FFF8F0;border:1px solid #F3BE4A;border-radius:8px;padding:12px;font-size:12px;color:#7A5900;margin:16px 0;">
+        ⚠️ PDE 정책 제한에 의한 미달은 Make-good 적용 가능 여부를 법무팀과 먼저 확인해야 합니다. 동일 미디어에서 동일 시간대 재집행 시 동일한 제한이 적용됩니다.
+      </div>
+      <div style="margin-top:20px;">
+        <button style="width:100%;padding:11px;background:#596066;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">법무팀 검토 요청</button>
+      </div>
+    `
+  }
+};
+
+function openDrawer(id) {
+  const d = DRAWER_DATA[id];
+  if (!d) return;
+  document.getElementById('drawer-title').textContent = d.title;
+  document.getElementById('drawer-body').innerHTML = d.html;
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+</script>
+</body>
+</html>
