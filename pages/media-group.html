@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미디어 그룹·Sync Group — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root { --green:#58C65D;--dark:#24292E;--main:#2D84ED;--warn:#F3BE4A;--danger:#E97474;--bg:#F6F7F9;--border:#E5E7EA; }
+    .breadcrumb { display:flex;align-items:center;gap:6px;font-size:13px;color:#9EA5AD;margin-bottom:16px; }
+    .breadcrumb a { color:#9EA5AD;text-decoration:none; }
+    .breadcrumb a:hover { color:#24292E; }
+    .page-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px; }
+    .page-title { font-size:20px;font-weight:700;color:#24292E; }
+    .btn-primary { background:#2D84ED;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer; }
+    .btn-primary:hover { background:#1A6FD6; }
+    .tabs { display:flex;gap:0;border-bottom:2px solid #E5E7EA;margin-bottom:20px; }
+    .tab-btn { padding:10px 18px;font-size:13px;font-weight:500;color:#9EA5AD;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer; }
+    .tab-btn:hover { color:#24292E; }
+    .tab-btn.active { color:#2D84ED;font-weight:700;border-bottom-color:#2D84ED; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .detail-card { background:#fff;border:1px solid #E5E7EA;border-radius:10px;padding:20px;margin-bottom:16px; }
+    .detail-card-title { font-size:14px;font-weight:700;color:#24292E;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between; }
+    .group-list { display:flex;flex-direction:column;gap:12px; }
+    .group-card { border:1px solid #E5E7EA;border-radius:8px;padding:16px;background:#fff;cursor:pointer;transition:border-color .15s; }
+    .group-card:hover { border-color:#2D84ED; }
+    .group-card.selected { border-color:#2D84ED;background:#EFF6FF; }
+    .group-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:8px; }
+    .group-name { font-size:14px;font-weight:700;color:#24292E; }
+    .group-meta { font-size:12px;color:#9EA5AD; }
+    .group-badge { display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700; }
+    .badge-group { background:#EFF6FF;color:#2D84ED; }
+    .badge-sync { background:#E8F8E9;color:#2E9E34; }
+    .badge-inactive { background:#F0F1F3;color:#9EA5AD; }
+    .member-chips { display:flex;flex-wrap:wrap;gap:6px;margin-top:8px; }
+    .member-chip { font-size:11px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;padding:3px 8px;color:#596066; }
+    .stat-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px; }
+    .stat-card { background:#F6F7F9;border-radius:8px;padding:14px;text-align:center; }
+    .stat-label { font-size:11px;color:#9EA5AD;margin-bottom:4px; }
+    .stat-value { font-size:22px;font-weight:700;color:#24292E; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%;border-collapse:collapse;font-size:13px; }
+    th { padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid #E5E7EA;background:#F6F7F9; }
+    td { padding:10px 12px;border-bottom:1px solid #F0F1F3;vertical-align:top; }
+    .sync-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px; }
+    .sync-active { background:#58C65D; }
+    .sync-warn { background:#F3BE4A; }
+    .sync-off { background:#9EA5AD; }
+    .drawer-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:600; }
+    .drawer { position:fixed;top:0;right:0;width:600px;max-width:100%;height:100%;background:#fff;z-index:700;box-shadow:-4px 0 32px rgba(0,0,0,.14);overflow-y:auto;display:flex;flex-direction:column; }
+    .drawer-header { display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #E5E7EA; }
+    .drawer-title { font-size:16px;font-weight:700;color:#24292E; }
+    .drawer-close { background:none;border:none;font-size:20px;cursor:pointer;color:#9EA5AD; }
+    .drawer-body { padding:24px;flex:1; }
+    .field-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+    .field-group { display:flex;flex-direction:column;gap:4px; }
+    .field-label { font-size:11px;color:#9EA5AD;font-weight:600;text-transform:uppercase;letter-spacing:.03em; }
+    .field-value { font-size:13px;color:#24292E; }
+    .info-box { background:#EFF6FF;border-radius:8px;padding:14px;font-size:13px;color:#1A5FA3;margin-bottom:16px; }
+    .scenario-banner { background:#24292E;color:#fff;border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:13px; }
+    .scenario-banner strong { color:#F3BE4A; }
+  </style>
+</head>
+<body>
+<nav class="gnb">
+  <div class="gnb-logo"><span style="font-weight:900;font-size:18px;color:#fff;">D</span><span style="color:#F3BE4A;font-size:10px;font-weight:700;">ooh</span></div>
+  <ul>
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li class="active"><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="product-list">프로덕트</a></li>
+    <li><a href="contents">콘텐츠</a></li>
+    <li><a href="campaign-list">캠페인</a></li>
+    <li><a href="schedule-list">스케줄</a></li>
+    <li><a href="monitoring-dashboard">모니터링</a></li>
+    <li><a href="settings-org">설정</a></li>
+  </ul>
+</nav>
+<main class="content" style="margin-left:93px;padding-top:80px;padding-left:24px;padding-right:24px;min-height:100vh;background:#F6F7F9;">
+  <div class="content-inner" style="max-width:1100px;margin:0 auto;">
+
+    <div class="breadcrumb">
+      <a href="media-list">미디어</a><span class="sep">›</span>
+      <span class="current">미디어 그룹·Sync Group</span>
+    </div>
+
+    <div class="scenario-banner">
+      <strong>T-MED-04</strong> · 미디어 그룹 / Sync Group 관리 · Menu: 미디어 → 그룹 관리<br>
+      <span style="color:#9EA5AD;font-size:12px;">Media Group = 운영 목적 그룹(≠ Product/Package ≠ Access Scope) · Sync Group = 기술적 동기재생 그룹(RMS 실행) · 두 개념은 독립</span>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">미디어 그룹·Sync Group</div>
+        <div style="font-size:13px;color:#9EA5AD;margin-top:4px;">운영 목적 그룹 구성 및 동기재생(Sync) 그룹 관리</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary" onclick="openDrawer('new-group')">+ Media Group 생성</button>
+        <button style="background:#E8F8E9;color:#2E9E34;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;" onclick="openDrawer('new-sync')">+ Sync Group 생성</button>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">전체 Media Group</div><div class="stat-value">8</div></div>
+      <div class="stat-card"><div class="stat-label">Sync Group</div><div class="stat-value">3</div></div>
+      <div class="stat-card"><div class="stat-label">그룹 미배정 매체</div><div class="stat-value" style="color:#A67000;">12</div></div>
+      <div class="stat-card"><div class="stat-label">Sync 오류</div><div class="stat-value" style="color:#E97474;">1</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('media-group')">Media Group</button>
+      <button class="tab-btn" onclick="switchTab('sync-group')">Sync Group</button>
+    </div>
+
+    <!-- Media Group Tab -->
+    <div class="tab-panel active" id="panel-media-group">
+      <div class="info-box">
+        Media Group은 운영 목적의 논리적 그룹입니다. Product/Package와 무관하며, Access Scope(조직 권한 범위)와도 독립적으로 관리됩니다. 집계 분석, 공동 일정 관리, 알림 라우팅 등에 활용합니다.
+      </div>
+      <div class="group-list">
+        <div class="group-card" onclick="openDrawer('GRP-001')">
+          <div class="group-card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="group-badge badge-group">Media Group</span>
+              <span class="group-name">강남·서초 프리미엄 클러스터</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:#2E9E34;font-weight:600;">● 활성 8개</span>
+              <span style="font-size:12px;color:#9EA5AD;">총 12개 매체</span>
+            </div>
+          </div>
+          <div class="group-meta">GRP-001 · 관리자: 홍길동 · 생성: 2024-06-01</div>
+          <div class="member-chips">
+            <span class="member-chip">MED-001 강남역 1번출구 A</span>
+            <span class="member-chip">MED-002 홍대입구역 2번출구</span>
+            <span class="member-chip">MED-007 광화문광장</span>
+            <span class="member-chip" style="color:#2D84ED;">+9개 더보기</span>
+          </div>
+        </div>
+        <div class="group-card" onclick="openDrawer('GRP-002')">
+          <div class="group-card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="group-badge badge-group">Media Group</span>
+              <span class="group-name">서울역·강북 역세권</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:#A67000;font-weight:600;">● 활성 3 / 비활성 1</span>
+              <span style="font-size:12px;color:#9EA5AD;">총 7개 매체</span>
+            </div>
+          </div>
+          <div class="group-meta">GRP-002 · 관리자: 이민지 · 생성: 2024-09-15</div>
+          <div class="member-chips">
+            <span class="member-chip">MED-003 신촌역 스탠드형 A</span>
+            <span class="member-chip">MED-005 서울역 환승통로 B</span>
+            <span class="member-chip" style="color:#2D84ED;">+5개 더보기</span>
+          </div>
+        </div>
+        <div class="group-card" onclick="openDrawer('GRP-003')">
+          <div class="group-card-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="group-badge badge-group">Media Group</span>
+              <span class="group-name">대형 LED 특화 그룹</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:#E97474;font-weight:600;">● 장애 1개 포함</span>
+              <span style="font-size:12px;color:#9EA5AD;">총 4개 매체</span>
+            </div>
+          </div>
+          <div class="group-meta">GRP-003 · 관리자: 김영수 · 생성: 2023-12-01</div>
+          <div class="member-chips">
+            <span class="member-chip" style="border-color:#E97474;color:#C83434;">MED-004 잠실역 대형 LED ⚠</span>
+            <span class="member-chip" style="color:#2D84ED;">+3개 더보기</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sync Group Tab -->
+    <div class="tab-panel" id="panel-sync-group">
+      <div class="info-box" style="background:#FFF7ED;color:#A67000;">
+        Sync Group은 동일 콘텐츠를 복수 매체에서 기술적으로 동기화(동시) 재생하기 위한 그룹입니다. 실제 동기 실행은 RMS(Remote Management System)가 담당합니다. Screen Split(분할화면)과 다른 개념입니다.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Sync Group ID</th><th>그룹명</th><th>매체 수</th><th>동기 방식</th><th>Sync 상태</th><th>마지막 확인</th><th>관리</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;">SYN-001</td>
+              <td>강남역 입출구 동기<br><span style="font-size:11px;color:#9EA5AD;">MED-001, MED-004 외 2개</span></td>
+              <td>4</td>
+              <td>시간 동기 (NTP)</td>
+              <td><span class="sync-dot sync-active"></span><span style="color:#2E9E34;font-weight:600;">정상 동기</span></td>
+              <td style="color:#9EA5AD;font-size:12px;">08:42:01</td>
+              <td><button onclick="openSyncDrawer('SYN-001')" style="background:none;border:1px solid #E5E7EA;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;">상세</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">SYN-002</td>
+              <td>광화문 광장 3면<br><span style="font-size:11px;color:#9EA5AD;">MED-007 외 2개</span></td>
+              <td>3</td>
+              <td>이벤트 트리거</td>
+              <td><span class="sync-dot sync-warn"></span><span style="color:#A67000;font-weight:600;">경고 — 1개 지연</span></td>
+              <td style="color:#9EA5AD;font-size:12px;">08:39:55</td>
+              <td><button onclick="openSyncDrawer('SYN-002')" style="background:none;border:1px solid #E5E7EA;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;">상세</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">SYN-003</td>
+              <td>신설 Sync 그룹 (테스트)</td>
+              <td>2</td>
+              <td>NTP</td>
+              <td><span class="sync-dot sync-off"></span><span style="color:#9EA5AD;font-weight:600;">비활성</span></td>
+              <td style="color:#9EA5AD;font-size:12px;">—</td>
+              <td><button onclick="openSyncDrawer('SYN-003')" style="background:none;border:1px solid #E5E7EA;border-radius:4px;padding:3px 10px;font-size:12px;cursor:pointer;">상세</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px;padding:12px 14px;background:#FEF2F2;border-left:3px solid #E97474;border-radius:0 6px 6px 0;font-size:12px;color:#C83434;">
+        ⚠ SYN-002 광화문 광장 3면: MED-009 오프라인으로 인해 1개 매체가 Sync에서 탈락. RMS에서 복구 시도 중.
+      </div>
+      <div style="font-size:12px;color:#9EA5AD;margin-top:10px;">Sync 실행 주체: RMS (Remote Management System) · CMS는 그룹 구성·모니터링만 담당</div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Group Detail Drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="main-drawer" style="display:none;">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawer-title">그룹 상세</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body">
+    <!-- Content injected by JS -->
+  </div>
+</div>
+
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+var GROUP_DATA = {
+  'GRP-001': {
+    title: '강남·서초 프리미엄 클러스터',
+    id: 'GRP-001',
+    manager: '홍길동',
+    purpose: '강남·서초 지역 프리미엄 매체 통합 관리 및 캠페인 집행 집계',
+    members: ['MED-001 강남역 1번출구 A (활성)', 'MED-002 홍대입구역 2번출구 (경고)', 'MED-007 광화문광장 디지털 사이니지 (활성)'],
+    scope: 'Media Group ≠ Product/Package ≠ Access Scope — 독립 운영 그룹',
+  },
+  'GRP-002': {
+    title: '서울역·강북 역세권',
+    id: 'GRP-002',
+    manager: '이민지',
+    purpose: '서울역·강북 역세권 매체 집합 관리',
+    members: ['MED-003 신촌역 스탠드형 A (활성)', 'MED-005 서울역 환승통로 B (비활성)'],
+    scope: 'Media Group ≠ Product/Package ≠ Access Scope',
+  },
+};
+
+function openDrawer(id) {
+  var overlay = document.getElementById('drawer-overlay');
+  var drawer = document.getElementById('main-drawer');
+  var title = document.getElementById('drawer-title');
+  var body = document.getElementById('drawer-body');
+
+  if (id === 'new-group' || id === 'new-sync') {
+    title.textContent = id === 'new-group' ? '새 Media Group 생성' : '새 Sync Group 생성';
+    body.innerHTML = '<div style="padding:20px 0;color:#9EA5AD;text-align:center;">그룹명, 설명, 매체 선택 폼 (구현 예시)</div>'
+      + '<div style="margin-top:20px;display:flex;justify-content:flex-end;gap:8px;">'
+      + '<button onclick="closeDrawer()" style="padding:8px 16px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">취소</button>'
+      + '<button onclick="alert(\'그룹이 생성되었습니다.\');closeDrawer();" style="padding:8px 16px;border:none;border-radius:6px;background:#2D84ED;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">생성</button>'
+      + '</div>';
+  } else {
+    var g = GROUP_DATA[id];
+    if (!g) return;
+    title.textContent = g.title;
+    var memberList = g.members.map(m => '<li style="padding:6px 0;border-bottom:1px solid #F0F1F3;font-size:13px;">• ' + m + '</li>').join('');
+    body.innerHTML = '<div class="detail-card">'
+      + '<div class="detail-card-title">기본 정보</div>'
+      + '<div class="field-grid">'
+      + '<div class="field-group"><div class="field-label">Group ID</div><div class="field-value">' + g.id + '</div></div>'
+      + '<div class="field-group"><div class="field-label">관리자</div><div class="field-value">' + g.manager + '</div></div>'
+      + '</div>'
+      + '<div style="margin-top:12px;"><div class="field-label" style="font-size:11px;color:#9EA5AD;font-weight:600;margin-bottom:6px;">운영 목적</div><div style="font-size:13px;">' + g.purpose + '</div></div>'
+      + '</div>'
+      + '<div class="detail-card">'
+      + '<div class="detail-card-title">소속 매체 (' + g.members.length + '개)</div>'
+      + '<ul style="list-style:none;padding:0;margin:0;">' + memberList + '</ul>'
+      + '<button onclick="alert(\'매체 추가 선택 UI\')" style="margin-top:12px;padding:6px 14px;border:1px dashed #2D84ED;border-radius:6px;background:#EFF6FF;color:#2D84ED;font-size:12px;cursor:pointer;">+ 매체 추가</button>'
+      + '</div>'
+      + '<div style="padding:10px 14px;background:#EFF6FF;border-radius:6px;font-size:12px;color:#1A5FA3;">' + g.scope + '</div>'
+      + '<div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px;">'
+      + '<button onclick="closeDrawer()" style="padding:8px 16px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">닫기</button>'
+      + '<button onclick="alert(\'저장되었습니다.\');closeDrawer();" style="padding:8px 16px;border:none;border-radius:6px;background:#2D84ED;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">저장</button>'
+      + '</div>';
+  }
+
+  overlay.style.display = 'block';
+  drawer.style.display = 'flex';
+}
+
+function openSyncDrawer(id) {
+  var overlay = document.getElementById('drawer-overlay');
+  var drawer = document.getElementById('main-drawer');
+  document.getElementById('drawer-title').textContent = 'Sync Group 상세 — ' + id;
+  document.getElementById('drawer-body').innerHTML = '<div style="font-size:13px;color:#596066;line-height:1.8;">'
+    + '<p><strong>동기 방식:</strong> NTP 기반 시간 동기</p>'
+    + '<p><strong>Leader 매체:</strong> MED-001 강남역 1번출구 A</p>'
+    + '<p><strong>Follower:</strong> MED-002, MED-004, MED-007</p>'
+    + '<p><strong>허용 지연:</strong> ≤ 50ms</p>'
+    + '<p style="color:#9EA5AD;font-size:12px;">실제 Sync 실행은 RMS(Remote Management System)가 담당. CMS는 구성 관리 및 상태 모니터링만 수행.</p>'
+    + '</div>'
+    + '<div style="margin-top:20px;display:flex;justify-content:flex-end;">'
+    + '<button onclick="closeDrawer()" style="padding:8px 16px;border:1px solid #E5E7EA;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">닫기</button></div>';
+  overlay.style.display = 'block';
+  drawer.style.display = 'flex';
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-overlay').style.display = 'none';
+  document.getElementById('main-drawer').style.display = 'none';
+}
+</script>
+</body>
+</html>

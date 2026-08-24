@@ -347,6 +347,10 @@
       <button class="tab-btn" onclick="switchTab('sensor')">센서·MCU</button>
       <button class="tab-btn" onclick="switchTab('ops')">운영 현황</button>
       <button class="tab-btn" onclick="switchTab('schedule')">Schedule 현황</button>
+      <button class="tab-btn" onclick="switchTab('taxonomy')">Taxonomy·측정</button>
+      <button class="tab-btn" onclick="switchTab('policy')">정책 적용 정보</button>
+      <button class="tab-btn" onclick="switchTab('audience')">Audience Profile</button>
+      <button class="tab-btn" onclick="switchTab('effect')">Advertising Effect</button>
       <button class="tab-btn" onclick="switchTab('revision')">Revision</button>
       <button class="tab-btn" onclick="switchTab('audit')">Audit</button>
     </div>
@@ -997,6 +1001,196 @@
     <!-- ────────────────────────────────────────────── -->
     <!-- TAB Revision -->
     <!-- ────────────────────────────────────────────── -->
+    <!-- ── Taxonomy·측정 기준 (MEDIA-DETAIL-TAXONOMY) ── -->
+    <div class="tab-panel" id="panel-taxonomy">
+      <div class="detail-card">
+        <div class="detail-card-title">Media Taxonomy</div>
+        <div class="field-grid">
+          <div class="field-group"><div class="field-label">TypeCode (mediaTypeCode)</div><div class="field-value">OF <span style="font-size:11px;color:#9EA5AD;">옥외고정 (Outdoor Fixed)</span></div></div>
+          <div class="field-group"><div class="field-label">Taxonomy Version</div><div class="field-value readonly">v2.14 <span style="font-size:11px;color:#9EA5AD;">(시스템 자동 참조)</span></div></div>
+          <div class="field-group"><div class="field-label">법적 분류 (Legal Classification)</div><div class="field-value">옥외광고물법 적용 대상 · 허가 취득 완료</div></div>
+          <div class="field-group"><div class="field-label">법적 매핑 상태 (Legal Mapping Status)</div><div class="field-value"><span style="color:#2E9E34;font-weight:600;">✅ Mapped</span></div></div>
+          <div class="field-group"><div class="field-label">시청 거리 (Viewing Distance)</div><div class="field-value">5 ~ 30m (Primary: 8m)</div></div>
+          <div class="field-group"><div class="field-label">물리 환경 (Physical Environment)</div><div class="field-value">지하철 역세권 · 보행자 고유동</div></div>
+          <div class="field-group"><div class="field-label">Location Management Mode</div><div class="field-value readonly">TAXONOMY_AUTO <span style="font-size:11px;color:#9EA5AD;">(Taxonomy 기반 자동 파생)</span></div></div>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title">Audience Interaction Profile</div>
+        <div class="field-grid">
+          <div class="field-group"><div class="field-label">주요 접촉 행동 (Primary Interaction)</div><div class="field-value">보행 중 노출 (Walking Exposure)</div></div>
+          <div class="field-group"><div class="field-label">평균 노출 시간 (Avg Dwell Time)</div><div class="field-value">8.3초</div></div>
+          <div class="field-group"><div class="field-label">인터랙션 유형</div><div class="field-value">패시브 (Passive) — 터치/QR 없음</div></div>
+          <div class="field-group"><div class="field-label">Audience Behavior 분류</div><div class="field-value">통행형 (Transit)</div></div>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title">Measurement Profile</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#F6F7F9;">
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">KPI</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">측정 방식</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">Data 가용 여부</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">갱신 주기</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;">유동인구 (Foot Traffic)</td><td style="padding:10px 12px;">센서 + DMS 추정</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">AVAILABLE</span></td><td style="padding:10px 12px;">실시간</td></tr>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;">노출인구 (Exposed Audience)</td><td style="padding:10px 12px;">카메라 AI 분석</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">AVAILABLE</span></td><td style="padding:10px 12px;">15분</td></tr>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;">주목인구 (Attention Audience)</td><td style="padding:10px 12px;">시선 추적 모델</td><td style="padding:10px 12px;"><span style="color:#A67000;font-weight:600;">PARTIAL</span></td><td style="padding:10px 12px;">1시간</td></tr>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;">랭킹 (Ranking)</td><td style="padding:10px 12px;">인근 매체 비교 집계</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">AVAILABLE</span></td><td style="padding:10px 12px;">일별</td></tr>
+              <tr><td style="padding:10px 12px;">Reach / Frequency</td><td style="padding:10px 12px;">패널 모델 추정</td><td style="padding:10px 12px;"><span style="color:#9EA5AD;font-weight:600;">NOT_AVAILABLE</span></td><td style="padding:10px 12px;">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:12px;color:#9EA5AD;margin-top:10px;">Data As-of: 2026-08-24 09:00 KST · Metric Version: v1.9 · Source: DMS</div>
+      </div>
+    </div>
+
+    <!-- ── 정책 적용 정보 (MEDIA-DETAIL-POL) ── -->
+    <div class="tab-panel" id="panel-policy">
+      <div class="detail-card">
+        <div class="detail-card-title">Jurisdiction · Access Scope</div>
+        <div class="field-grid">
+          <div class="field-group"><div class="field-label">Jurisdiction Country (정책 적용 국가, SSOT)</div><div class="field-value readonly"><strong>KR (대한민국)</strong> <span style="font-size:11px;color:#9EA5AD;">Media 설치 위치 기준 — 로그인/본사 국가 아님</span></div></div>
+          <div class="field-group"><div class="field-label">Jurisdiction Region</div><div class="field-value readonly">KR-11 (서울특별시) · 강남구</div></div>
+          <div class="field-group"><div class="field-label">Access Country (접근 범위 국가)</div><div class="field-value readonly">KR <span style="font-size:11px;color:#9EA5AD;">Organization Scope + Geographic/Media Scope</span></div></div>
+          <div class="field-group"><div class="field-label">Media Company Policy Scope</div><div class="field-value readonly">서울권역 전체 · Branch: 강남지점</div></div>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title">Effective PolicySet Reference</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <span style="font-size:12px;font-weight:700;color:#2E9E34;background:#E8F8E9;padding:3px 10px;border-radius:12px;">Decision Context: Current</span>
+          <span style="font-size:12px;color:#9EA5AD;">마지막 평가: 2026-08-23 14:32 KST · PDE v2025.10.02</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#F6F7F9;">
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">PolicySet</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">Authority</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">Reference Status</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">Effective Period</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;font-weight:600;">KR-LAW-OOH-2024</td><td style="padding:10px 12px;">Platform Mandatory</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">Current</span></td><td style="padding:10px 12px;">2024-01-01 ~ 상시</td></tr>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;font-weight:600;">KR-11-REGION-2025</td><td style="padding:10px 12px;">Platform Country</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">Current</span></td><td style="padding:10px 12px;">2025-03-01 ~ 상시</td></tr>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;font-weight:600;">MC-CONTENT-POLICY-v3</td><td style="padding:10px 12px;">Media Company Local</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">Current</span></td><td style="padding:10px 12px;">2025-09-01 ~ 상시</td></tr>
+              <tr><td style="padding:10px 12px;font-weight:600;">MC-INDUSTRY-RESTRICT-v2</td><td style="padding:10px 12px;">Media Company Internal</td><td style="padding:10px 12px;"><span style="color:#2E9E34;font-weight:600;">Current</span></td><td style="padding:10px 12px;">2024-06-15 ~ 상시</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title">PDE Decision Snapshot · Fail-safe</div>
+        <div class="field-grid">
+          <div class="field-group"><div class="field-label">최근 PDE Decision</div><div class="field-value"><span style="color:#2E9E34;font-weight:700;">Approved</span></div></div>
+          <div class="field-group"><div class="field-label">Decision ID</div><div class="field-value readonly">DEC-2026-08-23-MED001-4421</div></div>
+          <div class="field-group"><div class="field-label">적용 Policy IDs</div><div class="field-value readonly" style="font-size:11px;">KR-LAW-OOH-2024 · KR-11-REGION-2025 · MC-CONTENT-POLICY-v3 · MC-INDUSTRY-RESTRICT-v2</div></div>
+          <div class="field-group"><div class="field-label">Decision Valid Until</div><div class="field-value">2026-09-23 <span style="font-size:11px;color:#9EA5AD;">(30일 유효, Policy 변경 시 자동 Stale)</span></div></div>
+          <div class="field-group"><div class="field-label">PDE API 상태</div><div class="field-value"><span style="color:#2E9E34;font-weight:600;">Connected</span></div></div>
+          <div class="field-group"><div class="field-label">Fail-safe 모드</div><div class="field-value readonly">기존 Effective Policy 유지 (Fail Closed)</div></div>
+        </div>
+        <div style="margin-top:14px;padding:12px 14px;background:#FFFBEB;border-left:3px solid #F3BE4A;border-radius:0 6px 6px 0;font-size:12px;color:#A67000;">
+          Decision Context가 <strong>Stale</strong> 또는 <strong>Revalidation Pending</strong> 상태가 되면 해당 미디어의 신규 Schedule 배정 전 PDE 재검증이 필요합니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Media Audience Profile (MEDIA-DETAIL-AUDIENCE) ── -->
+    <div class="tab-panel" id="panel-audience">
+      <div class="detail-card">
+        <div class="detail-card-title">Media Audience Profile — MED-001 <span style="font-size:11px;color:#9EA5AD;font-weight:400;">강남역 1번출구 A · Data As-of: 2026-08-24</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px;">
+          <div style="background:#F6F7F9;border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">일 평균 유동인구</div>
+            <div style="font-size:24px;font-weight:700;color:#24292E;">142,800</div>
+            <div style="font-size:11px;color:#58C65D;">▲ 3.2% MoM</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">노출인구 추정 (일)</div>
+            <div style="font-size:24px;font-weight:700;color:#24292E;">38,400</div>
+            <div style="font-size:11px;color:#9EA5AD;">유동 대비 26.9%</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">주목인구 (PARTIAL)</div>
+            <div style="font-size:24px;font-weight:700;color:#24292E;">~9,200</div>
+            <div style="font-size:11px;color:#A67000;">추정값 — 고신뢰도 미확보</div>
+          </div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">지역 내 랭킹</div>
+            <div style="font-size:24px;font-weight:700;color:#24292E;">#3</div>
+            <div style="font-size:11px;color:#9EA5AD;">강남구 21개 매체 중</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title">Audience 특성 분석</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:10px;">성별 비율</div>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+              <div style="width:100px;font-size:12px;">남성</div>
+              <div style="flex:1;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;"><div style="width:54%;height:100%;background:#2D84ED;border-radius:4px;"></div></div>
+              <div style="width:36px;font-size:12px;text-align:right;">54%</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <div style="width:100px;font-size:12px;">여성</div>
+              <div style="flex:1;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;"><div style="width:46%;height:100%;background:#E97474;border-radius:4px;"></div></div>
+              <div style="width:36px;font-size:12px;text-align:right;">46%</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:#596066;margin-bottom:10px;">연령 분포</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;gap:10px;align-items:center;"><div style="width:80px;font-size:12px;">20대</div><div style="flex:1;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;"><div style="width:28%;height:100%;background:#58C65D;border-radius:4px;"></div></div><div style="width:32px;font-size:12px;text-align:right;">28%</div></div>
+              <div style="display:flex;gap:10px;align-items:center;"><div style="width:80px;font-size:12px;">30대</div><div style="flex:1;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;"><div style="width:34%;height:100%;background:#58C65D;border-radius:4px;"></div></div><div style="width:32px;font-size:12px;text-align:right;">34%</div></div>
+              <div style="display:flex;gap:10px;align-items:center;"><div style="width:80px;font-size:12px;">40대</div><div style="flex:1;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;"><div style="width:22%;height:100%;background:#F3BE4A;border-radius:4px;"></div></div><div style="width:32px;font-size:12px;text-align:right;">22%</div></div>
+              <div style="display:flex;gap:10px;align-items:center;"><div style="width:80px;font-size:12px;">50대+</div><div style="flex:1;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;"><div style="width:16%;height:100%;background:#9EA5AD;border-radius:4px;"></div></div><div style="width:32px;font-size:12px;text-align:right;">16%</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:10px 14px;background:#F6F7F9;border-radius:6px;font-size:12px;color:#596066;">
+          Peak 시간대: <strong>07:30~09:00</strong> (출근) · <strong>18:00~20:00</strong> (퇴근) · 주말: 13:00~17:00 (쇼핑객 비율 증가)
+        </div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:8px;">Source: DMS v1.9 · 데이터 미가용 항목은 N/A 처리 (0점 아님)</div>
+      </div>
+    </div>
+
+    <!-- ── Advertising Effect (MEDIA-DETAIL-EFFECT) ── -->
+    <div class="tab-panel" id="panel-effect">
+      <div class="detail-card">
+        <div class="detail-card-title">Advertising Effect — 집행 완료 Schedule 기준 <span style="font-size:11px;color:#9EA5AD;font-weight:400;">집행 후 Actual Effect. Campaign 사전 Effect Reference(Historical/Predicted)와 구분</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px;">
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">누적 노출인구 (8월)</div><div style="font-size:20px;font-weight:700;color:#24292E;">1,152,000</div></div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">누적 주목인구</div><div style="font-size:20px;font-weight:700;color:#24292E;">276,000</div></div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">집행 Campaign 수</div><div style="font-size:20px;font-weight:700;color:#24292E;">3</div></div>
+          <div style="background:#F6F7F9;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:11px;color:#9EA5AD;margin-bottom:4px;">달성률 (계획 대비)</div><div style="font-size:20px;font-weight:700;color:#58C65D;">98.4%</div></div>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title">Campaign별 Actual Advertising Effect</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#F6F7F9;">
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">Campaign</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">Schedule</th>
+              <th style="padding:10px 12px;text-align:right;font-weight:600;border-bottom:1px solid #E5E7EA;">노출인구</th>
+              <th style="padding:10px 12px;text-align:right;font-weight:600;border-bottom:1px solid #E5E7EA;">주목인구</th>
+              <th style="padding:10px 12px;text-align:right;font-weight:600;border-bottom:1px solid #E5E7EA;">달성률</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #E5E7EA;">집행 기간</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;font-weight:600;">삼성전자 Galaxy</td><td style="padding:10px 12px;color:#9EA5AD;">SCH-2025-0041</td><td style="padding:10px 12px;text-align:right;">624,000</td><td style="padding:10px 12px;text-align:right;">149,760</td><td style="padding:10px 12px;text-align:right;color:#2E9E34;font-weight:600;">102.1%</td><td style="padding:10px 12px;">2026.07.01~07.31</td></tr>
+              <tr style="border-bottom:1px solid #F0F1F3;"><td style="padding:10px 12px;font-weight:600;">현대카드 ZERO</td><td style="padding:10px 12px;color:#9EA5AD;">SCH-2025-0038</td><td style="padding:10px 12px;text-align:right;">396,000</td><td style="padding:10px 12px;text-align:right;">95,040</td><td style="padding:10px 12px;text-align:right;color:#2E9E34;font-weight:600;">99.0%</td><td style="padding:10px 12px;">2026.06.01~06.30</td></tr>
+              <tr><td style="padding:10px 12px;font-weight:600;">LG전자 올레드</td><td style="padding:10px 12px;color:#9EA5AD;">SCH-2026-0003</td><td style="padding:10px 12px;text-align:right;">132,000</td><td style="padding:10px 12px;text-align:right;">31,680</td><td style="padding:10px 12px;text-align:right;color:#A67000;font-weight:600;">88.0%</td><td style="padding:10px 12px;">2026.08.01~08.21</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:#9EA5AD;margin-top:10px;">Actual Source: DMS · Metric Version: v1.9 · Privacy/Access Scope 적용됨 · 미가용 KPI는 N/A 표시</div>
+      </div>
+    </div>
+
     <div class="tab-panel" id="panel-revision">
 
       <div class="detail-card" style="margin-bottom:12px;">
