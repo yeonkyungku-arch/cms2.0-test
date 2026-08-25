@@ -181,6 +181,11 @@
     .field-value { font-size: 14px; color: #24292E; }
     .field-value.large { font-size: 18px; font-weight: 700; }
     .field-value.mono { font-family: monospace; }
+    .card-subhead {
+      font-size: 11px; font-weight: 700; color: #596066; text-transform: uppercase;
+      letter-spacing: .03em; margin: 20px 0 12px; padding-top: 18px; border-top: 1px solid #F0F1F3;
+    }
+    .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
     /* ── Tags ── */
     .tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -233,6 +238,13 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 8px; color: #9EA5AD; font-size: 13px;
+    }
+    .detail-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    .detail-side { position: sticky; top: 20px; }
+    .detail-side .map-placeholder { height: 220px; text-align: center; padding: 0 12px; }
+    @media (max-width: 960px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .detail-side { position: static; }
     }
 
     /* ── Operating day chips ── */
@@ -399,14 +411,18 @@
     </div>
     <!-- Lifecycle/PDE 판단 결과 헤더 제거됨 — P1-1 기본정보 · P1-3 정책 적용 현황 탭에서 확인 -->
 
+    <div class="detail-layout">
+    <div class="detail-main">
+
     <!-- Tab Groups (P1~P6, per Miro 프로덕트 상세 메뉴트리) -->
     <div class="tab-groups" id="tabGroups">
       <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')">P1. 프로덕트 정보</button>
       <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')">P2. 상품 구성</button>
       <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')">P3. 상품 옵션</button>
       <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')">P4. 운영 현황</button>
-      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')">P5. 변경 이력</button>
-      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')">P6. 감사</button>
+      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')">P5. 미디어 효과</button>
+      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')">P6. 변경 이력</button>
+      <button class="tab-group-btn" data-group="g7" onclick="switchGroup('g7')">P7. 감사</button>
     </div>
 
     <!-- ====== TAB 1: 기본정보 ====== -->
@@ -454,10 +470,8 @@
             <div class="field-value"><span class="rev-current">R3</span></div>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">생애주기 상태 (Lifecycle State)</div>
+        <div class="card-subhead">생애주기 상태 (Lifecycle State)</div>
         <div class="field-grid">
           <div class="field-item">
             <div class="field-label">현재 상태</div>
@@ -472,7 +486,7 @@
             </div>
           </div>
         </div>
-        <div style="margin-top:14px;font-size:12px;color:#9EA5AD;">
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
           ※ 생애주기 상태는 직접 변경이 아닌 허용된 전환 액션으로만 변경됩니다.
         </div>
       </div>
@@ -518,7 +532,8 @@
       </div>
 
       <div class="card">
-        <div class="card-title">판단 컨텍스트 상태 (Decision Context)</div>
+        <div class="card-title">판단 컨텍스트 &amp; PDE 판단 결과</div>
+        <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">Decision Context</div>
         <div class="field-grid three">
           <div class="field-item">
             <div class="field-label">Decision Context Status</div>
@@ -533,10 +548,8 @@
             <div class="field-value">v2.1.3</div>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">최근 PDE 판단 결과</div>
+        <div class="card-subhead">최근 PDE 판단 결과</div>
         <div class="field-grid three">
           <div class="field-item">
             <div class="field-label">PDE Decision</div>
@@ -596,22 +609,13 @@
           </table>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-title">위치도 (Product Map)</div>
-        <div class="map-placeholder">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#CED2D6" stroke-width="2"/><path d="M20 10a6 6 0 016 6c0 4-6 14-6 14S14 20 14 16a6 6 0 016-6z" stroke="#9EA5AD" stroke-width="1.5" fill="none"/><circle cx="20" cy="16" r="2" fill="#9EA5AD"/></svg>
-          <span>지도 자동 표시 영역 — 구성 미디어 3개 위치 플롯</span>
-          <span style="font-size:11px;color:#CED2D6;">강남역 1번출구 A (MED-001) · 역삼역 2번출구 B (MED-012) · 선릉역 1번출구 C (MED-018)</span>
-        </div>
-      </div>
     </div>
 
     <!-- ====== TAB 3: 운영정보 ====== -->
     <div class="tab-panel" data-group="g2" id="tab-operation">
       <div class="section-sublabel">P2-2. 운영정보</div>
       <div class="card">
-        <div class="card-title">기본 운영조건</div>
+        <div class="card-title">운영 조건</div>
         <div class="field-grid three">
           <div class="field-item">
             <div class="field-label">운영 요일</div>
@@ -635,12 +639,6 @@
             <div class="field-label">운영 종료시간</div>
             <div class="field-value">24:00</div>
           </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">휴무 정책</div>
-        <div class="field-grid">
           <div class="field-item">
             <div class="field-label">정기 휴무</div>
             <div class="field-value">없음</div>
@@ -649,15 +647,9 @@
             <div class="field-label">공휴일 운영 여부</div>
             <div class="field-value">정상운영</div>
           </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">콘텐츠 상한</div>
-        <div class="field-grid">
           <div class="field-item">
             <div class="field-label">최대 콘텐츠 재생시간</div>
-            <div class="field-value large num">30<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">초</span></div>
+            <div class="field-value">30초</div>
           </div>
         </div>
       </div>
@@ -679,10 +671,8 @@
           <div class="field-label">총 슬롯 수 (Total Slot Count)</div>
           <div class="field-value large num">6<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">슬롯</span></div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">Reference Loop — 자동 계산 (Read-only)</div>
+        <div class="card-subhead">Reference Loop — 자동 계산 (Read-only)</div>
         <div class="kpi-row">
           <div class="kpi-card">
             <div class="kpi-label">기준 슬롯 시간 (RSD)</div>
@@ -706,9 +696,9 @@
       </div>
     </div>
 
-    <!-- ====== TAB 5: 가격정보 ====== -->
+    <!-- ====== TAB 5+6: 가격정보 / 상품옵션 (P3) ====== -->
     <div class="tab-panel" data-group="g3" id="tab-price">
-      <div class="section-sublabel">가격정보</div>
+      <div class="section-sublabel">P3. 상품 옵션</div>
       <div class="card">
         <div class="card-title">기준가격 (List Price)</div>
         <div class="field-grid three">
@@ -729,17 +719,11 @@
             <div class="field-value">1개월</div>
           </div>
         </div>
-        <div style="margin-top:14px;font-size:12px;color:#9EA5AD;">
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
           ※ 기준가격은 영업·견적의 참고가입니다. 실제 계약가격은 캠페인/영업 영역에서 별도 관리합니다.
         </div>
-      </div>
-    </div>
 
-    <!-- ====== TAB 6: 상품옵션 ====== -->
-    <div class="tab-panel" data-group="g3" id="tab-options">
-      <div class="section-sublabel">P3-1. 상품옵션 목록</div>
-      <div class="card">
-        <div class="card-title">상품 옵션 목록</div>
+        <div class="card-subhead">P3-1. 상품 옵션 목록</div>
         <div class="inner-table-wrap">
           <table class="inner-table">
             <thead>
@@ -806,10 +790,8 @@
             <div class="field-value">100 MB</div>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">추가 제작 가이드</div>
+        <div class="card-subhead">추가 제작 가이드</div>
         <div class="field-grid one">
           <div class="field-item">
             <div class="field-label">제작 유의사항</div>
@@ -980,9 +962,123 @@
       </div>
     </div>
 
+    <!-- ====== TAB: 미디어 효과 (P5) ====== -->
+    <div class="tab-panel" data-group="g5" id="tab-effect">
+      <div class="section-sublabel">P5. 미디어 효과</div>
+      <div class="card">
+        <div class="card-title">누적 Advertising Effect (구성 미디어 전체 합산)</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">사전 추천용 Effect Reference KPI(Historical/Predicted)와 실제 집행 성과(Actual)는 별도로 관리됩니다. 이 섹션은 집행 후 실적만 표시합니다.</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Data As-of</div>
+            <div class="field-value mono" style="font-size:12px;">2026-08-20 06:00</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Effect Metric Version</div>
+            <div class="field-value mono" style="font-size:12px;">EFFECT-METRIC-v1.3</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Data Availability</div>
+            <div class="field-value" style="color:#2E9E34;">AVAILABLE</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">Core KPI (Actual)</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Foot Traffic (누적 유동인구)</div>
+            <div class="field-value large num">2,940,000</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Exposed Audience (노출인구)</div>
+            <div class="field-value large num">986,400</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Attention Audience (주목인구)</div>
+            <div class="field-value large num">214,800 <span style="font-size:11px;font-weight:400;color:#9EA5AD;">(PARTIAL)</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Reach</div>
+            <div class="field-value" style="color:#9EA5AD;">N/A</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Frequency</div>
+            <div class="field-value" style="color:#9EA5AD;">N/A</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">Reach/Frequency는 구성 미디어의 Measurement Profile·Data Availability가 모두 갖춰진 경우에만 제공됩니다. 현재 N/A.</div>
+
+        <div class="card-subhead">Derived KPI — Effect Reference 대비 실적</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>KPI</th>
+                <th>Effect Reference (Predicted)</th>
+                <th>Actual</th>
+                <th class="center">달성률</th>
+                <th>Ranking</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Foot Traffic</td>
+                <td>2,760,000</td>
+                <td>2,940,000</td>
+                <td class="center" style="color:#2E9E34;font-weight:700;">106.5%</td>
+                <td>#2 강남구</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Exposed Audience</td>
+                <td>1,020,000</td>
+                <td>986,400</td>
+                <td class="center" style="color:#E97474;font-weight:700;">96.7%</td>
+                <td>#3 강남구</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-subhead">구성 미디어별 Breakdown</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>미디어</th>
+                <th>집행 Campaign 수</th>
+                <th>Foot Traffic</th>
+                <th class="center">달성률</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>강남역 1번출구 A <span style="font-size:11px;color:#9EA5AD;">MED-001</span></td>
+                <td>3개</td>
+                <td>1,152,000</td>
+                <td class="center" style="color:#2E9E34;">108.1%</td>
+              </tr>
+              <tr>
+                <td>역삼역 2번출구 B <span style="font-size:11px;color:#9EA5AD;">MED-012</span></td>
+                <td>2개</td>
+                <td>980,000</td>
+                <td class="center" style="color:#2E9E34;">105.0%</td>
+              </tr>
+              <tr>
+                <td>선릉역 1번출구 C <span style="font-size:11px;color:#9EA5AD;">MED-018</span></td>
+                <td>2개</td>
+                <td>808,000</td>
+                <td class="center" style="color:#B45309;">98.2%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">동일 Campaign이라도 Schedule Revision·기간·effectMetricVersion이 다르면 별도 결과로 조회됩니다.</div>
+      </div>
+    </div>
+
     <!-- ====== TAB 8: Revision ====== -->
-    <div class="tab-panel" data-group="g5" id="tab-revision">
-      <div class="section-sublabel">P5-1. Revision</div>
+    <div class="tab-panel" data-group="g6" id="tab-revision">
+      <div class="section-sublabel">P6-1. Revision</div>
       <div class="card">
         <div class="card-title">Revision 이력</div>
         <div class="inner-table-wrap">
@@ -1032,8 +1128,8 @@
     </div>
 
     <!-- ====== TAB 9: Audit ====== -->
-    <div class="tab-panel" data-group="g6" id="tab-audit">
-      <div class="section-sublabel">P6-1. 변경사항</div>
+    <div class="tab-panel" data-group="g7" id="tab-audit">
+      <div class="section-sublabel">P7-1. 변경사항</div>
       <div class="card">
         <div class="card-title">감사 정보 (Audit Log)</div>
         <div class="audit-row">
@@ -1104,6 +1200,35 @@
         </div>
       </div>
     </div>
+
+    </div><!-- /detail-main -->
+
+    <!-- 미디어 지도 — 모든 탭에서 항상 표시되는 고정 패널 -->
+    <div class="detail-side">
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-title">위치도 (Product Map)</div>
+        <div class="map-placeholder">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#CED2D6" stroke-width="2"/><path d="M20 10a6 6 0 016 6c0 4-6 14-6 14S14 20 14 16a6 6 0 016-6z" stroke="#9EA5AD" stroke-width="1.5" fill="none"/><circle cx="20" cy="16" r="2" fill="#9EA5AD"/></svg>
+          <span>지도 자동 표시 영역 — 구성 미디어 3개 위치 플롯</span>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#596066;">
+            <span class="media-status-dot" style="width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block;"></span>
+            강남역 1번출구 A <span style="color:#9EA5AD;">MED-001</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#596066;">
+            <span class="media-status-dot" style="width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block;"></span>
+            역삼역 2번출구 B <span style="color:#9EA5AD;">MED-012</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#596066;">
+            <span class="media-status-dot" style="width:8px;height:8px;border-radius:50%;background:#F3BE4A;display:inline-block;"></span>
+            선릉역 1번출구 C <span style="color:#9EA5AD;">MED-018</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /detail-layout -->
 
   </div><!-- /content-inner -->
 </main>
