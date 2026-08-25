@@ -114,7 +114,6 @@
     .btn-danger:hover { background:#FEF2F2; }
 
     /* ── Tabs ── */
-    .tabs { display: flex; gap: 0; border-bottom: 1px solid #E5E7EA; margin-bottom: 20px; overflow-x: auto; }
     .tab-groups { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
     .tab-group-btn {
       padding: 7px 14px; font-size: 12.5px; font-weight: 600; color: #596066;
@@ -123,17 +122,41 @@
     }
     .tab-group-btn:hover { background: #E5E7EA; }
     .tab-group-btn.active { background: #24292E; color: #fff; }
-    .tab-btn {
-      padding: 10px 16px;
-      font-size: 13px; font-weight: 500; color: #596066;
-      background: none; border: none; border-bottom: 2px solid transparent;
-      cursor: pointer; white-space: nowrap;
-      margin-bottom: -1px;
+
+    /* ── Slot calendar (P4 운영 현황) ── */
+    .slot-cal { border: 1px solid #E5E7EA; border-radius: 10px; padding: 14px 16px; background: #fff; }
+    .slot-cal-head { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 10px; }
+    .slot-cal-title { font-size: 14px; font-weight: 700; color: #24292E; min-width: 90px; text-align: center; }
+    .slot-cal-nav {
+      width: 26px; height: 26px; border-radius: 6px; border: 1px solid #E5E7EA; background: #fff;
+      color: #596066; font-size: 15px; cursor: pointer; line-height: 1;
     }
-    .tab-btn:hover { color: #24292E; }
-    .tab-btn.active { color: #2D84ED; border-bottom-color: #2D84ED; font-weight: 600; }
+    .slot-cal-nav:hover { background: #F6F7F9; }
+    .slot-cal-legend { display: flex; gap: 16px; justify-content: center; margin-bottom: 12px; font-size: 11px; color: #596066; }
+    .slot-cal-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+    .dot-ok { background: #58C65D; }
+    .dot-tight { background: #F3BE4A; }
+    .dot-off { background: #CED2D6; }
+    .slot-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .slot-cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: #9EA5AD; padding-bottom: 6px; }
+    .slot-cal-cell {
+      border: 1px solid #E5E7EA; border-radius: 6px; padding: 6px 4px; min-height: 52px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .slot-cal-cell.empty { border: none; background: transparent; }
+    .slot-cal-cell.off { background: #F6F7F9; }
+    .slot-cal-cell.today { border-color: #2D84ED; box-shadow: 0 0 0 1px #2D84ED inset; }
+    .slot-cal-cell .d { font-size: 12px; font-weight: 600; color: #24292E; }
+    .slot-cal-cell .occ { font-size: 11px; font-weight: 600; color: #9EA5AD; }
+    .slot-cal-cell .occ.ok { color: #2E9E34; }
+    .slot-cal-cell .occ.tight { color: #B45309; }
+    .slot-cal-cell .occ.off { color: #9EA5AD; }
     .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .tab-panel.group-active { display: block; }
+    .section-sublabel {
+      font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: 0.4px; margin: 24px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #E5E7EA;
+    }
 
     /* ── Section card ── */
     .card {
@@ -386,24 +409,9 @@
       <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')">P6. 감사</button>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" data-group="g1" onclick="switchTab('basic')">P1-1. 기본정보</button>
-      <button class="tab-btn" data-group="g1" onclick="switchTab('policy')">P1-3. 정책 적용 현황</button>
-      <button class="tab-btn" data-group="g2" onclick="switchTab('media')">P2-1. 구성 미디어</button>
-      <button class="tab-btn" data-group="g2" onclick="switchTab('operation')">P2-2. 운영정보</button>
-      <button class="tab-btn" data-group="g2" onclick="switchTab('slot')">슬롯 구조</button>
-      <button class="tab-btn" data-group="g2" onclick="switchTab('guide')">P2-3. 매체제작가이드</button>
-      <button class="tab-btn" data-group="g2" onclick="switchTab('package')">P2-4. 소속 패키지</button>
-      <button class="tab-btn" data-group="g3" onclick="switchTab('price')">가격정보</button>
-      <button class="tab-btn" data-group="g3" onclick="switchTab('options')">P3-1. 상품옵션 목록</button>
-      <button class="tab-btn" data-group="g4" onclick="switchTab('status')">P4. 운영 현황</button>
-      <button class="tab-btn" data-group="g5" onclick="switchTab('revision')">P5-1. Revision</button>
-      <button class="tab-btn" data-group="g6" onclick="switchTab('audit')">P6-1. 변경사항</button>
-    </div>
-
     <!-- ====== TAB 1: 기본정보 ====== -->
-    <div class="tab-panel active" id="tab-basic">
+    <div class="tab-panel" data-group="g1" id="tab-basic">
+      <div class="section-sublabel">P1-1. 기본정보</div>
       <div class="card">
         <div class="card-title">식별 정보</div>
         <div class="field-grid">
@@ -471,7 +479,8 @@
     </div>
 
     <!-- ====== TAB: 정책 적용 현황 (P1-3) ====== -->
-    <div class="tab-panel" id="tab-policy">
+    <div class="tab-panel" data-group="g1" id="tab-policy">
+      <div class="section-sublabel">P1-3. 정책 적용 현황</div>
       <div class="card">
         <div class="card-title">적용 정책</div>
         <div class="inner-table-wrap">
@@ -546,7 +555,8 @@
     </div>
 
     <!-- ====== TAB 2: 구성 미디어 ====== -->
-    <div class="tab-panel" id="tab-media">
+    <div class="tab-panel" data-group="g2" id="tab-media">
+      <div class="section-sublabel">P2-1. 구성 미디어</div>
       <div class="card">
         <div class="card-title">구성 미디어 목록</div>
         <div class="inner-table-wrap">
@@ -598,7 +608,8 @@
     </div>
 
     <!-- ====== TAB 3: 운영정보 ====== -->
-    <div class="tab-panel" id="tab-operation">
+    <div class="tab-panel" data-group="g2" id="tab-operation">
+      <div class="section-sublabel">P2-2. 운영정보</div>
       <div class="card">
         <div class="card-title">기본 운영조건</div>
         <div class="field-grid three">
@@ -653,7 +664,8 @@
     </div>
 
     <!-- ====== TAB 4: 슬롯 구조 ====== -->
-    <div class="tab-panel" id="tab-slot">
+    <div class="tab-panel" data-group="g2" id="tab-slot">
+      <div class="section-sublabel">슬롯 구조</div>
       <div class="card">
         <div class="card-title">슬롯 시간 구성</div>
         <div class="field-item" style="margin-bottom:16px;">
@@ -695,7 +707,8 @@
     </div>
 
     <!-- ====== TAB 5: 가격정보 ====== -->
-    <div class="tab-panel" id="tab-price">
+    <div class="tab-panel" data-group="g3" id="tab-price">
+      <div class="section-sublabel">가격정보</div>
       <div class="card">
         <div class="card-title">기준가격 (List Price)</div>
         <div class="field-grid three">
@@ -723,7 +736,8 @@
     </div>
 
     <!-- ====== TAB 6: 상품옵션 ====== -->
-    <div class="tab-panel" id="tab-options">
+    <div class="tab-panel" data-group="g3" id="tab-options">
+      <div class="section-sublabel">P3-1. 상품옵션 목록</div>
       <div class="card">
         <div class="card-title">상품 옵션 목록</div>
         <div class="inner-table-wrap">
@@ -766,7 +780,8 @@
     </div>
 
     <!-- ====== TAB 7: 매체제작가이드 ====== -->
-    <div class="tab-panel" id="tab-guide">
+    <div class="tab-panel" data-group="g2" id="tab-guide">
+      <div class="section-sublabel">P2-3. 매체제작가이드</div>
       <div class="card">
         <div class="card-title">자동 기술 사양 (Read-only)</div>
         <div class="field-grid three">
@@ -823,7 +838,8 @@
     </div>
 
     <!-- ====== TAB: 소속 패키지 (P2-4) ====== -->
-    <div class="tab-panel" id="tab-package">
+    <div class="tab-panel" data-group="g2" id="tab-package">
+      <div class="section-sublabel">P2-4. 소속 패키지</div>
       <div class="card">
         <div class="card-title">소속 패키지 목록</div>
         <div class="inner-table-wrap">
@@ -859,7 +875,8 @@
     </div>
 
     <!-- ====== TAB: 운영 현황 (P4) ====== -->
-    <div class="tab-panel" id="tab-status">
+    <div class="tab-panel" data-group="g4" id="tab-status">
+      <div class="section-sublabel">P4. 운영 현황</div>
       <div class="card">
         <div class="card-title">슬롯 현황 (달력)</div>
         <div class="kpi-row">
@@ -877,9 +894,58 @@
             <div class="kpi-formula">2026-08-15, 2026-08-17</div>
           </div>
         </div>
-        <div class="map-placeholder" style="margin-top:14px;">
-          <svg width="36" height="36" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#9EA5AD"/><path d="M3 8h14" stroke="#9EA5AD" stroke-width="1.5"/></svg>
-          <span>월간 슬롯 현황 달력 (자동 표시 영역)</span>
+        <div class="slot-cal" style="margin-top:14px;">
+          <div class="slot-cal-head">
+            <button class="slot-cal-nav" type="button" aria-label="이전 달">‹</button>
+            <div class="slot-cal-title">2026년 8월</div>
+            <button class="slot-cal-nav" type="button" aria-label="다음 달">›</button>
+          </div>
+          <div class="slot-cal-legend">
+            <span><i class="dot dot-ok"></i>여유</span>
+            <span><i class="dot dot-tight"></i>포화(잔여 20% 미만)</span>
+            <span><i class="dot dot-off"></i>휴무일</span>
+          </div>
+          <div class="slot-cal-grid">
+            <div class="slot-cal-dow">일</div><div class="slot-cal-dow">월</div><div class="slot-cal-dow">화</div><div class="slot-cal-dow">수</div><div class="slot-cal-dow">목</div><div class="slot-cal-dow">금</div><div class="slot-cal-dow">토</div>
+
+            <div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div>
+            <div class="slot-cal-cell"><div class="d">1</div><div class="occ ok">6/6</div></div>
+
+            <div class="slot-cal-cell"><div class="d">2</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">3</div><div class="occ ok">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">4</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">5</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">6</div><div class="occ tight">1/6</div></div>
+            <div class="slot-cal-cell"><div class="d">7</div><div class="occ ok">4/6</div></div>
+            <div class="slot-cal-cell"><div class="d">8</div><div class="occ ok">6/6</div></div>
+
+            <div class="slot-cal-cell"><div class="d">9</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">10</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">11</div><div class="occ ok">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">12</div><div class="occ tight">1/6</div></div>
+            <div class="slot-cal-cell"><div class="d">13</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">14</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell off"><div class="d">15</div><div class="occ off">휴무</div></div>
+
+            <div class="slot-cal-cell"><div class="d">16</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell off"><div class="d">17</div><div class="occ off">휴무</div></div>
+            <div class="slot-cal-cell"><div class="d">18</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">19</div><div class="occ ok">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">20</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">21</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">22</div><div class="occ tight">0/6</div></div>
+
+            <div class="slot-cal-cell today"><div class="d">23</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">24</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">25</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">26</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">27</div><div class="occ ok">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">28</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">29</div><div class="occ ok">6/6</div></div>
+
+            <div class="slot-cal-cell"><div class="d">30</div><div class="occ ok">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">31</div><div class="occ ok">6/6</div></div>
+          </div>
         </div>
       </div>
 
@@ -915,7 +981,8 @@
     </div>
 
     <!-- ====== TAB 8: Revision ====== -->
-    <div class="tab-panel" id="tab-revision">
+    <div class="tab-panel" data-group="g5" id="tab-revision">
+      <div class="section-sublabel">P5-1. Revision</div>
       <div class="card">
         <div class="card-title">Revision 이력</div>
         <div class="inner-table-wrap">
@@ -965,7 +1032,8 @@
     </div>
 
     <!-- ====== TAB 9: Audit ====== -->
-    <div class="tab-panel" id="tab-audit">
+    <div class="tab-panel" data-group="g6" id="tab-audit">
+      <div class="section-sublabel">P6-1. 변경사항</div>
       <div class="card">
         <div class="card-title">감사 정보 (Audit Log)</div>
         <div class="audit-row">
@@ -1043,34 +1111,10 @@
 <script>
 function switchGroup(group) {
   document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
-  var firstVisible = null;
-  document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    var show = btn.dataset.group === group;
-    btn.style.display = show ? '' : 'none';
-    if (show && !firstVisible) firstVisible = btn;
-  });
-  if (firstVisible) {
-    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-    firstVisible.classList.add('active');
-    document.getElementById('tab-' + firstVisible.getAttribute('onclick').match(/switchTab\('(\w+)'\)/)[1]).classList.add('active');
-  }
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('group-active', p.dataset.group === group); });
 }
 
-function switchTab(id) {
-  document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
-  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-  event.target.classList.add('active');
-  document.getElementById('tab-' + id).classList.add('active');
-  var group = event.target.dataset.group;
-  document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    if (btn.dataset.group !== 'g1') btn.style.display = 'none';
-  });
-});
+document.addEventListener('DOMContentLoaded', function() { switchGroup('g1'); });
 
 function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
