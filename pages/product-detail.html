@@ -30,6 +30,11 @@
     }
     .breadcrumb a { color: #9EA5AD; text-decoration: none; }
     .breadcrumb a:hover { color: #2D84ED; }
+    .prd-header { margin-bottom: 20px; }
+    .prd-header-status { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .prd-eff-rev { font-size: 12.5px; color: #596066; }
+    .prd-header-meta { display: flex; align-items: center; gap: 16px; margin-top: 6px; font-size: 12px; color: #9EA5AD; }
+    .prd-header-meta strong { color: #596066; font-weight: 600; }
 
     /* ── State section ── */
     .state-bar {
@@ -173,6 +178,54 @@
     .slot-cal-cell .occ.ok { color: #2E9E34; }
     .slot-cal-cell .occ.tight { color: #B45309; }
     .slot-cal-cell .occ.off { color: #9EA5AD; }
+
+    /* ── Availability Summary (P4) ── */
+    .avail-summary {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+      background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 10px;
+      padding: 16px 0; margin-bottom: 20px;
+    }
+    .avail-item { text-align: center; padding: 0 8px; border-left: 1px solid #E5E7EA; }
+    .avail-item:first-child { border-left: none; }
+    .avail-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .avail-value { font-size: 18px; font-weight: 700; color: #24292E; }
+    .avail-value.main { color: #2D84ED; }
+    .avail-value.small { font-size: 14px; }
+    @media (max-width: 720px) { .avail-summary { grid-template-columns: repeat(2, 1fr); } .avail-item { border-left: none; border-top: 1px solid #E5E7EA; padding-top: 10px; } .avail-item:nth-child(-n+2) { border-top: none; } }
+
+    /* ── Policy restrictions (P1-3) ── */
+    .policy-restrict-list { display: flex; flex-direction: column; gap: 10px; }
+    .policy-restrict-item {
+      display: flex; align-items: baseline; gap: 12px; padding: 10px 14px;
+      background: #FFF8E6; border: 1px solid #F3E1AE; border-radius: 8px; font-size: 13px;
+    }
+    .policy-restrict-label { font-weight: 700; color: #92610A; flex-shrink: 0; min-width: 110px; }
+    .policy-restrict-value { color: #596066; }
+    .policy-detail-toggle { margin-top: 18px; padding-top: 16px; border-top: 1px solid #F0F1F3; }
+    .policy-detail-toggle summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: #2D84ED; user-select: none; }
+    .policy-detail-toggle summary:hover { text-decoration: underline; }
+
+    /* ── Revision Snapshot modal ── */
+    .rev-snap-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(16,24,32,0.4);
+      z-index: 500; align-items: center; justify-content: center; padding: 24px;
+    }
+    .rev-snap-overlay.open { display: flex; }
+    .rev-snap-modal {
+      background: #fff; border-radius: 12px; width: 560px; max-width: 100%;
+      max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(16,24,32,0.18);
+    }
+    .rev-snap-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid #E5E7EA;
+    }
+    .rev-snap-title { font-size: 15px; font-weight: 700; color: #24292E; display: flex; align-items: center; gap: 8px; }
+    .rev-snap-sub { font-size: 12px; color: #9EA5AD; margin-top: 4px; }
+    .rev-snap-close { border: none; background: none; font-size: 16px; color: #9EA5AD; cursor: pointer; padding: 4px; }
+    .rev-snap-close:hover { color: #24292E; }
+    .rev-snap-body { padding: 20px 22px; overflow-y: auto; }
+    .rev-snap-body .field-grid { margin-bottom: 0; }
     .tab-panel { display: none; }
     .tab-panel.group-active { display: block; }
     .section-sublabel {
@@ -408,32 +461,33 @@
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <a href="product-list">프로덕트</a> &rsaquo; 강남 프리미엄 패키지
+      <a href="product-list">프로덕트</a> &rsaquo; <span id="prd-crumb">강남 프리미엄 옥외</span>
     </div>
 
     <!-- Page header -->
-    <div class="page-header">
+    <div class="page-header prd-header">
       <div class="page-header-left">
-        <div class="page-title" id="prd-title">강남 프리미엄 패키지</div>
+        <div class="page-title" id="prd-title">강남 프리미엄 옥외</div>
         <div class="page-meta">
           <span class="page-id" id="prd-id">PRD-001</span>
-          <span class="page-rev">R3</span>
           <span class="tag">강남</span>
           <span class="tag">프리미엄</span>
           <span class="tag">옥외</span>
         </div>
+        <div class="prd-header-status">
+          <span class="badge lc-active" id="prd-lc-badge-h"><span class="badge-dot"></span>활성</span>
+          <span class="prd-eff-rev">Effective Revision <span class="rev-current" id="prd-eff-rev-val">R3</span></span>
+        </div>
+        <div class="prd-header-meta">
+          <span>최종 변경 <strong id="prd-modified-h">2026.08.10</strong></span>
+          <span>담당 <strong id="prd-manager-h">홍길동</strong></span>
+        </div>
       </div>
-    </div>
-
-    <!-- Header actions -->
-    <div style="display:flex;align-items:center;margin-bottom:20px;">
-      <div style="flex:1;"></div>
       <div class="action-group" style="display:flex;align-items:center;gap:8px;">
         <button class="action-btn action-btn-pause btn-warn" onclick="if(confirm('중지하면 해당 Product를 참조하는 스케줄에 영향을 줄 수 있습니다.\n계속하시겠습니까?'))location.reload()">중지</button>
         <button class="action-btn action-btn-resume" onclick="location.href='product-edit'">새 Revision</button>
       </div>
     </div>
-    <!-- Lifecycle/PDE 판단 결과 헤더 제거됨 — P1-1 기본정보 · P1-3 정책 적용 현황 탭에서 확인 -->
 
     <div class="detail-layout">
     <div class="detail-main">
@@ -441,7 +495,7 @@
     <!-- Tab Groups (P1~P6, per Miro 프로덕트 상세 메뉴트리) -->
     <div class="tab-groups" id="tabGroups">
       <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">1</span>프로덕트 정보</button>
-      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">2</span>상품 구성</button>
+      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">2</span>운영 구성</button>
       <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">3</span>상품 옵션</button>
       <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')"><span class="grp-num">4</span>운영 현황</button>
       <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')"><span class="grp-num">5</span>미디어 효과</button>
@@ -457,7 +511,7 @@
         <div class="field-grid">
           <div class="field-item">
             <div class="field-label">프로덕트명</div>
-            <div class="field-value">강남 프리미엄 패키지</div>
+            <div class="field-value">강남 프리미엄 옥외</div>
           </div>
           <div class="field-item">
             <div class="field-label">프로덕트 ID</div>
@@ -518,76 +572,93 @@
 
     <!-- ====== TAB: 정책 적용 현황 (P1-3) ====== -->
     <div class="tab-panel" data-group="g1" id="tab-policy">
-      <div class="section-sublabel">P1-3. 정책 적용 현황</div>
+      <div class="section-sublabel">P1-3. 정책 적용 정보</div>
       <div class="card">
-        <div class="card-title">적용 정책</div>
-        <div class="inner-table-wrap">
-          <table class="inner-table">
-            <thead>
-              <tr>
-                <th>Policy ID</th>
-                <th>정책명</th>
-                <th>범위</th>
-                <th class="center">상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="mono" style="font-size:11px;color:#9EA5AD;">KR-LAW-OOH-2024</td>
-                <td>옥외광고물 관리법 준수 정책</td>
-                <td>Platform Mandatory</td>
-                <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
-              </tr>
-              <tr>
-                <td class="mono" style="font-size:11px;color:#9EA5AD;">KR-11-REGION-2025</td>
-                <td>강남구 지역 광고 심의 정책</td>
-                <td>Platform Country</td>
-                <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
-              </tr>
-              <tr>
-                <td class="mono" style="font-size:11px;color:#9EA5AD;">MC-CONTENT-POLICY-v3</td>
-                <td>사내 콘텐츠 심의 기준</td>
-                <td>Media Company Local</td>
-                <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">판단 컨텍스트 &amp; PDE 판단 결과</div>
-        <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">Decision Context</div>
+        <div class="card-title">정책 적용 정보</div>
         <div class="field-grid three">
           <div class="field-item">
-            <div class="field-label">Decision Context Status</div>
-            <div class="field-value"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></div>
+            <div class="field-label">현재 판단</div>
+            <div class="field-value"><span class="badge pde-approved">정상</span></div>
           </div>
           <div class="field-item">
-            <div class="field-label">Policy Snapshot ID</div>
-            <div class="field-value mono" style="font-size:12px;">POL-SNAP-PRD001-20260810</div>
+            <div class="field-label">적용 정책</div>
+            <div class="field-value">3개</div>
           </div>
           <div class="field-item">
-            <div class="field-label">Policy Version</div>
-            <div class="field-value">v2.1.3</div>
-          </div>
-        </div>
-
-        <div class="card-subhead">최근 PDE 판단 결과</div>
-        <div class="field-grid three">
-          <div class="field-item">
-            <div class="field-label">PDE Decision</div>
-            <div class="field-value"><span class="badge pde-approved">승인</span></div>
-          </div>
-          <div class="field-item">
-            <div class="field-label">판단 일시</div>
+            <div class="field-label">최근 판단 일시</div>
             <div class="field-value mono" style="font-size:12px;">2026-08-10 09:22</div>
           </div>
-          <div class="field-item">
-            <div class="field-label">Fail-safe</div>
-            <div class="field-value" style="font-size:12px;color:#9EA5AD;">API 오류 시 기존 Effective Policy 유지 (Fail Closed)</div>
+        </div>
+
+        <div class="card-subhead">주요 운영 제한</div>
+        <div class="policy-restrict-list">
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">야간 광도 제한</span>
+            <span class="policy-restrict-value">23:00 이후 500 cd/m² 이하로 자동 감소</span>
+          </div>
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">음성 콘텐츠</span>
+            <span class="policy-restrict-value">송출 불가</span>
+          </div>
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">콘텐츠 심의</span>
+            <span class="policy-restrict-value">사내 심의 기준 적용 (MC-CONTENT-POLICY-v3)</span>
           </div>
         </div>
+
+        <details class="policy-detail-toggle">
+          <summary>정책 상세 보기</summary>
+          <div class="inner-table-wrap" style="margin-top:12px;">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <th>Policy ID</th>
+                  <th>정책명</th>
+                  <th>범위</th>
+                  <th class="center">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono" style="font-size:11px;color:#9EA5AD;">KR-LAW-OOH-2024</td>
+                  <td>옥외광고물 관리법 준수 정책</td>
+                  <td>Platform Mandatory</td>
+                  <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="font-size:11px;color:#9EA5AD;">KR-11-REGION-2025</td>
+                  <td>강남구 지역 광고 심의 정책</td>
+                  <td>Platform Country</td>
+                  <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="font-size:11px;color:#9EA5AD;">MC-CONTENT-POLICY-v3</td>
+                  <td>사내 콘텐츠 심의 기준</td>
+                  <td>Media Company Local</td>
+                  <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="field-grid three" style="margin-top:16px;">
+            <div class="field-item">
+              <div class="field-label">Decision Context Status</div>
+              <div class="field-value"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Policy Snapshot ID</div>
+              <div class="field-value mono" style="font-size:12px;">POL-SNAP-PRD001-20260810</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Policy Version</div>
+              <div class="field-value">v2.1.3</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Fail-safe</div>
+              <div class="field-value" style="font-size:12px;color:#9EA5AD;">API 오류 시 기존 Effective Policy 유지 (Fail Closed)</div>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -884,11 +955,36 @@
     <div class="tab-panel" data-group="g4" id="tab-status">
       <div class="section-sublabel">P4. 운영 현황</div>
       <div class="card">
-        <div class="card-title">P4-1. 슬롯 현황 (달력)</div>
+        <div class="card-title">8월 운영 가능 현황</div>
+        <div class="avail-summary">
+          <div class="avail-item">
+            <div class="avail-label">가용률</div>
+            <div class="avail-value main">22.6%</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">잔여 슬롯</div>
+            <div class="avail-value">42</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">포화 예정일</div>
+            <div class="avail-value small">8/22</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">운영 불가일</div>
+            <div class="avail-value small">8/15, 8/17</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">진행 스케줄</div>
+            <div class="avail-value">2<span style="font-size:12px;font-weight:400;color:#9EA5AD;">건</span></div>
+          </div>
+        </div>
+
+        <div class="card-subhead">P4-1. 슬롯 현황 (달력)</div>
         <div class="kpi-row">
           <div class="kpi-card">
             <div class="kpi-label">전체 슬롯 (이번 달)</div>
             <div class="kpi-value">186<span class="kpi-unit">슬롯</span></div>
+            <div class="kpi-formula">= 일 슬롯 6 × 31일</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">잔여 슬롯</div>
@@ -900,6 +996,7 @@
             <div class="kpi-formula">2026-08-15, 2026-08-17</div>
           </div>
         </div>
+        <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">일일 총 슬롯 수(슬롯 구조 P2-2에서 정의된 6슬롯)를 기준으로 월간 총량이 산출됩니다. 휴무일은 전체 슬롯 계산에서 제외되지 않고 해당일 가용 슬롯이 0으로 처리됩니다.</div>
         <div class="slot-cal" style="margin-top:14px;">
           <div class="slot-cal-head">
             <button class="slot-cal-nav" type="button" aria-label="이전 달">‹</button>
@@ -962,9 +1059,11 @@
           <table class="inner-table">
             <thead>
               <tr>
-                <th>Schedule ID</th>
+                <th>Schedule</th>
                 <th>Campaign</th>
-                <th>기간</th>
+                <th>운영 기간</th>
+                <th class="center">점유 슬롯</th>
+                <th class="center">슬롯당 재생시간</th>
                 <th class="center">상태</th>
               </tr>
             </thead>
@@ -973,12 +1072,16 @@
                 <td class="mono" style="font-size:11px;color:#9EA5AD;">SCH-2026-0012</td>
                 <td>삼성전자 갤럭시 S25 런칭</td>
                 <td style="font-size:12px;">2026.01.20 ~ 02.10</td>
+                <td class="center num">4 / 6</td>
+                <td class="center num">30초</td>
                 <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></td>
               </tr>
               <tr>
                 <td class="mono" style="font-size:11px;color:#9EA5AD;">SCH-2026-0031</td>
                 <td>LG 생활건강 봄 시즌 프로모션</td>
                 <td style="font-size:12px;">2026.03.01 ~ 03.31</td>
+                <td class="center num">2 / 6</td>
+                <td class="center num">15초</td>
                 <td class="center"><span class="badge lc-approved"><span class="badge-dot"></span>승인</span></td>
               </tr>
             </tbody>
@@ -1106,6 +1209,7 @@
       <div class="section-sublabel">P6-1. Revision</div>
       <div class="card">
         <div class="card-title">Revision 이력</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">Revision = 특정 시점에 유효했던 프로덕트 정의 버전의 스냅샷. "누가 무엇을 바꿨는지"는 <a href="javascript:void(0)" onclick="switchGroup('g7')" style="color:#2D84ED;">감사(Audit)</a>에서 확인하세요.</div>
         <div class="inner-table-wrap">
           <table class="inner-table">
             <thead>
@@ -1116,6 +1220,7 @@
                 <th>효력 시작일</th>
                 <th>효력 종료일</th>
                 <th>생성자</th>
+                <th class="center"></th>
               </tr>
             </thead>
             <tbody>
@@ -1126,6 +1231,7 @@
                 <td class="num">2026-08-10</td>
                 <td class="num" style="color:#9EA5AD;">—</td>
                 <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R3')">상세보기</button></td>
               </tr>
               <tr>
                 <td><span class="rev-past">R2</span></td>
@@ -1134,6 +1240,7 @@
                 <td class="num">2025-01-15</td>
                 <td class="num">2026-08-09</td>
                 <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R2')">상세보기</button></td>
               </tr>
               <tr>
                 <td><span class="rev-past">R1</span></td>
@@ -1142,6 +1249,7 @@
                 <td class="num">2024-06-01</td>
                 <td class="num">2025-01-14</td>
                 <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R1')">상세보기</button></td>
               </tr>
             </tbody>
           </table>
@@ -1152,11 +1260,26 @@
       </div>
     </div>
 
+    <!-- Revision Snapshot Modal (read-only, per-Revision) -->
+    <div class="rev-snap-overlay" id="revSnapOverlay" onclick="if(event.target===this)closeRevisionSnapshot()">
+      <div class="rev-snap-modal">
+        <div class="rev-snap-head">
+          <div>
+            <div class="rev-snap-title">Revision Snapshot <span class="rev-current" id="revSnapId">R3</span></div>
+            <div class="rev-snap-sub">조회 전용(Read-only) — 해당 Revision 당시 프로덕트 정의</div>
+          </div>
+          <button class="rev-snap-close" onclick="closeRevisionSnapshot()">✕</button>
+        </div>
+        <div class="rev-snap-body" id="revSnapBody"></div>
+      </div>
+    </div>
+
     <!-- ====== TAB 9: Audit ====== -->
     <div class="tab-panel" data-group="g7" id="tab-audit">
       <div class="section-sublabel">P7-1. 변경사항</div>
       <div class="card">
         <div class="card-title">감사 정보 (Audit Log)</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">Audit = 누가 무엇을 언제 바꿨는지에 대한 변경 기록. 특정 시점의 프로덕트 정의 버전 자체를 보려면 <a href="javascript:void(0)" onclick="switchGroup('g6')" style="color:#2D84ED;">변경 이력(Revision)</a>의 상세보기를 확인하세요.</div>
         <div class="audit-row">
           <div class="audit-item">
             <div class="field-label">최초 생성일</div>
@@ -1266,6 +1389,46 @@ function switchGroup(group) {
 
 document.addEventListener('DOMContentLoaded', function() { switchGroup('g1'); });
 
+var REVISION_SNAPSHOTS = {
+  'R3': {
+    label: '2026-08-10 ~ 현재', fields: [
+      ['프로덕트명', '강남 프리미엄 옥외'], ['기준가격', '₩3,000,000/월'],
+      ['총 슬롯 수', '6슬롯'], ['슬롯 시간', '15초, 30초'],
+      ['구성 미디어', '3개 (MED-001, MED-012, MED-018)'], ['생애주기 상태', '활성']
+    ]
+  },
+  'R2': {
+    label: '2025-01-15 ~ 2026-08-09', fields: [
+      ['프로덕트명', '강남 프리미엄 옥외'], ['기준가격', '₩2,500,000/월'],
+      ['총 슬롯 수', '4슬롯'], ['슬롯 시간', '30초'],
+      ['구성 미디어', '3개 (MED-001, MED-012, MED-018)'], ['생애주기 상태', '활성']
+    ]
+  },
+  'R1': {
+    label: '2024-06-01 ~ 2025-01-14', fields: [
+      ['프로덕트명', '강남 프리미엄 옥외'], ['기준가격', '₩2,500,000/월'],
+      ['총 슬롯 수', '4슬롯'], ['슬롯 시간', '30초'],
+      ['구성 미디어', '2개 (MED-001, MED-012)'], ['생애주기 상태', '승인됨']
+    ]
+  }
+};
+
+function openRevisionSnapshot(rev) {
+  var data = REVISION_SNAPSHOTS[rev];
+  if (!data) return;
+  document.getElementById('revSnapId').textContent = rev;
+  var html = '<div style="font-size:12px;color:#9EA5AD;margin-bottom:16px;">적용 기간: ' + data.label + '</div><div class="field-grid">';
+  data.fields.forEach(function(f) {
+    html += '<div class="field-item"><div class="field-label">' + f[0] + '</div><div class="field-value">' + f[1] + '</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('revSnapBody').innerHTML = html;
+  document.getElementById('revSnapOverlay').classList.add('open');
+}
+function closeRevisionSnapshot() {
+  document.getElementById('revSnapOverlay').classList.remove('open');
+}
+
 function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
   alert(action + ' 처리되었습니다.'); location.reload();
@@ -1279,7 +1442,7 @@ function showRevisionModal() {
 <script>
 (function() {
   const PRODUCTS = {
-    'PRD-001': { name: '강남 프리미엄 패키지', mediaCount: 3, price: '₩3,000,000/월', desc: '강남역·역삼역·선릉역 중심 프리미엄 옥외 광고 네트워크. 하루 유동인구 합산 약 10만명 대상.', manager: '홍길동', createdAt: '2024-06-01', modifiedAt: '2026-08-10', revision: 'R3', tags: ['강남', '프리미엄', '옥외'], lcHistory: '초안 → 구성완료 → PDE검토 → 승인됨 → <strong>활성</strong>', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-001': { name: '강남 프리미엄 옥외', mediaCount: 3, price: '₩3,000,000/월', desc: '강남역·역삼역·선릉역 중심 프리미엄 옥외 광고 네트워크. 하루 유동인구 합산 약 10만명 대상.', manager: '홍길동', createdAt: '2024-06-01', modifiedAt: '2026-08-10', revision: 'R3', tags: ['강남', '프리미엄', '옥외'], lcHistory: '초안 → 구성완료 → PDE검토 → 승인됨 → <strong>활성</strong>', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
     'PRD-002': { name: '공항 프리미엄 네트워크', mediaCount: 5, price: '₩5,200,000/월', desc: '인천공항·김포공항 실내 미디어 5개. 항공 이용객 프리미엄 타겟 패키지.', manager: '김영수', createdAt: '2024-09-01', modifiedAt: '2026-08-07', revision: 'R5', tags: ['공항', '프리미엄', '교통'], lcHistory: '초안 → 구성완료 → 승인됨 → <strong>활성</strong>', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
     'PRD-003': { name: '홍대·신촌 청년 네트워크', mediaCount: 2, price: '₩800,000/월', desc: '홍대 및 신촌 역세권 스탠드형 미디어 2개. 20~30대 청년층 집중 타겟.', manager: '박민서', createdAt: '2026-07-15', modifiedAt: '2026-08-12', revision: 'R2', tags: ['홍대', '신촌', '청년'], lcHistory: '초안 → <strong>구성완료</strong>', lc: 'ready', lcLabel: '구성완료', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
     'PRD-004': { name: '부산 센텀 프리미엄', mediaCount: 4, price: '₩4,500,000/월', desc: '부산 센텀시티·해운대 실내 프리미엄 광고 네트워크. 부산 최대 쇼핑몰 커버리지.', manager: '이지은', createdAt: '2025-11-10', modifiedAt: '2026-08-05', revision: 'R4', tags: ['부산', '센텀', '프리미엄'], lcHistory: '초안 → 구성완료 → <strong>승인됨</strong>', lc: 'approved', lcLabel: '승인됨', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
@@ -1309,11 +1472,26 @@ function showRevisionModal() {
     const titleEl = document.getElementById('prd-title');
     if (titleEl) titleEl.textContent = d.name;
 
+    const crumbEl = document.getElementById('prd-crumb');
+    if (crumbEl) crumbEl.textContent = d.name;
+
     const idEl = document.getElementById('prd-id');
     if (idEl) idEl.textContent = id;
 
     const lcEl = document.getElementById('prd-lc-badge');
     if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const lcHEl = document.getElementById('prd-lc-badge-h');
+    if (lcHEl) { lcHEl.className = 'badge lc-' + d.lc; lcHEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const effRevEl = document.getElementById('prd-eff-rev-val');
+    if (effRevEl) effRevEl.textContent = d.revision;
+
+    const modifiedHEl = document.getElementById('prd-modified-h');
+    if (modifiedHEl) modifiedHEl.textContent = d.modifiedAt;
+
+    const managerHEl = document.getElementById('prd-manager-h');
+    if (managerHEl) managerHEl.textContent = d.manager;
 
     const apprEl = document.getElementById('prd-appr-badge');
     if (apprEl) { apprEl.className = d.apprClass; apprEl.textContent = d.appr; }
