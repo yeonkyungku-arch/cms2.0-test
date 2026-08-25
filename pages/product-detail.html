@@ -172,7 +172,7 @@
     }
     .slot-cal-cell.empty { border: none; background: transparent; }
     .slot-cal-cell.off { background: #F6F7F9; }
-    .slot-cal-cell.today { border-color: #2D84ED; box-shadow: 0 0 0 1px #2D84ED inset; }
+    .slot-cal-cell.today { border: 2px solid #2D84ED; }
     .slot-cal-cell .d { font-size: 12px; font-weight: 600; color: #24292E; }
     .slot-cal-cell .occ { font-size: 11px; font-weight: 600; color: #9EA5AD; }
     .slot-cal-cell .occ.ok { color: #2E9E34; }
@@ -212,9 +212,8 @@
     }
     .rev-snap-overlay.open { display: flex; }
     .rev-snap-modal {
-      background: #fff; border-radius: 12px; width: 560px; max-width: 100%;
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; width: 560px; max-width: 100%;
       max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: 0 12px 32px rgba(16,24,32,0.18);
     }
     .rev-snap-head {
       display: flex; align-items: flex-start; justify-content: space-between;
@@ -230,7 +229,7 @@
     .tab-panel.group-active { display: block; }
     .section-sublabel {
       font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
-      letter-spacing: 0.4px; margin: 24px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #E5E7EA;
+      letter-spacing: 0.6px; margin: 0 0 6px;
     }
 
     /* ── Section card ── */
@@ -242,8 +241,8 @@
       margin-bottom: 16px;
     }
     .card-title {
-      font-size: 13px; font-weight: 700; color: #24292E;
-      margin-bottom: 16px; padding-bottom: 10px;
+      font-size: 16px; font-weight: 700; color: #24292E;
+      margin-bottom: 18px; padding-bottom: 12px;
       border-bottom: 1px solid #E5E7EA;
     }
 
@@ -257,8 +256,8 @@
     .field-value.large { font-size: 18px; font-weight: 700; }
     .field-value.mono { font-family: monospace; }
     .card-subhead {
-      font-size: 11px; font-weight: 700; color: #596066; text-transform: uppercase;
-      letter-spacing: .03em; margin: 20px 0 12px; padding-top: 18px; border-top: 1px solid #F0F1F3;
+      font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: .05em; margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid #F0F1F3;
     }
     .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
