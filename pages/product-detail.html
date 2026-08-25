@@ -114,14 +114,36 @@
     .btn-danger:hover { background:#FEF2F2; }
 
     /* ── Tabs ── */
-    .tab-groups { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-    .tab-group-btn {
-      padding: 7px 14px; font-size: 12.5px; font-weight: 600; color: #596066;
-      background: #F0F1F3; border: 1px solid transparent; border-radius: 16px;
-      cursor: pointer; white-space: nowrap; transition: all 0.12s;
+    .detail-main {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(16,24,32,0.04); overflow: hidden;
     }
-    .tab-group-btn:hover { background: #E5E7EA; }
-    .tab-group-btn.active { background: #24292E; color: #fff; }
+    .tab-groups {
+      display: flex; gap: 2px; flex-wrap: wrap;
+      background: #F9FAFB; border-bottom: 1px solid #E5E7EA;
+      padding: 10px 14px;
+    }
+    .detail-main .tab-panel { padding: 22px 24px; }
+    .detail-main .tab-panel .card { border: none; padding: 0; margin-bottom: 0; }
+    .detail-main .tab-panel .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .detail-main .tab-panel .card + .card { margin-top: 28px; padding-top: 24px; border-top: 1px solid #F0F1F3; }
+    .tab-group-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px 9px 10px; font-size: 13px; font-weight: 600; color: #596066;
+      background: transparent; border: 1px solid transparent; border-radius: 8px;
+      cursor: pointer; white-space: nowrap; transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab-group-btn .grp-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%;
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0;
+      background: #F0F1F3; color: #9EA5AD; transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab-group-btn:hover { color: #24292E; background: #F6F7F9; }
+    .tab-group-btn:hover .grp-num { background: #E5E7EA; color: #596066; }
+    .tab-group-btn.active { color: #2D84ED; background: #EAF3FF; }
+    .tab-group-btn.active .grp-num { background: #2D84ED; color: #fff; }
+    @media (max-width: 720px) { .tab-groups { gap: 4px; } .tab-group-btn { padding: 8px 12px 8px 8px; font-size: 12.5px; } }
 
     /* ── Slot calendar (P4 운영 현황) ── */
     .slot-cal { border: 1px solid #E5E7EA; border-radius: 10px; padding: 14px 16px; background: #fff; }
@@ -418,18 +440,18 @@
 
     <!-- Tab Groups (P1~P6, per Miro 프로덕트 상세 메뉴트리) -->
     <div class="tab-groups" id="tabGroups">
-      <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')">P1. 프로덕트 정보</button>
-      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')">P2. 상품 구성</button>
-      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')">P3. 상품 옵션</button>
-      <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')">P4. 운영 현황</button>
-      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')">P5. 미디어 효과</button>
-      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')">P6. 변경 이력</button>
-      <button class="tab-group-btn" data-group="g7" onclick="switchGroup('g7')">P7. 감사</button>
+      <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">1</span>프로덕트 정보</button>
+      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">2</span>상품 구성</button>
+      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">3</span>상품 옵션</button>
+      <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')"><span class="grp-num">4</span>운영 현황</button>
+      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')"><span class="grp-num">5</span>미디어 효과</button>
+      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')"><span class="grp-num">6</span>변경 이력</button>
+      <button class="tab-group-btn" data-group="g7" onclick="switchGroup('g7')"><span class="grp-num">7</span>감사</button>
     </div>
 
     <!-- ====== TAB 1: 기본정보 ====== -->
     <div class="tab-panel" data-group="g1" id="tab-basic">
-      <div class="section-sublabel">P1-1. 기본정보</div>
+      <div class="section-sublabel">P1-1. 프로덕트 기본 정보</div>
       <div class="card">
         <div class="card-title">식별 정보</div>
         <div class="field-grid">
@@ -615,7 +637,7 @@
 
     <!-- ====== TAB 3: 운영정보 ====== -->
     <div class="tab-panel" data-group="g2" id="tab-operation">
-      <div class="section-sublabel">P2-2. 운영정보</div>
+      <div class="section-sublabel">P2-2. 운영 정보</div>
       <div class="card">
         <div class="card-title">운영 조건</div>
         <div class="field-grid three">
@@ -767,7 +789,7 @@
 
     <!-- ====== TAB 7: 매체제작가이드 ====== -->
     <div class="tab-panel" data-group="g2" id="tab-guide">
-      <div class="section-sublabel">P2-3. 매체제작가이드</div>
+      <div class="section-sublabel">P2-3. 매체 제작 가이드</div>
       <div class="card">
         <div class="card-title">자동 기술 사양 (Read-only)</div>
         <div class="field-grid three">
@@ -862,7 +884,7 @@
     <div class="tab-panel" data-group="g4" id="tab-status">
       <div class="section-sublabel">P4. 운영 현황</div>
       <div class="card">
-        <div class="card-title">슬롯 현황 (달력)</div>
+        <div class="card-title">P4-1. 슬롯 현황 (달력)</div>
         <div class="kpi-row">
           <div class="kpi-card">
             <div class="kpi-label">전체 슬롯 (이번 달)</div>
@@ -934,7 +956,8 @@
       </div>
 
       <div class="card">
-        <div class="card-title">등록된 스케줄 목록</div>
+        <div class="card-title">P4-2. 스케줄 현황</div>
+        <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">등록된 스케줄 목록</div>
         <div class="inner-table-wrap">
           <table class="inner-table">
             <thead>
@@ -1380,7 +1403,7 @@ function showRevisionModal() {
     var tabBasic = document.getElementById('tab-basic');
     if (tabBasic) {
       var tags = (d.tags || []).map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
-      tabBasic.innerHTML = '<div class="section-sublabel">P1-1. 기본정보</div>'
+      tabBasic.innerHTML = '<div class="section-sublabel">P1-1. 프로덕트 기본 정보</div>'
         + '<div class="card"><div class="card-title">식별 정보</div>'
         + '<div class="field-grid">'
         + fi('프로덕트명', d.name)
