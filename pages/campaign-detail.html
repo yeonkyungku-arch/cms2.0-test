@@ -115,7 +115,7 @@
     .pde-top-card-label { font-size: 12px; font-weight: 700; color: #596066; }
     .pde-top-card-text { font-size: 13px; color: #24292E; }
 
-    /* ── Tabs (8 tabs) ── */
+    /* ── Tabs (10 tabs) ── */
     .tabs-wrap { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; overflow: hidden; }
     .tab-inputs { display: none; }
     .tab-nav {
@@ -144,7 +144,9 @@
     #tab5:checked ~ .tab-nav label[for="tab5"],
     #tab6:checked ~ .tab-nav label[for="tab6"],
     #tab7:checked ~ .tab-nav label[for="tab7"],
-    #tab8:checked ~ .tab-nav label[for="tab8"] {
+    #tab8:checked ~ .tab-nav label[for="tab8"],
+    #tab9:checked ~ .tab-nav label[for="tab9"],
+    #tab10:checked ~ .tab-nav label[for="tab10"] {
       color: #24292E;
       border-bottom-color: #24292E;
       font-weight: 600;
@@ -158,7 +160,9 @@
     #tab5:checked ~ .tab-body > #content5,
     #tab6:checked ~ .tab-body > #content6,
     #tab7:checked ~ .tab-body > #content7,
-    #tab8:checked ~ .tab-body > #content8 { display: block; }
+    #tab8:checked ~ .tab-body > #content8,
+    #tab9:checked ~ .tab-body > #content9,
+    #tab10:checked ~ .tab-body > #content10 { display: block; }
 
     /* ── Info grid ── */
     .info-grid {
@@ -465,6 +469,7 @@
         <div class="header-actions" id="cmp-actions">
           <button class="btn-outline" onclick="if(confirm('캠페인을 재개하시겠습니까?'))location.reload()">재개(Resume)</button>
           <button class="btn-danger-outline" onclick="if(confirm('캠페인을 종료하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))location.href='campaign-list'">캠페인 종료</button>
+          <button class="btn-outline" onclick="if(confirm('Fresh Feasibility를 재확인한 후 선택된 Offering Revision + Variant Snapshot을 Schedule Draft로 전달합니다. 계속하시겠습니까?'))location.href='schedule-media-month'">Schedule로 전환</button>
           <button class="btn-primary-sm" onclick="location.href='campaign-edit'">수정</button>
         </div>
       </div>
@@ -515,6 +520,8 @@
       <input class="tab-inputs" type="radio" name="tabs" id="tab5">
       <input class="tab-inputs" type="radio" name="tabs" id="tab6">
       <input class="tab-inputs" type="radio" name="tabs" id="tab7">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab9">
+      <input class="tab-inputs" type="radio" name="tabs" id="tab10">
       <input class="tab-inputs" type="radio" name="tabs" id="tab8">
       <div class="tab-nav">
         <label class="tab-label" for="tab1">기본정보</label>
@@ -524,6 +531,8 @@
         <label class="tab-label" for="tab5">사전검토(Feasibility)</label>
         <label class="tab-label" for="tab6">추천결과</label>
         <label class="tab-label" for="tab7">선택결과 &amp; PDE</label>
+        <label class="tab-label" for="tab9">정책 적용·판단</label>
+        <label class="tab-label" for="tab10">Actual Advertising Effect</label>
         <label class="tab-label" for="tab8">Audit</label>
       </div>
       <div class="tab-body">
@@ -987,6 +996,193 @@
                 <span>콘텐츠 심의 완료 확인 (CNT-S25-LAUNCH-v2) — 모든 정책 요건 통과</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 9: 정책 적용·판단 (CAM-POL) ══ -->
+        <div class="tab-content" id="content9">
+
+          <div class="tab-section">
+            <div class="tab-section-title">Campaign Aggregate Decision</div>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#FFF8E6;border:1px solid #F3BE4A;border-radius:8px;margin-bottom:16px;">
+              <span style="font-size:16px;">⚠️</span>
+              <span style="font-size:12.5px;color:#8A6D1D;">Aggregate는 국가/지역별 부분 Restricted·Deferred를 숨기지 않습니다. 일부 국가 제한을 전체 Approved로 승격 표시하지 않습니다.</span>
+            </div>
+            <div class="info-grid info-grid-2">
+              <div class="info-item">
+                <div class="info-label">Campaign Aggregate PDE Decision</div>
+                <div class="info-value"><span class="badge" style="background:#FFF3D6;color:#9A6B00;">부분 제한 (Partially Restricted)</span></div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Decision Context Status</div>
+                <div class="info-value"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-section">
+            <div class="tab-section-title">Country/Region · Candidate별 PDE Decision</div>
+            <div class="immutable-table-wrap">
+              <table class="immutable-table">
+                <thead>
+                  <tr>
+                    <th>Country/Region</th>
+                    <th>Candidate (Offering Revision·Variant)</th>
+                    <th>PDE Decision</th>
+                    <th>Policy Snapshot ID</th>
+                    <th>Policy Version</th>
+                    <th>Applied Policy IDs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight:600;">KR</td>
+                    <td>강남 프라임 패키지 — 30초 일반</td>
+                    <td><span class="badge pde-approved">Approved</span></td>
+                    <td style="font-size:11px;color:#9EA5AD;">POL-SNAP-KR-20260115</td>
+                    <td style="font-size:12px;">v2.1.3</td>
+                    <td style="font-size:11px;color:#596066;">KR-LAW-OOH-2024, KR-11-REGION-2025</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:600;">VN</td>
+                    <td>호치민 시내권 패키지 — 30초 일반</td>
+                    <td><span class="badge" style="background:#FFF3D6;color:#9A6B00;">Restricted</span></td>
+                    <td style="font-size:11px;color:#9EA5AD;">POL-SNAP-VN-20260115</td>
+                    <td style="font-size:12px;">v1.8.0</td>
+                    <td style="font-size:11px;color:#596066;">VN-LAW-ADV-2023, VN-CONTENT-RESTRICT-v2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="font-size:11.5px;color:#9EA5AD;margin-top:8px;">Cross-country Campaign은 대상 Media/Location Jurisdiction 기준 국가별로 분할 평가되며, countryCode/regionCode/policySnapshotId/policyVersion/appliedPolicyIds가 Decision별로 보존됩니다.</div>
+          </div>
+
+          <div class="tab-section">
+            <div class="tab-section-title">VN Restricted 사유</div>
+            <div class="pde-condition">
+              <div class="pde-cond-bullet" style="background:#F3BE4A;"></div>
+              <span>VN 옥외광고 콘텐츠 사전 심의 절차 미완료 — 조건부 진행 가능(현지 대행사 심의 접수 후 재평가 필요)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ Tab 10: Actual Advertising Effect (CAM-EFFECT) ══ -->
+        <div class="tab-content" id="content10">
+
+          <div class="tab-section">
+            <div class="tab-section-title">Effect Reference (사전) vs Actual Advertising Effect (집행 후)</div>
+            <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">사전 추천용 Effect Reference KPI(Historical/Predicted)와 실제 집행 성과는 별도로 관리됩니다. 이 탭은 집행 후 실적만 표시합니다.</div>
+            <div class="snapshot-grid">
+              <div class="snapshot-item">
+                <div class="snapshot-label">DATA AS-OF</div>
+                <div class="snapshot-value">2026.02.10 06:00</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">EFFECT METRIC VERSION</div>
+                <div class="snapshot-value">EFFECT-METRIC-v1.3</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">DATA AVAILABILITY</div>
+                <div class="snapshot-value" style="color:#2E9E34;">AVAILABLE</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-section">
+            <div class="tab-section-title">Core KPI (Actual)</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Foot Traffic (누적 유동인구)</div>
+                <div class="info-value">1,152,000</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Exposed Audience (노출인구)</div>
+                <div class="info-value">412,300</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Attention Audience (주목인구)</div>
+                <div class="info-value">98,700 <span style="font-size:11px;color:#9EA5AD;">(PARTIAL)</span></div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Reach</div>
+                <div class="info-value" style="color:#9EA5AD;">N/A</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Frequency</div>
+                <div class="info-value" style="color:#9EA5AD;">N/A</div>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#9EA5AD;">Reach/Frequency는 대상 Media의 Measurement Profile·Data Availability가 갖춰진 경우에만 제공됩니다. 현재 N/A.</div>
+          </div>
+
+          <div class="tab-section">
+            <div class="tab-section-title">Derived KPI — Effect Reference 대비 실적</div>
+            <div class="immutable-table-wrap">
+              <table class="immutable-table">
+                <thead>
+                  <tr>
+                    <th>KPI</th>
+                    <th>Effect Reference (Predicted)</th>
+                    <th>Actual</th>
+                    <th>달성률</th>
+                    <th>Ranking</th>
+                    <th>CPM</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight:600;">Foot Traffic</td>
+                    <td>1,080,000</td>
+                    <td>1,152,000</td>
+                    <td style="color:#2E9E34;font-weight:700;">106.7%</td>
+                    <td>#2 강남구</td>
+                    <td>₩1,240</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:600;">Exposed Audience</td>
+                    <td>430,000</td>
+                    <td>412,300</td>
+                    <td style="color:#E97474;font-weight:700;">95.9%</td>
+                    <td>#3 강남구</td>
+                    <td>₩3,470</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="tab-section">
+            <div class="tab-section-title">Media별 Breakdown</div>
+            <div class="immutable-table-wrap">
+              <table class="immutable-table">
+                <thead>
+                  <tr>
+                    <th>Media</th>
+                    <th>Schedule Revision</th>
+                    <th>기간</th>
+                    <th>Foot Traffic</th>
+                    <th>달성률</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>강남역 8번출구 미디어폴</td>
+                    <td style="font-size:11px;color:#9EA5AD;">SCH-2026-0012-r3</td>
+                    <td style="font-size:12px;">2026.01.20~02.10</td>
+                    <td>612,000</td>
+                    <td style="color:#2E9E34;">108.1%</td>
+                  </tr>
+                  <tr>
+                    <td>강남 프라임 타워 LED</td>
+                    <td style="font-size:11px;color:#9EA5AD;">SCH-2026-0013-r1</td>
+                    <td style="font-size:12px;">2026.01.20~02.10</td>
+                    <td>540,000</td>
+                    <td style="color:#2E9E34;">105.0%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="font-size:11px;color:#9EA5AD;margin-top:8px;">동일 Campaign이라도 Schedule Revision·기간·effectMetricVersion이 다르면 별도 결과로 조회됩니다.</div>
           </div>
         </div>
 
