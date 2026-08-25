@@ -366,44 +366,15 @@
       </div>
     </div>
 
-    <!-- State bar -->
-    <div class="state-bar">
-      <span class="state-label">Lifecycle</span>
-      <span class="badge lc-active" id="prd-lc-badge"><span class="badge-dot"></span>활성</span>
-      <!-- Operational Status (system-computed, read-only) -->
-      <span class="badge ops-badge" id="prd-ops-badge" title="모니터링에서 산출 — 직접 변경 불가">
-        <span class="badge-dot" style="background:#58C65D;"></span>정상
-      </span>
-      <!-- Approval -->
-      <span class="badge appr-badge appr-approved" id="prd-appr-badge">승인됨</span>
-      <!-- PDE Decision -->
-      <span class="badge pde-badge-approved" id="prd-pde-badge">PDE 승인</span>
+    <!-- Header actions -->
+    <div style="display:flex;align-items:center;margin-bottom:20px;">
       <div style="flex:1;"></div>
-      <!-- Active → allowed: 중지, 새 Revision -->
-      <div class="action-group" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+      <div class="action-group" style="display:flex;align-items:center;gap:8px;">
         <button class="action-btn action-btn-pause btn-warn" onclick="if(confirm('중지하면 해당 Product를 참조하는 스케줄에 영향을 줄 수 있습니다.\n계속하시겠습니까?'))location.reload()">중지</button>
         <button class="action-btn action-btn-resume" onclick="location.href='product-edit'">새 Revision</button>
       </div>
     </div>
-    <!-- Lifecycle 프로세스 스테퍼 -->
-    <div class="lc-stepper-wrap" style="margin-top:12px;">
-      <div class="lc-stepper-title">Lifecycle 프로세스 (T-PROD-01 · P-05 / T-PROD-02 · P-06)</div>
-      <div class="lc-stepper" id="prd-lc-stepper"><!-- JS가 채움 --></div>
-      <div class="lc-note" id="prd-lc-note"></div>
-    </div>
-    <div class="axis-labels" style="padding:0 0 4px 0;"><span>Lifecycle</span><span>운영상태</span><span>승인</span><span>PDE</span></div>
-
-    <!-- PDE amber panel -->
-    <div class="pde-panel">
-      <div class="pde-panel-title">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L1 12h12L7 1z" stroke="#92610A" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 5.5v3M7 10h.01" stroke="#92610A" stroke-width="1.4" stroke-linecap="round"/></svg>
-        PDE 판단 결과 — 승인됨
-      </div>
-      <div class="pde-panel-body">
-        미디어사 상품정책 검증이 완료되었습니다. 핵심조건(구성 미디어, 운영시간, 슬롯 구조, 기준가격) 변경 시 신규 Revision을 생성하고 PDE 재검증이 필요합니다.
-        <br>검증일시: 2026-07-20 14:32 &nbsp;·&nbsp; 다음 재검증 예정: 핵심조건 변경 시
-      </div>
-    </div>
+    <!-- Lifecycle/PDE 판단 결과 헤더 제거됨 — P1-1 기본정보 · P1-3 정책 적용 현황 탭에서 확인 -->
 
     <!-- Tab Groups (P1~P6, per Miro 프로덕트 상세 메뉴트리) -->
     <div class="tab-groups" id="tabGroups">
