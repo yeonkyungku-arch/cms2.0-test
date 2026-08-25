@@ -115,6 +115,14 @@
 
     /* ── Tabs ── */
     .tabs { display: flex; gap: 0; border-bottom: 1px solid #E5E7EA; margin-bottom: 20px; overflow-x: auto; }
+    .tab-groups { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tab-group-btn {
+      padding: 7px 14px; font-size: 12.5px; font-weight: 600; color: #596066;
+      background: #F0F1F3; border: 1px solid transparent; border-radius: 16px;
+      cursor: pointer; white-space: nowrap; transition: all 0.12s;
+    }
+    .tab-group-btn:hover { background: #E5E7EA; }
+    .tab-group-btn.active { background: #24292E; color: #fff; }
     .tab-btn {
       padding: 10px 16px;
       font-size: 13px; font-weight: 500; color: #596066;
@@ -397,20 +405,30 @@
       </div>
     </div>
 
+    <!-- Tab Groups (P1~P6, per Miro 프로덕트 상세 메뉴트리) -->
+    <div class="tab-groups" id="tabGroups">
+      <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')">P1. 프로덕트 정보</button>
+      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')">P2. 상품 구성</button>
+      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')">P3. 상품 옵션</button>
+      <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')">P4. 운영 현황</button>
+      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')">P5. 변경 이력</button>
+      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')">P6. 감사</button>
+    </div>
+
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('basic')">기본정보</button>
-      <button class="tab-btn" onclick="switchTab('policy')">정책 적용 현황</button>
-      <button class="tab-btn" onclick="switchTab('media')">구성 미디어</button>
-      <button class="tab-btn" onclick="switchTab('operation')">운영정보</button>
-      <button class="tab-btn" onclick="switchTab('slot')">슬롯 구조</button>
-      <button class="tab-btn" onclick="switchTab('price')">가격정보</button>
-      <button class="tab-btn" onclick="switchTab('options')">상품옵션</button>
-      <button class="tab-btn" onclick="switchTab('guide')">매체제작가이드</button>
-      <button class="tab-btn" onclick="switchTab('package')">소속 패키지</button>
-      <button class="tab-btn" onclick="switchTab('status')">운영 현황</button>
-      <button class="tab-btn" onclick="switchTab('revision')">Revision</button>
-      <button class="tab-btn" onclick="switchTab('audit')">Audit</button>
+      <button class="tab-btn active" data-group="g1" onclick="switchTab('basic')">P1-1. 기본정보</button>
+      <button class="tab-btn" data-group="g1" onclick="switchTab('policy')">P1-3. 정책 적용 현황</button>
+      <button class="tab-btn" data-group="g2" onclick="switchTab('media')">P2-1. 구성 미디어</button>
+      <button class="tab-btn" data-group="g2" onclick="switchTab('operation')">P2-2. 운영정보</button>
+      <button class="tab-btn" data-group="g2" onclick="switchTab('slot')">슬롯 구조</button>
+      <button class="tab-btn" data-group="g2" onclick="switchTab('guide')">P2-3. 매체제작가이드</button>
+      <button class="tab-btn" data-group="g2" onclick="switchTab('package')">P2-4. 소속 패키지</button>
+      <button class="tab-btn" data-group="g3" onclick="switchTab('price')">가격정보</button>
+      <button class="tab-btn" data-group="g3" onclick="switchTab('options')">P3-1. 상품옵션 목록</button>
+      <button class="tab-btn" data-group="g4" onclick="switchTab('status')">P4. 운영 현황</button>
+      <button class="tab-btn" data-group="g5" onclick="switchTab('revision')">P5-1. Revision</button>
+      <button class="tab-btn" data-group="g6" onclick="switchTab('audit')">P6-1. 변경사항</button>
     </div>
 
     <!-- ====== TAB 1: 기본정보 ====== -->
@@ -1052,12 +1070,36 @@
 </main>
 
 <script>
+function switchGroup(group) {
+  document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
+  var firstVisible = null;
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    var show = btn.dataset.group === group;
+    btn.style.display = show ? '' : 'none';
+    if (show && !firstVisible) firstVisible = btn;
+  });
+  if (firstVisible) {
+    document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    firstVisible.classList.add('active');
+    document.getElementById('tab-' + firstVisible.getAttribute('onclick').match(/switchTab\('(\w+)'\)/)[1]).classList.add('active');
+  }
+}
+
 function switchTab(id) {
   document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
   event.target.classList.add('active');
   document.getElementById('tab-' + id).classList.add('active');
+  var group = event.target.dataset.group;
+  document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    if (btn.dataset.group !== 'g1') btn.style.display = 'none';
+  });
+});
 
 function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
