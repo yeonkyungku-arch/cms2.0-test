@@ -467,13 +467,9 @@
               </div>
             </div>
           </div>
-          <div class="field-item">
-            <div class="field-label">현재 Revision</div>
-            <div class="field-value"><span class="rev-current">R3</span></div>
-          </div>
         </div>
 
-        <div class="card-subhead">생애주기 상태 (Lifecycle State)</div>
+        <div class="card-subhead">P1-2. 상태 정보</div>
         <div class="field-grid">
           <div class="field-item">
             <div class="field-label">현재 상태</div>
@@ -482,6 +478,10 @@
             </div>
           </div>
           <div class="field-item">
+            <div class="field-label">현재 Revision</div>
+            <div class="field-value"><span class="rev-current">R3</span></div>
+          </div>
+          <div class="field-item" style="grid-column:1/-1;">
             <div class="field-label">상태전환 이력</div>
             <div class="field-value" style="font-size:13px;color:#596066;">
               초안 → 구성완료 → PDE검토 → 승인됨 → <strong>활성</strong>
@@ -1380,7 +1380,8 @@ function showRevisionModal() {
     var tabBasic = document.getElementById('tab-basic');
     if (tabBasic) {
       var tags = (d.tags || []).map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
-      tabBasic.innerHTML = '<div class="card"><div class="card-title">식별 정보</div>'
+      tabBasic.innerHTML = '<div class="section-sublabel">P1-1. 기본정보</div>'
+        + '<div class="card"><div class="card-title">식별 정보</div>'
         + '<div class="field-grid">'
         + fi('프로덕트명', d.name)
         + fi('프로덕트 ID', '<span class="mono">' + id + '</span>')
@@ -1390,14 +1391,15 @@ function showRevisionModal() {
         + fi('생성일', '<span class="mono">' + d.createdAt + '</span>')
         + fi('마지막 수정', '<span class="mono">' + d.modifiedAt + '</span>')
         + fi('태그', '<div class="tag-group">' + (tags || '—') + '</div>')
-        + fi('현재 Revision', '<span class="rev-current">' + d.revision + '</span>')
-        + '</div></div>'
-        + '<div class="card"><div class="card-title">생애주기 상태 (Lifecycle State)</div>'
+        + '</div>'
+        + '<div class="card-subhead">P1-2. 상태 정보</div>'
         + '<div class="field-grid">'
         + fi('현재 상태', '<span class="badge lc-' + d.lc + '"><span class="badge-dot"></span>' + d.lcLabel + '</span>')
-        + fi('상태전환 이력', '<span style="font-size:13px;color:#596066;">' + d.lcHistory + '</span>')
+        + fi('현재 Revision', '<span class="rev-current">' + d.revision + '</span>')
+        + '<div class="field-item" style="grid-column:1/-1;">'
+        + '<div class="field-label">상태전환 이력</div><div class="field-value" style="font-size:13px;color:#596066;">' + d.lcHistory + '</div></div>'
         + '</div>'
-        + '<div style="margin-top:14px;font-size:12px;color:#9EA5AD;">※ 생애주기 상태는 직접 변경이 아닌 허용된 전환 액션으로만 변경됩니다.</div>'
+        + '<div style="margin-top:12px;font-size:12px;color:#9EA5AD;">※ 생애주기 상태는 직접 변경이 아닌 허용된 전환 액션으로만 변경됩니다.</div>'
         + '</div>';
     }
   });
