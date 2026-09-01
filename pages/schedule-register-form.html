@@ -80,6 +80,9 @@
     .sched-item-label { font-size: 12px; font-weight: 600; color: #596066; }
     .sched-item-label .req { color: #E97474; margin-left: 2px; }
     .sched-item-divider { grid-column: span 2; border-top: 1px dashed #E5E7EA; margin: 4px 0; }
+    .sched-item-override-toggle { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #596066; cursor: pointer; }
+    .sched-item-override { display: contents; }
+    .sched-item-override[hidden] { display: none; }
 
     /* ── 조건 광고 규칙 빌더 ── */
     .rule-row {
@@ -344,7 +347,7 @@
       <div class="section-head">
         <div>
           <div class="section-title">운영 계획</div>
-          <div class="section-desc">공통 운영 기간을 설정합니다 — 각 Schedule Item에서 세부 조건을 재정의할 수 있습니다</div>
+          <div class="section-desc">공통 운영 기간·요일·시간·콘텐츠를 설정합니다 — 모든 Schedule Item에 기본 적용되며, 필요한 항목만 개별적으로 재정의할 수 있습니다</div>
         </div>
       </div>
       <div class="section-body">
@@ -358,6 +361,58 @@
               <input type="date" class="input" style="width:160px;" value="2025-12-31">
             </div>
             <div class="input-hint">총 77일 · Q4 집행</div>
+          </div>
+        </div>
+
+        <!-- schedule.items[].operatingDays 기본값 (공통 적용, Item별 재정의 가능) -->
+        <div class="form-row">
+          <div class="form-label">운영 요일 <span class="req">*</span></div>
+          <div class="form-field">
+            <div class="day-chips">
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d1" checked><label for="cmn-d1">월</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d2" checked><label for="cmn-d2">화</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d3" checked><label for="cmn-d3">수</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d4" checked><label for="cmn-d4">목</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d5" checked><label for="cmn-d5">금</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d6"><label for="cmn-d6">토</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="cmn-d7"><label for="cmn-d7">일</label></div>
+            </div>
+            <div class="input-hint">모든 Schedule Item에 기본 적용됩니다 — 항목별로 다른 요일이 필요하면 해당 Item에서 재정의하세요</div>
+          </div>
+        </div>
+
+        <!-- schedule.items[].dailyStartTime / dailyEndTime 기본값 (공통 적용, Item별 재정의 가능) -->
+        <div class="form-row">
+          <div class="form-label">운영 시간 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="time" class="input" style="width:140px;" value="09:00">
+              <span style="color:#9EA5AD;">~</span>
+              <input type="time" class="input" style="width:140px;" value="22:00">
+            </div>
+            <div class="input-hint">유효 운영일마다 반복 적용되는 일일 운영시간입니다. 종료시간이 시작시간보다 이르면 익일 종료로 해석됩니다.</div>
+          </div>
+        </div>
+
+        <!-- schedule.items[].contentRefType / contentRevisionId 기본값 (공통 적용, Item별 재정의 가능) -->
+        <div class="form-row">
+          <div class="form-label">기본 콘텐츠 <span class="req">*</span></div>
+          <div class="form-field">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <select class="select" style="width:160px;">
+                <option selected>콘텐츠</option>
+                <option>콘텐츠 체인</option>
+              </select>
+              <div style="display:flex;gap:6px;flex:1;min-width:260px;">
+                <select class="select" style="flex:1;">
+                  <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
+                  <option selected>갤럭시 S25 런칭 15초 (R2) — 승인</option>
+                  <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
+                </select>
+                <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
+              </div>
+            </div>
+            <div class="input-hint">모든 Schedule Item에 기본 적용됩니다 — 선택 즉시 Revision이 잠깁니다. 항목별로 다른 콘텐츠가 필요하면 해당 Item에서 재정의하세요</div>
           </div>
         </div>
 
@@ -384,7 +439,7 @@
       <div class="section-head">
         <div>
           <div class="section-title">Schedule Item 편성</div>
-          <div class="section-desc">프로덕트·콘텐츠·슬롯 조합을 항목별로 등록합니다</div>
+          <div class="section-desc">프로덕트·슬롯 조합을 항목별로 등록합니다 — 콘텐츠·운영 요일·시간은 기본적으로 공통 운영 계획을 따르며 필요한 항목만 재정의합니다</div>
         </div>
         <button class="btn btn-ghost" style="font-size:13px;" onclick="addItem()">+ Item 추가</button>
       </div>
@@ -432,53 +487,62 @@
                 </select>
               </div>
 
-              <!-- schedule.items[].contentRefType -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div>
-                <select class="select">
-                  <option selected>콘텐츠</option>
-                  <option>콘텐츠 체인</option>
-                </select>
-              </div>
-
-              <!-- schedule.items[].contentRevisionId -->
-              <div class="sched-item-field span2">
-                <div class="sched-item-label">콘텐츠 선택 <span class="req">*</span></div>
-                <div style="display:flex;gap:6px;">
-                  <select class="select" style="flex:1;">
-                    <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
-                    <option selected>갤럭시 S25 런칭 15초 (R2) — 승인</option>
-                    <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
-                  </select>
-                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                </div>
-                <div class="input-hint">선택 후 Revision이 잠깁니다</div>
-              </div>
-
               <div class="sched-item-divider"></div>
 
-              <!-- schedule.items[].operatingDays (조건부) -->
+              <!-- Item별 콘텐츠/운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
               <div class="sched-item-field span2">
-                <div class="sched-item-label">운영 요일 <span style="color:#9EA5AD;font-weight:400;">(미지정 시 공통 기간 전체 적용)</span></div>
-                <div class="day-chips">
-                  <div class="day-chip-item"><input type="checkbox" id="i1d1" checked><label for="i1d1">월</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i1d2" checked><label for="i1d2">화</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i1d3" checked><label for="i1d3">수</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i1d4" checked><label for="i1d4">목</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i1d5" checked><label for="i1d5">금</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i1d6"><label for="i1d6">토</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i1d7"><label for="i1d7">일</label></div>
+                <label class="sched-item-override-toggle">
+                  <input type="checkbox" onclick="toggleItemOverride(this)">
+                  이 항목만 공통 콘텐츠·운영 요일·시간과 다르게 설정
+                </label>
+              </div>
+              <div class="sched-item-override" hidden>
+                <!-- schedule.items[].contentRefType (조건부, 공통값 재정의) -->
+                <div class="sched-item-field">
+                  <div class="sched-item-label">콘텐츠 유형</div>
+                  <select class="select">
+                    <option selected>콘텐츠</option>
+                    <option>콘텐츠 체인</option>
+                  </select>
                 </div>
-              </div>
 
-              <!-- schedule.items[].startTime / endTime (조건부) -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">운영 시작 시간</div>
-                <input type="time" class="input" value="09:00">
-              </div>
-              <div class="sched-item-field">
-                <div class="sched-item-label">운영 종료 시간</div>
-                <input type="time" class="input" value="22:00">
+                <!-- schedule.items[].contentRevisionId (조건부, 공통값 재정의) -->
+                <div class="sched-item-field span2">
+                  <div class="sched-item-label">콘텐츠 선택</div>
+                  <div style="display:flex;gap:6px;">
+                    <select class="select" style="flex:1;">
+                      <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
+                      <option>갤럭시 S25 런칭 15초 (R2) — 승인</option>
+                      <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
+                    </select>
+                    <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
+                  </div>
+                  <div class="input-hint">선택 후 Revision이 잠깁니다</div>
+                </div>
+
+                <!-- schedule.items[].operatingDays (조건부, 공통값 재정의) -->
+                <div class="sched-item-field span2">
+                  <div class="sched-item-label">운영 요일</div>
+                  <div class="day-chips">
+                    <div class="day-chip-item"><input type="checkbox" id="i1d1" checked><label for="i1d1">월</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i1d2" checked><label for="i1d2">화</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i1d3" checked><label for="i1d3">수</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i1d4" checked><label for="i1d4">목</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i1d5" checked><label for="i1d5">금</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i1d6"><label for="i1d6">토</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i1d7"><label for="i1d7">일</label></div>
+                  </div>
+                </div>
+
+                <!-- schedule.items[].dailyStartTime / dailyEndTime (조건부, 공통값 재정의) -->
+                <div class="sched-item-field">
+                  <div class="sched-item-label">운영 시작 시간</div>
+                  <input type="time" class="input" value="09:00">
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">운영 종료 시간</div>
+                  <input type="time" class="input" value="22:00">
+                </div>
               </div>
 
             </div>
@@ -508,37 +572,48 @@
                 <div class="sched-item-label">슬롯 시간 <span class="req">*</span></div>
                 <select class="select"><option selected>15초</option><option>30초</option></select>
               </div>
-              <div class="sched-item-field">
-                <div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div>
-                <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
-              </div>
-              <div class="sched-item-field span2">
-                <div class="sched-item-label">콘텐츠 선택 <span class="req">*</span></div>
-                <div style="display:flex;gap:6px;">
-                  <select class="select" style="flex:1;"><option selected>갤럭시 S25 런칭 15초 (R2) — 승인</option></select>
-                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                </div>
-              </div>
               <div class="sched-item-divider"></div>
+
+              <!-- Item별 콘텐츠/운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
               <div class="sched-item-field span2">
-                <div class="sched-item-label">운영 요일</div>
-                <div class="day-chips">
-                  <div class="day-chip-item"><input type="checkbox" id="i2d1" checked><label for="i2d1">월</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i2d2" checked><label for="i2d2">화</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i2d3" checked><label for="i2d3">수</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i2d4" checked><label for="i2d4">목</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i2d5" checked><label for="i2d5">금</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i2d6" checked><label for="i2d6">토</label></div>
-                  <div class="day-chip-item"><input type="checkbox" id="i2d7"><label for="i2d7">일</label></div>
+                <label class="sched-item-override-toggle">
+                  <input type="checkbox" checked onclick="toggleItemOverride(this)">
+                  이 항목만 공통 콘텐츠·운영 요일·시간과 다르게 설정
+                </label>
+              </div>
+              <div class="sched-item-override">
+                <div class="sched-item-field">
+                  <div class="sched-item-label">콘텐츠 유형</div>
+                  <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
                 </div>
-              </div>
-              <div class="sched-item-field">
-                <div class="sched-item-label">운영 시작 시간</div>
-                <input type="time" class="input" value="10:00">
-              </div>
-              <div class="sched-item-field">
-                <div class="sched-item-label">운영 종료 시간</div>
-                <input type="time" class="input" value="21:00">
+                <div class="sched-item-field span2">
+                  <div class="sched-item-label">콘텐츠 선택</div>
+                  <div style="display:flex;gap:6px;">
+                    <select class="select" style="flex:1;"><option selected>갤럭시 S25 런칭 30초 (R1) — 승인</option></select>
+                    <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
+                  </div>
+                  <div class="input-hint">선택 후 Revision이 잠깁니다</div>
+                </div>
+                <div class="sched-item-field span2">
+                  <div class="sched-item-label">운영 요일</div>
+                  <div class="day-chips">
+                    <div class="day-chip-item"><input type="checkbox" id="i2d1" checked><label for="i2d1">월</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i2d2" checked><label for="i2d2">화</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i2d3" checked><label for="i2d3">수</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i2d4" checked><label for="i2d4">목</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i2d5" checked><label for="i2d5">금</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i2d6" checked><label for="i2d6">토</label></div>
+                    <div class="day-chip-item"><input type="checkbox" id="i2d7"><label for="i2d7">일</label></div>
+                  </div>
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">운영 시작 시간</div>
+                  <input type="time" class="input" value="10:00">
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">운영 종료 시간</div>
+                  <input type="time" class="input" value="21:00">
+                </div>
               </div>
             </div>
           </div>
@@ -649,11 +724,48 @@ function addItem() {
         <div class="sched-item-field"><div class="sched-item-label">대상 유형 <span class="req">*</span></div><select class="select"><option selected>프로덕트</option><option>패키지 프로덕트</option></select></div>
         <div class="sched-item-field"><div class="sched-item-label">프로덕트 선택 <span class="req">*</span></div><select class="select"><option value="">프로덕트 검색·선택</option></select></div>
         <div class="sched-item-field"><div class="sched-item-label">슬롯 시간 <span class="req">*</span></div><select class="select"><option value="">슬롯 선택</option></select></div>
-        <div class="sched-item-field"><div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div><select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select></div>
-        <div class="sched-item-field span2"><div class="sched-item-label">콘텐츠 선택 <span class="req">*</span></div><select class="select"><option value="">콘텐츠 검색·선택</option></select></div>
+        <div class="sched-item-divider"></div>
+        <div class="sched-item-field span2">
+          <label class="sched-item-override-toggle">
+            <input type="checkbox" onclick="toggleItemOverride(this)">
+            이 항목만 공통 콘텐츠·운영 요일·시간과 다르게 설정
+          </label>
+        </div>
+        <div class="sched-item-override" hidden>
+          <div class="sched-item-field">
+            <div class="sched-item-label">콘텐츠 유형</div>
+            <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
+          </div>
+          <div class="sched-item-field span2">
+            <div class="sched-item-label">콘텐츠 선택</div>
+            <div style="display:flex;gap:6px;">
+              <select class="select" style="flex:1;"><option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option></select>
+              <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
+            </div>
+          </div>
+          <div class="sched-item-field span2">
+            <div class="sched-item-label">운영 요일</div>
+            <div class="day-chips">
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d1" checked><label for="i${itemCount}d1">월</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d2" checked><label for="i${itemCount}d2">화</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d3" checked><label for="i${itemCount}d3">수</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d4" checked><label for="i${itemCount}d4">목</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d5" checked><label for="i${itemCount}d5">금</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d6"><label for="i${itemCount}d6">토</label></div>
+              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d7"><label for="i${itemCount}d7">일</label></div>
+            </div>
+          </div>
+          <div class="sched-item-field"><div class="sched-item-label">운영 시작 시간</div><input type="time" class="input" value="09:00"></div>
+          <div class="sched-item-field"><div class="sched-item-label">운영 종료 시간</div><input type="time" class="input" value="22:00"></div>
+        </div>
       </div>
     </div>`;
   wrap.appendChild(el);
+}
+
+function toggleItemOverride(cb) {
+  const override = cb.closest('.sched-item-grid').querySelector('.sched-item-override');
+  override.hidden = !cb.checked;
 }
 
 function addRule() {
