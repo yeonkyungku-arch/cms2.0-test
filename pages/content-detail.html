@@ -3,283 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>갤럭시 S25 런칭 30초 — D'ooh CMS</title>
+  <title>콘텐츠 상세 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
-    /* Header */
-    .detail-header {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-    }
-    .detail-header-top {
+    /* ── Page header ── */
+    .page-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 12px;
+      gap: 16px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
     }
-    .breadcrumb {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 13px; color: #9EA5AD;
-    }
+    .page-header-left { display: flex; flex-direction: column; gap: 6px; }
+    .page-title { font-size: 20px; font-weight: 700; color: #24292E; }
+    .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .page-id { font-size: 12px; color: #9EA5AD; font-family: monospace; }
+    .breadcrumb { font-size: 12px; color: #9EA5AD; margin-bottom: 12px; }
     .breadcrumb a { color: #9EA5AD; text-decoration: none; }
-    .breadcrumb a:hover { color: #24292E; }
-    .breadcrumb-sep { color: #CED2D6; }
-    .breadcrumb-current { color: #596066; font-weight: 500; }
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-outline {
-      height: 34px; padding: 0 14px;
-      background: #fff; border: 1px solid #CED2D6; border-radius: 6px;
-      font-size: 13px; color: #24292E; cursor: pointer; font-weight: 500;
-    }
-    .btn-outline:hover { background: #F6F7F9; }
-    .btn-amber-outline {
-      height: 34px; padding: 0 14px;
-      background: #fff; border: 1px solid #B45309; border-radius: 6px;
-      font-size: 13px; color: #B45309; cursor: pointer; font-weight: 500;
-    }
-    .btn-amber-outline:hover { background: #FFF8E6; }
-    .btn-blue {
-      height: 34px; padding: 0 14px;
-      background: #2D84ED; border: none; border-radius: 6px;
-      font-size: 13px; color: #fff; cursor: pointer; font-weight: 600;
-    }
-    .btn-blue:hover { background: #2272d0; }
-    .detail-title-row {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 8px; flex-wrap: wrap;
-    }
-    .detail-title { font-size: 20px; font-weight: 700; color: #24292E; margin: 0; }
+    .breadcrumb a:hover { color: #2D84ED; }
+    .cnt-header { margin-bottom: 20px; }
+    .cnt-header-status { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .cnt-eff-rev { font-size: 12.5px; color: #596066; }
+    .cnt-header-meta { display: flex; align-items: center; gap: 16px; margin-top: 6px; font-size: 12px; color: #9EA5AD; }
+    .cnt-header-meta strong { color: #596066; font-weight: 600; }
+
+    /* Lifecycle badges */
     .badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; border-radius: 20px;
-      font-size: 12px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
     }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
     .lc-draft      { background: #F0F1F3; color: #596066; }
+    .lc-draft      .badge-dot { background: #9EA5AD; }
     .lc-validating { background: #EAF3FF; color: #2D84ED; }
+    .lc-validating .badge-dot { background: #2D84ED; }
     .lc-review     { background: #F3EEFF; color: #7C5CBF; }
+    .lc-review     .badge-dot { background: #7C5CBF; }
     .lc-approved   { background: #E8F8E9; color: #2E9E34; }
-    .lc-approved .badge-dot { background: #58C65D; }
+    .lc-approved   .badge-dot { background: #58C65D; }
     .lc-inactive   { background: #FFF8E6; color: #B45309; }
+    .lc-inactive   .badge-dot { background: #F3BE4A; }
     .lc-archived   { background: #F0F1F3; color: #383F45; }
-    .ret-normal    { background: #F0F1F3; color: #596066; border: 1px solid #CED2D6; }
-    .ret-soon      { background: #FFF8E6; color: #B45309; }
-    .ret-expired   { background: #FEE2E2; color: #C83434; }
-    .chip-type {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; background: #EAF3FF; color: #2D84ED;
-      border-radius: 5px; font-size: 12px; font-weight: 600; border: 1px solid #BDD9FF;
-    }
-    .lifecycle-action-group { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .lc-archived   .badge-dot { background: #9EA5AD; }
 
-    /* Tabs — 7 tabs */
-    .tabs-wrap { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; overflow: hidden; }
-    .tab-inputs { display: none; }
-    .tab-nav {
-      display: flex; border-bottom: 1px solid #E5E7EA;
-      background: #F6F7F9; overflow-x: auto;
+    /* Transition action buttons */
+    .action-btn {
+      height: 32px; padding: 0 14px;
+      border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent;
+      display: inline-flex; align-items: center; gap: 5px;
     }
-    .tab-label {
-      padding: 12px 20px; font-size: 13px; font-weight: 500; color: #9EA5AD;
-      cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
-      transition: color 0.1s; background: #F6F7F9; user-select: none;
+    .btn-warn { border-color:#F3BE4A; color:#B45309; background:#FFFBE6; }
+    .btn-warn:hover { background:#FFF3C4; }
+    .btn-primary-sm { background:#2D84ED; color:#fff; border-color:#2D84ED; }
+    .btn-primary-sm:hover { background:#2272d0; }
+    .btn-outline { background:#fff; border-color:#CED2D6; color:#24292E; }
+    .btn-outline:hover { background:#F6F7F9; }
+    .btn-action {
+      height: 28px; padding: 0 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+      background: #fff; border: 1px solid #CED2D6; color: #24292E; cursor: pointer;
     }
-    .tab-label:hover { color: #596066; }
-    #tab1:checked ~ .tab-nav label[for="tab1"],
-    #tab2:checked ~ .tab-nav label[for="tab2"],
-    #tab3:checked ~ .tab-nav label[for="tab3"],
-    #tab4:checked ~ .tab-nav label[for="tab4"],
-    #tab5:checked ~ .tab-nav label[for="tab5"],
-    #tab6:checked ~ .tab-nav label[for="tab6"],
-    #tab7:checked ~ .tab-nav label[for="tab7"] {
-      color: #24292E; border-bottom-color: #24292E; font-weight: 600; background: #fff;
-    }
-    .tab-content { display: none; padding: 24px; }
-    #tab1:checked ~ .tab-body > #content1,
-    #tab2:checked ~ .tab-body > #content2,
-    #tab3:checked ~ .tab-body > #content3,
-    #tab4:checked ~ .tab-body > #content4,
-    #tab5:checked ~ .tab-body > #content5,
-    #tab6:checked ~ .tab-body > #content6,
-    #tab7:checked ~ .tab-body > #content7 { display: block; }
+    .btn-action:hover { background: #F6F7F9; }
 
-    /* Info layout */
-    .detail-layout { display: flex; gap: 20px; align-items: flex-start; }
-    .detail-main { flex: 1; min-width: 0; }
-    .detail-side { width: 280px; flex-shrink: 0; }
-    @media (max-width: 900px) {
-      .detail-layout { flex-direction: column; }
-      .detail-side { width: 100%; }
+    /* ── Tabs / grouped panel shell (재사용: product-detail.html과 동일 패턴) ── */
+    .detail-main { background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; overflow: hidden; }
+    .tab-groups {
+      display: flex; gap: 0; flex-wrap: nowrap; overflow-x: auto;
+      background: #fff; border-bottom: 1px solid #E5E7EA; padding: 0 8px;
     }
-
-    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
-    .info-grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .info-label {
-      font-size: 11px; font-weight: 600; color: #9EA5AD;
-      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px;
+    .detail-main .tab-panel { padding: 22px 24px; }
+    .detail-main .tab-panel .card { border: none; padding: 0; margin-bottom: 0; }
+    .detail-main .tab-panel .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .detail-main .tab-panel .card + .card { margin-top: 28px; padding-top: 24px; border-top: 1px solid #F0F1F3; }
+    .tab-group-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 13px 14px; font-size: 13px; font-weight: 500; color: #9EA5AD;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; white-space: nowrap; margin-bottom: -1px;
+      transition: color 0.12s ease, border-color 0.12s ease;
     }
-    .info-value { font-size: 14px; color: #24292E; font-weight: 500; }
-    .info-value a { color: #2D84ED; text-decoration: none; }
-    .info-value a:hover { text-decoration: underline; }
-    .info-value-sm { font-size: 13px; color: #24292E; }
-    .info-value-mono { font-size: 13px; color: #24292E; font-family: monospace; background: #F6F7F9; border-radius: 4px; padding: 2px 8px; display: inline-block; }
-
-    .tag-list { display: flex; gap: 6px; flex-wrap: wrap; }
-    .tag { background: #F0F1F3; color: #596066; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-
-    /* PDE amber left-border panel */
-    .pde-panel {
-      background: #FFFBF0;
-      border: 1px solid #FDE68A;
-      border-left: 4px solid #F3BE4A;
-      border-radius: 8px;
-      padding: 14px 16px;
-    }
-    .pde-panel-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-    }
-    .pde-panel-title { font-size: 13px; font-weight: 700; color: #92400E; }
-    .pde-panel-body { display: flex; flex-direction: column; gap: 10px; }
-    .pde-row { display: flex; flex-direction: column; gap: 3px; }
-    .pde-row-label { font-size: 11px; font-weight: 600; color: #B45309; text-transform: uppercase; letter-spacing: 0.3px; }
-    .pde-row-value { font-size: 12px; color: #92400E; }
-    .pde-cond-text {
-      font-size: 12px; color: #92400E; background: #FEF3C7;
-      border: 1px solid #FDE68A; border-radius: 5px; padding: 7px 10px; line-height: 1.5;
-    }
-    .badge-pde-approved  { background: #E8F8E9; color: #2E9E34; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .badge-pde-restricted { background: #FFF8E6; color: #B45309; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-
-    /* Tab section */
-    .tab-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #E5E7EA; }
-    .tab-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .tab-section-title { font-size: 14px; font-weight: 700; color: #24292E; margin-bottom: 16px; }
-
-    /* Validation panel */
-    .validation-panel {
-      background: #F0FDF4; border: 1px solid #B2DFB3; border-radius: 8px; padding: 14px 16px;
-    }
-    .validation-header {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
-    }
-    .validation-status { font-size: 14px; font-weight: 700; color: #2E9E34; }
-    .validation-date { font-size: 12px; color: #596066; margin-left: auto; }
-    .check-items { display: flex; flex-direction: column; gap: 6px; }
-    .check-item {
-      display: flex; align-items: center; gap: 8px; font-size: 13px; color: #24292E;
-      padding: 8px 12px; background: #fff; border-radius: 6px;
-    }
-    .check-ok  { color: #2E9E34; font-weight: 700; font-size: 14px; }
-    .check-warn { color: #B45309; font-weight: 700; font-size: 14px; }
-    .check-fail { color: #C83434; font-weight: 700; font-size: 14px; }
-    .check-label { flex: 1; }
-    .check-detail { font-size: 11px; color: #9EA5AD; }
-
-    /* Preview */
-    .preview-box {
-      background: #E5E7EA; border-radius: 8px; height: 200px;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 12px; color: #9EA5AD; font-size: 13px; margin-bottom: 12px;
-    }
-    .btn-sm {
-      height: 30px; padding: 0 12px; border: 1px solid #CED2D6;
-      background: #fff; border-radius: 6px; font-size: 12px; color: #24292E; cursor: pointer;
-    }
-    .btn-sm:hover { background: #F6F7F9; }
-    .thumb-sm {
-      width: 120px; height: 68px; background: #E5E7EA; border-radius: 4px;
-      display: flex; align-items: center; justify-content: center; color: #9EA5AD; font-size: 11px;
+    .tab-group-btn .grp-num { font-weight: 600; color: #CED2D6; transition: color 0.12s ease; }
+    .tab-group-btn:hover { color: #596066; }
+    .tab-group-btn.active { color: #24292E; font-weight: 600; border-bottom-color: #24292E; }
+    .tab-group-btn.active .grp-num { color: #24292E; }
+    @media (max-width: 720px) { .tab-group-btn { padding: 11px 10px; font-size: 12.5px; } }
+    .tab-panel { display: none; }
+    .tab-panel.group-active { display: block; }
+    .section-sublabel {
+      font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: 0.6px; margin: 0 0 6px;
     }
 
-    /* Revision table */
-    .revision-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-    .revision-table th {
-      background: #F6F7F9; padding: 9px 12px; font-size: 12px;
-      font-weight: 600; color: #596066; text-align: left; border-bottom: 1px solid #E5E7EA;
+    /* ── Section card ── */
+    .card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; box-shadow: none; }
+    .card-title { font-size: 16px; font-weight: 700; color: #24292E; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #E5E7EA; }
+
+    /* ── Field grid ── */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+    .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .field-grid.one { grid-template-columns: 1fr; }
+    .field-item { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; }
+    .field-value { font-size: 14px; color: #24292E; }
+    .field-value.large { font-size: 18px; font-weight: 700; }
+    .field-value.mono { font-family: monospace; }
+    .card-subhead {
+      font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: .05em; margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid #F0F1F3;
     }
-    .revision-table td {
-      padding: 11px 12px; font-size: 13px; color: #24292E; border-bottom: 1px solid #F0F1F3;
-    }
-    .revision-table tr:last-child td { border-bottom: none; }
-    .current-rev-chip {
-      display: inline-flex; align-items: center; padding: 2px 8px;
-      background: #E8F8E9; color: #2E9E34; border-radius: 4px; font-size: 11px; font-weight: 700;
-    }
-    .info-note {
-      background: #FFF8E6; border: 1px solid #FDE68A; border-left: 3px solid #F3BE4A;
-      border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #92400E; line-height: 1.5;
-    }
-    .info-box {
-      background: #F6F7F9; border-radius: 6px; padding: 10px 14px;
-      font-size: 12px; color: #596066; line-height: 1.5;
+    .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+    /* ── Tags ── */
+    .tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #F0F1F3; color: #596066; }
+
+    /* ── Need-confirm flag ── */
+    .need-confirm {
+      display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700;
+      color: #B45309; background: #FFF3D6; border-radius: 4px; padding: 1px 6px;
+      margin-left: 6px; text-transform: none; letter-spacing: 0;
     }
 
-    /* Retention */
-    .retention-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 14px; margin-bottom: 20px;
+    /* ── Policy restrictions ── */
+    .policy-restrict-list { display: flex; flex-direction: column; gap: 10px; }
+    .policy-restrict-item {
+      display: flex; align-items: baseline; gap: 12px; padding: 10px 14px;
+      background: #FFF8E6; border: 1px solid #F3E1AE; border-radius: 8px; font-size: 13px;
     }
-    .ret-item-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
-    .ret-item-value { font-size: 14px; color: #24292E; font-weight: 500; }
-    .dday { font-size: 12px; color: #596066; font-weight: 500; margin-top: 2px; }
-    .btn-extend {
-      height: 34px; padding: 0 14px; background: #fff;
-      border: 1px solid #CED2D6; border-radius: 6px;
-      font-size: 13px; color: #24292E; cursor: pointer; font-weight: 500;
-    }
-    .btn-extend:hover { background: #F6F7F9; }
-    .retention-timeline {
-      background: #F6F7F9; border-radius: 8px; padding: 16px;
-      display: flex; align-items: center; gap: 0; margin-top: 16px;
-    }
-    .ret-tl-start, .ret-tl-end { font-size: 11px; color: #596066; white-space: nowrap; }
-    .ret-tl-bar {
-      flex: 1; height: 8px; background: #E5E7EA; border-radius: 4px;
-      margin: 0 12px; position: relative;
-    }
-    .ret-tl-fill {
-      height: 100%; background: #58C65D; border-radius: 4px;
-      width: 70%;
-    }
-    .ret-tl-now {
-      position: absolute; top: -4px; left: 70%;
-      width: 2px; height: 16px; background: #24292E;
-    }
-    .ret-tl-now::after {
-      content: '오늘'; position: absolute; top: 18px; left: 50%;
-      transform: translateX(-50%); font-size: 10px; color: #596066; white-space: nowrap;
-    }
+    .policy-restrict-label { font-weight: 700; color: #92610A; flex-shrink: 0; min-width: 130px; }
+    .policy-restrict-value { color: #596066; }
+    .policy-detail-toggle { margin-top: 18px; padding-top: 16px; border-top: 1px solid #F0F1F3; }
+    .policy-detail-toggle summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: #2D84ED; user-select: none; }
+    .policy-detail-toggle summary:hover { text-decoration: underline; }
 
-    /* Audit */
-    .audit-timeline { display: flex; flex-direction: column; gap: 0; }
-    .audit-item {
-      display: flex; gap: 14px; padding: 12px 0;
-      border-bottom: 1px solid #F0F1F3;
-    }
-    .audit-item:last-child { border-bottom: none; }
-    .audit-time-col { width: 130px; flex-shrink: 0; }
-    .audit-time { font-size: 12px; color: #9EA5AD; white-space: nowrap; }
-    .audit-dot {
-      width: 8px; height: 8px; background: #CED2D6; border-radius: 50%;
-      flex-shrink: 0; margin-top: 4px;
-    }
-    .audit-dot.sys  { background: #2D84ED; }
-    .audit-dot.user { background: #58C65D; }
-    .audit-dot.pde  { background: #F3BE4A; }
-    .audit-body { flex: 1; }
-    .audit-actor { font-size: 12px; font-weight: 600; color: #596066; margin-bottom: 2px; }
-    .audit-desc { font-size: 13px; color: #24292E; }
+    /* ── KPI cards ── */
+    .kpi-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .kpi-card { flex: 1; min-width: 140px; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 8px; padding: 14px 16px; }
+    .kpi-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; font-variant-numeric: tabular-nums; }
+    .kpi-unit { font-size: 12px; font-weight: 400; color: #9EA5AD; margin-left: 2px; }
+    .kpi-formula { font-size: 11px; color: #9EA5AD; margin-top: 4px; }
 
-    .delta-ok { background: #E8F8E9; color: #2E9E34; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    /* ── Table inside cards ── */
+    .inner-table-wrap { overflow-x: auto; }
+    .inner-table { width: 100%; border-collapse: collapse; }
+    .inner-table thead th { background: #F6F7F9; padding: 9px 12px; font-size: 12px; font-weight: 600; color: #596066; text-align: left; border-bottom: 1px solid #E5E7EA; white-space: nowrap; }
+    .inner-table tbody td { padding: 11px 12px; font-size: 13px; color: #24292E; border-bottom: 1px solid #F0F1F3; vertical-align: middle; }
+    .inner-table tbody tr:last-child td { border-bottom: none; }
+    .inner-table .center { text-align: center; }
+    .inner-table .right { text-align: right; }
+
+    /* ── Preview / thumbnail ── */
+    .content-preview { width: 100%; height: 260px; background: #EEF0F2; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #9EA5AD; font-size: 13px; overflow: hidden; }
+    .content-preview.video::before { content: '▶'; font-size: 28px; color: #CED2D6; }
+
+    /* ── Revision pill ── */
+    .rev-current { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; background: #2D84ED; color: #fff; }
+    .rev-past { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #F0F1F3; color: #596066; }
+
+    /* ── Retention state badges ── */
+    .ret-normal  { background: #F0F1F3; color: #596066; }
+    .ret-soon    { background: #FFF8E6; color: #B45309; }
+    .ret-expired { background: #FEE2E2; color: #C83434; }
+
+    /* ── PDE decision badges ── */
+    .pde-approved  { background: #E8F8E9; color: #2E9E34; }
+    .pde-restricted{ background: #FFF3D6; color: #92610A; }
+    .pde-deferred  { background: #F0F1F3; color: #596066; }
+    .pde-rejected  { background: #FEE2E2; color: #C83434; }
+
+    /* ── Audit row ── */
+    .audit-row { display: flex; gap: 32px; flex-wrap: wrap; }
+    .audit-item { display: flex; flex-direction: column; gap: 3px; }
+
+    /* ── Revision Snapshot modal ── */
+    .rev-snap-overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,32,0.4); z-index: 500; align-items: center; justify-content: center; padding: 24px; }
+    .rev-snap-overlay.open { display: flex; }
+    .rev-snap-modal { background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; width: 560px; max-width: 100%; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+    .rev-snap-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #E5E7EA; }
+    .rev-snap-title { font-size: 15px; font-weight: 700; color: #24292E; display: flex; align-items: center; gap: 8px; }
+    .rev-snap-sub { font-size: 12px; color: #9EA5AD; margin-top: 4px; }
+    .rev-snap-close { border: none; background: none; font-size: 16px; color: #9EA5AD; cursor: pointer; padding: 4px; }
+    .rev-snap-close:hover { color: #24292E; }
+    .rev-snap-body { padding: 20px 22px; overflow-y: auto; }
+    .rev-snap-body .field-grid { margin-bottom: 0; }
+
+    /* ── Numeric align ── */
+    .num { font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 700px) {
+      .field-grid, .field-grid.three { grid-template-columns: 1fr; }
+      .kpi-row { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
 
-<!-- GNB -->
+<!-- ① GNB -->
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
@@ -302,41 +224,14 @@
     </li>
     <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
     <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
-    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
-    <div class="gnb-sub">
-    <div class="gnb-sub-title">편성표</div>
-    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
-    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
-    </div>
-    </li>
     <div class="gnb-divider"></div>
-    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
-    <div class="gnb-sub">
-    <div class="gnb-sub-title">모니터링</div>
-    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
-    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
-    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
-    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
-    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
-    </div>
-    </li>
-    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
-    <div class="gnb-sub">
-    <div class="gnb-sub-title">영업 워크스페이스</div>
-    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
-    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
-    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
-    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
-    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
-    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
-    </div>
-    </li>
+    <li><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
     <div class="gnb-divider"></div>
     <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
   </ul>
 </nav>
 
-<!-- Topbar -->
+<!-- ② Topbar -->
 <header class="topbar">
   <div class="topbar-search">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -357,709 +252,564 @@
   </div>
 </header>
 
-<!-- Main -->
+<!-- ③ Main content -->
 <main class="content">
   <div class="content-inner">
 
-    <!-- Detail Header -->
-    <div class="detail-header">
-      <div class="detail-header-top">
-        <div class="breadcrumb">
-          <a href="contents">콘텐츠</a>
-          <span class="breadcrumb-sep">›</span>
-          <span class="breadcrumb-current">갤럭시 S25 런칭 30초</span>
-        </div>
-        <div class="header-actions">
-          <button class="btn-outline" onclick="window.open('','_blank')">미리보기</button>
-          <button class="btn-outline" onclick="alert('다운로드 준비 중')">다운로드</button>
-        </div>
-      </div>
-      <div class="detail-title-row">
-        <h1 class="detail-title" id="cnt-title">갤럭시 S25 런칭 30초</h1>
-        <span class="badge lc-approved" id="cnt-lc-badge"><span class="badge-dot"></span>승인</span>
-        <!-- Approval -->
-        <span class="badge appr-approved" id="cnt-appr-badge" style="background:#E8F8E9;color:#2E9E34;">승인됨</span>
-        <!-- PDE Decision -->
-        <span class="badge-pde-approved" id="cnt-pde-badge">PDE 승인</span>
-        <span class="chip-type">파일(동영상)</span>
-        <div class="lifecycle-action-group">
-          <!-- State Transition Actions — 승인(Approved) 상태 -->
-          <button class="btn-amber-outline" onclick="if(confirm('콘텐츠를 비활성화하시겠습니까?\n승인된 Revision은 보존되며 재생 대상에서 제외됩니다.'))location.reload()">비활성화</button>
-          <button class="btn-blue" onclick="location.href='content-edit'">새 Revision</button>
-        </div>
-      </div>
-      <div style="display:flex;gap:16px;margin-top:6px;font-size:11px;color:#9EA5AD;"><span>Lifecycle</span><span>승인</span><span>PDE</span></div>
-      <div style="font-size:12px;color:#9EA5AD;" id="cnt-meta">content.id: CNT-001 &nbsp;·&nbsp; Revision: <strong style="color:#596066;">R1</strong> (Immutable) &nbsp;·&nbsp; Retention: <span class="badge ret-normal" style="font-size:11px;padding:1px 8px;">정상</span></div>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="contents">콘텐츠</a> &rsaquo; 갤럭시 S25 런칭 30초
     </div>
 
-    <!-- Lifecycle 프로세스 스테퍼 -->
-    <div class="lc-stepper-wrap" style="margin-bottom:12px;">
-      <div class="lc-stepper-title">Lifecycle 프로세스 (T-CONT-01 · T-CONT-03)</div>
-      <div class="lc-stepper" id="cnt-lc-stepper"><!-- JS가 채움 --></div>
-      <div class="lc-note" id="cnt-lc-note"></div>
+    <!-- Page header -->
+    <div class="page-header cnt-header">
+      <div class="page-header-left">
+        <div class="page-title">갤럭시 S25 런칭 30초</div>
+        <div class="page-meta">
+          <span class="page-id">CNT-2026-0142</span>
+          <span class="tag">상업광고</span>
+          <span class="tag">영상</span>
+          <span class="tag">단일(Single)</span>
+        </div>
+        <div class="cnt-header-status">
+          <span class="badge lc-approved"><span class="badge-dot"></span>승인(Approved)</span>
+          <span class="cnt-eff-rev">Current Revision <span class="rev-current">R2</span></span>
+        </div>
+        <div class="cnt-header-meta">
+          <span>최종 변경 <strong>2026.08.09</strong></span>
+          <span>작성자 <strong>홍길동</strong></span>
+        </div>
+      </div>
+      <div class="action-group" style="display:flex;align-items:center;gap:8px;">
+        <button class="action-btn btn-outline">미리보기</button>
+        <button class="action-btn btn-warn" onclick="if(confirm('비활성화하면 신규 Schedule 연결이 제한됩니다.\n계속하시겠습니까?'))location.reload()">비활성화</button>
+        <button class="action-btn btn-primary-sm" onclick="location.href='content-edit'">새 Revision</button>
+      </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs-wrap">
-      <input class="tab-inputs" type="radio" name="tabs" id="tab1" checked>
-      <input class="tab-inputs" type="radio" name="tabs" id="tab2">
-      <input class="tab-inputs" type="radio" name="tabs" id="tab3">
-      <input class="tab-inputs" type="radio" name="tabs" id="tab4">
-      <input class="tab-inputs" type="radio" name="tabs" id="tab5">
-      <input class="tab-inputs" type="radio" name="tabs" id="tab6">
-      <input class="tab-inputs" type="radio" name="tabs" id="tab7">
+    <div class="detail-main">
 
-      <div class="tab-nav">
-        <label class="tab-label" for="tab1">기본 정보</label>
-        <label class="tab-label" for="tab2">소재 정보</label>
-        <label class="tab-label" for="tab3">재생 시간</label>
-        <label class="tab-label" for="tab4">광고 정보</label>
-        <label class="tab-label" for="tab5">Revision</label>
-        <label class="tab-label" for="tab6">보관 정책</label>
-        <label class="tab-label" for="tab7">Audit / 이력</label>
+    <!-- Tab Groups -->
+    <div class="tab-groups" id="tabGroups">
+      <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">P1</span>기본 정보</button>
+      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">P2</span>정책 적용 정보</button>
+      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">P3</span>소재 정보</button>
+      <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')"><span class="grp-num">P4</span>재생 시간</button>
+      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')"><span class="grp-num">P5</span>광고 정보</button>
+      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')"><span class="grp-num">P6</span>보관 정책</button>
+      <button class="tab-group-btn" data-group="g7" onclick="switchGroup('g7')"><span class="grp-num">P7</span>변경 이력</button>
+      <button class="tab-group-btn" data-group="g8" onclick="switchGroup('g8')"><span class="grp-num">P8</span>감사</button>
+    </div>
+
+    <!-- ====== P1. 기본 정보 ====== -->
+    <div class="tab-panel group-active" data-group="g1" id="tab-basic">
+      <div class="section-sublabel">P1-1. 식별 정보</div>
+      <div class="card">
+        <div class="card-title">식별 정보</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">콘텐츠명</div>
+            <div class="field-value">갤럭시 S25 런칭 30초</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">콘텐츠 ID</div>
+            <div class="field-value mono">CNT-2026-0142</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">재생 구성 (Playback Composition)</div>
+            <div class="field-value">단일 (Single)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">기본 콘텐츠 언어 (Default Locale)</div>
+            <div class="field-value">ko-KR</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">태그</div>
+            <div class="field-value">
+              <div class="tag-group">
+                <span class="tag">갤럭시</span>
+                <span class="tag">S25</span>
+                <span class="tag">런칭</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Content Access Scope</div>
+            <div class="field-value">서울권역 · 강남지점</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">감사 정보</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">작성자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">등록일시</div>
+            <div class="field-value mono">2026-07-28 10:14</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최종 수정</div>
+            <div class="field-value mono">2026-08-09 15:40</div>
+          </div>
+        </div>
       </div>
 
-      <div class="tab-body">
+      <div class="card">
+        <div class="card-title">상태 관리</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">콘텐츠 생애주기 상태</div>
+            <div class="field-value"><span class="badge lc-approved"><span class="badge-dot"></span>승인(Approved)</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">기술검증 결과</div>
+            <div class="field-value"><span style="color:#2E9E34;font-weight:600;">SUCCESS</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">PDE 검토 결과</div>
+            <div class="field-value"><span class="badge pde-approved">Approved</span></div>
+          </div>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:#596066;">
+          초안(Draft) → 검증중(Validating) → <strong>검토대기(Review Pending)</strong> → <strong style="color:#2E9E34;">승인(Approved)</strong> → 비활성(Inactive) → 보관(Archived)
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:#9EA5AD;">
+          ※ PDE는 Lifecycle State를 직접 변경하지 않습니다. PDE Approved는 승인 전환의 조건이며, 실제 전환은 CMS Content Domain Transition Rule이 수행합니다. Rejected는 Lifecycle 상태가 아니라 별도의 PDE Decision입니다.
+        </div>
+      </div>
+    </div>
 
-        <!-- ─── Tab 1: 기본 정보 ─── -->
-        <div id="content1" class="tab-content">
-          <div class="detail-layout">
-            <div class="detail-main">
-              <div class="info-grid">
-                <div class="info-item">
-                  <div class="info-label">콘텐츠 ID</div>
-                  <div class="info-value"><span class="info-value-mono">CNT-001</span></div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">콘텐츠명</div>
-                  <div class="info-value">갤럭시 S25 런칭 30초</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">Lifecycle 상태</div>
-                  <div class="info-value">
-                    <span class="badge lc-approved"><span class="badge-dot"></span>승인</span>
-                  </div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">Revision (자동생성, 불변)</div>
-                  <div class="info-value"><span class="info-value-mono">R1</span> <span style="font-size:11px;color:#9EA5AD;">생성 후 변경 불가</span></div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">태그</div>
-                  <div class="info-value">
-                    <div class="tag-list">
-                      <span class="tag">갤럭시</span>
-                      <span class="tag">런칭</span>
-                      <span class="tag">삼성</span>
-                      <span class="tag">30초</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- State Transition 섹션 -->
-              <div style="background:#F6F7F9;border-radius:8px;padding:16px;margin-bottom:20px;">
-                <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:12px;">상태 전환 (State Transition)</div>
-                <div style="font-size:12px;color:#596066;margin-bottom:10px;">현재 상태: <span class="badge lc-approved" style="font-size:11px;"><span class="badge-dot"></span>승인</span> &nbsp;→&nbsp; 가능한 전환:</div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                  <button class="btn-amber-outline" onclick="if(confirm('비활성화하시겠습니까?'))location.reload()">비활성화 (Inactive)</button>
-                  <button class="btn-outline" onclick="location.href='content-edit'" style="border-color:#2D84ED;color:#2D84ED;">새 Revision → 검증중</button>
-                </div>
-                <div style="font-size:11px;color:#9EA5AD;margin-top:8px;">Lifecycle: 초안 → 검증중 → 검토대기 → 승인 ↔ 비활성 → 보관</div>
-              </div>
-
-              <div class="info-grid" style="margin-bottom:0;">
-                <div class="info-item">
-                  <div class="info-label">소스유형</div>
-                  <div class="info-value">파일 (동영상)</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">광고유형</div>
-                  <div class="info-value">일반광고</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">업로드일</div>
-                  <div class="info-value">2025-08-01</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">업로더</div>
-                  <div class="info-value">이민지</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">광고주</div>
-                  <div class="info-value"><a href="#">삼성전자</a> <span style="font-size:11px;color:#9EA5AD;">ADV-001</span></div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">대행사</div>
-                  <div class="info-value">제일기획</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- PDE amber left-border panel -->
-            <div class="detail-side">
-              <div class="pde-panel">
-                <div class="pde-panel-header">
-                  <span class="pde-panel-title">⚠ PDE 검토 결과</span>
-                  <span class="badge-pde-approved">승인</span>
-                </div>
-                <div class="pde-panel-body">
-                  <div class="pde-row">
-                    <div class="pde-row-label">Decision</div>
-                    <div class="pde-row-value"><strong>승인(Approved)</strong></div>
-                  </div>
-                  <div class="pde-row">
-                    <div class="pde-row-label">적용 정책</div>
-                    <div class="pde-cond-text">일반 상업광고 — 전 시간대 송출 허용. 특별 제한 조건 없음.</div>
-                  </div>
-                  <div class="pde-row">
-                    <div class="pde-row-label">Policy Version</div>
-                    <div class="pde-row-value">v2.1.3</div>
-                  </div>
-                  <div class="pde-row">
-                    <div class="pde-row-label">평가일시</div>
-                    <div class="pde-row-value">2025-08-03 10:30</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <!-- ====== P2. 정책 적용 정보 ====== -->
+    <div class="tab-panel" data-group="g2" id="tab-policy">
+      <div class="section-sublabel">P2-1. 정책 적용 정보</div>
+      <div class="card">
+        <div class="card-title">정책 적용 정보</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Decision Context Status</div>
+            <div class="field-value"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">PolicySet Reference Status</div>
+            <div class="field-value"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">PDE 연동 상태</div>
+            <div class="field-value">Available</div>
           </div>
         </div>
 
-        <!-- ─── Tab 2: 소재 정보 ─── -->
-        <div id="content2" class="tab-content">
-          <div class="tab-section">
-            <div class="tab-section-title">원본 소스 유형</div>
-            <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:#EAF3FF;border:1px solid #BDD9FF;border-radius:6px;font-size:13px;font-weight:600;color:#2D84ED;">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3z" rx="2" stroke="#2D84ED" stroke-width="1.4" fill="none"/><path d="M5.5 8h5M8 5.5v5" stroke="#2D84ED" stroke-width="1.4" stroke-linecap="round"/></svg>
-              파일 (File)
-            </div>
+        <div class="card-subhead">주요 운영 제한</div>
+        <div class="policy-restrict-list">
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">광고 업종 규제</span>
+            <span class="policy-restrict-value">전자기기 업종 — 국가 광고규제 기준 충족, 별도 제한 없음</span>
           </div>
-
-          <div class="tab-section">
-            <div class="tab-section-title">원본 파일 정보 (content.source.file)</div>
-            <div class="info-grid info-grid-3">
-              <div class="info-item">
-                <div class="info-label">파일명</div>
-                <div class="info-value-sm" style="word-break:break-all;">galaxy_s25_launch_30sec_v3.mp4</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">파일 크기</div>
-                <div class="info-value">245 MB</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">해상도</div>
-                <div class="info-value">1920×1080px</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">프레임레이트</div>
-                <div class="info-value">30fps</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">비트레이트</div>
-                <div class="info-value">8,000 kbps</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">코덱</div>
-                <div class="info-value">H.264</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">오디오</div>
-                <div class="info-value">AAC 48kHz Stereo <span style="font-size:11px;color:#9EA5AD;">(옥외 무음 재생)</span></div>
-              </div>
-            </div>
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">오디오 포함</span>
+            <span class="policy-restrict-value">오디오 트랙 없음 — 무음 콘텐츠, Audio 금지 정책과 무관</span>
           </div>
-
-          <div class="tab-section">
-            <div class="tab-section-title">미리보기</div>
-            <div class="preview-box">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="3" y="3" width="34" height="34" rx="4" stroke="#CED2D6" stroke-width="2"/><path d="M16 14l12 6-12 6V14z" fill="#CED2D6"/></svg>
-              <span>미리보기 영역</span>
-              <button class="btn-sm" onclick="alert('미리보기 재생 (플레이어 연동 필요)')">미리보기 재생</button>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <div class="thumb-sm">썸네일</div>
-              <div style="font-size:12px;color:#596066;">자동 생성 썸네일</div>
-            </div>
-          </div>
-
-          <div class="tab-section">
-            <div class="tab-section-title">Technical Validation 결과</div>
-            <div class="validation-panel">
-              <div class="validation-header">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="#E8F8E9"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="#2E9E34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="validation-status">통과</span>
-                <span class="validation-date">검증일시: 2025-08-02 14:23</span>
-              </div>
-              <div class="check-items">
-                <div class="check-item">
-                  <span class="check-ok">✓</span>
-                  <span class="check-label">파일 형식</span>
-                  <span class="check-detail">MP4 — 지원 형식</span>
-                </div>
-                <div class="check-item">
-                  <span class="check-ok">✓</span>
-                  <span class="check-label">해상도</span>
-                  <span class="check-detail">1920×1080 — 요구 해상도 충족</span>
-                </div>
-                <div class="check-item">
-                  <span class="check-ok">✓</span>
-                  <span class="check-label">코덱</span>
-                  <span class="check-detail">H.264 / AAC — 지원 코덱</span>
-                </div>
-                <div class="check-item">
-                  <span class="check-ok">✓</span>
-                  <span class="check-label">재생시간</span>
-                  <span class="check-detail">30.000초 — 설정값과 일치</span>
-                </div>
-                <div class="check-item">
-                  <span class="check-ok">✓</span>
-                  <span class="check-label">파일 크기</span>
-                  <span class="check-detail">245 MB — 500 MB 이하</span>
-                </div>
-              </div>
-            </div>
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">해상도/화면비</span>
+            <span class="policy-restrict-value">1920×1080 · 16:9 — 대상 미디어 호환조건 충족</span>
           </div>
         </div>
 
-        <!-- ─── Tab 3: 재생 시간 ─── -->
-        <div id="content3" class="tab-content">
-          <div class="tab-section">
-            <div class="tab-section-title">재생시간 정보 (content.playbackDuration)</div>
-            <div class="info-grid info-grid-3">
-              <div class="info-item">
-                <div class="info-label">원본 재생시간 (Source)</div>
-                <div class="info-value">30.000초</div>
-                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">파일에서 자동 추출 (Read-only)</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">설정 재생시간 (Playback Duration)</div>
-                <div class="info-value">30초</div>
-                <div style="font-size:11px;color:#9EA5AD;margin-top:3px;">스케줄 SSOT</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Delta</div>
-                <div class="info-value">0초</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">허용 오차</div>
-                <div class="info-value">±0.5초</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Delta 상태</div>
-                <div class="info-value"><span class="delta-ok">정상 범위</span></div>
-              </div>
+        <details class="policy-detail-toggle">
+          <summary>정책 상세 보기</summary>
+          <div class="field-grid three" style="margin-top:14px;">
+            <div class="field-item">
+              <div class="field-label">Effective PolicySet Reference</div>
+              <div class="field-value mono" style="font-size:12px;">POL-SNAP-CNT0142-20260809</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Policy Version</div>
+              <div class="field-value">v2.1.3</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Applied Policy IDs</div>
+              <div class="field-value" style="font-size:12px;color:#596066;">KR-LAW-ADV-2024, KR-CONTENT-COMMERCIAL-v3</div>
             </div>
           </div>
-          <div class="tab-section">
-            <div class="tab-section-title">호환 미디어 유형</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">OF (옥외)</span>
-              <span class="badge" style="background:#EAF3FF;color:#2D84ED;">IN (실내 대형)</span>
-            </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Content Decision Snapshot</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Decision ID</div>
+            <div class="field-value mono" style="font-size:12px;">DEC-CNT0142-R2-0809</div>
           </div>
-          <div class="tab-section">
-            <div class="tab-section-title">참조 원칙 (content.masterReferencePolicy)</div>
-            <div style="background:#F6F7F9;border-radius:6px;padding:12px 16px;font-size:13px;color:#596066;display:flex;align-items:center;gap:8px;">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9EA5AD" stroke-width="1.4"/><path d="M8 7v4M8 5v1" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
-              <span>스케줄에서 최신 Revision 자동 참조 (Read-only 시스템 규칙)</span>
-            </div>
+          <div class="field-item">
+            <div class="field-label">Context Hash</div>
+            <div class="field-value mono" style="font-size:12px;">a91f...2c7e</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Valid Until</div>
+            <div class="field-value mono" style="font-size:12px;">2026-11-09</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 실제 송출 국가가 확정되기 전 Content 자체 PDE Decision은 선행 판단입니다. Schedule에서 실제 Media/Location의 Jurisdiction Country 기준으로 최종 재평가되며, Access Country는 이를 Override하지 않습니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== P3. 소재 정보 ====== -->
+    <div class="tab-panel" data-group="g3" id="tab-source">
+      <div class="section-sublabel">P3-1. 소재 정보</div>
+      <div class="card">
+        <div class="card-title">원본 소스</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">업로드 유형 (Upload Source Type)</div>
+            <div class="field-value">파일 (File)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">파일명</div>
+            <div class="field-value" style="font-size:13px;">galaxy_s25_launch_30s_v2.mp4</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">파일 크기</div>
+            <div class="field-value">42.8 MB</div>
           </div>
         </div>
 
-        <!-- ─── Tab 4: 광고 정보 ─── -->
-        <div id="content4" class="tab-content">
-          <div class="tab-section">
-            <div class="tab-section-title">광고 분류 (content.advertisingType)</div>
-            <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">광고 유형</div>
-                <div class="info-value">일반광고 (Commercial)</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">업종 카테고리 (content.industryCategoryCode)</div>
-                <div class="info-value">IT/전자</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">광고소재 분류</div>
-                <div class="info-value">제품 런칭</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">시즌</div>
-                <div class="info-value">2025 Q1</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">지역제한</div>
-                <div class="info-value">없음</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">연령제한</div>
-                <div class="info-value">없음</div>
-              </div>
-            </div>
+        <div class="card-subhead">기술 메타데이터 (자동 추출, Read-only)</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">MIME 유형</div>
+            <div class="field-value mono">video/mp4</div>
           </div>
-          <div class="tab-section">
-            <div class="tab-section-title">콘텐츠 주체</div>
-            <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">광고주 (content.advertiserId)</div>
-                <div class="info-value"><a href="#">삼성전자</a> <span style="font-size:11px;color:#9EA5AD;">ADV-001</span></div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">대행사 (content.agencyId)</div>
-                <div class="info-value"><a href="#">제일기획</a></div>
-              </div>
-            </div>
+          <div class="field-item">
+            <div class="field-label">해상도</div>
+            <div class="field-value">1920 × 1080 (FHD)</div>
           </div>
-          <div class="tab-section">
-            <div class="tab-section-title">PDE 검토 결과</div>
-            <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">PDE 검토일</div>
-                <div class="info-value">2025-08-03</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">PDE 결정</div>
-                <div class="info-value"><span class="badge-pde-approved">Approved (제한 없음)</span></div>
-              </div>
-            </div>
+          <div class="field-item">
+            <div class="field-label">화면비 (Aspect Ratio)</div>
+            <div class="field-value">16:9</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">코덱</div>
+            <div class="field-value mono">H.264</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">프레임레이트</div>
+            <div class="field-value">29.97 fps</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">오디오 포함 여부</div>
+            <div class="field-value">없음 (무음)</div>
+          </div>
+          <div class="field-item" style="grid-column:1/-1;">
+            <div class="field-label">체크섬 / 해시</div>
+            <div class="field-value mono" style="font-size:12px;color:#9EA5AD;">sha256:8f1e...b04a2</div>
           </div>
         </div>
 
-        <!-- ─── Tab 5: Revision ─── -->
-        <div id="content5" class="tab-content">
-          <div class="tab-section">
-            <div class="info-note" style="margin-bottom:16px;">
-              ⚠ Revision 생성 후 소재 정보 변경 불가 — 핵심 소재(파일·URL) 변경이 필요한 경우 새 Revision을 생성하세요.
-            </div>
-            <div class="tab-section-title">Revision 목록</div>
-            <table class="revision-table">
+        <div class="card-subhead">미리보기 자산</div>
+        <div class="content-preview video">
+          <span>미리보기 재생 영역 (원본 파일 기반)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== P4. 재생 시간 ====== -->
+    <div class="tab-panel" data-group="g4" id="tab-duration">
+      <div class="section-sublabel">P4-1. 재생 시간</div>
+      <div class="card">
+        <div class="card-title">시간 정보</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">원본 재생시간 (Source Duration)</div>
+            <div class="field-value large num">30.4<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">초</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">설정 재생시간 (Playback Duration)</div>
+            <div class="field-value large num">30<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">초</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">재생시간 차이 (Duration Delta)</div>
+            <div class="field-value num" style="color:#B45309;">-0.4초</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">시간 검증</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">허용 오차 (Tolerance)</div>
+            <div class="field-value">1초 미만</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">보정 방식 (Duration Adjustment)</div>
+            <div class="field-value">없음 (허용 오차 이내)</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 운영 적합성 판단에서는 Playback Duration이 Source Duration보다 우선합니다. 허용 오차를 초과하는 Delta는 늘이기(Extend)/자르기(Trim)/재요청(Re-request) 중 하나로 보정 권고됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== P5. 광고 정보 ====== -->
+    <div class="tab-panel" data-group="g5" id="tab-ad">
+      <div class="section-sublabel">P5-1. 광고 정보</div>
+      <div class="card">
+        <div class="card-title">분류</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">광고 유형 (Advertising Type)</div>
+            <div class="field-value">상업광고 (Commercial)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">광고 업종 (Industry Category)</div>
+            <div class="field-value">전자기기 · 모바일</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">콘텐츠 주체</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">광고주 (Advertiser)</div>
+            <div class="field-value">삼성전자 <span style="font-size:11px;color:#9EA5AD;">ADV-0091</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">광고대행사 (Agency)</div>
+            <div class="field-value">제일기획 <span style="font-size:11px;color:#9EA5AD;">AGY-0014</span></div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 광고주/대행사는 외부 Master의 고유 ID만 참조하며, Content가 Master 원본 정보를 소유·복제하지 않습니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== P6. 보관 정책 ====== -->
+    <div class="tab-panel" data-group="g6" id="tab-retention">
+      <div class="section-sublabel">P6-1. 보관 정책</div>
+      <div class="card">
+        <div class="card-title">정책 분기 · 기간 계산</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">보관 정책 유형</div>
+            <div class="field-value">시스템 기본 (System Default)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">보관 상태 (Retention State)</div>
+            <div class="field-value"><span class="badge ret-normal">Active Retention</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">보관 기준일 (Retention Base Date)</div>
+            <div class="field-value mono">해당 없음 — 진행 Schedule 있음</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">1차 보관 만료일</div>
+            <div class="field-value mono">기준일 + 3개월</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">삭제 권고일</div>
+            <div class="field-value mono" style="color:#9EA5AD;">해당 없음</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 보관 기준일은 이 Content Revision을 참조한 최종 Schedule 종료일(MAX endDate)로 산정됩니다. Retention 만료 후 원본 Asset은 삭제 가능하나 Content ID·Revision ID·PDE Decision Log 등 Logical/Audit Record는 계속 보존됩니다.
+        </div>
+
+        <div class="card-subhead">연장 / 삭제</div>
+        <div style="display:flex;gap:8px;">
+          <button class="action-btn btn-outline" disabled style="opacity:.5;cursor:not-allowed;">보관 연장 (Delete Recommended 상태에서만 가능)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== P7. 변경 이력 (Revision) ====== -->
+    <div class="tab-panel" data-group="g7" id="tab-revision">
+      <div class="section-sublabel">P7-1. Revision</div>
+      <div class="card">
+        <div class="card-title">Revision 이력</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">Revision = 특정 시점에 유효했던 콘텐츠 정의 버전의 스냅샷. "누가 무엇을 바꿨는지"는 <a href="javascript:void(0)" onclick="switchGroup('g8')" style="color:#2D84ED;">감사(Audit)</a>에서 확인하세요.</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Revision</th>
+                <th>변경 사유</th>
+                <th>핵심 변경 항목</th>
+                <th>효력 시작일</th>
+                <th>생성자</th>
+                <th class="center"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rev-current">R2</span> <span style="font-size:11px;color:#9EA5AD;">현재</span></td>
+                <td>재생시간 보정</td>
+                <td style="font-size:12px;color:#596066;">Playback Duration: 32초 → 30초</td>
+                <td class="num">2026-08-09</td>
+                <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R2')">상세보기</button></td>
+              </tr>
+              <tr>
+                <td><span class="rev-past">R1</span></td>
+                <td>최초 등록</td>
+                <td style="font-size:12px;color:#596066;">신규 생성</td>
+                <td class="num">2026-07-28</td>
+                <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R1')">상세보기</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 과거 Revision은 직접 수정할 수 없으며, 해당 Revision을 참조한 Schedule/Chain은 계속 그 Revision과 당시 PolicySet Reference를 고정 참조합니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision Snapshot Modal -->
+    <div class="rev-snap-overlay" id="revSnapOverlay" onclick="if(event.target===this)closeRevisionSnapshot()">
+      <div class="rev-snap-modal">
+        <div class="rev-snap-head">
+          <div>
+            <div class="rev-snap-title">Revision Snapshot <span class="rev-current" id="revSnapId">R2</span></div>
+            <div class="rev-snap-sub">조회 전용(Read-only) — 해당 Revision 당시 콘텐츠 정의</div>
+          </div>
+          <button class="rev-snap-close" onclick="closeRevisionSnapshot()">✕</button>
+        </div>
+        <div class="rev-snap-body" id="revSnapBody"></div>
+      </div>
+    </div>
+
+    <!-- ====== P8. 감사 (Audit) ====== -->
+    <div class="tab-panel" data-group="g8" id="tab-audit">
+      <div class="section-sublabel">P8-1. 감사</div>
+      <div class="card">
+        <div class="card-title">감사 정보 (Audit Log)</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">Audit = 누가 무엇을 언제 바꿨는지에 대한 변경 기록. 특정 시점의 콘텐츠 정의 버전 자체를 보려면 <a href="javascript:void(0)" onclick="switchGroup('g7')" style="color:#2D84ED;">변경 이력(Revision)</a>의 상세보기를 확인하세요.</div>
+        <div class="audit-row">
+          <div class="audit-item">
+            <div class="field-label">최초 생성일</div>
+            <div class="field-value">2026-07-28</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">생성자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">최종 수정일</div>
+            <div class="field-value">2026-08-09 15:40</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">최종 수정자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">현재 Revision</div>
+            <div class="field-value"><span class="rev-current">R2</span></div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">Lifecycle 상태</div>
+            <div class="field-value"><span class="badge lc-approved" style="font-size:12px;"><span class="badge-dot"></span>승인</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <div class="card-title" style="font-size:12px;border-bottom:none;padding-bottom:0;margin-bottom:10px;">최근 변경 이력</div>
+          <div class="inner-table-wrap">
+            <table class="inner-table">
               <thead>
                 <tr>
-                  <th>Revision 번호</th>
-                  <th>변경내역</th>
-                  <th>상태</th>
-                  <th>생성일</th>
-                  <th>생성자</th>
-                  <th></th>
+                  <th>일시</th>
+                  <th>변경 항목</th>
+                  <th>이전 값</th>
+                  <th>변경 후 값</th>
+                  <th>처리자</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="font-weight:700;font-family:monospace;">R1</td>
-                  <td style="font-size:12px;color:#596066;">최초 등록 — galaxy_s25_launch_30sec_v3.mp4<br><span style="color:#9EA5AD;">Effective: 2025-08-05~ &nbsp;·&nbsp; 변경내용: 최초 등록</span></td>
-                  <td><span class="badge lc-approved">승인</span></td>
-                  <td style="font-size:12px;color:#596066;">2025-08-01</td>
-                  <td style="font-size:12px;">이민지</td>
-                  <td><span class="current-rev-chip">현재</span></td>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-08-09 15:40</td>
+                  <td>Playback Duration</td>
+                  <td style="color:#9EA5AD;">32초</td>
+                  <td>30초</td>
+                  <td>홍길동</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-08-09 15:40</td>
+                  <td>Revision 생성 (R2)</td>
+                  <td style="color:#9EA5AD;">R1</td>
+                  <td>R2</td>
+                  <td>홍길동</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-07-30 09:12</td>
+                  <td>Lifecycle 상태전환</td>
+                  <td style="color:#9EA5AD;">검토대기</td>
+                  <td>승인</td>
+                  <td>System (PDE Gate 통과)</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-07-28 10:20</td>
+                  <td>기술검증 결과</td>
+                  <td style="color:#9EA5AD;">—</td>
+                  <td>SUCCESS</td>
+                  <td>System</td>
                 </tr>
               </tbody>
             </table>
-            <div style="margin-bottom:16px;">
-              <div style="font-size:12px;color:#596066;margin-bottom:8px;">현재 적용 Revision: <strong>R1</strong> (Immutable — 생성 후 소재 정보 불변) &nbsp;·&nbsp; 최초 등록·승인: 2025-08-01</div>
-              <button class="btn-blue" onclick="location.href='content-edit'">+ 새 Revision 생성</button>
-            </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- ─── Tab 6: 보관 정책 ─── -->
-        <div id="content6" class="tab-content">
-          <div class="tab-section">
-            <div class="tab-section-title">보관 정책 (content.retentionPolicy)</div>
-            <div class="retention-grid">
-              <div>
-                <div class="ret-item-label">보관 유형</div>
-                <div class="ret-item-value">표준 (계약 종료 후 2년 보존)</div>
-              </div>
-              <div>
-                <div class="ret-item-label">예상 보관 만료일 (content.retentionPolicy.expireAt)</div>
-                <div class="ret-item-value">2028-08-01</div>
-              </div>
-              <div>
-                <div class="ret-item-label">물리 삭제 예정</div>
-                <div class="ret-item-value">없음</div>
-              </div>
-              <div>
-                <div class="ret-item-label">Retention 상태</div>
-                <div class="ret-item-value"><span class="badge ret-normal">정상</span></div>
-              </div>
-              <div>
-                <div class="ret-item-label">자동 보관 (content.retentionPolicy.autoArchive)</div>
-                <div class="ret-item-value" style="display:flex;align-items:center;gap:8px;">
-                  <span style="font-size:13px;">활성화</span>
-                  <span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">ON</span>
-                </div>
-              </div>
-              <div style="display:flex;align-items:flex-end;">
-                <button class="btn-extend" onclick="if(confirm('보관 기간을 1년 연장하시겠습니까? (Admin 권한 필요)'))alert('보관 기간이 연장되었습니다.')">보관 기간 연장</button>
-              </div>
-            </div>
+    </div><!-- /detail-main -->
 
-            <!-- Retention Timeline -->
-            <div class="retention-timeline">
-              <span class="ret-tl-start">2025-08-01 (등록)</span>
-              <div class="ret-tl-bar">
-                <div class="ret-tl-fill"></div>
-                <div class="ret-tl-now"></div>
-              </div>
-              <span class="ret-tl-end">2028-08-01 (만료)</span>
-            </div>
-
-            <div class="info-box" style="margin-top:16px;">만료 후 Asset 파일은 삭제 가능하나, 논리적 레코드 및 Audit 이력은 영구 보존됩니다.</div>
-          </div>
-        </div>
-
-        <!-- ─── Tab 7: Audit / 이력 ─── -->
-        <div id="content7" class="tab-content">
-          <div class="tab-section">
-            <div class="tab-section-title">담당자 / 생성·수정 정보</div>
-            <div class="info-grid">
-              <div class="info-item">
-                <div class="info-label">등록자</div>
-                <div class="info-value">이민지</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">등록일</div>
-                <div class="info-value">2025-08-01</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">최종 수정자</div>
-                <div class="info-value">시스템</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">최종 수정일</div>
-                <div class="info-value">2026-08-19</div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-section">
-            <div class="tab-section-title">변경 이력</div>
-            <div class="audit-timeline">
-              <div class="audit-item">
-                <div class="audit-time-col"><div class="audit-time">2026-08-19</div></div>
-                <div class="audit-dot sys"></div>
-                <div class="audit-body">
-                  <div class="audit-actor">시스템</div>
-                  <div class="audit-desc">콘텐츠 조회</div>
-                </div>
-              </div>
-              <div class="audit-item">
-                <div class="audit-time-col"><div class="audit-time">2025-08-10</div></div>
-                <div class="audit-dot user"></div>
-                <div class="audit-body">
-                  <div class="audit-actor">홍길동</div>
-                  <div class="audit-desc">스케줄 편성 등록</div>
-                </div>
-              </div>
-              <div class="audit-item">
-                <div class="audit-time-col"><div class="audit-time">2025-08-03</div></div>
-                <div class="audit-dot pde"></div>
-                <div class="audit-body">
-                  <div class="audit-actor">시스템(PDE)</div>
-                  <div class="audit-desc">PDE 승인 — <span style="color:#2E9E34;font-weight:600;">Approved (제한 없음)</span></div>
-                </div>
-              </div>
-              <div class="audit-item">
-                <div class="audit-time-col"><div class="audit-time">2025-08-02 14:23</div></div>
-                <div class="audit-dot sys"></div>
-                <div class="audit-body">
-                  <div class="audit-actor">시스템</div>
-                  <div class="audit-desc">기술검증 완료 — <span style="color:#2E9E34;font-weight:600;">통과</span></div>
-                </div>
-              </div>
-              <div class="audit-item">
-                <div class="audit-time-col"><div class="audit-time">2025-08-01</div></div>
-                <div class="audit-dot user"></div>
-                <div class="audit-body">
-                  <div class="audit-actor">이민지</div>
-                  <div class="audit-desc">콘텐츠 등록 — R1 생성 (최초 등록)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /tab-body -->
-    </div><!-- /tabs-wrap -->
-
-  </div>
+  </div><!-- /content-inner -->
 </main>
 
-<script src="../assets/js/cms.js"></script>
 <script>
-(function() {
-  const CONTENTS = {
-    'CNT-001': { title: '갤럭시 S25 런칭 30초', advertiser: '삼성전자', adType: '일반광고', duration: '30초', uploader: '이민지', uploadedAt: '2025-08-01', sourceType: '파일 (동영상)', tags: ['갤럭시', '런칭', '삼성', '30초'], lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-amber-outline" onclick="if(confirm(\'비활성화하시겠습니까?\'))location.reload()">비활성화 (Inactive)</button><button class="btn-outline" onclick="location.href=\'content-edit\'" style="border-color:#2D84ED;color:#2D84ED;">새 Revision → 검증중</button>', stateNote: 'Lifecycle: 초안 → 검증중 → 검토대기 → 승인 ↔ 비활성 → 보관' },
-    'CNT-002': { title: '인천공항 브랜드 스팟', advertiser: '현대자동차', adType: '일반광고', duration: '15초', uploader: '김영수', uploadedAt: '2025-07-28', sourceType: '파일 (동영상)', tags: ['현대', '아이오닉', '공항', '15초'], lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-amber-outline" onclick="if(confirm(\'비활성화하시겠습니까?\'))location.reload()">비활성화 (Inactive)</button>', stateNote: '승인 완료 — 집행 가능 상태' },
-    'CNT-003': { title: '홍대 팝업스토어 안내', advertiser: '나이키코리아', adType: '일반광고', duration: '10초', uploader: '박민서', uploadedAt: '2025-07-01', sourceType: '파일 (동영상)', tags: ['나이키', '팝업', '홍대', '10초'], lc: 'review', lcLabel: '검토대기', appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', pde: 'PDE 미심사', pdeClass: '', stateActions: '<button class="btn-blue" onclick="if(confirm(\'승인하시겠습니까?\'))location.reload()">승인</button><button class="btn-amber-outline" onclick="location.reload()">반려</button>', stateNote: '검토 담당자의 최종 승인 대기 중' },
-    'CNT-004': { title: '코엑스 신제품 런칭', advertiser: 'LG전자', adType: '일반광고', duration: '20초', uploader: '이민지', uploadedAt: '2025-07-15', sourceType: '파일 (동영상)', tags: ['LG전자', '신제품', '코엑스', '20초'], lc: 'validating', lcLabel: '검증중', appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', pde: 'PDE 검토중', pdeClass: 'badge-pde-restricted', stateActions: '<span style="font-size:13px;color:#9EA5AD;">시스템 자동 검증 진행 중 — 완료 후 검토대기 전환 예정</span>', stateNote: '기술 검증 자동화 파이프라인 처리 중' },
-    'CNT-005': { title: '판교 IT 박람회 영상', advertiser: 'SK하이닉스', adType: '일반광고', duration: '45초', uploader: '홍길동', uploadedAt: '2025-07-20', sourceType: '파일 (동영상)', tags: ['SK하이닉스', 'IT', '박람회', '45초'], lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '', stateActions: '<button class="btn-blue" onclick="location.href=\'content-edit\'">검증 제출</button><button class="btn-outline">삭제</button>', stateNote: '초안 상태 — 검증 제출 전' },
-    'CNT-006': { title: '공익광고 교통안전', advertiser: '서울시', adType: '공익광고', duration: '30초', uploader: '박민서', uploadedAt: '2025-06-30', sourceType: '파일 (동영상)', tags: ['공익', '교통안전', '서울시', '30초'], lc: 'approved', lcLabel: '승인', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-amber-outline" onclick="if(confirm(\'비활성화하시겠습니까?\'))location.reload()">비활성화 (Inactive)</button>', stateNote: 'Retention 만료 임박 — 갱신 필요' },
-    'CNT-007': { title: '여름 시즌 프로모션', advertiser: '롯데마트', adType: '일반광고', duration: '20초', uploader: '김영수', uploadedAt: '2025-08-05', sourceType: '파일 (동영상)', tags: ['롯데마트', '여름', '프로모션', '20초'], lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '', stateActions: '<button class="btn-blue" onclick="location.href=\'content-edit\'">검증 제출</button><button class="btn-outline">삭제</button>', stateNote: '초안 상태 — 콘텐츠 검토 전' },
-    'CNT-008': { title: '브랜드 자체 광고', advertiser: 'MNM Networks', adType: '자체광고', duration: '10초', uploader: '홍길동', uploadedAt: '2025-05-10', sourceType: '파일 (동영상)', tags: ['자체광고', 'MNM', '브랜드'], lc: 'inactive', lcLabel: '비활성', appr: '승인됨', apprStyle: 'background:#E8F8E9;color:#2E9E34;', pde: 'PDE 승인', pdeClass: 'badge-pde-approved', stateActions: '<button class="btn-outline" onclick="if(confirm(\'재활성화하시겠습니까?\'))location.reload()">재활성화 (Active)</button><button class="btn-outline" onclick="location.reload()">보관 (Archive)</button>', stateNote: '비활성 상태 — 재활성화 또는 보관 선택 가능' },
-    'CNT-NEW': { title: '(신규 등록 콘텐츠)', advertiser: '(광고주 미입력)', adType: '일반광고', duration: '—', uploader: '홍길동', uploadedAt: '2026-08-20', sourceType: '파일 (동영상)', tags: ['신규'], lc: 'draft', lcLabel: '초안', appr: '미제출', apprStyle: 'background:#F0F1F3;color:#9EA5AD;', pde: 'PDE 미심사', pdeClass: '', stateActions: '', stateNote: '초안 상태 — 기술검증 요청을 눌러 검증을 시작하세요.', isNew: true }
-  };
+function switchGroup(group) {
+  document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('group-active', p.dataset.group === group); });
+}
 
-  function ii(label, value) {
-    return '<div class="info-item"><div class="info-label">' + label + '</div><div class="info-value">' + value + '</div></div>';
+document.addEventListener('DOMContentLoaded', function() { switchGroup('g1'); });
+
+var REVISION_SNAPSHOTS = {
+  'R2': {
+    label: '2026-08-09 ~ 현재', fields: [
+      ['콘텐츠명', '갤럭시 S25 런칭 30초'], ['설정 재생시간', '30초'],
+      ['업로드 유형', '파일 (File)'], ['해상도', '1920 × 1080 (FHD)'],
+      ['Lifecycle 상태', '승인(Approved)'], ['PDE Decision', 'Approved']
+    ]
+  },
+  'R1': {
+    label: '2026-07-28 ~ 2026-08-09', fields: [
+      ['콘텐츠명', '갤럭시 S25 런칭 30초'], ['설정 재생시간', '32초'],
+      ['업로드 유형', '파일 (File)'], ['해상도', '1920 × 1080 (FHD)'],
+      ['Lifecycle 상태', '승인(Approved)'], ['PDE Decision', 'Approved']
+    ]
   }
+};
 
-  function goStateCnt(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
-
-  const STATE_OVERRIDES_CNT = {
-    'draft':      { lc: 'draft',      label: '초안',    appr: '미제출',  apprStyle: 'background:#F0F1F3;color:#9EA5AD;', actions: '<button class="btn-blue" onclick="goStateCnt(\'validating\')">기술검증 요청</button><button class="btn-outline" onclick="location.href=\'content-edit\'">수정</button>', note: '초안 상태 — 기술검증 요청을 눌러 검증을 시작하세요.' },
-    'validating': { lc: 'validating', label: '검증중',  appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', actions: '<button class="btn-blue" onclick="goStateCnt(\'review\')">승인요청</button>', note: '기술 검증 완료 — 승인요청을 눌러 검토를 요청하세요.' },
-    'review':     { lc: 'review',     label: '검토대기', appr: '승인대기', apprStyle: 'background:#EAF3FF;color:#2D84ED;', actions: '<button class="btn-blue" onclick="goStateCnt(\'approved\')">승인</button><button class="btn-outline" onclick="goStateCnt(\'rejected\')">반려</button>', note: '검토 담당자의 최종 승인 대기 중' },
-    'approved':   { lc: 'approved',   label: '승인',    appr: '승인됨',  apprStyle: 'background:#E8F8E9;color:#2E9E34;', actions: '<button class="btn-blue" onclick="goStateCnt(\'active\')">활성화</button><button class="btn-outline" onclick="location.href=\'content-edit\'">새 Revision</button>', note: '승인 완료 — 집행 가능 상태' },
-    'active':     { lc: 'active',     label: '활성',    appr: '승인됨',  apprStyle: 'background:#E8F8E9;color:#2E9E34;', actions: '<button class="btn-outline" onclick="goStateCnt(\'inactive\')">비활성화</button>', note: '활성 상태 — 캠페인에 사용 중' },
-    'inactive':   { lc: 'inactive',   label: '비활성',  appr: '승인됨',  apprStyle: 'background:#E8F8E9;color:#2E9E34;', actions: '<button class="btn-outline" onclick="goStateCnt(\'active\')">재활성화</button>', note: '비활성 상태 — 재활성화 또는 보관 선택 가능' },
-    'rejected':   { lc: 'draft',      label: '초안(반려)',appr: '반려',  apprStyle: 'background:#FEE2E2;color:#C83434;', actions: '<button class="btn-outline" onclick="location.href=\'content-edit\'">수정 후 재제출</button>', note: '반려됨 — 내용 수정 후 다시 검증 요청하세요.' }
-  };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const params = new URLSearchParams(location.search);
-    const id = params.get('id') || 'CNT-001';
-    const stateParam = params.get('state');
-    const d = CONTENTS[id] || CONTENTS['CNT-001'];
-
-    if (d.isNew) {
-      var banner = document.createElement('div');
-      banner.style.cssText = 'background:#EAF3FF;border:1px solid #2D84ED;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#2D84ED;display:flex;align-items:center;gap:8px;';
-      banner.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/></svg> 방금 등록된 항목입니다. Lifecycle: <strong>초안</strong> · PDE 미심사 · 기술검증 요청 버튼을 눌러 다음 단계로 진행하세요.';
-      var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
-      main.insertBefore(banner, main.firstChild);
-    }
-
-    // Lifecycle 프로세스 스테퍼
-    var CNT_FLOW = [
-      { key:'draft',      icon:'1', label:'초안',     gate:'파일 업로드\n메타데이터 입력' },
-      { key:'validating', icon:'V', label:'기술검증',  gate:'포맷·해상도·용량\nFPS 자동 검증' },
-      { key:'review',     icon:'2', label:'콘텐츠심의', gate:'콘텐츠 적합성\n검토자 승인' },
-      { key:'approved',   icon:'✓', label:'승인',      gate:'활성화\n(캠페인 연결 가능)' },
-      { key:'active',     icon:'▶', label:'활성',      gate:'캠페인 집행 중\n비활성화 가능' },
-      { key:'inactive',   icon:'⏸', label:'비활성',    gate:'재활성화 or\n보관 처리' },
-      { key:'archived',   icon:'📦', label:'보관',     gate:'읽기 전용\n이력 보존' },
-    ];
-    var CNT_IDX = { draft:0, validating:1, review:2, approved:3, active:4, inactive:5, archived:6, rejected:2 };
-    var curKey = stateParam || d.lc || 'draft';
-    var curIdx = CNT_IDX[curKey] !== undefined ? CNT_IDX[curKey] : 0;
-    var stepperEl = document.getElementById('cnt-lc-stepper');
-    if (stepperEl) {
-      var html = '';
-      CNT_FLOW.forEach(function(s, i) {
-        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
-        if (curKey === 'rejected' && i === 2) cls = 'blocked';
-        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
-          + '<div class="lc-step-label">' + s.label + '</div>'
-          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
-        if (i < CNT_FLOW.length - 1) {
-          html += '<div class="lc-arrow ' + (i < curIdx ? 'done' : '') + '"><div class="lc-arrow-line"></div></div>';
-        }
-      });
-      stepperEl.innerHTML = html;
-    }
-    var CNT_NOTES = {
-      draft:'초안 — 소재 파일 업로드 후 기술검증을 요청하세요.',
-      validating:'기술검증 중 — 포맷·해상도·용량·FPS를 자동 검증합니다. 완료 시 콘텐츠심의 요청이 가능합니다.',
-      review:'콘텐츠심의 — 검토자의 승인 또는 반려를 기다리는 중.',
-      rejected:'반려됨 — 반려 사유를 확인하고 소재를 수정한 뒤 재제출하세요.',
-      approved:'승인됨 — 활성화하면 캠페인에 연결할 수 있습니다.',
-      active:'활성 — 캠페인에 사용 중. 비활성화 또는 새 Revision(T-CONT-02) 가능합니다.',
-      inactive:'비활성 — 재활성화하거나 보관 처리(T-CONT-03)할 수 있습니다.',
-      archived:'보관 — 읽기 전용. 보관된 콘텐츠는 수정·집행할 수 없습니다.',
-    };
-    var noteEl = document.getElementById('cnt-lc-note');
-    if (noteEl) noteEl.textContent = CNT_NOTES[curKey] || '';
-
-    // 수정·삭제 정책 테이블
-    var CNT_POLICY = [
-      { state:'draft',      label:'초안',     edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-ok">✅ 가능</span>',   note:'파일 교체·메타데이터 자유 편집' },
-      { state:'validating', label:'기술검증',  edit:'<span class="pol-warn">⚠ 제한</span>',         del:'<span class="pol-ok">✅ 가능</span>',   note:'검증 중 파일 교체 불가. 메타데이터만 수정. 검증 취소 후 삭제 가능' },
-      { state:'review',     label:'콘텐츠심의', edit:'<span class="pol-no">❌ 불가</span>',          del:'<span class="pol-no">❌ 불가</span>',   note:'반려 후 초안으로 되돌아가 수정 가능' },
-      { state:'rejected',   label:'반려',      edit:'<span class="pol-ok">✅ 수정 후 재제출</span>', del:'<span class="pol-ok">✅ 가능</span>',   note:'수정 후 기술검증 재요청' },
-      { state:'approved',   label:'승인',      edit:'<span class="pol-warn">⚠ 새 Revision</span>',  del:'<span class="pol-no">❌ 불가</span>',   note:'T-CONT-02: 새 Revision 생성. 기존 Revision Immutable (캠페인 참조 유지)' },
-      { state:'active',     label:'활성',      edit:'<span class="pol-warn">⚠ 새 Revision</span>',  del:'<span class="pol-no">❌ 불가</span>',   note:'캠페인 집행 중. Revision으로만 변경. 비활성화 후 삭제 가능' },
-      { state:'inactive',   label:'비활성',    edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-warn">⚠ 조건부</span>', note:'캠페인 미연결 시 삭제 가능. 연결 중이면 불가' },
-      { state:'archived',   label:'보관',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-no">❌ 불가</span>',   note:'읽기 전용. 보관 해제(unarchive) 후 수정 가능' },
-    ];
-    var cntStepperEl = document.getElementById('cnt-lc-stepper');
-    var cntPolicyWrap = cntStepperEl ? cntStepperEl.closest('.lc-stepper-wrap') : null;
-    if (cntPolicyWrap) {
-      var toggleBtn = document.createElement('button');
-      toggleBtn.className = 'lc-policy-toggle';
-      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
-      var tableWrap = document.createElement('div');
-      tableWrap.className = 'lc-policy-table-wrap';
-      tableWrap.style.display = 'none';
-      var rows = CNT_POLICY.map(function(p) {
-        var isCur = p.state === curKey;
-        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
-          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
-          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
-      }).join('');
-      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
-      toggleBtn.onclick = function() {
-        var v = tableWrap.style.display === 'none';
-        tableWrap.style.display = v ? 'block' : 'none';
-        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
-      };
-      cntPolicyWrap.appendChild(toggleBtn);
-      cntPolicyWrap.appendChild(tableWrap);
-    }
-
-    // Apply state override
-    var ov = stateParam && STATE_OVERRIDES_CNT[stateParam] ? STATE_OVERRIDES_CNT[stateParam] : null;
-    if (ov) {
-      d.lc = ov.lc; d.lcLabel = ov.label;
-      d.appr = ov.appr; d.apprStyle = ov.apprStyle;
-      d.stateActions = ov.actions; d.stateNote = ov.note;
-    }
-
-    // Header
-    const titleEl = document.getElementById('cnt-title');
-    if (titleEl) titleEl.textContent = d.title;
-
-    const metaEl = document.getElementById('cnt-meta');
-    if (metaEl) metaEl.innerHTML = 'content.id: ' + id + ' &nbsp;·&nbsp; 광고주: <strong style="color:#596066;">' + d.advertiser + '</strong> &nbsp;·&nbsp; 길이: ' + d.duration;
-
-    const lcEl = document.getElementById('cnt-lc-badge');
-    if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
-
-    const apprEl = document.getElementById('cnt-appr-badge');
-    if (apprEl) { apprEl.textContent = d.appr; apprEl.setAttribute('style', d.apprStyle); }
-
-    const pdeEl = document.getElementById('cnt-pde-badge');
-    if (pdeEl) { pdeEl.textContent = d.pde; pdeEl.className = d.pdeClass; }
-
-    // Tab 1: 기본정보 (content1)
-    var c1 = document.getElementById('content1');
-    if (c1) {
-      var tags = (d.tags || []).map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
-      c1.innerHTML = '<div class="detail-layout"><div class="detail-main">'
-        + '<div class="info-grid">'
-        + ii('콘텐츠 ID', '<span class="info-value-mono">' + id + '</span>')
-        + ii('콘텐츠명', d.title)
-        + ii('Lifecycle 상태', '<span class="badge lc-' + d.lc + '"><span class="badge-dot"></span>' + d.lcLabel + '</span>')
-        + ii('Revision (자동생성, 불변)', '<span class="info-value-mono">R1</span> <span style="font-size:11px;color:#9EA5AD;">생성 후 변경 불가</span>')
-        + ii('태그', '<div class="tag-list">' + (tags || '—') + '</div>')
-        + '</div>'
-        + '<div style="background:#F6F7F9;border-radius:8px;padding:16px;margin-bottom:20px;">'
-        + '<div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:12px;">상태 전환 (State Transition)</div>'
-        + '<div style="font-size:12px;color:#596066;margin-bottom:10px;">현재 상태: <span class="badge lc-' + d.lc + '" style="font-size:11px;"><span class="badge-dot"></span>' + d.lcLabel + '</span> &nbsp;→&nbsp; 가능한 전환:</div>'
-        + '<div style="display:flex;gap:8px;flex-wrap:wrap;">' + d.stateActions + '</div>'
-        + '<div style="font-size:11px;color:#9EA5AD;margin-top:8px;">' + d.stateNote + '</div>'
-        + '</div>'
-        + '<div class="info-grid" style="margin-bottom:0;">'
-        + ii('소스유형', d.sourceType)
-        + ii('광고유형', d.adType)
-        + ii('재생시간', d.duration)
-        + ii('업로드일', d.uploadedAt)
-        + ii('업로더', d.uploader)
-        + ii('광고주', d.advertiser)
-        + '</div></div></div>';
-    }
+function openRevisionSnapshot(rev) {
+  var data = REVISION_SNAPSHOTS[rev];
+  if (!data) return;
+  document.getElementById('revSnapId').textContent = rev;
+  var html = '<div style="font-size:12px;color:#9EA5AD;margin-bottom:16px;">적용 기간: ' + data.label + '</div><div class="field-grid">';
+  data.fields.forEach(function(f) {
+    html += '<div class="field-item"><div class="field-label">' + f[0] + '</div><div class="field-value">' + f[1] + '</div></div>';
   });
-})();
+  html += '</div>';
+  document.getElementById('revSnapBody').innerHTML = html;
+  document.getElementById('revSnapOverlay').classList.add('open');
+}
+function closeRevisionSnapshot() {
+  document.getElementById('revSnapOverlay').classList.remove('open');
+}
 </script>
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
