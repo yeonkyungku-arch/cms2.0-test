@@ -123,6 +123,12 @@
     #mode-hybrid:checked ~ .main-wrap .cond-rules-section { display: block; }
     #mode-rolling:checked ~ .main-wrap .cond-rules-section { display: none; }
 
+    /* ── 기본 콘텐츠: 기존 선택 vs 신규 등록 ── */
+    #content-mode-existing:checked ~ .main-wrap .content-existing-panel { display: block; }
+    #content-mode-existing:checked ~ .main-wrap .content-new-panel { display: none; }
+    #content-mode-new:checked ~ .main-wrap .content-existing-panel { display: none; }
+    #content-mode-new:checked ~ .main-wrap .content-new-panel { display: block; }
+
     /* ── 하단 액션 바 ── */
     .action-bar {
       position: fixed; bottom: 0; left: 220px; right: 0; height: 60px;
@@ -141,6 +147,9 @@
 <input class="state" type="radio" name="op-mode" id="mode-rolling" checked>
 <input class="state" type="radio" name="op-mode" id="mode-cond">
 <input class="state" type="radio" name="op-mode" id="mode-hybrid">
+<!-- CSS State: default content source -->
+<input class="state" type="radio" name="content-mode" id="content-mode-existing" checked>
+<input class="state" type="radio" name="content-mode" id="content-mode-new">
 
 <!-- GNB -->
 <nav class="gnb">
@@ -398,21 +407,85 @@
         <div class="form-row">
           <div class="form-label">기본 콘텐츠 <span class="req">*</span></div>
           <div class="form-field">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <select class="select" style="width:160px;">
-                <option selected>콘텐츠</option>
-                <option>콘텐츠 체인</option>
-              </select>
-              <div style="display:flex;gap:6px;flex:1;min-width:260px;">
-                <select class="select" style="flex:1;">
-                  <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
-                  <option selected>갤럭시 S25 런칭 15초 (R2) — 승인</option>
-                  <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
-                </select>
-                <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-              </div>
+            <div class="seg-ctrl" style="margin-bottom:12px;">
+              <input type="radio" name="content-mode-ui" id="cm-existing-ui" checked onclick="document.getElementById('content-mode-existing').checked=true">
+              <label for="cm-existing-ui">기존 콘텐츠 선택</label>
+              <input type="radio" name="content-mode-ui" id="cm-new-ui" onclick="document.getElementById('content-mode-new').checked=true">
+              <label for="cm-new-ui">새 콘텐츠 등록</label>
             </div>
-            <div class="input-hint">모든 Schedule Item에 기본 적용됩니다 — 선택 즉시 Revision이 잠깁니다. 항목별로 다른 콘텐츠가 필요하면 해당 Item에서 재정의하세요</div>
+
+            <!-- 기존 콘텐츠 선택 -->
+            <div class="content-existing-panel">
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <select class="select" style="width:160px;">
+                  <option selected>콘텐츠</option>
+                  <option>콘텐츠 체인</option>
+                </select>
+                <div style="display:flex;gap:6px;flex:1;min-width:260px;">
+                  <select class="select" style="flex:1;">
+                    <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
+                    <option selected>갤럭시 S25 런칭 15초 (R2) — 승인</option>
+                    <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
+                  </select>
+                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
+                </div>
+              </div>
+              <div class="input-hint">모든 Schedule Item에 기본 적용됩니다 — 선택 즉시 Revision이 잠깁니다. 항목별로 다른 콘텐츠가 필요하면 해당 Item에서 재정의하세요</div>
+            </div>
+
+            <!-- 새 콘텐츠 등록 (등록 즉시 이 스케줄에 적용 — 콘텐츠 자체 승인 절차는 별도 진행) -->
+            <div class="content-new-panel" hidden>
+              <div style="background:#FFF8E6;border:1px solid #F3BE4A;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92610A;margin-bottom:14px;">
+                ⚠ 등록과 동시에 이 스케줄에 적용됩니다. 콘텐츠의 기술검증·PDE 정책 검토는 등록 후 별도로 진행되며, 검토 결과(Restricted/Rejected 등)에 따라 이 스케줄의 운영이 사후 제한될 수 있습니다.
+              </div>
+              <div class="sched-item-grid">
+                <div class="sched-item-field">
+                  <div class="sched-item-label">콘텐츠명 <span class="req">*</span></div>
+                  <input type="text" class="input" placeholder="콘텐츠명 입력">
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">태그</div>
+                  <input type="text" class="input" placeholder="쉼표로 구분">
+                </div>
+                <div class="sched-item-field span2">
+                  <div class="sched-item-label">원본 소스 <span class="req">*</span></div>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="file" class="input" style="flex:1;">
+                    <span style="color:#9EA5AD;font-size:12px;">또는</span>
+                    <input type="text" class="input" placeholder="외부 URL" style="flex:1;">
+                  </div>
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">설정 재생시간 <span class="req">*</span></div>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <input type="number" class="input" style="width:100px;" placeholder="0">
+                    <span style="font-size:12px;color:#596066;">초</span>
+                  </div>
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">광고 유형 <span class="req">*</span></div>
+                  <select class="select">
+                    <option selected>상업광고</option>
+                    <option>공익광고</option>
+                    <option>자사광고</option>
+                    <option>미디어아트</option>
+                  </select>
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">광고 업종 <span class="req">*</span></div>
+                  <select class="select"><option value="">업종 검색·선택</option></select>
+                </div>
+                <div class="sched-item-field">
+                  <div class="sched-item-label">광고주 <span class="req">*</span></div>
+                  <div style="display:flex;gap:6px;">
+                    <select class="select" style="flex:1;"><option value="">광고주 검색·선택</option></select>
+                    <button class="btn btn-ghost" style="white-space:nowrap;">신규 등록</button>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" style="margin-top:14px;" type="button">등록하고 이 스케줄에 적용</button>
+              <div class="input-hint" style="margin-top:8px;">등록된 콘텐츠는 Draft 상태로 생성되며, 이 스케줄의 기본 콘텐츠로 즉시 잠깁니다. 항목별로 다른 콘텐츠가 필요하면 해당 Item에서 재정의하세요</div>
+            </div>
           </div>
         </div>
 
