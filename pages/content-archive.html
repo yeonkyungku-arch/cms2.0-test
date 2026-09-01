@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>콘텐츠 목록 — D'ooh CMS</title>
+  <title>보관 관리 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
@@ -49,55 +49,21 @@
       -webkit-appearance: none;
       appearance: none;
       cursor: pointer;
-      white-space: nowrap;
     }
-    .btn-primary {
-      background: #58C65D;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
+    .info-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #F6F7F9;
+      border: 1px solid #E5E7EA;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
       font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      height: 36px;
-      padding: 0 14px;
+      color: #596066;
+      line-height: 1.5;
     }
-    .btn-primary:hover { background: #4ab34f; }
-
-    /* Status summary chips */
-    .summary-chips {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1.5px solid transparent;
-      cursor: pointer;
-      transition: border-color .12s;
-    }
-    .chip:hover { opacity: .85; }
-    .chip-all    { background: #F0F1F3; color: #383F45; }
-    .chip-approved { background: #E8F8E9; color: #2E9E34; }
-    .chip-review   { background: #F3EEFF; color: #7C5CBF; }
-    .chip-validating { background: #EAF3FF; color: #2D84ED; }
-    .chip-draft    { background: #F0F1F3; color: #596066; }
-    .chip-archived { background: #F0F1F3; color: #383F45; }
-    .chip-count { font-size: 13px; font-weight: 700; }
-
-    /* Table */
+    .info-banner svg { flex-shrink: 0; margin-top: 1px; }
     .table-card {
       background: #fff;
       border: 1px solid #E5E7EA;
@@ -130,7 +96,6 @@
       vertical-align: middle;
     }
     tbody td.center { text-align: center; }
-
     .thumb-box {
       width: 36px;
       height: 36px;
@@ -141,43 +106,38 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .thumb-box svg { color: #9EA5AD; }
-
-    .content-name-link {
-      color: #24292E;
-      text-decoration: none;
-      font-weight: 500;
-    }
+    .content-name-link { color: #24292E; text-decoration: none; font-weight: 500; }
     .content-name-link:hover { color: #2D84ED; text-decoration: underline; }
     .content-id { font-size: 11px; color: #9EA5AD; }
-
-    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
       padding: 3px 10px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
     }
-    /* Lifecycle */
-    .lc-draft     { background: #F0F1F3; color: #596066; }
-    .lc-validating { background: #EAF3FF; color: #2D84ED; }
-    .lc-review    { background: #F3EEFF; color: #7C5CBF; }
-    .lc-approved  { background: #E8F8E9; color: #2E9E34; }
-    .lc-inactive  { background: #FFF8E6; color: #B45309; }
-    .lc-archived  { background: #F0F1F3; color: #383F45; }
-    /* PDE decision */
-    .pde-approved  { background: #E8F8E9; color: #2E9E34; }
-    .pde-restricted { background: #FFF8E6; color: #B45309; }
-    .pde-deferred  { background: #F3EEFF; color: #7C5CBF; }
-    .pde-rejected  { background: #FEE2E2; color: #C83434; }
-    .pde-none { color: #CED2D6; font-size: 13px; }
-    /* Retention */
-    .ret-normal { background: #F0F1F3; color: #596066; border: 1px solid #CED2D6; }
-    .ret-soon   { background: #FFF8E6; color: #B45309; }
+    .lc-archived { background: #F0F1F3; color: #383F45; }
+    .ret-normal  { background: #F0F1F3; color: #596066; border: 1px solid #CED2D6; }
     .ret-expired { background: #FEE2E2; color: #C83434; }
+    .btn-sm {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #CED2D6;
+      background: #fff;
+      color: #596066;
+    }
+    .btn-sm:hover { background: #F6F7F9; }
+    .empty-state {
+      padding: 60px 0;
+      text-align: center;
+      color: #9EA5AD;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -200,7 +160,7 @@
     <div class="gnb-sub-title">콘텐츠</div>
     <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
     <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
-    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    <a href="content-archive" class="gnb-sub-active"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
     </div>
     </li>
     <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
@@ -263,17 +223,15 @@
 <!-- Main content -->
 <main class="content">
   <div class="content-inner">
-    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">콘텐츠</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">보관 관리</div>
+      <span class="badge lc-archived" style="font-size:12px;">Archived</span>
+    </div>
 
-    <!-- Status summary chips -->
-    <div class="summary-chips">
-      <span class="chip chip-all">전체 <span class="chip-count">42</span></span>
-      <span class="chip chip-draft">초안 <span class="chip-count">7</span></span>
-      <span class="chip chip-validating">검증중 <span class="chip-count">3</span></span>
-      <span class="chip chip-review">검토대기 <span class="chip-count">6</span></span>
-      <span class="chip chip-approved">승인 <span class="chip-count">24</span></span>
-      <span class="chip" style="background:#FFF8E6;color:#B45309;border-color:transparent;">비활성 <span class="chip-count">0</span></span>
-      <span class="chip chip-archived">보관 <span class="chip-count">2</span></span>
+    <!-- Info banner -->
+    <div class="info-banner">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 9v5M10 7v.5" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div>보관(Archived) 상태의 콘텐츠는 <strong>조회 전용</strong>입니다. 원본 Asset이 삭제된 경우 미리보기가 제한될 수 있습니다. Retention 만료 후 Asset은 삭제될 수 있으나 감사 기록은 영구 보존됩니다.</div>
     </div>
 
     <!-- Toolbar -->
@@ -282,15 +240,6 @@
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
         <input type="text" id="searchInput" placeholder="콘텐츠명, 콘텐츠 ID 검색" oninput="filterTable()">
       </div>
-      <select class="filter-select" id="filterLifecycle" onchange="filterTable()">
-        <option value="">Lifecycle 전체</option>
-        <option value="초안">초안</option>
-        <option value="검증중">검증중</option>
-        <option value="검토대기">검토대기</option>
-        <option value="승인">승인</option>
-        <option value="비활성">비활성</option>
-        <option value="보관">보관</option>
-      </select>
       <select class="filter-select" id="filterAdType" onchange="filterTable()">
         <option value="">광고유형 전체</option>
         <option value="일반광고">일반광고</option>
@@ -301,13 +250,8 @@
       <select class="filter-select" id="filterRetention" onchange="filterTable()">
         <option value="">Retention 전체</option>
         <option value="정상">정상</option>
-        <option value="만료임박">만료임박</option>
         <option value="만료">만료</option>
       </select>
-      <button class="btn-primary" onclick="location.href='content-register'">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-        콘텐츠 등록
-      </button>
     </div>
 
     <!-- Table -->
@@ -319,100 +263,42 @@
             <th>콘텐츠명</th>
             <th style="width:110px;">광고유형</th>
             <th class="center" style="width:80px;">재생시간</th>
-            <th class="center" style="width:100px;">Lifecycle</th>
             <th class="center" style="width:90px;">Retention</th>
             <th style="width:100px;">광고주</th>
-            <th style="width:90px;">수정일</th>
+            <th style="width:100px;">보관일시</th>
+            <th class="center" style="width:80px;">작업</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <!-- Row 1 -->
-          <tr data-lc="승인" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-001'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
-            <td><div class="content-name-link">갤럭시 S25 런칭 30초</div><div class="content-id">CNT-001</div></td>
+          <tr data-adtype="일반광고" data-retention="만료" onclick="location.href='content-detail?id=CNT-ARC-001'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div></td>
+            <td><div class="content-name-link">2024 연말 프로모션 영상</div><div class="content-id">CNT-ARC-001</div></td>
             <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">30초</td>
-            <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td class="center"><span class="badge ret-expired">만료</span></td>
             <td style="font-size:12px;">삼성전자</td>
-            <td style="font-size:12px;color:#596066;">2025-08-01</td>
+            <td style="font-size:12px;color:#596066;">2025-01-15</td>
+            <td class="center" onclick="event.stopPropagation()"><button class="btn-sm" onclick="location.href='content-detail?id=CNT-ARC-001'">상세</button></td>
           </tr>
-          <!-- Row 2 -->
-          <tr data-lc="승인" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-002'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
-            <td><div class="content-name-link">인천공항 브랜드 스팟</div><div class="content-id">CNT-002</div></td>
-            <td style="font-size:12px;color:#596066;">일반광고</td>
-            <td class="center" style="font-size:13px;">15초</td>
-            <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge ret-normal">정상</span></td>
-            <td style="font-size:12px;">현대자동차</td>
-            <td style="font-size:12px;color:#596066;">2025-07-28</td>
-          </tr>
-          <!-- Row 3 -->
-          <tr data-lc="검토대기" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-003'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div></td>
-            <td><div class="content-name-link">홍대 팝업스토어 안내</div><div class="content-id">CNT-003</div></td>
-            <td style="font-size:12px;color:#596066;">일반광고</td>
-            <td class="center" style="font-size:13px;">10초</td>
-            <td class="center"><span class="badge lc-review">검토대기</span></td>
-            <td class="center"><span class="badge ret-normal">정상</span></td>
-            <td style="font-size:12px;">나이키코리아</td>
-            <td style="font-size:12px;color:#596066;">2025-07-01</td>
-          </tr>
-          <!-- Row 4 -->
-          <tr data-lc="검증중" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-004'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="#CED2D6" stroke-width="1.5"/><path d="M10 7v3l2 2" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg></div></td>
-            <td><div class="content-name-link">코엑스 신제품 런칭</div><div class="content-id">CNT-004</div></td>
-            <td style="font-size:12px;color:#596066;">일반광고</td>
-            <td class="center" style="font-size:13px;">20초</td>
-            <td class="center"><span class="badge lc-validating">검증중</span></td>
-            <td class="center"><span class="badge ret-normal">정상</span></td>
-            <td style="font-size:12px;">LG전자</td>
-            <td style="font-size:12px;color:#596066;">2025-07-15</td>
-          </tr>
-          <!-- Row 5 -->
-          <tr data-lc="초안" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-005'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#CED2D6"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
-            <td><div class="content-name-link">판교 IT 박람회 영상</div><div class="content-id">CNT-005</div></td>
-            <td style="font-size:12px;color:#596066;">일반광고</td>
-            <td class="center" style="font-size:13px;">45초</td>
-            <td class="center"><span class="badge lc-draft">초안</span></td>
-            <td class="center"><span class="badge ret-normal">정상</span></td>
-            <td style="font-size:12px;">SK하이닉스</td>
-            <td style="font-size:12px;color:#596066;">2025-07-20</td>
-          </tr>
-          <!-- Row 6 -->
-          <tr data-lc="승인" data-adtype="공익광고" data-retention="만료임박" onclick="location.href='content-detail?id=CNT-006'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#9EA5AD"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
-            <td><div class="content-name-link">공익광고 교통안전</div><div class="content-id">CNT-006</div></td>
+          <tr data-adtype="공익광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-ARC-002'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div></td>
+            <td><div class="content-name-link">2023 에너지 절약 캠페인</div><div class="content-id">CNT-ARC-002</div></td>
             <td style="font-size:12px;color:#596066;">공익광고</td>
-            <td class="center" style="font-size:13px;">30초</td>
-            <td class="center"><span class="badge lc-approved">승인</span></td>
-            <td class="center"><span class="badge ret-soon">만료임박</span></td>
-            <td style="font-size:12px;">서울시</td>
-            <td style="font-size:12px;color:#596066;">2025-06-30</td>
-          </tr>
-          <!-- Row 7 -->
-          <tr data-lc="초안" data-adtype="일반광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-007'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 7.5l6 2.5-6 2.5V7.5z" fill="#CED2D6"/><rect x="3" y="3" width="14" height="14" rx="2" stroke="#CED2D6" stroke-width="1.5"/></svg></div></td>
-            <td><div class="content-name-link">여름 시즌 프로모션</div><div class="content-id">CNT-007</div></td>
-            <td style="font-size:12px;color:#596066;">일반광고</td>
             <td class="center" style="font-size:13px;">20초</td>
-            <td class="center"><span class="badge lc-draft">초안</span></td>
             <td class="center"><span class="badge ret-normal">정상</span></td>
-            <td style="font-size:12px;">롯데마트</td>
-            <td style="font-size:12px;color:#596066;">2025-08-05</td>
+            <td style="font-size:12px;">환경부</td>
+            <td style="font-size:12px;color:#596066;">2024-12-31</td>
+            <td class="center" onclick="event.stopPropagation()"><button class="btn-sm" onclick="location.href='content-detail?id=CNT-ARC-002'">상세</button></td>
           </tr>
-          <!-- Row 8 -->
-          <tr data-lc="비활성" data-adtype="자체광고" data-retention="정상" onclick="location.href='content-detail?id=CNT-008'">
-            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="1" fill="#CED2D6"/><path d="M7 10h6M10 7v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div></td>
-            <td><div class="content-name-link">브랜드 자체 광고</div><div class="content-id">CNT-008</div></td>
+          <tr data-adtype="자체광고" data-retention="만료" onclick="location.href='content-detail?id=CNT-ARC-003'">
+            <td class="center"><div class="thumb-box" style="margin:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div></td>
+            <td><div class="content-name-link">사옥 홍보 영상 v1</div><div class="content-id">CNT-ARC-003</div></td>
             <td style="font-size:12px;color:#596066;">자체광고</td>
-            <td class="center" style="font-size:13px;">10초</td>
-            <td class="center"><span class="badge lc-inactive">비활성</span></td>
-            <td class="center"><span class="badge ret-normal">정상</span></td>
+            <td class="center" style="font-size:13px;">60초</td>
+            <td class="center"><span class="badge ret-expired">만료</span></td>
             <td style="font-size:12px;">MNM Networks</td>
-            <td style="font-size:12px;color:#596066;">2025-05-10</td>
+            <td style="font-size:12px;color:#596066;">2024-06-30</td>
+            <td class="center" onclick="event.stopPropagation()"><button class="btn-sm" onclick="location.href='content-detail?id=CNT-ARC-003'">상세</button></td>
           </tr>
         </tbody>
       </table>
@@ -423,17 +309,14 @@
 <script>
 function filterTable() {
   const search = document.getElementById('searchInput').value.toLowerCase();
-  const lc = document.getElementById('filterLifecycle').value;
   const adtype = document.getElementById('filterAdType').value;
   const ret = document.getElementById('filterRetention').value;
   document.querySelectorAll('#tableBody tr').forEach(row => {
     const name = row.querySelector('.content-name-link')?.textContent.toLowerCase() || '';
     const id = row.querySelector('.content-id')?.textContent.toLowerCase() || '';
-    const rowLc = row.dataset.lc || '';
     const rowAdtype = row.dataset.adtype || '';
     const rowRet = row.dataset.retention || '';
     const ok = (!search || name.includes(search) || id.includes(search))
-      && (!lc || rowLc === lc)
       && (!adtype || rowAdtype === adtype)
       && (!ret || rowRet === ret);
     row.style.display = ok ? '' : 'none';

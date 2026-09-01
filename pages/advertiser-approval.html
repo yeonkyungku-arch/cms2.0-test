@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule 승인 — D'ooh 광고주 포털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#58C65D;--dark:#24292E;--main:#2D84ED;--warn:#F3BE4A;--danger:#E97474;--bg:#F6F7F9;--border:#E5E7EA;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+    .adv-header{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:20px;z-index:200;}
+    .adv-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--dark);text-decoration:none;margin-right:12px;}
+    .adv-nav{display:flex;gap:4px;flex:1;}
+    .adv-nav a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:#596066;text-decoration:none;}
+    .adv-nav a:hover{background:#F6F7F9;}
+    .adv-nav a.active{background:#EFF6FF;color:var(--main);font-weight:600;}
+    .adv-header-right{display:flex;align-items:center;gap:12px;}
+    .adv-avatar{width:32px;height:32px;border-radius:50%;background:var(--main);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    .adv-notif{position:relative;width:36px;height:36px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;}
+    .adv-notif .dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#E97474;border:1.5px solid #fff;}
+    main{padding:80px 24px 40px;max-width:1200px;margin:0 auto;}
+    .page-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+    .page-sub{font-size:13px;color:#596066;margin-bottom:20px;}
+    /* Chips */
+    .chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+    .chip{height:34px;padding:0 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);background:#fff;color:#596066;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+    .chip.active{background:#EFF6FF;border-color:var(--main);color:var(--main);font-weight:600;}
+    .chip-count{font-size:12px;background:rgba(0,0,0,.08);border-radius:10px;padding:1px 7px;}
+    .chip.active .chip-count{background:rgba(45,132,237,.15);}
+    /* Filter */
+    .filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .filter-select{height:36px;padding:0 28px 0 10px;border:1px solid #CED2D6;border-radius:6px;font-size:13px;color:var(--dark);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;-webkit-appearance:none;appearance:none;cursor:pointer;}
+    /* Table card */
+    .table-card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .table-scroll{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;min-width:900px;}
+    thead th{background:#F6F7F9;padding:10px 14px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.12s;}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:#F6F7F9;}
+    tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
+    .muted{color:#9EA5AD;font-size:12px;}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+    .badge-pending{background:#FFF8E6;color:#A67000;}
+    .badge-approved{background:#E8F8E9;color:#2E9E34;}
+    .badge-rejected{background:#FEE2E2;color:#C83434;}
+    .badge-cond{background:#EFF6FF;color:#1D6DBF;}
+    .badge-resubmit{background:#F5F0FF;color:#7C3AED;}
+    /* Buttons */
+    .btn{height:30px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:#596066;display:inline-flex;align-items:center;gap:5px;}
+    .btn:hover{background:#F6F7F9;}
+    .btn-approve{background:#E8F8E9;color:#2E9E34;border-color:#BBF7D0;}
+    .btn-approve:hover{background:#BBF7D0;}
+    .btn-reject{background:#FEE2E2;color:#C83434;border-color:#FECACA;}
+    .btn-reject:hover{background:#FECACA;}
+    .btn-primary{background:var(--main);color:#fff;border-color:var(--main);height:34px;padding:0 16px;}
+    .btn-primary:hover{background:#1a6fd4;}
+    .btn-lg{height:38px;padding:0 18px;font-size:13px;}
+    /* Drawer */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:500;}
+    .overlay.open{display:block;}
+    .drawer{position:fixed;top:0;right:-560px;width:560px;height:100%;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.12);z-index:501;transition:right 0.25s ease;display:flex;flex-direction:column;}
+    .drawer.open{right:0;}
+    .drawer-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .drawer-head h3{font-size:16px;font-weight:700;}
+    .drawer-close{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#596066;}
+    .drawer-body{padding:20px 24px;overflow-y:auto;flex:1;}
+    .drawer-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;}
+    .section-label{font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px;}
+    .section-label:first-child{margin-top:0;}
+    .dl{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:13px;}
+    .dl dt{color:#596066;font-weight:500;}
+    .dl dd{color:var(--dark);font-weight:500;}
+    .check-list{display:flex;flex-direction:column;gap:8px;}
+    .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#F6F7F9;border:1px solid var(--border);}
+    .ci-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+    .ci-ok{background:#E8F8E9;color:#2E9E34;}
+    .ci-warn{background:#FFF8E6;color:#A67000;}
+    .ci-no{background:#FEE2E2;color:#C83434;}
+    .ci-text{font-size:13px;flex:1;}
+    .ci-sub{font-size:11px;color:#596066;margin-top:2px;}
+    textarea{width:100%;min-height:80px;border:1px solid #CED2D6;border-radius:6px;padding:10px 12px;font-size:13px;color:var(--dark);resize:vertical;font-family:inherit;}
+    textarea::placeholder{color:#9EA5AD;}
+    .alert{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:12px;}
+    .alert-warn{background:#FFF8E6;border:1px solid #FDE68A;color:#92400E;}
+    .alert-ok{background:#E8F8E9;border:1px solid #BBF7D0;color:#14532D;}
+    .alert-info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF;}
+    .alert-purple{background:#F5F0FF;border:1px solid #DDD6FE;color:#5B21B6;}
+    /* Content preview */
+    .content-preview{background:#F0F1F3;border-radius:8px;height:140px;display:flex;align-items:center;justify-content:center;color:#9EA5AD;font-size:13px;margin-bottom:8px;}
+    /* Row states */
+    tr.row-pending{background:#FFFBEB;}
+    tr.row-rejected{background:#FFF5F5;}
+    /* Toast */
+    #toast{display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;}
+  </style>
+</head>
+<body>
+
+<!-- Portal Header -->
+<header class="adv-header">
+  <a href="advertiser-dashboard" class="adv-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
+    광고주 포털
+  </a>
+  <nav class="adv-nav">
+    <a href="advertiser-dashboard">대시보드</a>
+    <a href="advertiser-approval" class="active">Schedule 승인</a>
+    <a href="advertiser-operation">운영 확인</a>
+    <a href="advertiser-report">광고 효과</a>
+  </nav>
+  <div class="adv-header-right">
+    <div class="adv-notif">
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#596066" stroke-width="1.4"/><path d="M7.5 16h3" stroke="#596066" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot"></span>
+    </div>
+    <div class="adv-avatar">삼</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;">삼성전자 광고팀</div>
+      <div style="font-size:12px;color:#596066;">Approver</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-title">Schedule 승인</div>
+  <div class="page-sub">T-ADV-01: Schedule 승인 · T-ADV-04: Reject → 수정 → 재승인</div>
+
+  <!-- T-ADV-04 alert -->
+  <div class="alert alert-purple" style="margin-bottom:16px;">
+    📋 <strong>T-ADV-04 시나리오:</strong> SCH-2026-029가 거절 후 수정·재제출된 상태입니다. 아래 목록에서 확인 후 재승인하세요.
+  </div>
+
+  <!-- Filter chips -->
+  <div class="chips">
+    <div class="chip active" onclick="filterChip(this,'all')">전체 <span class="chip-count">6</span></div>
+    <div class="chip" onclick="filterChip(this,'pending')">승인 대기 <span class="chip-count">3</span></div>
+    <div class="chip" onclick="filterChip(this,'approved')">승인됨 <span class="chip-count">2</span></div>
+    <div class="chip" onclick="filterChip(this,'rejected')">거절됨 <span class="chip-count">1</span></div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <select class="filter-select"><option>기간: 전체</option><option>이번 달</option><option>지난 달</option></select>
+    <select class="filter-select"><option>캠페인: 전체</option><option>갤럭시 Z Fold7 런칭</option><option>갤럭시 S26 언팩</option><option>비스포크 AI 홈</option></select>
+    <select class="filter-select"><option>미디어 유형: 전체</option><option>역사 LED</option><option>스탠드형</option><option>대형 옥외</option></select>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Schedule ID</th>
+            <th>캠페인명</th>
+            <th>미디어</th>
+            <th>집행 기간</th>
+            <th>슬롯</th>
+            <th>요청일</th>
+            <th>상태</th>
+            <th>액션</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Pending rows -->
+          <tr class="row-pending" data-state="pending" data-id="SCH-2026-031" onclick="openDrawer('SCH-2026-031','갤럭시 Z Fold7 런칭','강남역 1번출구 A','2026.09.01~09.30','30초 × 48회/일','pending')">
+            <td><span style="font-weight:600;">SCH-2026-031</span></td>
+            <td>갤럭시 Z Fold7 런칭</td>
+            <td><div>강남역 1번출구 A</div><div class="muted">MED-001 외 3개</div></td>
+            <td class="muted">2026.09.01 ~ 09.30</td>
+            <td class="muted">30s × 48/일</td>
+            <td class="muted">08-20</td>
+            <td><span class="badge badge-pending">승인 대기</span></td>
+            <td onclick="event.stopPropagation()" style="display:flex;gap:6px;"><button class="btn btn-approve" onclick="quickApprove('SCH-2026-031',this)">✓ 승인</button><button class="btn btn-reject" onclick="quickReject('SCH-2026-031',this)">✕ 거절</button></td>
+          </tr>
+          <tr class="row-pending" data-state="pending" data-id="SCH-2026-032" onclick="openDrawer('SCH-2026-032','갤럭시 Z Fold7 런칭','홍대입구역 광고판','2026.09.01~09.30','30초 × 48회/일','pending')">
+            <td><span style="font-weight:600;">SCH-2026-032</span></td>
+            <td>갤럭시 Z Fold7 런칭</td>
+            <td><div>홍대입구역 광고판</div><div class="muted">MED-002</div></td>
+            <td class="muted">2026.09.01 ~ 09.30</td>
+            <td class="muted">30s × 48/일</td>
+            <td class="muted">08-20</td>
+            <td><span class="badge badge-pending">승인 대기</span></td>
+            <td onclick="event.stopPropagation()" style="display:flex;gap:6px;"><button class="btn btn-approve" onclick="quickApprove('SCH-2026-032',this)">✓ 승인</button><button class="btn btn-reject" onclick="quickReject('SCH-2026-032',this)">✕ 거절</button></td>
+          </tr>
+          <tr class="row-pending" data-state="pending" data-id="SCH-2026-033" onclick="openDrawer('SCH-2026-033','삼성 생활가전 캠페인','부산 해운대 A','2026.09.05~10.04','20초 × 60회/일','pending')">
+            <td><span style="font-weight:600;">SCH-2026-033</span></td>
+            <td>삼성 생활가전 캠페인</td>
+            <td><div>부산 해운대 A</div><div class="muted">MED-021</div></td>
+            <td class="muted">2026.09.05 ~ 10.04</td>
+            <td class="muted">20s × 60/일</td>
+            <td class="muted">08-21</td>
+            <td><span class="badge badge-pending">승인 대기</span></td>
+            <td onclick="event.stopPropagation()" style="display:flex;gap:6px;"><button class="btn btn-approve" onclick="quickApprove('SCH-2026-033',this)">✓ 승인</button><button class="btn btn-reject" onclick="quickReject('SCH-2026-033',this)">✕ 거절</button></td>
+          </tr>
+          <!-- Approved rows -->
+          <tr data-state="approved" onclick="openDrawer('SCH-2026-028','갤럭시 S26 언팩','서울역 환승통로 B','2026.08.01~08.31','30초 × 48회/일','approved')">
+            <td>SCH-2026-028</td>
+            <td>갤럭시 S26 언팩</td>
+            <td>서울역 환승통로 B</td>
+            <td class="muted">2026.08.01 ~ 08.31</td>
+            <td class="muted">30s × 48/일</td>
+            <td class="muted">07-29</td>
+            <td><span class="badge badge-approved">승인됨</span></td>
+            <td><span class="muted">—</span></td>
+          </tr>
+          <tr data-state="approved" onclick="openDrawer('SCH-2026-026','비스포크 AI 홈','인천공항 T1 게이트','2026.08.10~09.15','20초 × 72회/일','approved')">
+            <td>SCH-2026-026</td>
+            <td>비스포크 AI 홈</td>
+            <td>인천공항 T1 게이트</td>
+            <td class="muted">2026.08.10 ~ 09.15</td>
+            <td class="muted">20s × 72/일</td>
+            <td class="muted">08-05</td>
+            <td><span class="badge badge-approved">승인됨</span></td>
+            <td><span class="muted">—</span></td>
+          </tr>
+          <!-- T-ADV-04: rejected then resubmitted -->
+          <tr class="row-rejected" data-state="rejected" data-id="SCH-2026-029" onclick="openDrawer('SCH-2026-029','갤럭시 Z Fold7 런칭','잠실역 대형 LED','2026.09.01~09.30','60초 × 24회/일','resubmit')">
+            <td><span style="font-weight:600;color:#7C3AED;">SCH-2026-029</span></td>
+            <td>갤럭시 Z Fold7 런칭</td>
+            <td>잠실역 대형 LED</td>
+            <td class="muted">2026.09.01 ~ 09.30</td>
+            <td class="muted">60s × 24/일</td>
+            <td class="muted">08-18</td>
+            <td><span class="badge badge-resubmit">수정 후 재제출</span></td>
+            <td onclick="event.stopPropagation()" style="display:flex;gap:6px;"><button class="btn btn-approve" onclick="quickApprove('SCH-2026-029',this)">✓ 재승인</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Drawer Overlay -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<!-- Schedule Detail Drawer -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 id="drawerTitle">Schedule 상세</h3>
+    <div class="drawer-close" onclick="closeDrawer()">✕</div>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <!-- filled by JS -->
+  </div>
+  <div class="drawer-footer" id="drawerFooter">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<a href="scenario-guide" style="position:fixed;bottom:24px;left:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+var currentId = null;
+
+function filterChip(el, state) {
+  document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  var rows = document.querySelectorAll('tbody tr');
+  rows.forEach(function(r){
+    r.style.display = (state === 'all' || r.dataset.state === state) ? '' : 'none';
+  });
+}
+
+function openDrawer(id, campaign, media, period, slot, state) {
+  currentId = id;
+  document.getElementById('drawerTitle').textContent = id;
+  var body = '';
+  var footer = '';
+
+  if (state === 'resubmit') {
+    body += '<div class="alert alert-purple">📋 <strong>T-ADV-04 시나리오:</strong> 이 Schedule은 거절 후 수정·재제출된 상태입니다.</div>';
+    body += '<div class="alert alert-ok">✓ 거절 사유: "60초 소재는 해당 매체 기준을 초과합니다." → 광고주가 45초로 소재를 수정하여 재제출하였습니다.</div>';
+  }
+
+  body += '<div class="section-label">Schedule 기본정보</div>';
+  body += '<dl class="dl"><dt>Schedule ID</dt><dd>' + id + '</dd><dt>캠페인</dt><dd>' + campaign + '</dd><dt>미디어</dt><dd>' + media + '</dd><dt>집행 기간</dt><dd>' + period + '</dd><dt>슬롯</dt><dd>' + slot + '</dd><dt>광고주</dt><dd>삼성전자 광고팀</dd></dl>';
+
+  body += '<div class="section-label">콘텐츠 미리보기</div>';
+  body += '<div class="content-preview">🖼 콘텐츠 썸네일<br><span style="font-size:11px;margin-top:4px;display:block;">CONT-2026-' + id.slice(-3) + ' — 갤럭시 런칭 15s</span></div>';
+
+  body += '<div class="section-label">PDE 정책 검토 결과</div>';
+  body += '<div class="check-list"><div class="check-item"><div class="ci-icon ci-ok">✓</div><div><div class="ci-text">광고 소재 정책 적합</div><div class="ci-sub">업종·크리에이티브 기준 통과</div></div></div>';
+  body += '<div class="check-item"><div class="ci-icon ci-ok">✓</div><div><div class="ci-text">매체 운영 정책 적합</div><div class="ci-sub">슬롯 길이·빈도 기준 통과</div></div></div></div>';
+
+  body += '<div class="section-label">Feasibility 확인 결과</div>';
+  body += '<div class="alert alert-ok">✓ Feasibility FRESH — 해당 기간 슬롯 용량 확보 완료 (2026-08-21 기준)</div>';
+
+  body += '<div class="section-label">광고주 승인 체크리스트</div>';
+  body += '<div class="check-list">';
+  body += '<div class="check-item"><div class="ci-icon ci-ok">✓</div><div><div class="ci-text">집행 기간·위치 확인</div></div></div>';
+  body += '<div class="check-item"><div class="ci-icon ci-ok">✓</div><div><div class="ci-text">콘텐츠 소재 확인</div></div></div>';
+  body += '<div class="check-item"><div class="ci-icon ci-ok">✓</div><div><div class="ci-text">PDE 정책 이상 없음</div></div></div>';
+  body += '</div>';
+
+  if (state !== 'approved') {
+    body += '<div class="section-label">거절 사유 (거절 시 입력)</div>';
+    body += '<textarea id="rejectReason" placeholder="거절 사유를 상세히 입력하세요. 광고주에게 전달됩니다."></textarea>';
+    footer += '<button class="btn btn-primary btn-lg" onclick="drawerApprove()">✓ 승인</button>';
+    footer += '<button class="btn btn-primary btn-lg" style="background:#6D28D9;border-color:#6D28D9;" onclick="drawerApprove()">조건부 승인</button>';
+    footer += '<button class="btn btn-reject btn-lg" onclick="drawerReject()">✕ 거절</button>';
+    footer += '<button class="btn btn-lg" onclick="drawerDelegate()">위임</button>';
+  } else {
+    body += '<div class="alert alert-ok" style="margin-top:16px;">✓ 승인 완료 — 운영팀에 Schedule이 전달되었습니다.</div>';
+    footer = '<button class="btn btn-lg" onclick="closeDrawer()">닫기</button>';
+  }
+
+  document.getElementById('drawerBody').innerHTML = body;
+  document.getElementById('drawerFooter').innerHTML = footer;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  currentId = null;
+}
+
+function drawerApprove() {
+  closeDrawer();
+  if (currentId) updateRow(currentId, 'approved');
+  showToast((currentId || 'Schedule') + ' 승인이 완료되었습니다.');
+}
+
+function drawerReject() {
+  var reason = document.getElementById('rejectReason') && document.getElementById('rejectReason').value;
+  if (!reason) { alert('거절 사유를 입력하세요.'); return; }
+  closeDrawer();
+  if (currentId) updateRow(currentId, 'rejected');
+  showToast((currentId || 'Schedule') + ' 거절 처리되었습니다. 운영팀에 통보됩니다.');
+}
+
+function drawerDelegate() {
+  closeDrawer();
+  showToast('다른 담당자에게 위임 요청을 전송했습니다.');
+}
+
+function quickApprove(id, btn) {
+  updateRow(id, 'approved');
+  showToast(id + ' 승인이 완료되었습니다.');
+}
+
+function quickReject(id, btn) {
+  var reason = prompt('거절 사유를 입력하세요:');
+  if (reason) { updateRow(id, 'rejected'); showToast(id + ' 거절 처리되었습니다.'); }
+}
+
+function updateRow(id, newState) {
+  var row = document.querySelector('tr[data-id="' + id + '"]');
+  if (!row) return;
+  row.dataset.state = newState;
+  var badgeTd = row.cells[6];
+  var actionTd = row.cells[7];
+  if (newState === 'approved') {
+    badgeTd.innerHTML = '<span class="badge badge-approved">승인됨</span>';
+    actionTd.innerHTML = '<span class="muted">—</span>';
+    row.classList.remove('row-pending','row-rejected');
+  } else {
+    badgeTd.innerHTML = '<span class="badge badge-rejected">거절됨</span>';
+    actionTd.innerHTML = '<span class="muted">—</span>';
+    row.classList.remove('row-pending');
+    row.classList.add('row-rejected');
+  }
+}
+
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.cssText = 'display:block;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display='none'; }, 3500);
+}
+</script>
+</body>
+</html>

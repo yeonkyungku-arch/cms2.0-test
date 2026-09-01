@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스케줄 새 Revision — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    .form-section + .form-section { border-top: 1px solid #E5E7EA; }
+    .form-section-head { padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EA; }
+    .form-section-title { font-size: 14px; font-weight: 600; color: #24292E; display:flex;align-items:center;gap:8px; }
+    .form-section-desc  { font-size: 12px; color: #9EA5AD; margin-top: 3px; }
+    .form-section-body  { padding: 20px 24px; }
+    .form-row { display:grid;grid-template-columns:180px 1fr;gap:0;padding:10px 0;align-items:flex-start;border-bottom:1px solid #F6F7F9; }
+    .form-row:last-child { border-bottom:none; }
+    .form-label { font-size:13px;font-weight:500;color:#596066;padding-top:8px; }
+    .form-label .req { color:#E97474;margin-left:2px; }
+    .form-field { min-width:0; }
+    .input,.textarea,.select { width:100%;height:38px;border:1px solid #CED2D6;border-radius:4px;padding:0 12px;font-size:14px;color:#24292E;font-family:inherit;background:#fff;outline:none;transition:border-color .2s; }
+    .input:focus,.select:focus { border-color:#F3A623; }
+    .textarea { height:auto;padding:10px 12px;resize:vertical;min-height:80px; }
+    .input-hint { font-size:12px;color:#9EA5AD;margin-top:5px; }
+
+    .amber-banner { display:flex;align-items:flex-start;gap:10px;background:#FFF8E6;border:1px solid #FFD970;border-radius:6px;padding:14px 18px;margin-bottom:20px; }
+    .amber-banner-icon { color:#B97B00;font-size:18px;flex-shrink:0;margin-top:1px; }
+    .amber-banner-text { font-size:13px;color:#7A5500;line-height:1.6; }
+    .amber-banner-text strong { color:#5C3D00;display:block;margin-bottom:2px;font-size:14px; }
+
+    .info-card { display:flex;align-items:flex-start;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:12px 16px;font-size:13px;color:#1E40AF;line-height:1.6; }
+
+    .readonly-card { background:#F6F7F9;border:1px solid #E5E7EA;border-radius:6px;padding:14px 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px; }
+    .readonly-card-item label { font-size:11px;color:#9EA5AD;font-weight:500;display:block;margin-bottom:3px; }
+    .readonly-card-item span { font-size:13px;color:#24292E;font-weight:500; }
+
+    /* Schedule items table */
+    .sch-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .sch-table th { background:#F6F7F9;padding:8px 10px;text-align:left;font-weight:600;color:#596066;border-bottom:2px solid #E5E7EA;white-space:nowrap; }
+    .sch-table td { padding:8px 10px;border-bottom:1px solid #F6F7F9;vertical-align:middle; }
+    .sch-table tr:last-child td { border-bottom:none; }
+    .sch-input { height:32px;border:1px solid #CED2D6;border-radius:3px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;width:100%;min-width:60px; }
+    .sch-input:focus { outline:none;border-color:#F3A623; }
+    .add-item-btn { display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px dashed #CED2D6;border-radius:4px;background:#fff;cursor:pointer;font-size:13px;color:#596066;font-family:inherit;margin-top:12px;transition:border-color .2s; }
+    .add-item-btn:hover { border-color:#F3A623;color:#B97B00; }
+
+    .form-actions { display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #E5E7EA;background:#fff;position:sticky;bottom:0;z-index:10; }
+    .btn { height:36px;padding:0 18px;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:inherit;transition:opacity .15s; }
+    .btn:hover { opacity:.85; }
+    .btn-ghost { background:#fff;border-color:#CED2D6;color:#596066; }
+    .btn-warn { background:#F3A623;color:#fff;border-color:#F3A623; }
+  </style>
+</head>
+<body>
+
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">프로덕트</div><a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">콘텐츠</div><a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>콘텐츠 목록</a></div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">편성표</div><a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>미디어 편성표</a><a href="schedule-product-month"><div class="gnb-sub-icon" style="background:#F0FDF4;"></div>프로덕트 편성표</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">모니터링</div><a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>운영 대시보드</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">영업 워크스페이스</div><a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>영업 대시보드</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="bcrumb">
+  <a class="bcrumb-back" href="schedule-list">←</a>
+  <a href="schedule-list">스케줄</a>
+  <span class="sep">›</span>
+  <a href="schedule-detail">강남역 갤럭시 S25 광고 25Q4</a>
+  <span class="sep">›</span>
+  <span>새 Revision (R2)</span>
+</div>
+
+<main class="content">
+  <div class="page-head" style="padding-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1 class="page-title">강남역 갤럭시 S25 광고 25Q4 — R2 생성</h1>
+      <span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;background:#FEF9C3;color:#854D0E;">집행중</span>
+      <span style="font-size:12px;color:#9EA5AD;">SCH-2025-0041</span>
+    </div>
+  </div>
+
+  <div class="amber-banner">
+    <div class="amber-banner-icon">⚠</div>
+    <div class="amber-banner-text">
+      <strong>집행중 스케줄 — New Revision 생성 모드</strong>
+      집행중 스케줄 변경은 New Revision으로 생성됩니다. 기존 R1은 Effective From까지 유지됩니다.
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+
+    <!-- 원본 R1 정보 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">원본 정보 (R1 — 읽기 전용)</div>
+      </div>
+      <div class="form-section-body" style="padding-top:14px;padding-bottom:14px;">
+        <div class="readonly-card" style="margin-bottom:0;grid-template-columns:auto auto 1fr;">
+          <div class="readonly-card-item">
+            <label>스케줄 ID</label>
+            <span>SCH-2025-0041</span>
+          </div>
+          <div class="readonly-card-item">
+            <label>현재 Revision</label>
+            <span>R1 (집행중)</span>
+          </div>
+          <div class="readonly-card-item">
+            <label>출처 캠페인</label>
+            <span>CMP-2026-001 삼성전자 갤럭시 S25 런칭</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 편성 Items -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          Schedule Items 편성
+          <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:#FFF8E6;color:#B97B00;">핵심 → Revision</span>
+        </div>
+        <div class="form-section-desc">편성 항목을 수정하면 R2 생성 후 Feasibility 재검증이 요청됩니다.</div>
+      </div>
+      <div class="form-section-body" style="overflow-x:auto;">
+        <table class="sch-table" id="itemsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>유형</th>
+              <th>프로덕트</th>
+              <th>길이</th>
+              <th>콘텐츠</th>
+              <th>운영 요일</th>
+              <th>운영 시간</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:#9EA5AD;">1</td>
+              <td><input class="sch-input" value="프로덕트" style="width:70px;"></td>
+              <td><input class="sch-input" value="PRD-001 강남 프리미엄 옥외 (R3)" style="width:200px;"></td>
+              <td><input class="sch-input" value="30초" style="width:50px;"></td>
+              <td><input class="sch-input" value="CNT-001 갤럭시 S25 R1" style="width:150px;"></td>
+              <td><input class="sch-input" value="월~금" style="width:70px;"></td>
+              <td><input class="sch-input" value="09:00~22:00" style="width:100px;"></td>
+              <td><button onclick="removeRow(this)" style="background:none;border:none;cursor:pointer;color:#E97474;font-size:16px;padding:0 4px;">×</button></td>
+            </tr>
+            <tr>
+              <td style="color:#9EA5AD;">2</td>
+              <td><input class="sch-input" value="프로덕트" style="width:70px;"></td>
+              <td><input class="sch-input" value="PRD-001 (R3)" style="width:200px;"></td>
+              <td><input class="sch-input" value="15초" style="width:50px;"></td>
+              <td><input class="sch-input" value="CNT-001 (R1)" style="width:150px;"></td>
+              <td><input class="sch-input" value="토~일" style="width:70px;"></td>
+              <td><input class="sch-input" value="10:00~21:00" style="width:100px;"></td>
+              <td><button onclick="removeRow(this)" style="background:none;border:none;cursor:pointer;color:#E97474;font-size:16px;padding:0 4px;">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-item-btn" onclick="addItem()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Item 추가
+        </button>
+      </div>
+    </div>
+
+    <!-- 운영 종료일 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">운영 설정</div>
+      </div>
+      <div class="form-section-body">
+        <div class="form-row">
+          <div class="form-label">운영 종료일</div>
+          <div class="form-field">
+            <input class="input" type="date" id="endDate" value="2025-12-31" style="max-width:200px;">
+            <div class="input-hint">변경 시 Feasibility 재검증 자동 요청</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision 메타 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">Revision 생성 정보<span style="color:#E97474;margin-left:4px;">*</span></div>
+      </div>
+      <div class="form-section-body">
+        <div class="form-row">
+          <div class="form-label">Effective From<span class="req">*</span></div>
+          <div class="form-field">
+            <input class="input" type="date" id="effectiveFrom" style="max-width:200px;" required>
+            <div class="input-hint">이 날짜부터 R2가 적용되며 R1은 종료됩니다.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">변경 이유<span class="req">*</span></div>
+          <div class="form-field">
+            <textarea class="textarea" id="changeReason" placeholder="변경 이유를 입력하세요" required></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 저장 후 안내 -->
+    <div style="padding:16px 24px;">
+      <div class="info-card">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="6.5" stroke="#2563EB" stroke-width="1.3"/><path d="M8 5v4M8 11v.5" stroke="#2563EB" stroke-width="1.3" stroke-linecap="round"/></svg>
+        저장 후 Feasibility 재검증이 자동 요청됩니다. 재검증 완료 전까지 R2는 초안(Draft) 상태입니다.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="location.href='schedule-detail'">취소</button>
+    <button class="btn btn-warn" onclick="saveRevision()">R2 초안 저장 → 재검증 요청</button>
+  </div>
+</main>
+
+<script>
+let itemCount = 2;
+function addItem() {
+  itemCount++;
+  const tbody = document.querySelector('#itemsTable tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="color:#9EA5AD;">${itemCount}</td>
+    <td><input class="sch-input" value="프로덕트" style="width:70px;"></td>
+    <td><input class="sch-input" placeholder="프로덕트 ID" style="width:200px;"></td>
+    <td><input class="sch-input" placeholder="30초" style="width:50px;"></td>
+    <td><input class="sch-input" placeholder="콘텐츠 ID" style="width:150px;"></td>
+    <td><input class="sch-input" placeholder="월~금" style="width:70px;"></td>
+    <td><input class="sch-input" placeholder="09:00~22:00" style="width:100px;"></td>
+    <td><button onclick="removeRow(this)" style="background:none;border:none;cursor:pointer;color:#E97474;font-size:16px;padding:0 4px;">×</button></td>`;
+  tbody.appendChild(tr);
+}
+function removeRow(btn) {
+  const tr = btn.closest('tr');
+  if (document.querySelectorAll('#itemsTable tbody tr').length > 1) tr.remove();
+  else alert('최소 1개의 Item이 필요합니다.');
+}
+function saveRevision() {
+  const ef = document.getElementById('effectiveFrom').value;
+  const cr = document.getElementById('changeReason').value.trim();
+  if (!ef) { alert('Effective From 날짜를 선택하세요.'); return; }
+  if (!cr) { alert('변경 이유를 입력하세요.'); return; }
+  alert('R2 초안이 저장되었습니다. Feasibility 재검증이 요청됩니다.'); location.href='schedule-detail';
+}
+function goScheduleMain() {
+  const t = localStorage.getItem('scheduleType') || 'media';
+  location.href = t === 'product' ? 'schedule-product-month' : 'schedule-media-month';
+}
+function setScheduleType(t) { localStorage.setItem('scheduleType', t); }
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

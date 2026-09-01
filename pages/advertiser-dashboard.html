@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>광고주 포털 — D'ooh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#58C65D;--dark:#24292E;--main:#2D84ED;--warn:#F3BE4A;--danger:#E97474;--bg:#F6F7F9;--border:#E5E7EA;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+    /* Portal Header */
+    .adv-header{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:20px;z-index:200;}
+    .adv-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--dark);text-decoration:none;margin-right:12px;}
+    .adv-nav{display:flex;gap:4px;flex:1;}
+    .adv-nav a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:#596066;text-decoration:none;transition:background 0.12s;}
+    .adv-nav a:hover{background:#F6F7F9;}
+    .adv-nav a.active{background:#EFF6FF;color:var(--main);font-weight:600;}
+    .adv-header-right{display:flex;align-items:center;gap:12px;}
+    .adv-avatar{width:32px;height:32px;border-radius:50%;background:var(--main);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    .adv-user-name{font-size:13px;font-weight:600;color:var(--dark);}
+    .adv-user-role{font-size:12px;color:#596066;}
+    .adv-notif{position:relative;width:36px;height:36px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;}
+    .adv-notif .dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#E97474;border:1.5px solid #fff;}
+    /* Layout */
+    main{padding:80px 24px 40px;max-width:1200px;margin:0 auto;}
+    .page-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+    .page-sub{font-size:13px;color:#596066;margin-bottom:24px;}
+    /* KPI Grid */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+    @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+    .kpi-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+    .kpi-label{font-size:12px;color:#596066;margin-bottom:6px;}
+    .kpi-value{font-size:24px;font-weight:700;color:var(--dark);}
+    .kpi-delta{font-size:12px;margin-top:4px;}
+    .delta-up{color:#2E9E34;}
+    .delta-warn{color:#A67000;}
+    /* Cards */
+    .card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+    .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:14px;font-weight:600;}
+    .card-body{padding:16px 18px;}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+    .badge-pending{background:#FFF8E6;color:#A67000;}
+    .badge-approved{background:#E8F8E9;color:#2E9E34;}
+    .badge-rejected{background:#FEE2E2;color:#C83434;}
+    .badge-live{background:#EFF6FF;color:#1D6DBF;}
+    .badge-done{background:#F0F1F3;color:#596066;}
+    /* Table */
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#F6F7F9;padding:10px 14px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:#F6F7F9;}
+    tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
+    .muted{color:#9EA5AD;font-size:12px;}
+    /* Buttons */
+    .btn{height:30px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:#596066;display:inline-flex;align-items:center;gap:5px;text-decoration:none;}
+    .btn-approve{background:#E8F8E9;color:#2E9E34;border-color:#BBF7D0;}
+    .btn-approve:hover{background:#BBF7D0;}
+    .btn-reject{background:#FEE2E2;color:#C83434;border-color:#FECACA;}
+    .btn-reject:hover{background:#FECACA;}
+    .btn-primary{background:var(--main);color:#fff;border-color:var(--main);height:34px;padding:0 14px;}
+    .btn-primary:hover{background:#1a6fd4;}
+    /* Alert */
+    .alert{border-radius:8px;padding:10px 14px;font-size:13px;display:flex;align-items:flex-start;gap:10px;}
+    .alert-warn{background:#FFF8E6;border:1px solid #FDE68A;color:#92400E;}
+    /* Notif list */
+    .notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+    .notif-item:last-child{border-bottom:none;}
+    .notif-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+    .notif-icon.blue{background:#EFF6FF;}
+    .notif-icon.green{background:#E8F8E9;}
+    .notif-icon.amber{background:#FFF8E6;}
+    .notif-text{font-size:13px;color:var(--dark);flex:1;}
+    .notif-time{font-size:11px;color:#9EA5AD;white-space:nowrap;}
+    /* Quick links */
+    .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    @media(max-width:700px){.quick-grid{grid-template-columns:1fr;}}
+    .quick-link{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-decoration:none;color:var(--dark);display:flex;align-items:center;gap:12px;transition:box-shadow 0.15s;}
+    .quick-link:hover{box-shadow:0 2px 10px rgba(0,0,0,.08);}
+    .quick-link-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .quick-link-text{font-size:13px;font-weight:600;}
+    .quick-link-sub{font-size:12px;color:#596066;margin-top:2px;}
+    /* Row highlight */
+    .row-highlight td{background:#FFF8E6 !important;}
+  </style>
+</head>
+<body>
+
+<!-- Portal Header -->
+<header class="adv-header">
+  <a href="advertiser-dashboard" class="adv-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
+    광고주 포털
+  </a>
+  <nav class="adv-nav">
+    <a href="advertiser-dashboard" class="active">대시보드</a>
+    <a href="advertiser-approval">Schedule 승인</a>
+    <a href="advertiser-operation">운영 확인</a>
+    <a href="advertiser-report">광고 효과</a>
+  </nav>
+  <div class="adv-header-right">
+    <div class="adv-notif">
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#596066" stroke-width="1.4"/><path d="M7.5 16h3" stroke="#596066" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot"></span>
+    </div>
+    <div class="adv-avatar">삼</div>
+    <div>
+      <div class="adv-user-name">삼성전자 광고팀</div>
+      <div class="adv-user-role">Approver</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-title">광고주 대시보드</div>
+  <div class="page-sub">안녕하세요, 삼성전자 광고팀님. 오늘의 광고 현황을 확인하세요. — 2026-08-21</div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">승인 대기 중</div>
+      <div class="kpi-value" style="color:#A67000;">3</div>
+      <div class="kpi-delta delta-warn">⚠ 검토 필요</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">집행 중 Schedule</div>
+      <div class="kpi-value">5</div>
+      <div class="kpi-delta delta-up">▲ 정상 집행</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">이번 달 총 재생수</div>
+      <div class="kpi-value">1,423,650</div>
+      <div class="kpi-delta delta-up">▲ 목표 94.7% 달성</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">평균 Health Score</div>
+      <div class="kpi-value">96.2%</div>
+      <div class="kpi-delta delta-up">▲ 전월 대비 +1.4%</div>
+    </div>
+  </div>
+
+  <!-- Pending Approvals -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">승인 대기 Schedule <span class="badge badge-pending" style="margin-left:8px;">3건</span></div>
+      <a href="advertiser-approval" class="btn btn-primary" style="font-size:12px;">전체 보기</a>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Schedule ID</th>
+            <th>캠페인명</th>
+            <th>미디어</th>
+            <th>집행 기간</th>
+            <th>요청일</th>
+            <th>액션</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-highlight">
+            <td><span style="font-weight:500;">SCH-2026-031</span></td>
+            <td>갤럭시 Z Fold7 런칭</td>
+            <td><div>강남역 1번출구 A</div><div class="muted">MED-001 외 3개</div></td>
+            <td class="muted">2026.09.01 ~ 09.30</td>
+            <td class="muted">2026-08-20</td>
+            <td style="display:flex;gap:6px;">
+              <button class="btn btn-approve" onclick="approveSchedule('SCH-2026-031')">✓ 승인</button>
+              <button class="btn btn-reject" onclick="rejectSchedule('SCH-2026-031')">✕ 거절</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span style="font-weight:500;">SCH-2026-032</span></td>
+            <td>갤럭시 Z Fold7 런칭</td>
+            <td><div>홍대입구역 광고판</div><div class="muted">MED-002</div></td>
+            <td class="muted">2026.09.01 ~ 09.30</td>
+            <td class="muted">2026-08-20</td>
+            <td style="display:flex;gap:6px;">
+              <button class="btn btn-approve" onclick="approveSchedule('SCH-2026-032')">✓ 승인</button>
+              <button class="btn btn-reject" onclick="rejectSchedule('SCH-2026-032')">✕ 거절</button>
+            </td>
+          </tr>
+          <tr>
+            <td><span style="font-weight:500;">SCH-2026-033</span></td>
+            <td>삼성 생활가전 캠페인</td>
+            <td><div>부산 해운대 A</div><div class="muted">MED-021</div></td>
+            <td class="muted">2026.09.05 ~ 10.04</td>
+            <td class="muted">2026-08-21</td>
+            <td style="display:flex;gap:6px;">
+              <button class="btn btn-approve" onclick="approveSchedule('SCH-2026-033')">✓ 승인</button>
+              <button class="btn btn-reject" onclick="rejectSchedule('SCH-2026-033')">✕ 거절</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Running Schedules -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">집행 중 Schedule</div>
+      <a href="advertiser-operation" class="btn" style="font-size:12px;">운영 확인 →</a>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Schedule ID</th><th>캠페인명</th><th>미디어</th><th>기간</th><th>재생수 (오늘)</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SCH-2026-018</td><td>갤럭시 S26 언팩</td><td>서울역 환승통로 B</td><td class="muted">~08.31</td><td>12,430</td><td><span class="badge badge-live">집행중</span></td></tr>
+          <tr><td>SCH-2026-019</td><td>갤럭시 S26 언팩</td><td>강남역 1번출구 A</td><td class="muted">~08.31</td><td>18,920</td><td><span class="badge badge-live">집행중</span></td></tr>
+          <tr><td>SCH-2026-022</td><td>비스포크 AI 홈</td><td>인천공항 T1 게이트</td><td class="muted">~09.15</td><td>8,210</td><td><span class="badge badge-live">집행중</span></td></tr>
+          <tr><td>SCH-2026-023</td><td>비스포크 AI 홈</td><td>신촌역 스탠드형 A</td><td class="muted">~09.15</td><td>6,780</td><td><span class="badge badge-live">집행중</span></td></tr>
+          <tr><td>SCH-2026-025</td><td>Neo QLED 할인</td><td>잠실역 대형 LED</td><td class="muted">~08.25</td><td>0 <span class="muted">(장애)</span></td><td><span class="badge badge-rejected">장애</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-warn" style="margin:12px 18px 18px;">
+      ⚠ SCH-2026-025 (잠실역 대형 LED) — 기기 오프라인으로 인해 재생이 중단되었습니다. 복구 작업이 진행 중입니다.
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <!-- Notifications -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">최근 알림</div></div>
+      <div class="card-body">
+        <div class="notif-item">
+          <div class="notif-icon amber">⚠</div>
+          <div class="notif-text">SCH-2026-025 미디어 장애 발생 — 복구 작업 중</div>
+          <div class="notif-time">09:12</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon blue">📋</div>
+          <div class="notif-text">SCH-2026-033 승인 요청이 도착했습니다</div>
+          <div class="notif-time">08:45</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon green">✓</div>
+          <div class="notif-text">SCH-2026-019 어제 재생 목표 100% 달성</div>
+          <div class="notif-time">어제</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon blue">📊</div>
+          <div class="notif-text">8월 광고 효과 리포트가 준비되었습니다</div>
+          <div class="notif-time">2일 전</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">빠른 메뉴</div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="advertiser-approval" class="quick-link">
+            <div class="quick-link-icon" style="background:#FFF8E6;">📋</div>
+            <div>
+              <div class="quick-link-text">Schedule 승인</div>
+              <div class="quick-link-sub">승인 대기 3건 처리 필요</div>
+            </div>
+          </a>
+          <a href="advertiser-operation" class="quick-link">
+            <div class="quick-link-icon" style="background:#EFF6FF;">📺</div>
+            <div>
+              <div class="quick-link-text">운영 확인</div>
+              <div class="quick-link-sub">스크린샷·Live View 확인</div>
+            </div>
+          </a>
+          <a href="advertiser-report" class="quick-link">
+            <div class="quick-link-icon" style="background:#E8F8E9;">📈</div>
+            <div>
+              <div class="quick-link-text">광고 효과 리포트</div>
+              <div class="quick-link-sub">PoP 기준 효과 데이터</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
+
+<a href="scenario-guide" style="position:fixed;bottom:24px;left:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(function(){ t.style.display = 'none'; }, 3000);
+}
+function approveSchedule(id) {
+  var btn = event.target; btn.textContent = '✓ 승인됨'; btn.disabled = true;
+  btn.style.background = '#BBF7D0'; btn.nextElementSibling.style.display = 'none';
+  showToast(id + ' 승인이 완료되었습니다.');
+}
+function rejectSchedule(id) {
+  var reason = prompt('거절 사유를 입력하세요:');
+  if (reason) {
+    var btn = event.target; btn.textContent = '거절됨'; btn.disabled = true;
+    btn.style.background = '#FECACA'; btn.previousElementSibling.style.display = 'none';
+    showToast(id + ' 거절 처리되었습니다.');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미디어 편성표 · 일간 타임라인 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* ── 헤더 카드 ── */
+    .day-header-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .day-header-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .day-header-date {
+      font-size: 17px;
+      font-weight: 700;
+      color: #24292E;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .day-header-date span { font-size: 20px; }
+    .cal-nav { display: flex; align-items: center; gap: 6px; }
+    .cal-nav-btn {
+      height: 32px; padding: 0 12px;
+      border: 1px solid #CED2D6; border-radius: 6px;
+      background: #fff; font-size: 13px; color: #596066;
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .cal-nav-btn:hover { border-color: #58C65D; color: #58C65D; }
+    .day-header-actions { margin-left: auto; display: flex; gap: 8px; }
+
+    .day-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .meta-media-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #24292E;
+    }
+    .meta-dot { color: #CED2D6; }
+    .meta-info { font-size: 13px; color: #596066; }
+
+    .active-products {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .active-products-label {
+      font-size: 12px;
+      color: #596066;
+      font-weight: 500;
+    }
+    .product-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 10px;
+      border: 1px solid;
+    }
+    .product-badge.ga {
+      background: #EEEDFE; border-color: #AFA9EC; color: #3C3489;
+    }
+    .product-badge.na {
+      background: #DCFCE7; border-color: #86EFAC; color: #166534;
+    }
+
+    /* ── 타임라인 큰 틀 ── */
+    .timeline-section {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .timeline-section-head {
+      padding: 14px 20px;
+      border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9;
+      font-size: 14px;
+      font-weight: 700;
+      color: #24292E;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .timeline-section-head .ts-sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: #596066;
+    }
+
+    /* 시간 축 행 */
+    .tl-axis-row {
+      display: flex;
+      border-bottom: 2px solid #E5E7EA;
+      background: #F6F7F9;
+    }
+    .tl-label-col {
+      width: 104px;
+      flex-shrink: 0;
+      border-right: 1px solid #E5E7EA;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #596066;
+      display: flex;
+      align-items: center;
+    }
+    .tl-axis-ticks {
+      flex: 1;
+      display: flex;
+    }
+    .tl-tick {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: #9EA5AD;
+      padding: 10px 0;
+      border-right: 1px solid #E5E7EA;
+      font-weight: 500;
+    }
+    .tl-tick:last-child { border-right: none; }
+
+    /* 시보 행 */
+    .tl-jingle-row {
+      display: flex;
+      border-bottom: 1px solid #E5E7EA;
+      min-height: 54px;
+    }
+    .tl-jingle-track {
+      flex: 1;
+      position: relative;
+      display: flex;
+    }
+    .jingle-zone {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      font-size: 11px;
+      color: rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .jingle-zone.z1 { background: #EFF6FF; flex: 5; } /* 07~12 */
+    .jingle-zone.z2 { background: #FFF7ED; flex: 6; } /* 12~18 */
+    .jingle-zone.z3 { background: #F0FDF4; flex: 4; } /* 18~22 */
+
+    .jingle-marker {
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 3px;
+      background: #7F77DD;
+    }
+    .jingle-chip {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      left: 6px;
+      display: flex; align-items: center; gap: 5px;
+      background: #EEEDFE;
+      border: 1px solid #AFA9EC;
+      color: #3C3489;
+      border-radius: 20px;
+      padding: 3px 8px;
+      font-size: 11px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .jingle-edit-btn {
+      background: none; border: none; cursor: pointer;
+      color: #7F77DD; font-size: 13px; padding: 0 2px;
+      opacity: 0.7; transition: opacity 0.15s;
+    }
+    .jingle-edit-btn:hover { opacity: 1; }
+
+    /* 구간 헤더 */
+    .seg-header-row {
+      display: flex;
+      border-bottom: 1px solid #E5E7EA;
+      background: #F6F7F9;
+    }
+    .seg-header-label {
+      flex: 1;
+      padding: 7px 14px 7px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #596066;
+    }
+
+    /* 사이클 행 */
+    .cycle-row {
+      display: flex;
+      border-bottom: 1px solid #F1F2F4;
+      min-height: 48px;
+      align-items: center;
+    }
+    .cycle-row:last-child { border-bottom: none; }
+    .cycle-row-meta {
+      width: 104px;
+      flex-shrink: 0;
+      border-right: 1px solid #E5E7EA;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cycle-id {
+      font-size: 11px; font-weight: 700; color: #24292E;
+    }
+    .cycle-time {
+      font-size: 10px; color: #9EA5AD;
+    }
+    .cycle-chips {
+      flex: 1;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* 칩 공통 */
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px; font-weight: 600;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .chip-sec {
+      font-size: 10px; font-weight: 400; margin-left: 4px; opacity: 0.7;
+    }
+    .chip-ga {
+      background: #EEEDFE; border-color: #AFA9EC; color: #3C3489;
+    }
+    .chip-na {
+      background: #DCFCE7; border-color: #86EFAC; color: #166534;
+    }
+    .chip-self {
+      background: #E1F5EE; border-color: #5DCAA5; color: #085041;
+    }
+    .chip-draft {
+      background: #F1F2F4; border-color: #B0B7BE; color: #596066;
+      border-style: dashed;
+    }
+    .chip-jingle {
+      background: #F3E8FF; border-color: #C084FC; color: #6B21A8;
+    }
+
+    /* 더 반복 행 */
+    .cycle-more-row {
+      display: flex;
+      border-bottom: 1px solid #F1F2F4;
+      align-items: center;
+    }
+    .cycle-more-label {
+      width: 104px;
+      flex-shrink: 0;
+      border-right: 1px solid #E5E7EA;
+    }
+    .cycle-more-text {
+      flex: 1;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #9EA5AD;
+      font-style: italic;
+    }
+
+    /* ── 일반 광고 현황 테이블 ── */
+    .card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: #24292E;
+    }
+    .card-body { padding: 0; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      background: #F6F7F9;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: #596066;
+      border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #F1F2F4;
+      color: #24292E;
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #FAFAFA; }
+    .table-foot {
+      padding: 12px 20px;
+      background: #F6F7F9;
+      border-top: 1px solid #E5E7EA;
+      font-size: 13px;
+      color: #2E9E34;
+      font-weight: 600;
+    }
+
+    /* ── 조건 광고 카드 ── */
+    .cond-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .cond-card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .cond-card-top {
+      display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;
+    }
+    .cond-icon {
+      font-size: 22px; line-height: 1;
+    }
+    .cond-info { flex: 1; }
+    .cond-title {
+      font-size: 14px; font-weight: 700; color: #24292E; margin-bottom: 3px;
+    }
+    .cond-badge-wrap {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .cond-meta {
+      display: flex; gap: 8px; font-size: 12px; color: #596066; flex-wrap: wrap;
+    }
+    .cond-meta-item {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .cond-max {
+      margin-left: auto;
+      font-size: 12px; color: #596066;
+      white-space: nowrap;
+    }
+
+
+    @media (max-width: 900px) {
+      .cond-cards { grid-template-columns: 1fr; }
+    }
+
+    /* ── 드릴다운 링크 ── */
+    .drill-link {
+      color: #2D84ED;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .drill-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ── 사이클 툴팁 ── */
+    .tl-cycle-wrap { position: relative; flex: 1; }
+    .tl-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #24292E;
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.6;
+      padding: 7px 11px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 100;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+    .tl-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #24292E;
+    }
+    .tl-cycle-wrap:hover .tl-tooltip { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- GNB Sidebar -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile" onclick="this.querySelector('.profile-dropdown').classList.toggle('open')">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+      <span class="topbar-caret">▾</span>
+      <div class="profile-dropdown">
+        <a href="#">내 정보</a>
+        <a href="#" class="logout">로그아웃</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Breadcrumb -->
+<div class="bcrumb">
+  <span>편성표</span>
+  <span class="bcrumb-sep">›</span>
+  <a href="schedule-media-month">미디어 편성표</a>
+  <span class="bcrumb-sep">›</span>
+  <span class="bcrumb-current">일간 타임라인</span>
+</div>
+
+<!-- Content -->
+<main class="content">
+  <div class="content-inner" style="padding-top:36px;">
+  <div style="display:flex;gap:20px;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
+
+    <!-- 1. 헤더 카드 -->
+    <div class="day-header-card">
+      <div class="day-header-top">
+        <div class="day-header-date">
+          <span>📅</span>
+          2026년 6월 1일 (월)
+        </div>
+        <div class="cal-nav">
+          <button class="cal-nav-btn">&#8249; 전날</button>
+          <button class="cal-nav-btn">다음날 &#8250;</button>
+        </div>
+        <div class="day-header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="location.href='schedule-media-month'">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M1 5.5h12" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 2V1M9.5 2V1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            월간 뷰
+          </button>
+        </div>
+      </div>
+      <div class="day-header-meta">
+        <a href="product-detail" class="meta-media-name drill-link">강남역 1번출구 A</a>
+        <span class="meta-dot">·</span>
+        <span class="meta-info">사이클 최대 600초</span>
+        <span class="meta-dot">·</span>
+        <span class="meta-info">기준 슬롯 20개</span>
+      </div>
+      <div class="active-products">
+        <span class="active-products-label">운영 프로덕트:</span>
+        <a href="product-detail" class="product-badge ga drill-link">프로덕트 가</a>
+        <a href="product-detail" class="product-badge na drill-link">프로덕트 나</a>
+      </div>
+    </div>
+
+    <!-- 2. 타임라인 섹션 -->
+    <div class="timeline-section">
+      <div class="timeline-section-head">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#58C65D" stroke-width="1.4"/><path d="M8 4v4l2.5 2.5" stroke="#58C65D" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
+        일간 사이클 타임라인
+        <span class="ts-sub">운영시간 07:00 – 22:00 · CYCLE_MAX 600초</span>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <!-- 범례 -->
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#596066;">
+            <span style="width:10px;height:10px;border-radius:2px;background:#EEEDFE;border:1px solid #AFA9EC;display:inline-block;"></span>프로덕트 가
+          </span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#596066;">
+            <span style="width:10px;height:10px;border-radius:2px;background:#DCFCE7;border:1px solid #86EFAC;display:inline-block;"></span>프로덕트 나
+          </span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#596066;">
+            <span style="width:10px;height:10px;border-radius:2px;background:#F3E8FF;border:1px solid #C084FC;display:inline-block;"></span>시보
+          </span>
+        </div>
+      </div>
+
+      <!-- 2a. 시간 축 -->
+      <div class="tl-axis-row" id="timeAxisRow">
+        <div class="tl-label-col">시간</div>
+        <div class="tl-axis-ticks" id="timeAxisTicks"></div>
+      </div>
+
+      <!-- 2b. 통합 사이클 구간 bar (JS 렌더) -->
+      <div id="unifiedZoneRow"></div>
+
+      <!-- 2c. 조건 광고 대기 현황 (JS 렌더) -->
+      <div id="condScheduleRow"></div>
+    </div>
+
+    <!-- 사이클 편성 순서 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">일반 광고 편성 순서</span>
+        <span style="font-size:12px;color:#9EA5AD;">사이클당 재생 순서 (잔여 슬롯은 일반 광고로 채움)</span>
+      </div>
+      <div id="cycleDetail" style="border:1px solid #E5E7EA;border-radius:6px;overflow:hidden;margin:0 16px 16px;"></div>
+    </div>
+
+    <!-- 3. 일반 광고 송출 현황 (운영 중/운영 종료 상태에서만 표시) -->
+    <div class="card" id="generalAdStats">
+      <div class="card-head">
+        <span class="card-title">일반 광고 송출 현황</span>
+        <span style="font-size:12px;color:#596066;">기준일: 2026년 6월 1일</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>프로덕트</th>
+              <th>스케줄</th>
+              <th>콘텐츠</th>
+              <th>일 총계</th>
+              <th>최소 보장</th>
+              <th>충족</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="product-detail" class="product-badge ga drill-link">프로덕트 가</a></td>
+              <td><a href="#" class="drill-link">나이키 6월 캠페인</a></td>
+              <td>
+                <a href="contents" class="drill-link" style="display:flex;align-items:center;gap:6px;">
+                  <div style="width:28px;height:20px;border-radius:3px;background:#3C3489;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">👟</div>
+                  <span style="font-size:12px;">나이키_에어맥스2026_30s.mp4</span>
+                </a>
+              </td>
+              <td style="font-weight:700;">520회</td>
+              <td>138회</td>
+              <td style="font-size:16px;">✅</td>
+            </tr>
+            <tr>
+              <td><a href="product-detail" class="product-badge ga drill-link">프로덕트 가</a></td>
+              <td><a href="#" class="drill-link">삼성 여름 광고</a></td>
+              <td>
+                <a href="contents" class="drill-link" style="display:flex;align-items:center;gap:6px;">
+                  <div style="width:28px;height:20px;border-radius:3px;background:#2D84ED;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">📱</div>
+                  <span style="font-size:12px;">삼성_갤럭시S25_20s.mp4</span>
+                </a>
+              </td>
+              <td style="font-weight:700;">520회</td>
+              <td>138회</td>
+              <td style="font-size:16px;">✅</td>
+            </tr>
+            <tr>
+              <td><a href="product-detail" class="product-badge na drill-link">프로덕트 나</a></td>
+              <td><a href="#" class="drill-link">롯데 여름 프로모</a></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div style="width:28px;height:20px;border-radius:3px;border:1px dashed #CED2D6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  </div>
+                  <span style="font-size:12px;color:#CED2D6;">콘텐츠 미지정</span>
+                </div>
+              </td>
+              <td style="font-weight:700;">520회</td>
+              <td>138회</td>
+              <td style="font-size:16px;">✅</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-foot">✅ 전체 스케줄 최소 보장 횟수 138회 이상 충족</div>
+      </div>
+    </div>
+
+    <!-- 4. 조건 광고 현황 (운영 중/운영 종료 상태에서만 표시) -->
+    <div id="condAdStatsHeader" style="margin-bottom:8px;">
+      <span style="font-size:15px;font-weight:700;color:#24292E;">조건 광고 현황</span>
+    </div>
+    <div class="cond-cards" id="condAdStats">
+      <!-- 환경 조건 -->
+      <div class="cond-card">
+        <div class="cond-card-top">
+          <div class="cond-icon">🌤️</div>
+          <div class="cond-info">
+            <div class="cond-title">현대 날씨 조건 광고</div>
+            <div class="cond-badge-wrap">
+              <span class="chip chip-na">나:현대</span>
+              <span style="font-size:12px;color:#9EA5AD;">40초</span>
+            </div>
+          </div>
+          <div class="cond-max">최대 <strong>520회</strong></div>
+        </div>
+        <div class="cond-meta">
+          <div class="cond-meta-item">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9EA5AD" stroke-width="1.2"/><path d="M6.5 3v3.5l2 2" stroke="#9EA5AD" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+            <span>기온 10도 이하</span>
+          </div>
+          <div class="cond-meta-item">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2C5 2 3 3.5 3 5.5c0 1.8 1.5 3.5 3.5 5.5 2-2 3.5-3.7 3.5-5.5C10 3.5 8 2 6.5 2z" stroke="#9EA5AD" stroke-width="1.2" fill="none"/></svg>
+            <span>강수량 5mm 이상</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
+          <div style="height:100%;background:#7F77DD;width:0%;border-radius:3px;"></div>
+        </div>
+        <div style="margin-top:5px;font-size:11px;color:#9EA5AD;">오늘 조건 미발동 (대기 중)</div>
+      </div>
+
+      <!-- 타겟 조건 -->
+      <div class="cond-card">
+        <div class="cond-card-top">
+          <div class="cond-icon">👥</div>
+          <div class="cond-info">
+            <div class="cond-title">나이키 타겟 조건</div>
+            <div class="cond-badge-wrap">
+              <span class="chip chip-ga">가:나이키타겟</span>
+              <span style="font-size:12px;color:#9EA5AD;">30초</span>
+            </div>
+          </div>
+          <div class="cond-max">최대 <strong>520회</strong></div>
+        </div>
+        <div class="cond-meta">
+          <div class="cond-meta-item">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="5" r="2" stroke="#9EA5AD" stroke-width="1.2" fill="none"/><path d="M2.5 11c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5" stroke="#9EA5AD" stroke-width="1.2" fill="none"/></svg>
+            <span>20~30대</span>
+          </div>
+          <div class="cond-meta-item">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#9EA5AD" stroke-width="1.2"/><circle cx="6.5" cy="6.5" r="2" stroke="#9EA5AD" stroke-width="1.2"/></svg>
+            <span>반경 500m</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;">
+          <div style="height:100%;background:#58C65D;width:62%;border-radius:3px;"></div>
+        </div>
+        <div style="margin-top:5px;font-size:11px;color:#2E9E34;font-weight:600;">오늘 323회 발동 (최대 520회)</div>
+      </div>
+    </div>
+
+  </div><!-- /left col -->
+
+  <!-- right panel -->
+  <div style="width:280px;flex-shrink:0;position:sticky;top:72px;">
+    <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;overflow:hidden;margin-bottom:16px;">
+      <div style="padding:12px 16px;border-bottom:1px solid #E5E7EA;font-size:13px;font-weight:700;color:#24292E;display:flex;align-items:center;gap:7px;">
+        <svg width="14" height="14" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED" fill="none"/></svg>
+        미디어 정보
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:9px;">
+        <a href="product-detail" class="drill-link" style="font-size:14px;font-weight:700;">강남역 1번출구 A</a>
+        <div style="font-size:11px;color:#9EA5AD;">서울 강남구 강남대로 396</div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">설치 유형</div><div style="font-size:12px;font-weight:600;color:#24292E;">실외 · 세로형</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">해상도</div><div style="font-size:12px;font-weight:600;color:#24292E;">1920×1080</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">운영 시간</div><div style="font-size:12px;font-weight:600;color:#24292E;">07:00–22:00</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">사이클 최대</div><div style="font-size:12px;font-weight:600;color:#24292E;">600초</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">기준 슬롯</div><div style="font-size:12px;font-weight:600;color:#24292E;">30초 × 20개</div></div>
+          <div><div style="font-size:10px;color:#9EA5AD;margin-bottom:2px;">최소 보장</div><div style="font-size:12px;font-weight:600;color:#24292E;">90회/일</div></div>
+        </div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:4px;">센서</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:#F0EEFF;color:#5B3EC0;">⏰ 타임</span>
+          <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:#E8F5FF;color:#1A7CC0;">🌤 환경</span>
+          <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:#FFF0E8;color:#C05A1A;">🎯 타겟</span>
+        </div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="font-size:11px;font-weight:600;color:#596066;margin-bottom:4px;">운영 프로덕트</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <a href="product-detail" style="font-size:12px;color:#3C3489;background:#EEEDFE;border:1px solid #AFA9EC;border-radius:5px;padding:5px 9px;text-decoration:none;display:block;">프로덕트 가</a>
+          <a href="product-detail" style="font-size:12px;color:#166534;background:#DCFCE7;border:1px solid #86EFAC;border-radius:5px;padding:5px 9px;text-decoration:none;display:block;">프로덕트 나</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사이클 요약 -->
+    <div style="background:#fff;border:1px solid #E5E7EA;border-radius:10px;overflow:hidden;">
+      <div style="padding:12px 16px;border-bottom:1px solid #E5E7EA;font-size:13px;font-weight:700;color:#24292E;">사이클 요약</div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">사이클 최대</span><span style="font-weight:600;color:#24292E;">600초</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">편성 사용</span><span style="font-weight:600;color:#24292E;">90초</span></div>
+        <div style="height:6px;background:#E5E7EA;border-radius:3px;overflow:hidden;"><div style="height:100%;width:15%;background:#3C3489;border-radius:3px;"></div></div>
+        <div style="height:1px;background:#F0F1F3;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">일 총 사이클</span><span style="font-weight:600;color:#24292E;">450회</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#596066;">최소 보장</span><span style="font-weight:600;color:#24292E;">90회</span></div>
+      </div>
+    </div>
+  </div><!-- /right panel -->
+
+  </div><!-- /flex wrapper -->
+
+  </div><!-- /content-inner -->
+</main>
+
+
+<script>
+// ── 데이터 정의 ──
+var HOURS_START = 7;   // 07:00
+var HOURS_END   = 22;  // 22:00
+var HOURS_TOTAL = HOURS_END - HOURS_START; // 15시간
+
+// 시간 축 틱: 2시간 간격
+var TIME_TICKS = [];
+for (var h = HOURS_START; h <= HOURS_END; h += 2) {
+  TIME_TICKS.push(h);
+}
+
+// 구간 정의
+var SEGMENTS = [
+  { id: 'z1', label: '07:00~12:00 구간', start: 7,  end: 12, cycles_per_hour: 6, jingle: false },
+  { id: 'z2', label: '12:00~18:00 구간', start: 12, end: 18, cycles_per_hour: 6, jingle: true  },
+  { id: 'z3', label: '18:00~22:00 구간', start: 18, end: 22, cycles_per_hour: 6, jingle: true  }
+];
+
+// 구간 배경색
+var SEG_BG = { z1: '#EFF6FF', z2: '#FFF7ED', z3: '#F0FDF4' };
+
+// 사이클 칩 구성 (잔여 포함)
+// CYCLE_MAX = 600초
+// 가:나이키 30 + 가:삼성 20 + 나:현대 30 + 자체운영 10 = 90초 → 잔여 510초
+var BASE_CHIPS = [
+  { label: '가:나이키',  cls: 'chip-ga',   sec: 30  },
+  { label: '가:삼성',    cls: 'chip-ga',   sec: 20  },
+  { label: '나:현대',    cls: 'chip-na',   sec: 30  },
+  { label: '자체운영',   cls: 'chip-self', sec: 10  },
+];
+
+// 시보 칩 (시보 구간 첫 사이클 앞에 추가)
+var JINGLE_CHIP = { label: '시보', cls: 'chip-jingle', sec: 15, isJingle: true };
+
+// ── 시간 축 렌더 ──
+function renderTimeAxis() {
+  var ticksEl = document.getElementById('timeAxisTicks');
+  var html = '';
+  TIME_TICKS.forEach(function(h, idx) {
+    var tx = idx === 0 ? 'translateX(0)' : h === HOURS_END ? 'translateX(-100%)' : 'translateX(-50%)';
+    var leftPct = ((h - HOURS_START) / HOURS_TOTAL * 100).toFixed(2);
+    html += '<div class="tl-tick" style="left:' + leftPct + '%;transform:none;position:absolute;">' +
+      '<span style="display:block;font-size:10px;color:#9EA5AD;transform:' + tx + ';white-space:nowrap;">' +
+      String(h).padStart(2,'0') + ':00</span></div>';
+  });
+  ticksEl.style.position = 'relative';
+  ticksEl.innerHTML = html;
+}
+
+// ── 통합 타임라인 + 사이클 순서 렌더 ──
+function renderUnifiedTimeline() {
+  var CYCLE_MAX_S = 600;
+  var JINGLE_SEC  = 15;
+  var JINGLE_ADS  = { 12: '롯데 30초', 18: '현대 30초' };
+
+  /* ── zone bar: 사이클을 단일 블록으로 반복 표현 ── */
+  var zoneHtml = '<div style="display:flex;align-items:stretch;border-top:1px solid #E5E7EA;">';
+  zoneHtml += '<div style="flex-shrink:0;width:var(--tl-label-w,120px);font-size:11px;font-weight:700;color:#596066;padding:10px 10px;border-right:1px solid #E5E7EA;display:flex;align-items:center;">일반 광고 구간</div>';
+  zoneHtml += '<div style="flex:1;display:flex;">';
+
+  SEGMENTS.forEach(function(seg) {
+    var zoneSec  = (seg.end - seg.start) * 3600;
+    var wPct     = ((seg.end - seg.start) / HOURS_TOTAL * 100).toFixed(2);
+    var cycles   = (seg.end - seg.start) * seg.cycles_per_hour;
+    var isJingle = seg.jingle;
+
+    /* 구간 컨테이너 */
+    zoneHtml += '<div style="flex:0 0 ' + wPct + '%;background:' + SEG_BG[seg.id] + ';border-left:' + (isJingle ? '2px solid #C084FC' : '1px solid #E5E7EA') + ';padding:8px 6px;box-sizing:border-box;overflow:hidden;">';
+
+    /* 구간 헤더 */
+    zoneHtml += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">';
+    zoneHtml += '<span style="font-size:10px;color:#9EA5AD;white-space:nowrap;">' + String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시 · ' + cycles + '사이클</span>';
+    zoneHtml += '</div>';
+
+    /* 시보 + 사이클을 하나의 블록으로 좌→우 표현 */
+    zoneHtml += '<div style="display:flex;height:32px;gap:3px;overflow:hidden;">';
+
+    if (isJingle) {
+      var jLabel = JINGLE_ADS[seg.start] || '시보';
+      zoneHtml += '<div style="flex:0 0 auto;min-width:52px;padding:0 8px;background:#F3E8FF;border:1px solid #C084FC;border-radius:4px;display:flex;align-items:center;gap:4px;white-space:nowrap;" title="시보 ' + JINGLE_SEC + '초">';
+      zoneHtml += '<span style="font-size:9px;">🔔</span>';
+      zoneHtml += '<span style="font-size:10px;font-weight:700;color:#6B21A8;">' + jLabel + '</span>';
+      zoneHtml += '</div>';
+    }
+
+    /* 사이클: 하나의 단색 블록 */
+    var slotCount = Math.floor(CYCLE_MAX_S / 30);
+    var segLabel = String(seg.start).padStart(2,'0') + '~' + String(seg.end).padStart(2,'0') + '시';
+    zoneHtml += '<div class="tl-cycle-wrap">';
+    zoneHtml += '<div class="tl-tooltip">';
+    zoneHtml += '사이클 최대: ' + CYCLE_MAX_S + '초<br>';
+    zoneHtml += '슬롯 수 (기준 30초 ÷ 사이클 최대): ' + slotCount + '개<br>';
+    zoneHtml += '구간 횟수: ' + cycles + '회<br>';
+    zoneHtml += '운영 시간 구간: ' + segLabel;
+    zoneHtml += '</div>';
+    zoneHtml += '<div style="flex:1;height:32px;background:#E8EDFF;border:1px solid #AFA9EC;border-radius:4px;display:flex;align-items:center;padding:0 10px;">';
+    zoneHtml += '<span style="font-size:11px;font-weight:600;color:#3C3489;">일반 광고 롤링</span>';
+    zoneHtml += '<span style="font-size:10px;color:#9EA5AD;margin-left:6px;">' + cycles + '회</span>';
+    zoneHtml += '</div>';
+    zoneHtml += '</div>';
+
+    zoneHtml += '</div></div>';
+  });
+
+  zoneHtml += '</div></div>';
+  document.getElementById('unifiedZoneRow').innerHTML = zoneHtml;
+
+  renderCondScheduleRow();
+  renderCycleOrder();
+}
+
+function renderCondScheduleRow() {
+  var condAds = cycleOrder.filter(function(a) { return a.scheduleType === 'cond'; });
+  var el = document.getElementById('condScheduleRow');
+  if (!condAds.length) { el.innerHTML = ''; return; }
+
+  var condTypeLabel = { time:'타임', env:'환경', target:'타겟' };
+  var condTypeBg    = { time:'#FFF7ED', env:'#F0FDF4', target:'#FFF0FB' };
+  var condTypeCol   = { time:'#9A5F00', env:'#166534', target:'#7C3A8A' };
+  var condTypeBorder= { time:'#FDE68A', env:'#86EFAC', target:'#E9A8F0' };
+  var statusColor   = { confirmed:'#2E9E34', unconfirmed:'#B45309', reserved:'#9EA5AD' };
+  var statusLabel   = { confirmed:'확정', unconfirmed:'미확정', reserved:'예약' };
+
+  var h = '<div style="display:flex;align-items:stretch;border-top:1px solid #E5E7EA;">';
+  h += '<div style="flex-shrink:0;width:var(--tl-label-w,120px);font-size:11px;font-weight:700;color:#596066;padding:10px 10px;border-right:1px solid #E5E7EA;display:flex;align-items:center;">조건 광고</div>';
+  h += '<div style="flex:1;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">';
+
+  condAds.forEach(function(a) {
+    var ct = a.condType || 'time';
+    h += '<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:' + condTypeBg[ct] + ';border:1px solid ' + condTypeBorder[ct] + ';border-radius:6px;">';
+    h += '<span style="font-size:10px;font-weight:700;color:' + condTypeCol[ct] + ';padding:1px 5px;background:#fff;border:1px solid ' + condTypeBorder[ct] + ';border-radius:3px;">' + condTypeLabel[ct] + '</span>';
+    h += '<span style="font-size:12px;font-weight:500;color:#24292E;">' + a.name + '</span>';
+    if (a.content) {
+      h += '<span style="font-size:11px;color:#9EA5AD;">' + a.content.name + '</span>';
+    } else {
+      h += '<span style="font-size:11px;color:#CED2D6;">콘텐츠 미지정</span>';
+    }
+    h += '<span style="font-size:10px;font-weight:600;color:' + (statusColor[a.status] || '#9EA5AD') + ';">' + (statusLabel[a.status] || a.status) + '</span>';
+    h += '</div>';
+  });
+
+  h += '</div></div>';
+  el.innerHTML = h;
+}
+
+// ── 사이클 편성 순서 데이터 ──
+// scheduleType: 'general' | 'cond'
+// condType    : null | 'time' | 'env' | 'target'
+// status      : 'confirmed' | 'unconfirmed' | 'reserved'
+// content.selfOp: true → 자체운영 콘텐츠
+var cycleOrder = [
+  {
+    id: 0, name: '나이키 6월 캠페인', product: '강남 A지구 패키지', dur: 30,
+    scheduleType: 'general', condType: null, status: 'confirmed',
+    content: { thumb: '#3C3489', emoji: '👟', name: '나이키_에어맥스2026_30s.mp4', selfOp: false }
+  },
+  {
+    id: 1, name: '삼성 여름 광고', product: '강남 A지구 패키지', dur: 20,
+    scheduleType: 'cond', condType: 'target', status: 'confirmed',
+    content: { thumb: '#2D84ED', emoji: '📱', name: '삼성_갤럭시S25_20s.mp4', selfOp: false }
+  },
+  {
+    id: 2, name: '현대 아이오닉 캠페인', product: '홍대 입구역 프리미엄', dur: 30,
+    scheduleType: 'cond', condType: 'env', status: 'unconfirmed',
+    content: { thumb: '#F59E0B', emoji: '🚗', name: '현대_아이오닉9_30s.mp4', selfOp: false }
+  },
+  {
+    id: 3, name: '강남역 자체 홍보', product: '강남 A지구 패키지', dur: 10,
+    scheduleType: 'general', condType: null, status: 'confirmed',
+    content: { thumb: '#5DCAA5', emoji: '🏪', name: '강남역_자체홍보_10s.mp4', selfOp: true }
+  }
+];
+
+function renderCycleOrder() {
+  var CYCLE_MAX_S = 600;
+  var usedDur = cycleOrder.reduce(function(s, a) { return s + a.dur; }, 0);
+  var remDur  = CYCLE_MAX_S - usedDur;
+  var usedPct = Math.round(usedDur / CYCLE_MAX_S * 100);
+
+  /* 스케줄 유형: 일반 / 조건(타임·환경·타겟) */
+  var schedTypeLabel = { general:'일반', cond_time:'조건·타임', cond_env:'조건·환경', cond_target:'조건·타겟' };
+  var schedTypeBadge = {
+    general:      '#E8EDFF:#3C3489',
+    cond_time:    '#FFF7ED:#9A5F00',
+    cond_env:     '#F0FDF4:#166534',
+    cond_target:  '#FFF0FB:#7C3A8A'
+  };
+  /* 스케줄 상태 */
+  var statusLabel = { confirmed:'확정', unconfirmed:'미확정', reserved:'예약' };
+  var statusColor = { confirmed:'#2E9E34', unconfirmed:'#B45309', reserved:'#9EA5AD' };
+
+  var h = '';
+
+  /* 요약 바 */
+  h += '<div style="padding:12px 16px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;gap:12px;">';
+  h += '<div style="flex:1;">';
+  h += '<div style="height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;margin-bottom:5px;">';
+  h += '<div style="width:' + usedPct + '%;height:100%;background:#58C65D;border-radius:4px;transition:width .3s;"></div></div>';
+  h += '<div style="font-size:11px;color:#596066;"><strong style="color:#24292E;">' + usedDur + '초</strong> 사용 / 600초 최대</div>';
+  h += '</div>';
+  h += '<button onclick="saveCycleOrder(event)" style="height:32px;padding:0 14px;background:#24292E;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">순서 저장</button>';
+  h += '</div>';
+
+  /* 열: 순서 | 드래그 | 프로덕트 | 스케줄명 | 상태 | 유형 | 콘텐츠 | 순서조작 */
+  var COL = '36px 24px 120px 1fr 52px 80px 2fr 60px';
+
+  /* 헤더 */
+  h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:6px 12px;background:#F6F7F9;border-bottom:1px solid #E5E7EA;font-size:11px;font-weight:600;color:#596066;gap:8px;">';
+  h += '<span>순서</span><span></span><span>프로덕트</span><span>스케줄명</span><span>상태</span><span>유형</span><span>콘텐츠</span><span></span></div>';
+
+  /* 아이템 목록 */
+  cycleOrder.forEach(function(ad, idx) {
+    var typeKey  = ad.scheduleType === 'cond' ? ('cond_' + ad.condType) : 'general';
+    var tbParts  = (schedTypeBadge[typeKey] || '#F6F7F9:#596066').split(':');
+    var tBg = tbParts[0], tCol = tbParts[1];
+    var rowBg = idx % 2 === 0 ? '#fff' : '#FAFBFC';
+
+    h += '<div style="display:grid;grid-template-columns:' + COL + ';align-items:center;padding:8px 12px;background:' + rowBg + ';border-bottom:1px solid #F0F1F3;gap:8px;">';
+    h += '<span style="font-size:12px;font-weight:700;color:#9EA5AD;">' + (idx + 1) + '</span>';
+    h += '<span style="font-size:14px;color:#CED2D6;cursor:grab;user-select:none;" title="드래그로 순서 변경">⠿</span>';
+
+    /* 프로덕트명 */
+    h += '<span style="font-size:11px;color:#596066;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (ad.product || '') + '">' + (ad.product || '-') + '</span>';
+
+    /* 스케줄명 */
+    h += '<div style="min-width:0;display:flex;align-items:center;gap:6px;">';
+    h += '<span style="font-size:13px;font-weight:500;color:#24292E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">' + ad.name + '</span>';
+    h += '<a href="#" style="font-size:10px;color:#2D84ED;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">상세</a>';
+    h += '</div>';
+
+    /* 상태 */
+    h += '<span style="font-size:10px;font-weight:600;color:' + (statusColor[ad.status] || '#9EA5AD') + ';white-space:nowrap;">' + (statusLabel[ad.status] || ad.status) + '</span>';
+
+    /* 스케줄 유형 배지 */
+    h += '<span style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:' + tBg + ';color:' + tCol + ';white-space:nowrap;">' + (schedTypeLabel[typeKey] || typeKey) + '</span>';
+
+    /* 콘텐츠 썸네일 + 이름 + 자체운영 표기 + 재생시간 */
+    if (ad.content) {
+      h += '<div style="display:flex;align-items:center;gap:6px;min-width:0;">';
+      h += '<div style="width:32px;height:22px;border-radius:4px;background:' + ad.content.thumb + ';display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">' + ad.content.emoji + '</div>';
+      h += '<div style="min-width:0;">';
+      h += '<div style="display:flex;align-items:center;gap:4px;">';
+      h += '<a href="contents" style="font-size:11px;color:#2D84ED;text-decoration:none;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + ad.content.name + '" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">' + ad.content.name + '</a>';
+      if (ad.content.selfOp) {
+        h += '<span style="flex-shrink:0;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;background:#E1F5EE;color:#085041;border:1px solid #5DCAA5;">자체운영</span>';
+      }
+      h += '</div>';
+      h += '<div style="font-size:10px;color:#9EA5AD;margin-top:1px;">' + ad.dur + '초</div>';
+      h += '</div></div>';
+    } else {
+      h += '<div style="display:flex;align-items:center;gap:6px;">';
+      h += '<div style="width:32px;height:22px;border-radius:4px;border:1px dashed #CED2D6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
+      h += '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="#CED2D6" stroke-width="1.5" stroke-linecap="round"/></svg></div>';
+      h += '<span style="font-size:11px;color:#CED2D6;">콘텐츠 미지정</span>';
+      h += '</div>';
+    }
+
+    var upDis = idx === 0 ? 'disabled' : '';
+    var dnDis = idx === cycleOrder.length - 1 ? 'disabled' : '';
+    var upOp  = idx === 0 ? 'opacity:.35;cursor:not-allowed;' : '';
+    var dnOp  = idx === cycleOrder.length - 1 ? 'opacity:.35;cursor:not-allowed;' : '';
+    h += '<div style="display:flex;gap:2px;justify-content:flex-end;">';
+    h += '<button onclick="moveCycleAd(' + idx + ',-1)" ' + upDis + ' style="width:24px;height:24px;border:1px solid #E5E7EA;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;color:#596066;display:flex;align-items:center;justify-content:center;' + upOp + '">↑</button>';
+    h += '<button onclick="moveCycleAd(' + idx + ',1)" '  + dnDis + ' style="width:24px;height:24px;border:1px solid #E5E7EA;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;color:#596066;display:flex;align-items:center;justify-content:center;' + dnOp + '">↓</button>';
+    h += '</div>';
+    h += '</div>';
+  });
+
+
+  document.getElementById('cycleDetail').innerHTML = h;
+}
+
+function moveCycleAd(idx, dir) {
+  var ni = idx + dir;
+  if (ni < 0 || ni >= cycleOrder.length) return;
+  var tmp = cycleOrder[idx];
+  cycleOrder[idx] = cycleOrder[ni];
+  cycleOrder[ni] = tmp;
+  renderCycleOrder();
+}
+
+function saveCycleOrder(event) {
+  var btn = event.currentTarget;
+  btn.textContent = '저장됨 ✓';
+  btn.style.background = '#5DCAA5';
+  setTimeout(function() { btn.textContent = '순서 저장'; btn.style.background = '#24292E'; }, 1800);
+}
+
+
+// ── 스케줄 상태에 따른 현황 섹션 표시/숨김 ──
+// scheduleStatus: 'upcoming' | 'running' | 'ended' | 'completed'
+// 운영 예정(upcoming) 상태에서는 일반 광고 송출 현황 및 조건 광고 현황 섹션을 숨김
+var scheduleStatus = 'running'; // 현재 페이지의 스케줄 상태
+
+function applyScheduleStatusVisibility() {
+  var showStats = scheduleStatus === 'running' || scheduleStatus === 'ended' || scheduleStatus === 'completed';
+  var generalAdStats    = document.getElementById('generalAdStats');
+  var condAdStats       = document.getElementById('condAdStats');
+  var condAdStatsHeader = document.getElementById('condAdStatsHeader');
+  if (generalAdStats)    { generalAdStats.style.display    = showStats ? '' : 'none'; }
+  if (condAdStats)       { condAdStats.style.display       = showStats ? '' : 'none'; }
+  if (condAdStatsHeader) { condAdStatsHeader.style.display = showStats ? '' : 'none'; }
+}
+
+// ── 초기화 ──
+renderTimeAxis();
+renderUnifiedTimeline();
+applyScheduleStatusVisibility();
+</script>
+<script src="../assets/js/cms.js"></script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

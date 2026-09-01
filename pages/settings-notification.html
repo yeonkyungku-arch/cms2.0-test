@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>알림 설정 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
+    }
+    .settings-layout { display:flex; gap:0; }
+    .settings-sidebar {
+      width:200px; flex-shrink:0; background:#fff; border:1px solid var(--border);
+      border-radius:10px; padding:8px; height:fit-content;
+    }
+    .settings-sidebar a {
+      display:block; padding:8px 12px; border-radius:6px; font-size:13px;
+      color:#596066; text-decoration:none; margin-bottom:2px; transition:background 0.1s;
+    }
+    .settings-sidebar a:hover { background:var(--bg); color:var(--dark); }
+    .settings-sidebar a.active { background:#E8F8E9; color:#2E9E34; font-weight:600; }
+    .settings-main { flex:1; min-width:0; padding-left:20px; }
+
+    .card { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+    .card-head { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .card-title { font-size:14px; font-weight:700; color:var(--dark); }
+    .card-body { padding:16px; }
+
+    .btn { height:34px; padding:0 14px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; border:none; display:inline-flex; align-items:center; gap:6px; }
+    .btn-primary { background:#58C65D; color:#fff; }
+    .btn-primary:hover { background:#4ab34f; }
+    .btn-secondary { background:#fff; color:#596066; border:1px solid #CED2D6; }
+    .btn-secondary:hover { background:var(--bg); }
+    .btn-sm { height:28px; padding:0 12px; border-radius:5px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #CED2D6; background:#fff; color:#596066; display:inline-flex; align-items:center; gap:4px; }
+    .btn-sm:hover { background:var(--bg); }
+    .btn-sm.blue { background:#EFF6FF; color:#1D6DBF; border-color:#BFDBFE; }
+
+    /* Scenario banner */
+    .scenario-banner {
+      background:linear-gradient(90deg,#1A3A5C 0%,#24292E 100%);
+      border-radius:10px; padding:14px 20px; margin-bottom:16px;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    }
+    .scenario-task-label { font-size:10px; font-weight:700; letter-spacing:.1em; color:#58C65D; text-transform:uppercase; }
+    .scenario-title-text { font-size:14px; font-weight:700; color:#fff; margin-top:2px; }
+    .scenario-steps-row { display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-top:6px; }
+    .s-pill { font-size:11px; padding:2px 8px; border-radius:4px; background:rgba(255,255,255,.12); color:rgba(255,255,255,.8); }
+    .s-pill.current { background:#58C65D; color:#fff; font-weight:600; }
+    .s-arrow { font-size:10px; color:rgba(255,255,255,.4); }
+
+    /* Toggle switch */
+    .toggle-row { display:flex; align-items:flex-start; justify-content:space-between; padding:14px 0; border-bottom:1px solid #F0F1F3; gap:16px; }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-info { flex:1; }
+    .toggle-label { font-size:13px; font-weight:600; color:var(--dark); margin-bottom:3px; }
+    .toggle-desc { font-size:12px; color:#9EA5AD; line-height:1.5; }
+    .toggle-channel { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .ch-chip { font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600; }
+    .ch-email { background:#EFF6FF; color:#1D6DBF; }
+    .ch-sms   { background:#F0FDF4; color:#166534; }
+    .ch-push  { background:#FFF8E6; color:#A67000; }
+    .ch-slack { background:#F0F0FF; color:#6B21A8; }
+    .ch-webhook { background:#FEF2F2; color:#C83434; }
+
+    .toggle-switch { position:relative; width:40px; height:22px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider {
+      position:absolute; cursor:pointer; inset:0;
+      background:#E5E7EA; border-radius:22px; transition:background .2s;
+    }
+    .toggle-slider::before {
+      content:''; position:absolute; left:3px; top:3px;
+      width:16px; height:16px; border-radius:50%;
+      background:#fff; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.2);
+    }
+    input:checked + .toggle-slider { background:#58C65D; }
+    input:checked + .toggle-slider::before { transform:translateX(18px); }
+
+    /* Event category header */
+    .ev-category { font-size:11px; font-weight:700; letter-spacing:.08em; color:#9EA5AD; text-transform:uppercase; padding:8px 0 4px; border-bottom:2px solid var(--border); margin-bottom:0; }
+
+    /* Throttle / schedule row */
+    .config-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3; font-size:13px; }
+    .config-row:last-child { border-bottom:none; }
+    .config-label { color:#596066; font-weight:500; }
+    .config-value { display:flex; align-items:center; gap:8px; }
+    select.inline-select {
+      height:30px; padding:0 24px 0 8px; border:1px solid #CED2D6; border-radius:6px;
+      font-size:12px; color:var(--dark);
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 6px center;
+      -webkit-appearance:none; appearance:none; cursor:pointer;
+    }
+
+    /* Recipient table */
+    table { width:100%; border-collapse:collapse; }
+    thead th { background:var(--bg); padding:9px 12px; font-size:11px; font-weight:600; color:#596066; text-align:left; border-bottom:1px solid var(--border); }
+    tbody tr { border-bottom:1px solid #F0F1F3; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody td { padding:10px 12px; font-size:13px; color:var(--dark); vertical-align:middle; }
+
+    /* Test notification */
+    .test-panel { background:#F0FDF4; border:1px solid #A7F3AD; border-radius:8px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .test-panel-text { font-size:13px; color:#2E9E34; font-weight:600; }
+    .test-panel-sub { font-size:12px; color:#4ade80; margin-top:2px; }
+
+    /* Save banner */
+    .save-banner { position:sticky; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); padding:12px 20px; display:none; align-items:center; justify-content:flex-end; gap:8px; z-index:100; box-shadow:0 -4px 12px rgba(0,0,0,.08); }
+    .save-banner.visible { display:flex; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <div class="gnb-divider"></div>
+    <li><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a></li>
+    <li><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a></li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="content">
+  <div class="content-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+    </div>
+
+    <!-- T-SET-08 Scenario banner -->
+    <div class="scenario-banner" style="margin-bottom:16px;">
+      <div>
+        <div class="scenario-task-label">T-SET-08 · Notification Settings</div>
+        <div class="scenario-title-text">알림 이벤트 구성 · 채널 설정 · 수신자 관리</div>
+        <div class="scenario-steps-row">
+          <span class="s-pill">이벤트 On/Off</span><span class="s-arrow">›</span>
+          <span class="s-pill current">채널 설정</span><span class="s-arrow">›</span>
+          <span class="s-pill">수신자 지정</span><span class="s-arrow">›</span>
+          <span class="s-pill">Throttle 설정</span><span class="s-arrow">›</span>
+          <span class="s-pill">테스트 발송</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-layout">
+      <nav class="settings-sidebar">
+        <a href="settings-org">조직·사용자</a>
+        <a href="settings-permission">권한</a>
+        <a href="settings-master">공통 기준정보</a>
+        <a href="settings-policy">PDE 정책 관리</a>
+        <a href="settings-notification" class="active">알림 설정</a>
+        <a href="settings-integration">외부 연동</a>
+        <a href="settings-security">보안·접근</a>
+        <a href="settings-audit">감사·변경이력</a>
+      </nav>
+
+      <div class="settings-main">
+
+        <!-- Event On/Off -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">알림 이벤트 On/Off</span>
+            <span style="font-size:12px;color:#9EA5AD;">변경 시 즉시 저장됩니다</span>
+          </div>
+          <div class="card-body">
+
+            <div class="ev-category">모니터링 · 장애</div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Incident 발생</div>
+                <div class="toggle-desc">매체 장애 Incident가 새로 등록될 때 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-slack">Slack</span><span class="ch-chip ch-push">Push</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Auto Recovery 실패</div>
+                <div class="toggle-desc">자동 복구 시도가 3회 실패하면 즉시 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-sms">SMS</span><span class="ch-chip ch-slack">Slack</span><span class="ch-chip ch-push">Push</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Escalation 요청</div>
+                <div class="toggle-desc">Incident가 Escalation 등급으로 상향될 때 대상자에게 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-sms">SMS</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Health Score 임계치 하락</div>
+                <div class="toggle-desc">매체 Health Score가 설정 임계치(기본 70) 아래로 떨어질 때 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-push">Push</span><span class="ch-chip ch-slack">Slack</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="ev-category" style="margin-top:12px;">PDE · 정책</div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">PDE 정책 변경</div>
+                <div class="toggle-desc">PDE 엔진에 새 정책이 적용되거나 기존 정책이 수정될 때 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-slack">Slack</span><span class="ch-chip ch-webhook">Webhook</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">정책 Conflict 감지</div>
+                <div class="toggle-desc">신규 정책 등록 또는 Schedule 검증 시 정책 충돌이 감지될 때 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-slack">Slack</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Schedule PDE 재검증 필요</div>
+                <div class="toggle-desc">정책 변경으로 기존 Schedule의 재검증이 필요해질 때 담당자에게 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-push">Push</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="ev-category" style="margin-top:12px;">영업 · 계약</div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">계약 서명 완료</div>
+                <div class="toggle-desc">계약이 양 당사자 서명으로 최종 완료될 때 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Feasibility Gate 실패</div>
+                <div class="toggle-desc">계약 또는 Schedule의 Feasibility 검증이 실패할 때 담당 영업에게 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-push">Push</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+
+            <div class="ev-category" style="margin-top:12px;">광고주 포털</div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Schedule 승인 요청</div>
+                <div class="toggle-desc">광고주가 Schedule을 제출하면 담당 운영자에게 알림을 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span><span class="ch-chip ch-push">Push</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Schedule 승인/거절 결과</div>
+                <div class="toggle-desc">Schedule 승인·거절 결정이 완료되면 광고주에게 결과를 발송합니다.</div>
+                <div class="toggle-channel"><span class="ch-chip ch-email">Email</span></div>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Channel Config -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">채널 설정</span>
+          </div>
+          <div class="card-body">
+            <div class="config-row">
+              <div class="config-label">이메일 발신 주소</div>
+              <div class="config-value">
+                <input type="text" value="noreply@dooh-cms.mnm.co.kr" style="height:30px;padding:0 10px;border:1px solid #CED2D6;border-radius:6px;font-size:12px;width:260px;" oninput="markChanged()">
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-label">Slack Webhook URL</div>
+              <div class="config-value">
+                <input type="text" value="https://hooks.slack.com/services/T0***" style="height:30px;padding:0 10px;border:1px solid #CED2D6;border-radius:6px;font-size:12px;width:260px;" oninput="markChanged()">
+                <button class="btn-sm blue" onclick="testSlack()">연결 테스트</button>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-label">SMS 발신번호</div>
+              <div class="config-value">
+                <input type="text" value="0800000000" style="height:30px;padding:0 10px;border:1px solid #CED2D6;border-radius:6px;font-size:12px;width:180px;" oninput="markChanged()">
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-label">Webhook Endpoint (PDE 이벤트)</div>
+              <div class="config-value">
+                <input type="text" value="https://api.mnm.co.kr/webhooks/pde" style="height:30px;padding:0 10px;border:1px solid #CED2D6;border-radius:6px;font-size:12px;width:260px;" oninput="markChanged()">
+                <button class="btn-sm blue" onclick="testWebhook()">연결 테스트</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Throttle & Digest -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">발송 제한 · Digest 설정</span></div>
+          <div class="card-body">
+            <div class="config-row">
+              <div class="config-label">동일 이벤트 Throttle (중복 차단)</div>
+              <div class="config-value">
+                <select class="inline-select" onchange="markChanged()">
+                  <option>5분</option>
+                  <option selected>15분</option>
+                  <option>30분</option>
+                  <option>1시간</option>
+                  <option>사용 안 함</option>
+                </select>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-label">야간 알림 억제 (Push/SMS)</div>
+              <div class="config-value">
+                <select class="inline-select" onchange="markChanged()">
+                  <option>억제 안 함</option>
+                  <option selected>22:00 ~ 08:00 억제</option>
+                  <option>20:00 ~ 08:00 억제</option>
+                </select>
+                <span style="font-size:11px;color:#9EA5AD;">단, Critical Incident는 예외</span>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-label">일간 Digest 발송 (Email 요약)</div>
+              <div class="config-value">
+                <select class="inline-select" onchange="markChanged()">
+                  <option>사용 안 함</option>
+                  <option selected>매일 오전 9:00</option>
+                  <option>매일 오전 8:00</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipient management -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">수신자 관리</span>
+            <button class="btn-sm blue">+ 수신자 추가</button>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>사용자</th>
+                  <th>역할</th>
+                  <th>이메일</th>
+                  <th>Push</th>
+                  <th>SMS</th>
+                  <th>구독 이벤트</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600;">홍길동</td>
+                  <td><span style="font-size:11px;background:#EFF6FF;color:#1D6DBF;padding:2px 8px;border-radius:4px;font-weight:600;">Operation Admin</span></td>
+                  <td style="font-size:12px;">hong@mnm.co.kr</td>
+                  <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked><span class="toggle-slider"></span></label></td>
+                  <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked><span class="toggle-slider"></span></label></td>
+                  <td style="font-size:12px;color:#596066;">전체</td>
+                  <td><button class="btn-sm">편집</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;">김영업</td>
+                  <td><span style="font-size:11px;background:#F0FDF4;color:#166534;padding:2px 8px;border-radius:4px;font-weight:600;">Sales</span></td>
+                  <td style="font-size:12px;">kim@mnm.co.kr</td>
+                  <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked><span class="toggle-slider"></span></label></td>
+                  <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox"><span class="toggle-slider"></span></label></td>
+                  <td style="font-size:12px;color:#596066;">영업·계약</td>
+                  <td><button class="btn-sm">편집</button></td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;">이기술</td>
+                  <td><span style="font-size:11px;background:#FEF2F2;color:#C83434;padding:2px 8px;border-radius:4px;font-weight:600;">System Admin</span></td>
+                  <td style="font-size:12px;">lee@mnm.co.kr</td>
+                  <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked><span class="toggle-slider"></span></label></td>
+                  <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked><span class="toggle-slider"></span></label></td>
+                  <td style="font-size:12px;color:#596066;">PDE·정책, 모니터링</td>
+                  <td><button class="btn-sm">편집</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Test notification -->
+        <div class="test-panel">
+          <div>
+            <div class="test-panel-text">설정 테스트 발송</div>
+            <div class="test-panel-sub">저장 전 현재 설정으로 테스트 알림을 발송해 채널 연결을 확인하세요.</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <select class="inline-select" id="testEventSel" style="background:#fff;">
+              <option value="incident">Incident 발생</option>
+              <option value="pde">PDE 정책 변경</option>
+              <option value="escalation">Escalation 요청</option>
+            </select>
+            <button class="btn btn-primary" onclick="sendTest()">테스트 발송</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Save banner -->
+<div class="save-banner" id="saveBanner">
+  <span style="font-size:13px;color:#596066;">변경사항이 있습니다.</span>
+  <button class="btn btn-secondary" onclick="discardChanges()">취소</button>
+  <button class="btn btn-primary" onclick="saveSettings()">저장</button>
+</div>
+
+<script>
+function markChanged() {
+  document.getElementById('saveBanner').classList.add('visible');
+}
+function saveSettings() {
+  document.getElementById('saveBanner').classList.remove('visible');
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:70px;right:20px;background:#58C65D;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;';
+  banner.textContent = '✓ 알림 설정이 저장되었습니다.';
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove(), 2500);
+}
+function discardChanges() {
+  document.getElementById('saveBanner').classList.remove('visible');
+}
+function testSlack() {
+  setTimeout(() => alert('Slack 채널에 테스트 메시지가 전송되었습니다.'), 600);
+}
+function testWebhook() {
+  setTimeout(() => alert('Webhook Endpoint 연결 성공: HTTP 200 OK'), 600);
+}
+function sendTest() {
+  const ev = document.getElementById('testEventSel').value;
+  const labels = { incident:'Incident 발생', pde:'PDE 정책 변경', escalation:'Escalation 요청' };
+  setTimeout(() => alert(`테스트 알림 발송 완료\n이벤트: ${labels[ev]}\n채널: Email, Slack, Push`), 700);
+}
+</script>
+</body>
+</html>

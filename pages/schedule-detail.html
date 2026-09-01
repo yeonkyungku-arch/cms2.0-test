@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스케줄 상세 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* ── State banner ── */
+    .state-banner {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 16px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .state-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .state-title { font-size: 18px; font-weight: 700; color: #24292E; }
+    .state-meta { font-size: 12px; color: #9EA5AD; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .lc-active     { background: #E8F8E9; color: #2E9E34; }
+    .lc-active .badge-dot { background: #58C65D; animation: pulse-dot 1.6s ease infinite; }
+    .lc-draft      { background: #F0F1F3; color: #596066; }
+    .lc-scheduled  { background: #E6FAF9; color: #0EA5A0; }
+    .lc-pending    { background: #FFF8E6; color: #B45309; }
+    .lc-done       { background: #F0F1F3; color: #596066; }
+    .appr-approved { background: #E8F8E9; color: #2E9E34; }
+    .appr-pending  { background: #FFF8E6; color: #B45309; }
+    .appr-none     { background: #F0F1F3; color: #596066; }
+    .appr-rejected { background: #FEE2E2; color: #991B1B; }
+    .pde-approved  { background: #E8F8E9; color: #2E9E34; border-left: 3px solid #58C65D; border-radius: 4px; padding: 4px 10px; }
+    .source-campaign { background: #EAF3FF; color: #2D84ED; }
+    .rev-effective   { background: #E8F8E9; color: #2E9E34; }
+    .rev-draft       { background: #FFF8E6; color: #B45309; }
+    .rev-superseded  { background: #F0F1F3; color: #9EA5AD; }
+    .conflict-valid  { background: #E8F8E9; color: #2E9E34; }
+    .conflict-warn   { background: #FFF8E6; color: #B45309; }
+    .conflict-err    { background: #FEE2E2; color: #991B1B; }
+    .fsb-pass  { color: #2E9E34; }
+    .fsb-warn  { color: #B45309; }
+    .fsb-fail  { color: #991B1B; }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.72); }
+    }
+
+    /* ── Transition action buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; white-space: nowrap; }
+    .btn-danger  { background: #FEE2E2; color: #991B1B; }
+    .btn-ghost   { background: #F0F1F3; color: #596066; }
+    .btn-primary { background: #58C65D; color: #fff; }
+    .btn-warn    { background: #FFF8E6; color: #B45309; border: 1px solid #F3BE4A; }
+
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #E5E7EA;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      gap: 0;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #596066;
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: none;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+    }
+    .tab-btn.active { color: #2D84ED; border-bottom-color: #2D84ED; font-weight: 600; }
+    .tab-btn:hover:not(.active) { color: #24292E; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Cards ── */
+    .card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+    .card-head { padding: 14px 20px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 14px; font-weight: 600; color: #24292E; }
+    .card-body { padding: 16px 20px; }
+
+    /* ── Info rows ── */
+    .info-grid { display: grid; grid-template-columns: 140px 1fr; gap: 0; }
+    .info-row { display: contents; }
+    .info-label { padding: 9px 0; font-size: 13px; font-weight: 500; color: #596066; border-bottom: 1px solid #F6F7F9; }
+    .info-value { padding: 9px 0; font-size: 13px; color: #24292E; border-bottom: 1px solid #F6F7F9; }
+    .info-label:last-of-type, .info-value:last-of-type { border-bottom: none; }
+
+    /* ── KPI cards ── */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; }
+    .kpi-card { background: #F6F7F9; border-radius: 8px; padding: 14px 16px; }
+    .kpi-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; }
+    .kpi-unit  { font-size: 12px; color: #596066; margin-top: 2px; }
+
+    /* ── Table inside card ── */
+    .inner-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .inner-table th { background: #F6F7F9; padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #596066; border-bottom: 1px solid #E5E7EA; white-space: nowrap; }
+    .inner-table td { padding: 11px 12px; border-bottom: 1px solid #F0F1F3; color: #24292E; vertical-align: middle; }
+    .inner-table tr:last-child td { border-bottom: none; }
+
+    /* ── Feasibility checklist ── */
+    .fsb-list { list-style: none; padding: 0; margin: 0; }
+    .fsb-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #F0F1F3; font-size: 13px; }
+    .fsb-item:last-child { border-bottom: none; }
+    .fsb-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+    .fsb-desc { color: #596066; font-size: 12px; margin-top: 2px; }
+
+    /* ── PDE panel ── */
+    .pde-panel { border-left: 4px solid #58C65D; background: #F0FAF1; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 12px; }
+    .pde-panel-title { font-size: 13px; font-weight: 700; color: #2E9E34; margin-bottom: 6px; }
+    .pde-condition-list { list-style: none; padding: 0; margin: 0; }
+    .pde-condition-list li { font-size: 12px; color: #596066; padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+    .pde-condition-list li::before { content: '✓'; color: #58C65D; font-weight: 700; }
+
+    /* ── Approval workflow card ── */
+    .appr-card { background: #F6F7F9; border-radius: 8px; padding: 14px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+    .appr-field { }
+    .appr-field-label { font-size: 11px; color: #9EA5AD; font-weight: 600; margin-bottom: 4px; }
+    .appr-field-value { font-size: 13px; font-weight: 500; color: #24292E; }
+
+    /* ── Operational stats ── */
+    .ops-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .ops-stat { background: #F6F7F9; border-radius: 8px; padding: 12px 14px; }
+    .ops-stat-label { font-size: 11px; color: #9EA5AD; font-weight: 600; }
+    .ops-stat-val { font-size: 20px; font-weight: 700; color: #24292E; margin-top: 4px; }
+    .ops-stat-sub { font-size: 11px; color: #596066; margin-top: 2px; }
+
+    /* ── Immutability notice ── */
+    .immutability-notice { background: #FFF8E6; border: 1px solid #F3BE4A; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #B45309; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+    /* ── Feasibility Gate cards ── */
+    .gate-card { border-radius:8px; padding:16px 20px; margin-bottom:20px; }
+    .gate-failed { border:1.5px solid #F3BE4A; background:#FFFBEB; }
+    .gate-stale { border:1.5px solid #9EA5AD; background:#F9FAFB; }
+    .btn-outline { height:30px; padding:0 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #CED2D6; background:#fff; color:#596066; }
+
+    /* ── Audit timeline ── */
+    .audit-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F0F1F3; font-size: 13px; }
+    .audit-row:last-child { border-bottom: none; }
+    .audit-time { font-size: 11px; color: #9EA5AD; white-space: nowrap; min-width: 130px; font-variant-numeric: tabular-nums; }
+    .audit-dot  { width: 8px; height: 8px; border-radius: 50%; background: #CED2D6; flex-shrink: 0; margin-top: 3px; }
+    .audit-dot.green { background: #58C65D; }
+    .audit-actor { font-weight: 600; color: #24292E; }
+    .audit-desc { color: #596066; }
+  </style>
+</head>
+<body>
+
+<!-- ── GNB ── -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M9.5 9.5L12 12" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <button class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3-1.5 5-1.5 5H4.5S3 10 3 7a5 5 0 015-5z" fill="#9EA5AD"/><path d="M7.5 15a1.5 1.5 0 003 0" stroke="#9EA5AD" stroke-width="1.5"/></svg>
+      <span class="dot-badge"></span>
+    </button>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">D'ooh Admin</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Breadcrumb ── -->
+<div class="bcrumb">
+  <a href="schedule-list" class="bcrumb-back">‹</a>
+  <a href="schedule-list">스케줄</a>
+  <span class="sep">/</span>
+  <span class="cur">강남역 갤럭시 S25 광고 25Q4</span>
+</div>
+
+<!-- ── Content ── -->
+<main class="content">
+
+  <!-- ── State Banner ── -->
+  <div class="state-banner">
+    <div class="state-left">
+      <div>
+        <div class="state-title" id="sch-title">강남역 갤럭시 S25 광고 25Q4</div>
+        <div class="state-meta" style="margin-top:4px;" id="sch-meta">SCH-2025-0041 · 삼성전자 · 2025-10-15 ~ 12-31</div>
+      </div>
+      <span class="badge lc-active" id="sch-lc-badge" style="font-size:13px; padding:4px 12px;"><span class="badge-dot"></span>집행중</span>
+      <span class="badge appr-approved" id="sch-appr-badge" style="font-size:12px;">승인됨</span>
+      <span class="badge pde-approved" id="sch-pde-badge" style="font-size:12px;">PDE 승인</span>
+    </div>
+    <div id="sch-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-warn" onclick="goStateSch('paused')">일시중지</button>
+      <button class="btn btn-ghost" onclick="location.href='schedule-edit'">새 Revision</button>
+    </div>
+  </div>
+
+  <!-- Lifecycle 프로세스 스테퍼 -->
+  <div class="lc-stepper-wrap" style="margin-bottom:12px;">
+    <div class="lc-stepper-title">Lifecycle 프로세스 (T-SCH-01 · P-04)</div>
+    <div class="lc-stepper" id="sch-lc-stepper"><!-- JS가 채움 --></div>
+    <div class="lc-note" id="sch-lc-note"></div>
+  </div>
+
+  <!-- ── Tabs ── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('basic',this)">기본정보</button>
+    <button class="tab-btn" onclick="showTab('items',this)">Schedule Item 편성</button>
+    <button class="tab-btn" onclick="showTab('loop',this)">기준 루프 보장</button>
+    <button class="tab-btn" onclick="showTab('feasibility',this)">Feasibility 검증</button>
+    <button class="tab-btn" onclick="showTab('pde',this)">PDE 검토</button>
+    <button class="tab-btn" onclick="showTab('ops',this)">운영 상태</button>
+    <button class="tab-btn" onclick="showTab('revision',this)">Revision</button>
+    <button class="tab-btn" onclick="showTab('audit',this)">Audit</button>
+  </div>
+
+  <!-- ===== TAB 1: 기본정보 ===== -->
+  <div id="tab-basic" class="tab-panel active">
+    <div class="card">
+      <div class="card-head"><span class="card-title">스케줄 기본 정보</span></div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-label">스케줄 ID</div>
+          <div class="info-value" style="color:#9EA5AD; font-variant-numeric:tabular-nums;">SCH-2025-0041</div>
+          <div class="info-label">스케줄명</div>
+          <div class="info-value" style="font-weight:600;">강남역 갤럭시 S25 광고 25Q4</div>
+          <div class="info-label">태그</div>
+          <div class="info-value">
+            <span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;margin-right:4px;">강남</span>
+            <span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;">Q4</span>
+          </div>
+          <div class="info-label">광고주</div>
+          <div class="info-value">삼성전자</div>
+          <div class="info-label">생성 출처</div>
+          <div class="info-value"><span class="badge source-campaign">캠페인</span></div>
+          <div class="info-label">연계 캠페인</div>
+          <div class="info-value" style="color:#2D84ED;">CMP-2026-001 — 삼성전자 갤럭시 S25 런칭</div>
+          <div class="info-label">담당자</div>
+          <div class="info-value">홍길동</div>
+          <div class="info-label">운영기간</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-15 ~ 2025-12-31</div>
+          <div class="info-label">운영 방식</div>
+          <div class="info-value">Rolling</div>
+          <div class="info-label">등록일</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-14</div>
+          <div class="info-label">Lifecycle 상태</div>
+          <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중 (Active)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Workflow Card -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">승인 워크플로우</span>
+        <span style="font-size:12px;color:#58C65D;display:flex;align-items:center;gap:4px;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#58C65D"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Feasibility 통과
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="appr-card">
+          <div class="appr-field">
+            <div class="appr-field-label">승인 상태</div>
+            <div class="appr-field-value"><span class="badge appr-approved">승인됨</span></div>
+          </div>
+          <div class="appr-field">
+            <div class="appr-field-label">승인자</div>
+            <div class="appr-field-value">김관리 (Admin)</div>
+          </div>
+          <div class="appr-field">
+            <div class="appr-field-label">승인일시</div>
+            <div class="appr-field-value">2025-10-10 16:45</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- PDE Card -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">PDE 검토 결과</span>
+        <span style="font-size:12px;color:#B45309;font-weight:600;">Amber — 조건부 승인</span>
+      </div>
+      <div class="card-body">
+        <div style="background:#FFFBEB;border:1px solid #F3BE4A;border-radius:8px;padding:14px 18px;">
+          <div style="font-size:13px;font-weight:700;color:#B45309;margin-bottom:8px;">PDE 결정: Approved</div>
+          <div class="info-grid">
+            <div class="info-label">검토일</div>
+            <div class="info-value">2025-10-08</div>
+            <div class="info-label">사유</div>
+            <div class="info-value">일반 옥외광고, 업종·지역·시간대 제한 없음</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: Schedule Item 편성 ===== -->
+  <div id="tab-items" class="tab-panel">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Schedule Item 편성</span>
+        <button class="btn btn-ghost" style="opacity:0.5; cursor:not-allowed;" title="집행중 상태에서는 New Revision을 통해 변경하세요">+ Item 추가</button>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <div style="overflow-x:auto;">
+          <table class="inner-table" style="min-width:900px;">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>대상 유형</th>
+                <th>Product명 (Revision)</th>
+                <th>슬롯</th>
+                <th>콘텐츠 유형</th>
+                <th>Content명 (Revision)</th>
+                <th>운영 요일</th>
+                <th>시간대</th>
+                <th>운영 상태</th>
+                <th>충돌</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600; color:#596066;">Item 1</td>
+                <td>프로덕트</td>
+                <td style="color:#2D84ED;">PRD-001 강남 프리미엄 옥외 (R3)</td>
+                <td>30초</td>
+                <td>콘텐츠</td>
+                <td style="color:#2D84ED;">CNT-001 갤럭시 S25 런칭 30초 (R1)</td>
+                <td>월~금</td>
+                <td>09:00 ~ 22:00</td>
+                <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
+                <td><span class="badge conflict-valid">Valid</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600; color:#596066;">Item 2</td>
+                <td>프로덕트</td>
+                <td style="color:#2D84ED;">강남 프리미엄 옥외 PRD-001 (R3)</td>
+                <td>15초</td>
+                <td>콘텐츠</td>
+                <td style="color:#2D84ED;">갤럭시 S25 런칭 30초 CNT-001 (R1)</td>
+                <td>토~일</td>
+                <td>10:00 ~ 21:00</td>
+                <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
+                <td><span class="badge conflict-valid">Valid</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:12px; color:#9EA5AD; padding: 0 4px;">
+      ※ 집행중 상태에서 Item 핵심 조건(Product Revision, Slot, Content, 기간/시간) 변경은 New Revision을 생성하여 진행합니다.
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: 기준 루프 보장 ===== -->
+  <div id="tab-loop" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><span class="card-title">기준 루프 보장 현황</span></div>
+      <div class="card-body">
+        <div class="kpi-row" style="margin-bottom:16px;">
+          <div class="kpi-card">
+            <div class="kpi-label">Reference Slot Duration</div>
+            <div class="kpi-value">30</div>
+            <div class="kpi-unit">초</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Reference Loop Duration</div>
+            <div class="kpi-value">180</div>
+            <div class="kpi-unit">초</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">유효 운영시간</div>
+            <div class="kpi-value">13</div>
+            <div class="kpi-unit">시간/일 (09:00~22:00)</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">예상 최소 집행횟수/일</div>
+            <div class="kpi-value">260</div>
+            <div class="kpi-unit">회</div>
+          </div>
+          <div class="kpi-card" style="background:#E8F8E9;">
+            <div class="kpi-label" style="color:#2E9E34;">실제 집행횟수/일 (어제)</div>
+            <div class="kpi-value" style="color:#2E9E34;">274</div>
+            <div class="kpi-unit" style="color:#2E9E34;">회 ✓ 보장 충족</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#9EA5AD; background:#F6F7F9; border-radius:6px; padding:10px 12px;">
+          ⓘ Expected Minimum Plays = FLOOR(유효운영시간 / RLD). Assigned Slot이 RSD보다 짧아도 동일 Reference Loop 기준 사용.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 4: Feasibility 검증 ===== -->
+  <div id="tab-feasibility" class="tab-panel">
+
+    <!-- Feasibility Gate Card -->
+    <div class="gate-card gate-passed" style="border:1.5px solid #58C65D; border-radius:8px; padding:16px 20px; background:#F0FDF4; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#2E9E34;">✓ Feasibility 검증 통과</div>
+        <div style="font-size:12px;color:#596066;margin-top:4px;">검증일시: 2026-08-18 14:32 &nbsp;·&nbsp; 유효기간 내 (48h) &nbsp;·&nbsp; 담당자: 홍길동</div>
+      </div>
+      <div style="text-align:right;">
+        <button class="btn btn-outline" style="font-size:12px;" onclick="if(confirm('Feasibility 재검증을 요청하시겠습니까?'))alert('재검증 요청이 전송되었습니다.')">재검증 요청</button>
+      </div>
+    </div>
+
+    <!-- STALE/FAILED gate card examples (reference only — shown based on gate status) -->
+    <!--
+    STALE (48h 초과):
+    <div class="gate-card gate-stale" style="border:1.5px solid #9EA5AD; border-radius:8px; padding:16px 20px; background:#F9FAFB; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#596066;">⏰ Feasibility 검증 만료</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-top:4px;">검증일시: 2026-08-16 10:00 · 유효기간 초과 (48h) — 승인요청 전 재검증 필요</div>
+      </div>
+      <div><button class="btn btn-outline">재검증 요청</button></div>
+    </div>
+
+    FAILED:
+    <div class="gate-card gate-failed" style="border:1.5px solid #F3BE4A; border-radius:8px; padding:16px 20px; background:#FFFBEB; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#B45309;">⚠ Feasibility 검증 미통과</div>
+        <div style="font-size:12px;color:#596066;margin-top:4px;">슬롯 가용성 부족 — 승인요청이 차단됩니다. 검증 결과를 확인하세요.</div>
+      </div>
+      <div><button class="btn btn-warn">검증 재시도</button></div>
+    </div>
+    -->
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Feasibility 검증 결과</span>
+        <span style="font-size:12px; color:#9EA5AD;">평가 기준시각: 2025-10-13 14:22:07 · Inventory v2025.10.13.0142</span>
+      </div>
+      <div class="card-body">
+        <div style="margin-bottom:16px; padding:10px 14px; background:#E8F8E9; border-radius:8px; display:flex; align-items:center; gap:10px;">
+          <span style="font-size:20px;">✅</span>
+          <div>
+            <div style="font-size:14px; font-weight:700; color:#2E9E34;">Feasibility 통과</div>
+            <div style="font-size:12px; color:#596066; margin-top:2px;">모든 검증 항목이 통과되었습니다. 승인 후 예약 전환이 가능합니다.</div>
+          </div>
+        </div>
+        <ul class="fsb-list">
+          <li class="fsb-item">
+            <div class="fsb-icon fsb-pass">✅</div>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#24292E;">기간 합리성</div>
+              <div class="fsb-desc">운영 시작일·종료일이 유효하며 최소 운영 기간 조건을 충족합니다.</div>
+            </div>
+          </li>
+          <li class="fsb-item">
+            <div class="fsb-icon fsb-pass">✅</div>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#24292E;">매체 가용성</div>
+              <div class="fsb-desc">대상 매체 2개소 모두 운영기간 내 가용 상태입니다.</div>
+            </div>
+          </li>
+          <li class="fsb-item">
+            <div class="fsb-icon fsb-pass">✅</div>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#24292E;">슬롯 가용성</div>
+              <div class="fsb-desc">Item 1(30초) 및 Item 2(15초) 슬롯 모두 Inventory 확보 완료.</div>
+            </div>
+          </li>
+          <li class="fsb-item">
+            <div class="fsb-icon fsb-pass">✅</div>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#24292E;">예산 충분성</div>
+              <div class="fsb-desc">예상 집행금액이 승인된 캠페인 예산 범위 내입니다.</div>
+            </div>
+          </li>
+          <li class="fsb-item">
+            <div class="fsb-icon fsb-pass">✅</div>
+            <div style="flex:1;">
+              <div style="font-weight:600; color:#24292E;">콘텐츠 검증</div>
+              <div class="fsb-desc">Item 1·2의 Content Revision이 유효하며 업종 제한 조건 없음.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">기술 검증 결과 (Technical Validation)</span></div>
+      <div class="card-body">
+        <div style="padding:10px 14px; background:#E8F8E9; border-radius:8px; font-size:13px; color:#2E9E34; font-weight:600;">✅ Technical Validation Success — Revision Draft → Review Pending 전환 완료</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 5: PDE 검토 ===== -->
+  <div id="tab-pde" class="tab-panel">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">PDE 정책 검토</span>
+        <span style="font-size:12px; color:#9EA5AD;">Policy Version: PDE-2025.10.02 · 판단일시: 2025-10-13 15:00:41</span>
+      </div>
+      <div class="card-body">
+        <!-- PDE approved panel with green left-border -->
+        <div class="pde-panel">
+          <div class="pde-panel-title">🟢 PDE Decision: 승인 (Approved)</div>
+          <div style="font-size:12px; color:#596066; margin-bottom:10px;">법률·지역·미디어사 정책 기준 모두 충족. 편성 집행이 허용됩니다.</div>
+        </div>
+        <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:8px;">충족 조건 목록</div>
+        <ul class="pde-condition-list">
+          <li>업종 제한 없음 — 전자기기(삼성전자) 강남역 매체 운영 허용</li>
+          <li>경쟁사 독점 정책 없음 — 해당 기간 동일 제조사 경쟁 스케줄 없음</li>
+          <li>지역 광고 규제 적합 — 강남구·마포구 디지털 OOH 운영 요건 충족</li>
+          <li>콘텐츠 등급 적합 — 전체 이용가 콘텐츠, 시간대 제한 없음</li>
+          <li>미디어사 인벤토리 정책 준수 — 슬롯·루프·보장 조건 적합</li>
+        </ul>
+        <div style="margin-top:14px; font-size:12px; color:#9EA5AD; padding:8px 12px; background:#F6F7F9; border-radius:6px;">
+          ⓘ PDE Approved ≠ Schedule Approval Approved. PDE 정책 판단과 업무 승인(Approval)은 별도 절차입니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 정책 적용·재검증 card -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">정책 적용 · 재검증 (Policy Revalidation)</span>
+        <span id="pde-revalidation-status" style="font-size:12px; color:#2E9E34; font-weight:600;">최신 정책 적용 완료</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3;">
+          <div>
+            <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:2px;">현재 적용 PDE 버전</div>
+            <div style="font-size:12px; color:#9EA5AD;">PDE Engine v2025.10.02 — 2025-10-13 적용</div>
+          </div>
+          <span style="font-size:11px; padding:2px 9px; border-radius:20px; background:#E8F8E9; color:#2E9E34; font-weight:600;">최신</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3;">
+          <div>
+            <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:2px;">PDE 최신 배포 버전</div>
+            <div style="font-size:12px; color:#9EA5AD;">v2025.10.02 — 2025-10-13 배포 · 정책 5건 포함</div>
+          </div>
+          <span style="font-size:11px; padding:2px 9px; border-radius:20px; background:#E8F8E9; color:#2E9E34; font-weight:600;">일치</span>
+        </div>
+        <div style="padding:12px 0;">
+          <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:8px;">정책 변경 시 재검증</div>
+          <div style="font-size:12px; color:#596066; margin-bottom:12px;">PDE 정책이 새로 업데이트되거나 수동으로 재검증이 필요한 경우 아래 버튼을 실행하세요. 재검증 결과에 따라 Schedule 상태가 변경될 수 있습니다.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button onclick="runPdeRevalidation()" id="pde-reval-btn" style="height:34px;padding:0 16px;background:#2D84ED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">PDE 재검증 실행</button>
+            <a href="settings-policy" style="height:34px;padding:0 16px;background:#F6F7F9;color:#596066;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;">정책 관리</a>
+          </div>
+          <div id="pde-reval-result" style="display:none; margin-top:12px; padding:10px 14px; border-radius:6px; font-size:12px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 6: 운영 상태 ===== -->
+  <div id="tab-ops" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><span class="card-title">운영 상태 요약 (Operational Health Summary)</span></div>
+      <div class="card-body">
+        <div class="ops-stat-row">
+          <div class="ops-stat">
+            <div class="ops-stat-label">오늘 송출 횟수</div>
+            <div class="ops-stat-val" style="color:#2E9E34;">1,248</div>
+            <div class="ops-stat-sub">목표 대비 102%</div>
+          </div>
+          <div class="ops-stat">
+            <div class="ops-stat-label">누적 송출 횟수</div>
+            <div class="ops-stat-val">18,304</div>
+            <div class="ops-stat-sub">집행 3일차</div>
+          </div>
+          <div class="ops-stat">
+            <div class="ops-stat-label">운영 매체</div>
+            <div class="ops-stat-val">8</div>
+            <div class="ops-stat-sub">2개 Item · 8개소</div>
+          </div>
+          <div class="ops-stat">
+            <div class="ops-stat-label">Item 운영 상태</div>
+            <div class="ops-stat-val" style="font-size:16px;">
+              <span style="color:#2E9E34;">2 운영중</span>
+            </div>
+            <div class="ops-stat-sub">오류 없음</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Item별 운영 현황</span></div>
+      <div class="card-body" style="padding:0;">
+        <table class="inner-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>매체</th>
+              <th>운영 상태</th>
+              <th>오늘 송출</th>
+              <th>목표 대비</th>
+              <th>마지막 송출</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600; color:#596066;">Item 1</td>
+              <td>강남역 A출구 외 4개소</td>
+              <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
+              <td style="font-variant-numeric:tabular-nums;">826회</td>
+              <td style="color:#2E9E34; font-weight:600;">+3%</td>
+              <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">14:35:02</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600; color:#596066;">Item 2</td>
+              <td>신촌역 B출구 외 3개소</td>
+              <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
+              <td style="font-variant-numeric:tabular-nums;">422회</td>
+              <td style="color:#2E9E34; font-weight:600;">+1%</td>
+              <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">14:34:58</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="font-size:12px; color:#9EA5AD; padding:0 4px;">
+      ※ CMS Item State = 실행계획 상태. 실제 재생 증적 SSOT = Playback/PoP Log. 장비 Health/제어 SSOT = RMS.
+    </div>
+  </div>
+
+  <!-- ===== TAB 7: Revision ===== -->
+  <div id="tab-revision" class="tab-panel">
+    <div class="immutability-notice">
+      ⚠️ Revision은 승인 후 불변(Immutable)입니다. 핵심 조건 변경은 New Revision 생성 후 재검증·재승인 절차를 따릅니다.
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Revision 이력</span>
+        <button class="btn btn-ghost">New Revision 생성</button>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <table class="inner-table">
+          <thead>
+            <tr>
+              <th>Revision</th>
+              <th>변경 내역</th>
+              <th>적용 기간 (From ~ To)</th>
+              <th>Revision 상태</th>
+              <th>생성일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#F0FAF1;">
+              <td style="font-weight:700; color:#2E9E34;">R1 (현재 적용)</td>
+              <td>최초 등록</td>
+              <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-10-15 ~ (진행 중)</td>
+              <td><span class="badge rev-effective">Effective</span></td>
+              <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">R1 상세 — Revision Lifecycle</span></div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-label">Revision ID</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums; color:#9EA5AD;">SCH-2025-0041-R1</div>
+          <div class="info-label">Revision Lifecycle</div>
+          <div class="info-value"><span class="badge rev-effective">Effective (적용중)</span></div>
+          <div class="info-label">Effective From</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-15 00:00:00</div>
+          <div class="info-label">Effective To</div>
+          <div class="info-value" style="color:#9EA5AD;">(진행 중 — 다음 Revision 적용 시 자동 마감)</div>
+          <div class="info-label">Technical Validation</div>
+          <div class="info-value" style="color:#2E9E34;">✅ Success</div>
+          <div class="info-label">PDE Decision</div>
+          <div class="info-value" style="color:#2E9E34;">✅ Approved</div>
+          <div class="info-label">승인 상태</div>
+          <div class="info-value"><span class="badge appr-approved">승인</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 8: Audit ===== -->
+  <div id="tab-audit" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><span class="card-title">생성 / 수정 정보</span></div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-label">생성자</div>
+          <div class="info-value">홍길동</div>
+          <div class="info-label">생성일시</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-10 09:14:22</div>
+          <div class="info-label">최종 수정자</div>
+          <div class="info-value">홍길동</div>
+          <div class="info-label">최종 수정일시</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-14 18:03:11</div>
+          <div class="info-label">담당자</div>
+          <div class="info-value">홍길동 (D'ooh Admin)</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">상태 변경 이력</span></div>
+      <div class="card-body">
+        <div class="audit-row">
+          <div class="audit-time">2026-08-19</div>
+          <div class="audit-dot"></div>
+          <div><div><span class="audit-actor">홍길동</span> — <span class="audit-desc">조회 · 상세 페이지 조회 (운영 정상 확인)</span></div></div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-time">2025-10-15 00:00:01</div>
+          <div class="audit-dot green"></div>
+          <div><div><span class="audit-actor">System</span> — <span class="audit-desc">집행 시작 · Lifecycle: Scheduled → Active (운영 시작일 도달)</span></div></div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-time">2025-10-14 18:03:11</div>
+          <div class="audit-dot green"></div>
+          <div><div><span class="audit-actor">홍길동</span> — <span class="audit-desc">등록 · 스케줄 SCH-2025-0041 최초 등록 및 R1 생성</span></div></div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-time">2025-10-10 16:45:00</div>
+          <div class="audit-dot green"></div>
+          <div><div><span class="audit-actor">김관리</span> — <span class="audit-desc">승인 · Approval: Pending → Approved</span></div></div>
+        </div>
+        <div class="audit-row">
+          <div class="audit-time">2025-10-08 15:00:41</div>
+          <div class="audit-dot"></div>
+          <div><div><span class="audit-actor">System (PDE)</span> — <span class="audit-desc">PDE 검토 · PDE Decision: Approved. Policy v2025.10.02 적용</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Inventory Release 상태</span></div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-label">해제 상태</div>
+          <div class="info-value" style="color:#9EA5AD;">운영 중 (종결 시 미래 Inventory 해제 예정)</div>
+          <div class="info-label">해제 예정 시각</div>
+          <div class="info-value" style="font-variant-numeric:tabular-nums; color:#9EA5AD;">2025-12-31 23:59:59 (운영 종료 시)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+<script>
+(function() {
+  const SCHEDULES = {
+    'SCH-2025-0041': { title: '강남역 갤럭시 S25 광고 25Q4', advertiser: '삼성전자', period: '2025-10-15 ~ 2025-12-31', campaign: 'CMP-2026-001', campaignName: '삼성전자 갤럭시 S25 런칭', manager: '홍길동', registeredAt: '2025-10-14', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['강남', 'Q4'], apprReviewer: '김관리 (Admin)', apprDate: '2025-10-10 16:45', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '일반 옥외광고, 업종·지역·시간대 제한 없음', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0037': { title: '강남 여름 시즌 캠페인', advertiser: '삼성전자', period: '2025-07-01 ~ 2025-08-31', campaign: 'CMP-2025-061', campaignName: '삼성전자 비스포크 가을 이벤트', manager: '홍길동', registeredAt: '2025-07-01', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['강남', '여름', '삼성'], apprReviewer: '김관리 (Admin)', apprDate: '2025-06-28 10:30', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '일반 소비재 광고, 제한사항 없음', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0039': { title: '공항 브랜드 패키지 Q4', advertiser: '현대자동차', period: '2025-11-01 ~ 2025-11-30', campaign: 'CMP-2026-003', campaignName: '현대자동차 아이오닉9 브랜드 캠페인', manager: '김민준', registeredAt: '2025-10-10', mode: 'Fixed', source: '직접', sourceClass: 'source-direct', tags: ['공항', 'Q4', '현대'], apprReviewer: '이관리 (Admin)', apprDate: '2025-10-08 11:00', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '공항 내 자동차 브랜드 광고, 제한사항 없음', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0040': { title: '코엑스 신제품 런칭 스팟', advertiser: 'LG전자', period: '2025-11-15 ~ 2025-12-15', campaign: 'CMP-2026-002', campaignName: 'LG생활건강 봄 시즌 프로모션', manager: '이수아', registeredAt: '2025-10-12', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['코엑스', '신제품', 'LG'], apprReviewer: '김관리 (Admin)', apprDate: '2025-10-11 14:20', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '가전제품 광고, 코엑스 실내 위치 적합', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
+    'SCH-2025-0042': { title: '홍대 팝업 스팟 조건광고', advertiser: '나이키코리아', period: '2025-11-01 ~ 2025-11-17', campaign: 'CMP-2026-003', campaignName: '현대자동차 아이오닉9 브랜드 캠페인', manager: '홍길동', registeredAt: '2025-10-13', mode: 'Fixed', source: '캠페인', sourceClass: 'source-campaign', tags: ['홍대', '나이키', '팝업'], apprReviewer: '(대기 중)', apprDate: '—', pdeResult: '검토중', pdeStyle: 'background:#FFFBEB;border:1px solid #F3BE4A;', pdeReason: '스포츠 브랜드 광고 정책 검토 중 — 위치·시간대 적합성 확인 필요', lc: 'pending', lcLabel: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'SCH-2025-0043': { title: '롯데타운 연말 프로모션', advertiser: '롯데백화점', period: '2025-12-01 ~ 2025-12-31', campaign: 'CMP-2026-004', campaignName: '카카오페이 2026 브랜드 어웨어니스', manager: '박지은', registeredAt: '2025-10-15', mode: 'Rolling', source: '직접', sourceClass: 'source-direct', tags: ['롯데', '연말', '프로모션'], apprReviewer: '(대기 중)', apprDate: '—', pdeResult: '검토중', pdeStyle: 'background:#FFFBEB;border:1px solid #F3BE4A;', pdeReason: '연말 소비 촉진 광고 — 위치·노출 빈도 정책 확인 중', lc: 'pending', lcLabel: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
+    'SCH-2025-0044': { title: '카카오 브랜드 디스플레이', advertiser: '카카오', period: '2025-12-01 ~ 2025-12-31', campaign: 'CMP-2026-004', campaignName: '카카오페이 2026 브랜드 어웨어니스', manager: '홍길동', registeredAt: '2025-10-15', mode: 'Fixed', source: '직접', sourceClass: 'source-direct', tags: ['카카오', '브랜드'], apprReviewer: '(미요청)', apprDate: '—', pdeResult: '미심사', pdeStyle: 'background:#F0F1F3;border:1px solid #CED2D6;', pdeReason: '승인 요청 전 — PDE 심사 미진행', lc: 'draft', lcLabel: '초안', appr: '미요청', apprClass: 'badge appr-none', pde: 'PDE 미심사', pdeClass: 'badge' },
+    'SCH-2025-0022': { title: 'SK하이닉스 AI 칩 캠페인', advertiser: 'SK하이닉스', period: '2025-06-01 ~ 2025-07-31', campaign: 'CMP-2025-089', campaignName: '네이버 클라우드 B2B 어웨어니스', manager: '이수아', registeredAt: '2025-05-28', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['SK하이닉스', 'AI', '반도체'], apprReviewer: '김관리 (Admin)', apprDate: '2025-05-27 09:15', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '기술·반도체 B2B 광고, 제한사항 없음', lc: 'done', lcLabel: '완료', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' }
+  };
+
+  function infoRow(label, value) {
+    return '<div class="info-label">' + label + '</div><div class="info-value">' + value + '</div>';
+  }
+
+  function goStateSch(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
+  const STATE_OVERRIDES_SCH = {
+    'draft':    { lc: 'draft',     label: '초안',    appr: '미요청', apprClass: 'badge appr-none', actions: '<button class="btn" style="background:#E8F8E9;color:#2E9E34;border:1px solid #58C65D;" onclick="alert(\'Feasibility 확인 완료 — 가용 슬롯 확인됨\')">Feasibility 확인</button><button class="btn btn-primary" onclick="goStateSch(\'review\')">승인요청</button>' },
+    'review':   { lc: 'pending',   label: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', actions: '<button class="btn btn-primary" onclick="goStateSch(\'approved\')">승인</button>' },
+    'approved': { lc: 'scheduled', label: '예약',    appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-primary" onclick="goStateSch(\'active\')">집행시작</button>' },
+    'active':   { lc: 'active',    label: '집행중',  appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-outline" onclick="goStateSch(\'paused\')">일시중지</button><button class="btn" onclick="location.href=\'schedule-edit\'" style="background:#EAF3FF;color:#2D84ED;border:1px solid #2D84ED;">새 Revision</button>' },
+    'paused':   { lc: 'paused',    label: '일시중지', appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-primary" onclick="goStateSch(\'active\')">재개</button>' }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'SCH-2025-0041';
+    const stateParam = params.get('state');
+    const d = SCHEDULES[id] || SCHEDULES['SCH-2025-0041'];
+
+    // Apply state override
+    var ov = stateParam && STATE_OVERRIDES_SCH[stateParam] ? STATE_OVERRIDES_SCH[stateParam] : null;
+    var lcVal = ov ? ov.lc : d.lc;
+    var lcLabel = ov ? ov.label : d.lcLabel;
+
+    // Lifecycle 프로세스 스테퍼
+    var SCH_FLOW = [
+      { key:'draft',    icon:'1', label:'초안',     gate:'기본정보·매체·\n콘텐츠 설정' },
+      { key:'check',    icon:'F', label:'Feasibility\n확인',  gate:'FRESH Feasibility\n필수 Gate (T-SCH-01)' },
+      { key:'review',   icon:'2', label:'승인요청',  gate:'검토자 승인\n(T-SCH-02)' },
+      { key:'approved', icon:'✓', label:'예약',      gate:'집행 시작\n확인' },
+      { key:'active',   icon:'▶', label:'집행중',    gate:'일시중지 or\n새 Revision' },
+      { key:'paused',   icon:'⏸', label:'일시중지',  gate:'재개\n(Feasibility 재검증)' },
+      { key:'completed',icon:'■', label:'완료',      gate:'실적 분석\n(T-MON-01)' },
+    ];
+    var SCH_IDX = { draft:0, check:1, pending:2, review:2, approved:3, scheduled:3, active:4, paused:5, completed:6 };
+    var curKey = stateParam || d.lc || 'draft';
+    var curIdx = SCH_IDX[curKey] !== undefined ? SCH_IDX[curKey] : 0;
+    var stepperEl = document.getElementById('sch-lc-stepper');
+    if (stepperEl) {
+      var html = '';
+      SCH_FLOW.forEach(function(s, i) {
+        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
+        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label.replace(/\n/g,'<br>') + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
+        if (i < SCH_FLOW.length - 1) {
+          var mandatory = (i === 1) ? 'mandatory' : '';
+          html += '<div class="lc-arrow ' + (i < curIdx ? 'done' : '') + ' ' + mandatory + '"><div class="lc-arrow-line"></div>'
+            + (mandatory ? '<div class="lc-arrow-gate">필수 Gate</div>' : '') + '</div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var SCH_NOTES = {
+      draft:'초안 — 기본정보·매체·콘텐츠를 설정하세요. Feasibility 확인이 승인요청 전 필수입니다.',
+      check:'Feasibility 확인 중 — 슬롯 가용성·보장횟수 충족 여부를 검증합니다. FRESH 상태여야 합니다.',
+      review:'승인요청 — 검토자 승인을 기다리는 중.',
+      pending:'승인요청 — 검토자 승인을 기다리는 중.',
+      approved:'예약(Approved) — 집행 시작을 확인하세요.',
+      scheduled:'예약(Approved) — 집행 시작을 확인하세요.',
+      active:'집행중 — 스케줄 운영 중. 일시중지 또는 새 Revision이 가능합니다.',
+      paused:'일시중지 — Feasibility 재검증 후 재개하거나 종료를 선택하세요.',
+      completed:'완료 — 집행 종료. 모니터링·실적 분석 리포트를 확인하세요.',
+    };
+    var noteEl = document.getElementById('sch-lc-note');
+    if (noteEl) noteEl.textContent = SCH_NOTES[curKey] || '';
+
+    // 수정·삭제 정책 테이블
+    var SCH_POLICY = [
+      { state:'draft',     label:'초안',     edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-ok">✅ 가능</span>',       note:'모든 항목 편집. 수정 후 Feasibility 재실행 필요' },
+      { state:'check',     label:'Feasibility확인', edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>',   note:'수정 시 Feasibility Stale → 재실행 후 승인요청' },
+      { state:'review',    label:'승인요청',  edit:'<span class="pol-warn">⚠ 반려 후 수정</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'반려 처리 → 수정 → Feasibility 재실행 → 재제출' },
+      { state:'pending',   label:'승인대기',  edit:'<span class="pol-warn">⚠ 반려 후 수정</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'반려 처리 → 수정 → Feasibility 재실행 → 재제출' },
+      { state:'approved',  label:'예약',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-warn">⚠ 취소 가능</span>', note:'수정 시 취소 후 재등록. 취소는 광고주 협의 필요' },
+      { state:'scheduled', label:'예약',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-warn">⚠ 취소 가능</span>', note:'취소는 광고주 협의 필요' },
+      { state:'active',    label:'집행중',    edit:'<span class="pol-no">❌ 핵심조건 차단</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'새 Revision → Impact Analysis → 재승인. 강제취소 = 영업팀 승인 필요' },
+      { state:'paused',    label:'일시중지',  edit:'<span class="pol-warn">⚠ Revision 필요</span>', del:'<span class="pol-no">❌ 불가</span>',      note:'핵심조건 변경 → Revision → Feasibility → 재승인' },
+      { state:'completed', label:'완료',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-no">❌ 불가</span>',       note:'읽기 전용. 실적·PoP·정산 근거 보존' },
+    ];
+    var schStepperEl = document.getElementById('sch-lc-stepper');
+    var schPolicyWrap = schStepperEl ? schStepperEl.closest('.lc-stepper-wrap') : null;
+    if (schPolicyWrap) {
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'lc-policy-toggle';
+      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'lc-policy-table-wrap';
+      tableWrap.style.display = 'none';
+      var rows = SCH_POLICY.map(function(p) {
+        var isCur = p.state === curKey;
+        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
+          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
+          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
+      }).join('');
+      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제/취소</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      toggleBtn.onclick = function() {
+        var v = tableWrap.style.display === 'none';
+        tableWrap.style.display = v ? 'block' : 'none';
+        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
+      };
+      schPolicyWrap.appendChild(toggleBtn);
+      schPolicyWrap.appendChild(tableWrap);
+    }
+
+    var apprClass = ov ? ov.apprClass : d.apprClass;
+    var apprText = ov ? ov.appr : d.appr;
+
+    // Header
+    const titleEl = document.getElementById('sch-title');
+    if (titleEl) titleEl.textContent = d.title;
+
+    const metaEl = document.getElementById('sch-meta');
+    if (metaEl) metaEl.textContent = id + ' · ' + d.advertiser + ' · ' + d.period;
+
+    const lcEl = document.getElementById('sch-lc-badge');
+    if (lcEl) { lcEl.className = 'badge lc-' + lcVal; lcEl.style.cssText = 'font-size:13px; padding:4px 12px;'; lcEl.innerHTML = '<span class="badge-dot"></span>' + lcLabel; }
+
+    const apprEl = document.getElementById('sch-appr-badge');
+    if (apprEl) { apprEl.className = apprClass; apprEl.style.cssText = 'font-size:12px;'; apprEl.textContent = apprText; }
+
+    // Render state-transition action buttons if action container exists
+    var actEl = document.getElementById('sch-actions');
+    if (actEl && ov) actEl.innerHTML = ov.actions;
+
+    const pdeEl = document.getElementById('sch-pde-badge');
+    if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.style.cssText = 'font-size:12px;'; pdeEl.textContent = d.pde; }
+
+    // Tab: 기본정보 (tab-basic)
+    var tabBasic = document.getElementById('tab-basic');
+    if (tabBasic) {
+      var tags = (d.tags || []).map(function(t) {
+        return '<span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;margin-right:4px;">' + t + '</span>';
+      }).join('');
+      var isApproved = d.appr === '승인됨';
+      tabBasic.innerHTML = '<div class="card"><div class="card-head"><span class="card-title">스케줄 기본 정보</span></div>'
+        + '<div class="card-body"><div class="info-grid">'
+        + infoRow('스케줄 ID', '<span style="color:#9EA5AD;font-variant-numeric:tabular-nums;">' + id + '</span>')
+        + infoRow('스케줄명', '<span style="font-weight:600;">' + d.title + '</span>')
+        + infoRow('태그', tags || '—')
+        + infoRow('광고주', d.advertiser)
+        + infoRow('생성 출처', '<span class="badge ' + d.sourceClass + '">' + d.source + '</span>')
+        + infoRow('연계 캠페인', '<span style="color:#2D84ED;">' + d.campaign + ' — ' + d.campaignName + '</span>')
+        + infoRow('담당자', d.manager)
+        + infoRow('운영기간', '<span style="font-variant-numeric:tabular-nums;">' + d.period + '</span>')
+        + infoRow('운영 방식', d.mode)
+        + infoRow('등록일', '<span style="font-variant-numeric:tabular-nums;">' + d.registeredAt + '</span>')
+        + infoRow('Lifecycle 상태', '<span class="badge lc-' + d.lc + '"><span class="badge-dot"></span>' + d.lcLabel + ' (' + (d.lc === 'active' ? 'Active' : d.lc === 'scheduled' ? 'Scheduled' : d.lc === 'pending' ? 'Pending' : d.lc === 'done' ? 'Done' : 'Draft') + ')</span>')
+        + '</div></div></div>'
+        + '<div class="card"><div class="card-head"><span class="card-title">승인 워크플로우</span>'
+        + (isApproved ? '<span style="font-size:12px;color:#58C65D;display:flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#58C65D"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>Feasibility 통과</span>' : '')
+        + '</div><div class="card-body"><div class="appr-card">'
+        + '<div class="appr-field"><div class="appr-field-label">승인 상태</div><div class="appr-field-value"><span class="' + d.apprClass + '">' + d.appr + '</span></div></div>'
+        + '<div class="appr-field"><div class="appr-field-label">승인자</div><div class="appr-field-value">' + d.apprReviewer + '</div></div>'
+        + '<div class="appr-field"><div class="appr-field-label">승인일시</div><div class="appr-field-value">' + d.apprDate + '</div></div>'
+        + '</div></div></div>'
+        + '<div class="card"><div class="card-head"><span class="card-title">PDE 검토 결과</span></div>'
+        + '<div class="card-body"><div style="' + d.pdeStyle + 'border-radius:8px;padding:14px 18px;">'
+        + '<div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:8px;">PDE 결정: ' + d.pdeResult + '</div>'
+        + '<div class="info-grid"><div class="info-label">사유</div><div class="info-value">' + d.pdeReason + '</div></div>'
+        + '</div></div></div>';
+    }
+  });
+})();
+
+function runPdeRevalidation() {
+  var btn = document.getElementById('pde-reval-btn');
+  btn.textContent = '검증 중...';
+  btn.disabled = true;
+  var result = document.getElementById('pde-reval-result');
+  result.style.display = 'none';
+  setTimeout(function() {
+    result.style.display = 'block';
+    result.style.background = '#F0FAF1';
+    result.style.color = '#2E9E34';
+    result.style.border = '1px solid #A7F3AD';
+    result.innerHTML = '✅ PDE 재검증 완료 (v2025.10.02)<br>'
+      + '· 업종 제한 정책 — PASS<br>'
+      + '· 경쟁사 독점 정책 — PASS<br>'
+      + '· 지역 규제 정책 — PASS<br>'
+      + '· 콘텐츠 등급 정책 — PASS<br>'
+      + '· 인벤토리 루프 정책 — PASS<br>'
+      + '<strong>결과: 승인 유지 (모든 정책 충족)</strong>';
+    document.getElementById('pde-revalidation-status').textContent = '재검증 완료 ✓';
+    btn.textContent = '✓ 재검증 완료';
+    btn.style.background = '#58C65D';
+  }, 1800);
+}
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

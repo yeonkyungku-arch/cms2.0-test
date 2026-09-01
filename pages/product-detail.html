@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로덕트 상세 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    .page-header-left { display: flex; flex-direction: column; gap: 6px; }
+    .page-title { font-size: 20px; font-weight: 700; color: #24292E; }
+    .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .page-id { font-size: 12px; color: #9EA5AD; font-family: monospace; }
+    .page-rev {
+      font-size: 12px; font-weight: 600;
+      background: #F0F1F3; color: #596066;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .breadcrumb {
+      font-size: 12px; color: #9EA5AD; margin-bottom: 12px;
+    }
+    .breadcrumb a { color: #9EA5AD; text-decoration: none; }
+    .breadcrumb a:hover { color: #2D84ED; }
+    .prd-header { margin-bottom: 20px; }
+    .prd-header-status { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .prd-eff-rev { font-size: 12.5px; color: #596066; }
+    .prd-header-meta { display: flex; align-items: center; gap: 16px; margin-top: 6px; font-size: 12px; color: #9EA5AD; }
+    .prd-header-meta strong { color: #596066; font-weight: 600; }
+
+    /* ── State section ── */
+    .state-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .state-label { font-size: 12px; font-weight: 600; color: #596066; margin-right: 4px; }
+
+    /* Lifecycle badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .lc-draft    { background: #F0F1F3; color: #596066; }
+    .lc-draft    .badge-dot { background: #9EA5AD; }
+    .lc-ready    { background: #EAF3FF; color: #2D84ED; }
+    .lc-ready    .badge-dot { background: #2D84ED; }
+    .lc-approved { background: #F0EAFA; color: #7C5CBF; }
+    .lc-approved .badge-dot { background: #7C5CBF; }
+    .lc-active   { background: #E8F8E9; color: #2E9E34; }
+    .lc-active   .badge-dot { background: #58C65D; }
+    .lc-paused   { background: #FFFBE6; color: #B45309; }
+    .lc-paused   .badge-dot { background: #F3BE4A; }
+    .lc-ended    { background: #FFF0F0; color: #B03030; }
+    .lc-ended    .badge-dot { background: #E97474; }
+
+    /* Transition action buttons */
+    .action-btn {
+      height: 32px; padding: 0 14px;
+      border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .action-btn-pause {
+      background: #FFFBE6; color: #B45309; border-color: #F3BE4A;
+    }
+    .action-btn-pause:hover { background: #FFF3C4; }
+    .action-btn-end {
+      background: #FFF0F0; color: #B03030; border-color: #E97474;
+    }
+    .action-btn-end:hover { background: #FFE5E5; }
+    .action-btn-resume {
+      background: #E8F8E9; color: #2E9E34; border-color: #58C65D;
+    }
+    .action-btn-resume:hover { background: #D4F4D6; }
+
+    /* ── PDE amber panel ── */
+    .pde-panel {
+      border-left: 4px solid #F3BE4A;
+      background: #FFFBF0;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .pde-panel-title {
+      font-size: 12px; font-weight: 700; color: #92610A;
+      display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+    }
+    .pde-panel-body { font-size: 12px; color: #92610A; line-height: 1.5; }
+
+    /* ── 4-axis badge styles ── */
+    .ops-badge { background:#F0F1F3; color:#596066; border:1px solid #E5E7EA; }
+    .appr-badge { background:#EAF3FF; color:#2D84ED; }
+    .appr-approved { background:#E8F8E9; color:#2E9E34; }
+    .appr-pending { background:#FFF8E6; color:#B45309; }
+    .appr-rejected { background:#FEF2F2; color:#B91C1C; }
+    .pde-badge-approved { background:#E8F8E9; color:#2E9E34; }
+    .axis-labels { display:flex; gap:16px; margin-top:6px; font-size:11px; color:#9EA5AD; }
+
+    /* Warn / danger outline buttons */
+    .btn-warn { border-color:#F3BE4A; color:#B45309; }
+    .btn-warn:hover { background:#FFFBEB; }
+    .btn-danger { border-color:#E97474; color:#B91C1C; }
+    .btn-danger:hover { background:#FEF2F2; }
+
+    /* ── Tabs ── */
+    .detail-main {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 12px;
+      overflow: hidden;
+    }
+    .tab-groups {
+      display: flex; gap: 0; flex-wrap: nowrap; overflow-x: auto;
+      background: #fff; border-bottom: 1px solid #E5E7EA;
+      padding: 0 8px;
+    }
+    .detail-main .tab-panel { padding: 22px 24px; }
+    .detail-main .tab-panel .card { border: none; padding: 0; margin-bottom: 0; }
+    .detail-main .tab-panel .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .detail-main .tab-panel .card + .card { margin-top: 28px; padding-top: 24px; border-top: 1px solid #F0F1F3; }
+    .tab-group-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 13px 14px; font-size: 13px; font-weight: 500; color: #9EA5AD;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; white-space: nowrap; margin-bottom: -1px;
+      transition: color 0.12s ease, border-color 0.12s ease;
+    }
+    .tab-group-btn .grp-num { font-weight: 600; color: #CED2D6; transition: color 0.12s ease; }
+    .tab-group-btn:hover { color: #596066; }
+    .tab-group-btn.active { color: #24292E; font-weight: 600; border-bottom-color: #24292E; }
+    .tab-group-btn.active .grp-num { color: #24292E; }
+    @media (max-width: 720px) { .tab-group-btn { padding: 11px 10px; font-size: 12.5px; } }
+
+    /* ── Slot calendar (P4 운영 현황) ── */
+    .slot-cal { border: 1px solid #E5E7EA; border-radius: 10px; padding: 14px 16px; background: #fff; }
+    .slot-cal-head { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 10px; }
+    .slot-cal-title { font-size: 14px; font-weight: 700; color: #24292E; min-width: 90px; text-align: center; }
+    .slot-cal-nav {
+      width: 26px; height: 26px; border-radius: 6px; border: 1px solid #E5E7EA; background: #fff;
+      color: #596066; font-size: 15px; cursor: pointer; line-height: 1;
+    }
+    .slot-cal-nav:hover { background: #F6F7F9; }
+    .slot-cal-legend { display: flex; gap: 16px; justify-content: center; margin-bottom: 8px; font-size: 11px; color: #596066; }
+    .slot-cal-format-note { text-align: center; font-size: 11px; color: #9EA5AD; margin-bottom: 14px; }
+    .slot-cal-format-note strong { color: #596066; }
+    .slot-cal-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+    .dot-ok { background: #58C65D; }
+    .dot-tight { background: #F3BE4A; }
+    .dot-off { background: #CED2D6; }
+    .slot-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .slot-cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: #9EA5AD; padding-bottom: 6px; }
+    .slot-cal-cell {
+      border: 1px solid #E5E7EA; border-radius: 6px; padding: 6px 4px; min-height: 52px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .slot-cal-cell.empty { border: none; background: transparent; }
+    .slot-cal-cell.off { background: #F6F7F9; }
+    .slot-cal-cell.today { border: 2px solid #2D84ED; }
+    .slot-cal-cell .d { font-size: 12px; font-weight: 600; color: #24292E; }
+    .slot-cal-cell .occ { font-size: 11px; font-weight: 600; color: #9EA5AD; }
+    .slot-cal-cell .occ.ok { color: #2E9E34; }
+    .slot-cal-cell .occ.tight { color: #B45309; }
+    .slot-cal-cell .occ.off { color: #9EA5AD; }
+
+    /* ── Availability Summary (P4) ── */
+    .avail-summary {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+      background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 10px;
+      padding: 16px 0; margin-bottom: 20px;
+    }
+    .avail-item { text-align: center; padding: 0 8px; border-left: 1px solid #E5E7EA; }
+    .avail-item:first-child { border-left: none; }
+    .avail-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .avail-value { font-size: 18px; font-weight: 700; color: #24292E; }
+    .avail-value.main { color: #2D84ED; }
+    .avail-value.small { font-size: 14px; }
+    @media (max-width: 720px) { .avail-summary { grid-template-columns: repeat(2, 1fr); } .avail-item { border-left: none; border-top: 1px solid #E5E7EA; padding-top: 10px; } .avail-item:nth-child(-n+2) { border-top: none; } }
+
+    /* ── Policy restrictions (P1-3) ── */
+    .policy-restrict-list { display: flex; flex-direction: column; gap: 10px; }
+    .policy-restrict-item {
+      display: flex; align-items: baseline; gap: 12px; padding: 10px 14px;
+      background: #FFF8E6; border: 1px solid #F3E1AE; border-radius: 8px; font-size: 13px;
+    }
+    .policy-restrict-label { font-weight: 700; color: #92610A; flex-shrink: 0; min-width: 110px; }
+    .policy-restrict-value { color: #596066; }
+    .policy-detail-toggle { margin-top: 18px; padding-top: 16px; border-top: 1px solid #F0F1F3; }
+    .policy-detail-toggle summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: #2D84ED; user-select: none; }
+    .policy-detail-toggle summary:hover { text-decoration: underline; }
+
+    /* ── Need-confirm flag ── */
+    .need-confirm {
+      display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700;
+      color: #B45309; background: #FFF3D6; border-radius: 4px; padding: 1px 6px;
+      margin-left: 6px; text-transform: none; letter-spacing: 0;
+    }
+
+    /* ── Price composition (P3-04) ── */
+    .price-compose { border: 1px solid #E5E7EA; border-radius: 10px; padding: 16px 18px; background: #F9FAFB; }
+    .price-compose-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .price-compose-label { width: 100px; font-size: 12px; font-weight: 600; color: #596066; flex-shrink: 0; }
+    .price-compose-select { font-size: 13px; color: #24292E; background: #fff; border: 1px solid #E5E7EA; border-radius: 6px; padding: 7px 12px; flex: 1; }
+    .price-compose-calc { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #E5E7EA; flex-wrap: wrap; }
+    .price-calc-item { text-align: center; padding: 10px 14px; }
+    .price-calc-item.final { background: #EAF3FF; border-radius: 8px; padding: 10px 18px; }
+    .price-calc-label { font-size: 10.5px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .price-calc-value { font-size: 16px; font-weight: 700; color: #24292E; }
+    .price-calc-item.final .price-calc-value { color: #2D84ED; }
+    .price-calc-op { font-size: 16px; font-weight: 600; color: #9EA5AD; }
+    @media (max-width: 720px) { .price-compose-calc { flex-direction: column; align-items: stretch; } .price-calc-op { text-align: center; } }
+
+    /* ── Revision Snapshot modal ── */
+    .rev-snap-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(16,24,32,0.4);
+      z-index: 500; align-items: center; justify-content: center; padding: 24px;
+    }
+    .rev-snap-overlay.open { display: flex; }
+    .rev-snap-modal {
+      background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; width: 560px; max-width: 100%;
+      max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .rev-snap-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid #E5E7EA;
+    }
+    .rev-snap-title { font-size: 15px; font-weight: 700; color: #24292E; display: flex; align-items: center; gap: 8px; }
+    .rev-snap-sub { font-size: 12px; color: #9EA5AD; margin-top: 4px; }
+    .rev-snap-close { border: none; background: none; font-size: 16px; color: #9EA5AD; cursor: pointer; padding: 4px; }
+    .rev-snap-close:hover { color: #24292E; }
+    .rev-snap-body { padding: 20px 22px; overflow-y: auto; }
+    .rev-snap-body .field-grid { margin-bottom: 0; }
+    .tab-panel { display: none; }
+    .tab-panel.group-active { display: block; }
+    .section-sublabel {
+      font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: 0.6px; margin: 0 0 6px;
+    }
+
+    /* ── Section card ── */
+    .card {
+      background: #fff;
+      border: 1px solid #E5E7EA;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      box-shadow: none;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 700; color: #24292E;
+      margin-bottom: 18px; padding-bottom: 12px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+
+    /* ── Field grid ── */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+    .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .field-grid.one { grid-template-columns: 1fr; }
+    .field-item { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; }
+    .field-value { font-size: 14px; color: #24292E; }
+    .field-value.large { font-size: 18px; font-weight: 700; }
+    .field-value.mono { font-family: monospace; }
+    .card-subhead {
+      font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: .05em; margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid #F0F1F3;
+    }
+    .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+    /* ── Tags ── */
+    .tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 12px; font-weight: 500;
+      background: #F0F1F3; color: #596066;
+    }
+
+    /* ── Slot chips ── */
+    .slot-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .slot-chip {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 6px; font-size: 13px; font-weight: 600;
+      background: #EAF3FF; color: #2D84ED; border: 1px solid #B8D9F8;
+    }
+
+    /* ── KPI cards ── */
+    .kpi-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .kpi-card {
+      flex: 1; min-width: 140px;
+      background: #F6F7F9; border: 1px solid #E5E7EA;
+      border-radius: 8px; padding: 14px 16px;
+    }
+    .kpi-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; font-variant-numeric: tabular-nums; }
+    .kpi-unit { font-size: 12px; font-weight: 400; color: #9EA5AD; margin-left: 2px; }
+    .kpi-formula { font-size: 11px; color: #9EA5AD; margin-top: 4px; }
+
+    /* ── Table inside cards ── */
+    .inner-table-wrap { overflow-x: auto; }
+    .inner-table { width: 100%; border-collapse: collapse; }
+    .inner-table thead th {
+      background: #F6F7F9; padding: 9px 12px;
+      font-size: 12px; font-weight: 600; color: #596066;
+      text-align: left; border-bottom: 1px solid #E5E7EA;
+      white-space: nowrap;
+    }
+    .inner-table tbody td {
+      padding: 11px 12px; font-size: 13px; color: #24292E;
+      border-bottom: 1px solid #F0F1F3; vertical-align: middle;
+    }
+    .inner-table tbody tr:last-child td { border-bottom: none; }
+
+    /* ── Map placeholder ── */
+    .map-placeholder {
+      width: 100%; height: 240px;
+      background: #EEF0F2;
+      border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; color: #9EA5AD; font-size: 13px;
+    }
+
+    /* ── Operating day chips ── */
+    .day-chips { display: flex; gap: 6px; }
+    .day-chip {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+    }
+    .day-chip.on  { background: #2D84ED; color: #fff; }
+    .day-chip.off { background: #F0F1F3; color: #9EA5AD; }
+
+    /* ── Status badge for media ── */
+    .media-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+    }
+    .media-status.active { background: #E8F8E9; color: #2E9E34; }
+    .media-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #58C65D; }
+
+    /* ── Revision pill ── */
+    .rev-current {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 700;
+      background: #2D84ED; color: #fff;
+    }
+    .rev-past {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 600;
+      background: #F0F1F3; color: #596066;
+    }
+
+    /* ── Option availability ── */
+    .avail-on  { color: #2E9E34; font-size: 12px; font-weight: 600; }
+    .avail-off { color: #9EA5AD; font-size: 12px; font-weight: 600; }
+
+    /* ── Guide URL ── */
+    .guide-url { font-size: 13px; color: #2D84ED; text-decoration: none; word-break: break-all; }
+    .guide-url:hover { text-decoration: underline; }
+
+    /* ── Audit row ── */
+    .audit-row { display: flex; gap: 32px; flex-wrap: wrap; }
+    .audit-item { display: flex; flex-direction: column; gap: 3px; }
+
+    /* ── Numeric align ── */
+    .num { font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 700px) {
+      .field-grid, .field-grid.three { grid-template-columns: 1fr; }
+      .kpi-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ① GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- ② Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ③ Main content -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="product-list">프로덕트</a> &rsaquo; <span id="prd-crumb">강남 프리미엄 옥외</span>
+    </div>
+
+    <!-- Page header -->
+    <div class="page-header prd-header">
+      <div class="page-header-left">
+        <div class="page-title" id="prd-title">강남 프리미엄 옥외</div>
+        <div class="page-meta">
+          <span class="page-id" id="prd-id">PRD-001</span>
+          <span class="tag">강남</span>
+          <span class="tag">프리미엄</span>
+          <span class="tag">옥외</span>
+        </div>
+        <div class="prd-header-status">
+          <span class="badge lc-active" id="prd-lc-badge-h"><span class="badge-dot"></span>활성</span>
+          <span class="prd-eff-rev">Effective Revision <span class="rev-current" id="prd-eff-rev-val">R3</span></span>
+        </div>
+        <div class="prd-header-meta">
+          <span>최종 변경 <strong id="prd-modified-h">2026.08.10</strong></span>
+          <span>담당 <strong id="prd-manager-h">홍길동</strong></span>
+        </div>
+      </div>
+      <div class="action-group" style="display:flex;align-items:center;gap:8px;">
+        <button class="action-btn action-btn-pause btn-warn" onclick="if(confirm('중지하면 해당 Product를 참조하는 스케줄에 영향을 줄 수 있습니다.\n계속하시겠습니까?'))location.reload()">중지</button>
+        <button class="action-btn action-btn-resume" onclick="location.href='product-edit'">새 Revision</button>
+      </div>
+    </div>
+
+    <div class="detail-main">
+
+    <!-- Tab Groups (P1~P6, per Miro 프로덕트 상세 메뉴트리) -->
+    <div class="tab-groups" id="tabGroups">
+      <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">P1</span>프로덕트 정보</button>
+      <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">P2</span>운영 구성</button>
+      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">P3</span>판매 조건 · 가격</button>
+      <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')"><span class="grp-num">P4</span>운영 현황</button>
+      <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')"><span class="grp-num">P5</span>미디어 효과</button>
+      <button class="tab-group-btn" data-group="g6" onclick="switchGroup('g6')"><span class="grp-num">P6</span>변경 이력</button>
+      <button class="tab-group-btn" data-group="g7" onclick="switchGroup('g7')"><span class="grp-num">P7</span>감사</button>
+    </div>
+
+    <!-- ====== TAB 1: 기본정보 ====== -->
+    <div class="tab-panel" data-group="g1" id="tab-basic">
+      <div class="section-sublabel">P1-1. 프로덕트 기본 정보</div>
+      <div class="card">
+        <div class="card-title">식별 정보</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">프로덕트명</div>
+            <div class="field-value">강남 프리미엄 옥외</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">프로덕트 ID</div>
+            <div class="field-value mono">PRD-001</div>
+          </div>
+          <div class="field-item" style="grid-column:1/-1;">
+            <div class="field-label">설명</div>
+            <div class="field-value">강남역·역삼역·선릉역 중심 프리미엄 옥외 광고 네트워크. 하루 유동인구 합산 약 10만명 대상.</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">담당자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">생성일</div>
+            <div class="field-value mono">2024-06-01</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">마지막 수정</div>
+            <div class="field-value mono">2026-08-10</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">태그</div>
+            <div class="field-value">
+              <div class="tag-group">
+                <span class="tag">강남</span>
+                <span class="tag">프리미엄</span>
+                <span class="tag">옥외</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-subhead">P1-2. 상태 정보</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">현재 상태</div>
+            <div class="field-value">
+              <span class="badge lc-active"><span class="badge-dot"></span>활성</span>
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">현재 Revision</div>
+            <div class="field-value"><span class="rev-current">R3</span></div>
+          </div>
+          <div class="field-item" style="grid-column:1/-1;">
+            <div class="field-label">상태전환 이력</div>
+            <div class="field-value" style="font-size:13px;color:#596066;">
+              초안 → 구성완료 → PDE검토 → 승인됨 → <strong>활성</strong>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 생애주기 상태는 직접 변경이 아닌 허용된 전환 액션으로만 변경됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 정책 적용 현황 (P1-3) ====== -->
+    <div class="tab-panel" data-group="g1" id="tab-policy">
+      <div class="section-sublabel">P1-3. 정책 적용 정보</div>
+      <div class="card">
+        <div class="card-title">정책 적용 정보</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">현재 판단</div>
+            <div class="field-value"><span class="badge pde-approved">정상</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">적용 정책</div>
+            <div class="field-value">3개</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최근 판단 일시</div>
+            <div class="field-value mono" style="font-size:12px;">2026-08-10 09:22</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">주요 운영 제한</div>
+        <div class="policy-restrict-list">
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">야간 광도 제한</span>
+            <span class="policy-restrict-value">23:00 이후 500 cd/m² 이하로 자동 감소</span>
+          </div>
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">음성 콘텐츠</span>
+            <span class="policy-restrict-value">송출 불가</span>
+          </div>
+          <div class="policy-restrict-item">
+            <span class="policy-restrict-label">콘텐츠 심의</span>
+            <span class="policy-restrict-value">사내 심의 기준 적용 (MC-CONTENT-POLICY-v3)</span>
+          </div>
+        </div>
+
+        <details class="policy-detail-toggle">
+          <summary>정책 상세 보기</summary>
+          <div class="inner-table-wrap" style="margin-top:12px;">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <th>Policy ID</th>
+                  <th>정책명</th>
+                  <th>범위</th>
+                  <th class="center">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono" style="font-size:11px;color:#9EA5AD;">KR-LAW-OOH-2024</td>
+                  <td>옥외광고물 관리법 준수 정책</td>
+                  <td>Platform Mandatory</td>
+                  <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="font-size:11px;color:#9EA5AD;">KR-11-REGION-2025</td>
+                  <td>강남구 지역 광고 심의 정책</td>
+                  <td>Platform Country</td>
+                  <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
+                </tr>
+                <tr>
+                  <td class="mono" style="font-size:11px;color:#9EA5AD;">MC-CONTENT-POLICY-v3</td>
+                  <td>사내 콘텐츠 심의 기준</td>
+                  <td>Media Company Local</td>
+                  <td class="center"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="field-grid three" style="margin-top:16px;">
+            <div class="field-item">
+              <div class="field-label">Decision Context Status</div>
+              <div class="field-value"><span class="badge" style="background:#E8F8E9;color:#2E9E34;">Current</span></div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Policy Snapshot ID</div>
+              <div class="field-value mono" style="font-size:12px;">POL-SNAP-PRD001-20260810</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Policy Version</div>
+              <div class="field-value">v2.1.3</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Fail-safe</div>
+              <div class="field-value" style="font-size:12px;color:#9EA5AD;">API 오류 시 기존 Effective Policy 유지 (Fail Closed)</div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- ====== TAB 2: 구성 미디어 ====== -->
+    <div class="tab-panel" data-group="g2" id="tab-media">
+      <div class="section-sublabel">P2-1. 구성 미디어</div>
+      <div class="card">
+        <div class="card-title">구성 미디어 목록</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>미디어명</th>
+                <th>위치</th>
+                <th>미디어 유형</th>
+                <th>운영 상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:#9EA5AD;font-size:12px;">1</td>
+                <td style="font-weight:600;">강남역 1번출구 A <span style="font-size:11px;color:#9EA5AD;font-weight:400;">MED-001</span></td>
+                <td style="color:#596066;">서울 강남구 강남대로 396</td>
+                <td>OF (옥외)</td>
+                <td><span class="media-status active"><span class="media-status-dot"></span>활성</span> <span style="font-size:11px;color:#2E9E34;margin-left:4px;">정상</span></td>
+              </tr>
+              <tr>
+                <td style="color:#9EA5AD;font-size:12px;">2</td>
+                <td style="font-weight:600;">역삼역 2번출구 B <span style="font-size:11px;color:#9EA5AD;font-weight:400;">MED-012</span></td>
+                <td style="color:#596066;">서울 강남구 테헤란로 152</td>
+                <td>OF (옥외)</td>
+                <td><span class="media-status active"><span class="media-status-dot"></span>활성</span> <span style="font-size:11px;color:#2E9E34;margin-left:4px;">정상</span></td>
+              </tr>
+              <tr>
+                <td style="color:#9EA5AD;font-size:12px;">3</td>
+                <td style="font-weight:600;">선릉역 1번출구 C <span style="font-size:11px;color:#9EA5AD;font-weight:400;">MED-018</span></td>
+                <td style="color:#596066;">서울 강남구 선릉로 428</td>
+                <td>OF (옥외)</td>
+                <td><span class="media-status active" style="background:#FFF8E6;color:#B45309;"><span class="media-status-dot" style="background:#F3BE4A;"></span>활성</span> <span style="font-size:11px;color:#B45309;margin-left:4px;">경고</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-subhead">위치도 (Product Map)</div>
+        <div class="map-placeholder">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#CED2D6" stroke-width="2"/><path d="M20 10a6 6 0 016 6c0 4-6 14-6 14S14 20 14 16a6 6 0 016-6z" stroke="#9EA5AD" stroke-width="1.5" fill="none"/><circle cx="20" cy="16" r="2" fill="#9EA5AD"/></svg>
+          <span>지도 자동 표시 영역 — 구성 미디어 3개 위치 플롯</span>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#24292E;">
+            <span class="media-status-dot" style="width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block;flex-shrink:0;"></span>
+            강남역 1번출구 A <span style="color:#9EA5AD;font-size:12px;">MED-001</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#24292E;">
+            <span class="media-status-dot" style="width:8px;height:8px;border-radius:50%;background:#58C65D;display:inline-block;flex-shrink:0;"></span>
+            역삼역 2번출구 B <span style="color:#9EA5AD;font-size:12px;">MED-012</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#24292E;">
+            <span class="media-status-dot" style="width:8px;height:8px;border-radius:50%;background:#F3BE4A;display:inline-block;flex-shrink:0;"></span>
+            선릉역 1번출구 C <span style="color:#9EA5AD;font-size:12px;">MED-018</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 3: 운영정보 ====== -->
+    <div class="tab-panel" data-group="g2" id="tab-operation">
+      <div class="section-sublabel">P2-2. 운영 정보</div>
+      <div class="card">
+        <div class="card-title">운영 조건</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">운영 요일</div>
+            <div class="field-value">
+              <div class="day-chips">
+                <span class="day-chip on">월</span>
+                <span class="day-chip on">화</span>
+                <span class="day-chip on">수</span>
+                <span class="day-chip on">목</span>
+                <span class="day-chip on">금</span>
+                <span class="day-chip on">토</span>
+                <span class="day-chip on">일</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">운영 시작시간</div>
+            <div class="field-value">06:00</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">운영 종료시간</div>
+            <div class="field-value">24:00</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">정기 휴무</div>
+            <div class="field-value">없음</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">공휴일 운영 여부</div>
+            <div class="field-value">정상운영</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최대 콘텐츠 재생시간</div>
+            <div class="field-value">30초</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 4: 슬롯 구조 ====== -->
+    <div class="tab-panel" data-group="g2" id="tab-slot">
+      <div class="section-sublabel">슬롯 구조</div>
+      <div class="card">
+        <div class="card-title">슬롯 시간 구성</div>
+        <div class="field-item" style="margin-bottom:16px;">
+          <div class="field-label">슬롯 시간 (Slot Durations)</div>
+          <div class="slot-chips" style="margin-top:8px;">
+            <span class="slot-chip">15초</span>
+            <span class="slot-chip">30초</span>
+          </div>
+        </div>
+        <div class="field-item">
+          <div class="field-label">총 슬롯 수 (Total Slot Count)</div>
+          <div class="field-value large num">6<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">슬롯</span></div>
+        </div>
+
+        <div class="card-subhead">Reference Loop — 자동 계산 (Read-only)</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">기준 슬롯 시간 (RSD)</div>
+            <div class="kpi-value">30<span class="kpi-unit">초</span></div>
+            <div class="kpi-formula">= MAX(15, 30)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">기준 루프 시간 (RLD)</div>
+            <div class="kpi-value">180<span class="kpi-unit">초</span></div>
+            <div class="kpi-formula">= RSD(30초) × 총슬롯(6)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">예상 최소 집행횟수/일</div>
+            <div class="kpi-value">480<span class="kpi-unit">회</span></div>
+            <div class="kpi-formula">= FLOOR(86,400초 ÷ 180초)</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;padding:8px 12px;background:#F6F7F9;border-radius:6px;">
+          <strong>산식</strong> &nbsp; RSD = MAX(Slot Durations) &nbsp;·&nbsp; RLD = RSD × Total Slot Count &nbsp;·&nbsp; MinPlays = FLOOR(운영시간(초) ÷ RLD)
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 5+6: 가격정보 / 상품옵션 (P3) ====== -->
+    <div class="tab-panel" data-group="g3" id="tab-price">
+      <div class="section-sublabel">P3. 판매 조건 · 가격</div>
+      <div class="card">
+        <div class="card-title">01. 기본 가격</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">List Price는 대표/시작 가격입니다. Variant 가격은 이 값을 기준으로 가감 계산되지 않으며, Variant별로 독립된 Catalog Price를 가집니다.</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Representative List Price</div>
+            <div class="field-value large num">3,000,000<span style="font-size:14px;font-weight:400;color:#9EA5AD;margin-left:4px;">원</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Currency</div>
+            <div class="field-value">KRW (원화)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Price Unit</div>
+            <div class="field-value">월 (Month)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최소계약단위 <span class="need-confirm">확인 필요</span></div>
+            <div class="field-value">1개월</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">02. Sales Condition Variant <span class="need-confirm">데이터 정의 확인 필요</span></div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:12px;">Sales Condition Variant는 판매 조건의 조합이며, 독립적인 Variant Direct Price(Catalog Price)를 가집니다. 아래 2건은 현재 "상품 옵션"으로 표시되어 있었으나 명칭·성격상 판매조건(Variant)에 해당할 가능성이 높아 재분류했습니다 — IA 데이터 정의 확인 필요.</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>판매 조건</th>
+                <th class="right">Variant Direct Price</th>
+                <th class="center">상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Variant A — 황금시간대 집중 노출</td>
+                <td style="font-size:12px;color:#596066;">운영시간 중 황금시간대(출근/퇴근/점심) 집중 편성 조건</td>
+                <td class="right num">₩3,500,000/월</td>
+                <td class="center"><span class="avail-on">사용</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Variant B — 타깃 시간대 (출퇴근)</td>
+                <td style="font-size:12px;color:#596066;">출퇴근 시간대 타깃 편성 조건</td>
+                <td class="right num">₩3,300,000/월</td>
+                <td class="center"><span class="avail-on">사용</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-subhead">03. Product Option</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:12px;">Product Option은 선택한 Variant에 추가로 적용하는 Add-on입니다. 판매 조건 자체가 아니라 부가 서비스 성격의 항목만 여기 남깁니다.</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Option Type</th>
+                <th>Value</th>
+                <th>Price Type</th>
+                <th class="right">Adjustment</th>
+                <th class="center">상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">월간 성과 리포트</td>
+                <td>리포트</td>
+                <td>월간 1회</td>
+                <td>정액 (Fixed)</td>
+                <td class="right num">+100,000원/월</td>
+                <td class="center"><span class="avail-off">미사용</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-subhead">04. 가격 구성 (Final Catalog Price 계산)</div>
+        <div class="price-compose">
+          <div class="price-compose-row">
+            <div class="price-compose-label">Variant 선택</div>
+            <div class="price-compose-select">Variant A — 황금시간대 집중 노출</div>
+          </div>
+          <div class="price-compose-row">
+            <div class="price-compose-label">Option 선택</div>
+            <div class="price-compose-select">월간 성과 리포트</div>
+          </div>
+          <div class="price-compose-calc">
+            <div class="price-calc-item">
+              <div class="price-calc-label">Variant Direct Price</div>
+              <div class="price-calc-value">₩3,500,000</div>
+            </div>
+            <div class="price-calc-op">+</div>
+            <div class="price-calc-item">
+              <div class="price-calc-label">Option Adjustment</div>
+              <div class="price-calc-value">₩100,000</div>
+            </div>
+            <div class="price-calc-op">=</div>
+            <div class="price-calc-item final">
+              <div class="price-calc-label">Final Catalog Price</div>
+              <div class="price-calc-value">₩3,600,000</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 실제 계약가격은 영업/캠페인 영역의 Sales Condition Variant SSOT를 기준으로 별도 관리되며, 이 계산은 Catalog 참고값입니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 7: 매체제작가이드 ====== -->
+    <div class="tab-panel" data-group="g2" id="tab-guide">
+      <div class="section-sublabel">P2-3. 매체 제작 가이드</div>
+      <div class="card">
+        <div class="card-title">자동 기술 사양 (Read-only)</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">해상도</div>
+            <div class="field-value">1920 × 1080 (FHD)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">화면 방향</div>
+            <div class="field-value">가로 (Landscape)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최대 콘텐츠 재생시간</div>
+            <div class="field-value num">30초</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">지원 포맷</div>
+            <div class="field-value">MP4 (H.264), WebM</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">최대 파일 크기</div>
+            <div class="field-value">100 MB</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">추가 제작 가이드</div>
+        <div class="field-grid one">
+          <div class="field-item">
+            <div class="field-label">제작 유의사항</div>
+            <div class="field-value" style="line-height:1.7;white-space:pre-line;">
+콘텐츠 시작 0.5초 이내 브랜드 로고 노출 필수.
+외곽 안전영역(Safe Zone) 5% 확보 요망.
+음성 콘텐츠 재생 불가 — 무음 제작.
+야간 광도 기준 준수: 최대 500 cd/m² (23:00 이후 자동 감소).
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">가이드 파일</div>
+            <div class="field-value">
+              <a href="#" class="guide-url">강남프리미엄패키지_제작가이드_v2.pdf</a>
+              <span style="font-size:11px;color:#9EA5AD;margin-left:8px;">PDF · 2.4 MB</span>
+            </div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">참조 URL</div>
+            <div class="field-value">
+              <a href="#" class="guide-url">https://guide.dooh-cms.io/products/PRD-001/spec</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 소속 패키지 (P2-4) ====== -->
+    <div class="tab-panel" data-group="g2" id="tab-package">
+      <div class="section-sublabel">P2-4. 소속 패키지</div>
+      <div class="card">
+        <div class="card-title">소속 패키지 목록</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>패키지명</th>
+                <th>패키지 ID</th>
+                <th class="center">상태</th>
+                <th>포함 프로덕트 수</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">강남권역 프리미엄 번들</td>
+                <td class="mono" style="font-size:11px;color:#9EA5AD;">PKG-2026-003</td>
+                <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>활성</span></td>
+                <td>4개</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">2026 상반기 신규 런칭 패키지</td>
+                <td class="mono" style="font-size:11px;color:#9EA5AD;">PKG-2026-011</td>
+                <td class="center"><span class="badge lc-draft"><span class="badge-dot"></span>초안</span></td>
+                <td>2개</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 이 프로덕트가 현재 소속된 Package 목록입니다. 이 프로덕트의 구성 변경은 소속 패키지에도 영향을 줄 수 있습니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 운영 현황 (P4) ====== -->
+    <div class="tab-panel" data-group="g4" id="tab-status">
+      <div class="section-sublabel">P4. 운영 현황</div>
+      <div class="card">
+        <div class="card-title">8월 운영 가능 현황</div>
+        <div class="avail-summary">
+          <div class="avail-item">
+            <div class="avail-label">가용률</div>
+            <div class="avail-value main">22.6%</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">잔여 슬롯</div>
+            <div class="avail-value">42</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">포화 예정일</div>
+            <div class="avail-value small">8/22</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">운영 불가일</div>
+            <div class="avail-value small">8/15, 8/17</div>
+          </div>
+          <div class="avail-item">
+            <div class="avail-label">진행 스케줄</div>
+            <div class="avail-value">2<span style="font-size:12px;font-weight:400;color:#9EA5AD;">건</span></div>
+          </div>
+        </div>
+
+        <div class="card-subhead">P4-1. 슬롯 현황 (달력)</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">전체 슬롯 (이번 달)</div>
+            <div class="kpi-value">186<span class="kpi-unit">슬롯</span></div>
+            <div class="kpi-formula">= 일 슬롯 6 × 31일</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">잔여 슬롯</div>
+            <div class="kpi-value" style="color:#2E9E34;">42<span class="kpi-unit">슬롯</span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">휴무일</div>
+            <div class="kpi-value">2<span class="kpi-unit">일</span></div>
+            <div class="kpi-formula">2026-08-15, 2026-08-17</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">일일 총 슬롯 수(슬롯 구조 P2-2에서 정의된 6슬롯)를 기준으로 월간 총량이 산출됩니다. 휴무일은 전체 슬롯 계산에서 제외되지 않고 해당일 가용 슬롯이 0으로 처리됩니다.</div>
+        <div class="slot-cal" style="margin-top:14px;">
+          <div class="slot-cal-head">
+            <button class="slot-cal-nav" type="button" aria-label="이전 달">‹</button>
+            <div class="slot-cal-title">2026년 8월</div>
+            <button class="slot-cal-nav" type="button" aria-label="다음 달">›</button>
+          </div>
+          <div class="slot-cal-legend">
+            <span><i class="dot dot-ok"></i>여유</span>
+            <span><i class="dot dot-tight"></i>포화(잔여 20% 미만)</span>
+            <span><i class="dot dot-off"></i>휴무일</span>
+          </div>
+          <div class="slot-cal-format-note">날짜별 표기 = <strong>잔여 슬롯 / 전체 슬롯</strong> (예: 6/6 = 잔여 6, 전체 6)</div>
+          <div class="slot-cal-grid">
+            <div class="slot-cal-dow">일</div><div class="slot-cal-dow">월</div><div class="slot-cal-dow">화</div><div class="slot-cal-dow">수</div><div class="slot-cal-dow">목</div><div class="slot-cal-dow">금</div><div class="slot-cal-dow">토</div>
+
+            <div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div><div class="slot-cal-cell empty"></div>
+            <div class="slot-cal-cell"><div class="d">1</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+
+            <div class="slot-cal-cell"><div class="d">2</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">3</div><div class="occ ok" title="잔여 5 / 전체 6 슬롯">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">4</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">5</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">6</div><div class="occ tight" title="잔여 1 / 전체 6 슬롯">1/6</div></div>
+            <div class="slot-cal-cell"><div class="d">7</div><div class="occ ok" title="잔여 4 / 전체 6 슬롯">4/6</div></div>
+            <div class="slot-cal-cell"><div class="d">8</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+
+            <div class="slot-cal-cell"><div class="d">9</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">10</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">11</div><div class="occ ok" title="잔여 5 / 전체 6 슬롯">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">12</div><div class="occ tight" title="잔여 1 / 전체 6 슬롯">1/6</div></div>
+            <div class="slot-cal-cell"><div class="d">13</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">14</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell off"><div class="d">15</div><div class="occ off" title="휴무일 — 운영 불가">휴무</div></div>
+
+            <div class="slot-cal-cell"><div class="d">16</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell off"><div class="d">17</div><div class="occ off" title="휴무일 — 운영 불가">휴무</div></div>
+            <div class="slot-cal-cell"><div class="d">18</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">19</div><div class="occ ok" title="잔여 5 / 전체 6 슬롯">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">20</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">21</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">22</div><div class="occ tight" title="잔여 0 / 전체 6 슬롯">0/6</div></div>
+
+            <div class="slot-cal-cell today"><div class="d">23</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">24</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">25</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">26</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">27</div><div class="occ ok" title="잔여 5 / 전체 6 슬롯">5/6</div></div>
+            <div class="slot-cal-cell"><div class="d">28</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">29</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+
+            <div class="slot-cal-cell"><div class="d">30</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+            <div class="slot-cal-cell"><div class="d">31</div><div class="occ ok" title="잔여 6 / 전체 6 슬롯">6/6</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">P4-2. 스케줄 현황</div>
+        <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">등록된 스케줄 목록</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Schedule</th>
+                <th>Campaign</th>
+                <th>운영 기간</th>
+                <th class="center">점유 슬롯</th>
+                <th class="center">슬롯당 재생시간</th>
+                <th class="center">상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="font-size:11px;color:#9EA5AD;">SCH-2026-0012</td>
+                <td>삼성전자 갤럭시 S25 런칭</td>
+                <td style="font-size:12px;">2026.01.20 ~ 02.10</td>
+                <td class="center num">4 / 6</td>
+                <td class="center num">30초</td>
+                <td class="center"><span class="badge lc-active"><span class="badge-dot"></span>집행중</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="font-size:11px;color:#9EA5AD;">SCH-2026-0031</td>
+                <td>LG 생활건강 봄 시즌 프로모션</td>
+                <td style="font-size:12px;">2026.03.01 ~ 03.31</td>
+                <td class="center num">2 / 6</td>
+                <td class="center num">15초</td>
+                <td class="center"><span class="badge lc-approved"><span class="badge-dot"></span>승인</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 미디어 효과 (P5) ====== -->
+    <div class="tab-panel" data-group="g5" id="tab-effect">
+      <div class="section-sublabel">P5. 미디어 효과</div>
+      <div class="card">
+        <div class="card-title">누적 Advertising Effect (구성 미디어 전체 합산)</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">사전 추천용 Effect Reference KPI(Historical/Predicted)와 실제 집행 성과(Actual)는 별도로 관리됩니다. 이 섹션은 집행 후 실적만 표시합니다.</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Data As-of</div>
+            <div class="field-value mono" style="font-size:12px;">2026-08-20 06:00</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Effect Metric Version</div>
+            <div class="field-value mono" style="font-size:12px;">EFFECT-METRIC-v1.3</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Data Availability</div>
+            <div class="field-value" style="color:#2E9E34;">AVAILABLE</div>
+          </div>
+        </div>
+
+        <div class="card-subhead">Core KPI (Actual)</div>
+        <div class="field-grid three">
+          <div class="field-item">
+            <div class="field-label">Foot Traffic (누적 유동인구)</div>
+            <div class="field-value large num">2,940,000</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Exposed Audience (노출인구)</div>
+            <div class="field-value large num">986,400</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Attention Audience (주목인구)</div>
+            <div class="field-value large num">214,800 <span style="font-size:11px;font-weight:400;color:#9EA5AD;">(PARTIAL)</span></div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Reach</div>
+            <div class="field-value" style="color:#9EA5AD;">N/A</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Frequency</div>
+            <div class="field-value" style="color:#9EA5AD;">N/A</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">Reach/Frequency는 구성 미디어의 Measurement Profile·Data Availability가 모두 갖춰진 경우에만 제공됩니다. 현재 N/A.</div>
+
+        <div class="card-subhead">Derived KPI — Effect Reference 대비 실적</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>KPI</th>
+                <th>Effect Reference (Predicted)</th>
+                <th>Actual</th>
+                <th class="center">달성률</th>
+                <th>Ranking</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">Foot Traffic</td>
+                <td>2,760,000</td>
+                <td>2,940,000</td>
+                <td class="center" style="color:#2E9E34;font-weight:700;">106.5%</td>
+                <td>#2 강남구</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">Exposed Audience</td>
+                <td>1,020,000</td>
+                <td>986,400</td>
+                <td class="center" style="color:#E97474;font-weight:700;">96.7%</td>
+                <td>#3 강남구</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-subhead">구성 미디어별 Breakdown</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>미디어</th>
+                <th>집행 Campaign 수</th>
+                <th>Foot Traffic</th>
+                <th class="center">달성률</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>강남역 1번출구 A <span style="font-size:11px;color:#9EA5AD;">MED-001</span></td>
+                <td>3개</td>
+                <td>1,152,000</td>
+                <td class="center" style="color:#2E9E34;">108.1%</td>
+              </tr>
+              <tr>
+                <td>역삼역 2번출구 B <span style="font-size:11px;color:#9EA5AD;">MED-012</span></td>
+                <td>2개</td>
+                <td>980,000</td>
+                <td class="center" style="color:#2E9E34;">105.0%</td>
+              </tr>
+              <tr>
+                <td>선릉역 1번출구 C <span style="font-size:11px;color:#9EA5AD;">MED-018</span></td>
+                <td>2개</td>
+                <td>808,000</td>
+                <td class="center" style="color:#B45309;">98.2%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#9EA5AD;">동일 Campaign이라도 Schedule Revision·기간·effectMetricVersion이 다르면 별도 결과로 조회됩니다.</div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 8: Revision ====== -->
+    <div class="tab-panel" data-group="g6" id="tab-revision">
+      <div class="section-sublabel">P6-1. Revision</div>
+      <div class="card">
+        <div class="card-title">Revision 이력</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">Revision = 특정 시점에 유효했던 프로덕트 정의 버전의 스냅샷. "누가 무엇을 바꿨는지"는 <a href="javascript:void(0)" onclick="switchGroup('g7')" style="color:#2D84ED;">감사(Audit)</a>에서 확인하세요.</div>
+        <div class="inner-table-wrap">
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Revision</th>
+                <th>변경 사유</th>
+                <th>핵심 변경 항목</th>
+                <th>효력 시작일</th>
+                <th>효력 종료일</th>
+                <th>생성자</th>
+                <th class="center"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rev-current">R3</span> <span style="font-size:11px;color:#9EA5AD;">현재</span></td>
+                <td>가격 조정</td>
+                <td style="font-size:12px;color:#596066;">List Price: ₩2,500,000 → ₩3,000,000</td>
+                <td class="num">2026-08-10</td>
+                <td class="num" style="color:#9EA5AD;">—</td>
+                <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R3')">상세보기</button></td>
+              </tr>
+              <tr>
+                <td><span class="rev-past">R2</span></td>
+                <td>슬롯구조 변경</td>
+                <td style="font-size:12px;color:#596066;">Slot Durations, Total Slot Count 조정</td>
+                <td class="num">2025-01-15</td>
+                <td class="num">2026-08-09</td>
+                <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R2')">상세보기</button></td>
+              </tr>
+              <tr>
+                <td><span class="rev-past">R1</span></td>
+                <td>최초 등록</td>
+                <td style="font-size:12px;color:#596066;">신규 생성</td>
+                <td class="num">2024-06-01</td>
+                <td class="num">2025-01-14</td>
+                <td>홍길동</td>
+                <td class="center"><button class="btn-action" onclick="openRevisionSnapshot('R1')">상세보기</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">
+          ※ 과거 Revision은 삭제할 수 없으며, 해당 Revision 기준으로 생성된 계약·캠페인은 계속 참조됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision Snapshot Modal (read-only, per-Revision) -->
+    <div class="rev-snap-overlay" id="revSnapOverlay" onclick="if(event.target===this)closeRevisionSnapshot()">
+      <div class="rev-snap-modal">
+        <div class="rev-snap-head">
+          <div>
+            <div class="rev-snap-title">Revision Snapshot <span class="rev-current" id="revSnapId">R3</span></div>
+            <div class="rev-snap-sub">조회 전용(Read-only) — 해당 Revision 당시 프로덕트 정의</div>
+          </div>
+          <button class="rev-snap-close" onclick="closeRevisionSnapshot()">✕</button>
+        </div>
+        <div class="rev-snap-body" id="revSnapBody"></div>
+      </div>
+    </div>
+
+    <!-- ====== TAB 9: Audit ====== -->
+    <div class="tab-panel" data-group="g7" id="tab-audit">
+      <div class="section-sublabel">P7-1. 변경사항</div>
+      <div class="card">
+        <div class="card-title">감사 정보 (Audit Log)</div>
+        <div style="font-size:12px;color:#9EA5AD;margin-bottom:14px;">Audit = 누가 무엇을 언제 바꿨는지에 대한 변경 기록. 특정 시점의 프로덕트 정의 버전 자체를 보려면 <a href="javascript:void(0)" onclick="switchGroup('g6')" style="color:#2D84ED;">변경 이력(Revision)</a>의 상세보기를 확인하세요.</div>
+        <div class="audit-row">
+          <div class="audit-item">
+            <div class="field-label">최초 생성일</div>
+            <div class="field-value">2024-06-01</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">생성자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">최종 수정일</div>
+            <div class="field-value">2026-08-10 09:22</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">최종 수정자</div>
+            <div class="field-value">홍길동</div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">현재 Revision</div>
+            <div class="field-value"><span class="rev-current">R3</span></div>
+          </div>
+          <div class="audit-item">
+            <div class="field-label">Lifecycle 상태</div>
+            <div class="field-value"><span class="badge lc-active" style="font-size:12px;"><span class="badge-dot"></span>활성</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <div class="card-title" style="font-size:12px;border-bottom:none;padding-bottom:0;margin-bottom:10px;">최근 변경 이력</div>
+          <div class="inner-table-wrap">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <th>일시</th>
+                  <th>변경 항목</th>
+                  <th>이전 값</th>
+                  <th>변경 후 값</th>
+                  <th>처리자</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-08-10 09:22</td>
+                  <td>List Price</td>
+                  <td style="color:#9EA5AD;">₩2,500,000</td>
+                  <td>₩3,000,000</td>
+                  <td>홍길동</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-07-01 10:00</td>
+                  <td>Revision 생성 (R2)</td>
+                  <td style="color:#9EA5AD;">R1</td>
+                  <td>R2</td>
+                  <td>홍길동</td>
+                </tr>
+                <tr>
+                  <td class="num" style="font-size:12px;color:#9EA5AD;">2026-01-15 09:00</td>
+                  <td>Lifecycle 상태전환</td>
+                  <td style="color:#9EA5AD;">승인됨</td>
+                  <td>활성</td>
+                  <td>System</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /detail-main -->
+
+  </div><!-- /content-inner -->
+</main>
+
+<script>
+function switchGroup(group) {
+  document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('group-active', p.dataset.group === group); });
+}
+
+document.addEventListener('DOMContentLoaded', function() { switchGroup('g1'); });
+
+var REVISION_SNAPSHOTS = {
+  'R3': {
+    label: '2026-08-10 ~ 현재', fields: [
+      ['프로덕트명', '강남 프리미엄 옥외'], ['기준가격', '₩3,000,000/월'],
+      ['총 슬롯 수', '6슬롯'], ['슬롯 시간', '15초, 30초'],
+      ['구성 미디어', '3개 (MED-001, MED-012, MED-018)'], ['생애주기 상태', '활성']
+    ]
+  },
+  'R2': {
+    label: '2025-01-15 ~ 2026-08-09', fields: [
+      ['프로덕트명', '강남 프리미엄 옥외'], ['기준가격', '₩2,500,000/월'],
+      ['총 슬롯 수', '4슬롯'], ['슬롯 시간', '30초'],
+      ['구성 미디어', '3개 (MED-001, MED-012, MED-018)'], ['생애주기 상태', '활성']
+    ]
+  },
+  'R1': {
+    label: '2024-06-01 ~ 2025-01-14', fields: [
+      ['프로덕트명', '강남 프리미엄 옥외'], ['기준가격', '₩2,500,000/월'],
+      ['총 슬롯 수', '4슬롯'], ['슬롯 시간', '30초'],
+      ['구성 미디어', '2개 (MED-001, MED-012)'], ['생애주기 상태', '승인됨']
+    ]
+  }
+};
+
+function openRevisionSnapshot(rev) {
+  var data = REVISION_SNAPSHOTS[rev];
+  if (!data) return;
+  document.getElementById('revSnapId').textContent = rev;
+  var html = '<div style="font-size:12px;color:#9EA5AD;margin-bottom:16px;">적용 기간: ' + data.label + '</div><div class="field-grid">';
+  data.fields.forEach(function(f) {
+    html += '<div class="field-item"><div class="field-label">' + f[0] + '</div><div class="field-value">' + f[1] + '</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('revSnapBody').innerHTML = html;
+  document.getElementById('revSnapOverlay').classList.add('open');
+}
+function closeRevisionSnapshot() {
+  document.getElementById('revSnapOverlay').classList.remove('open');
+}
+
+function confirmTransition(action, message) {
+  if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
+  alert(action + ' 처리되었습니다.'); location.reload();
+}
+
+function showRevisionModal() {
+  location.href='product-edit';
+}
+</script>
+<script src="../assets/js/cms.js"></script>
+<script>
+(function() {
+  const PRODUCTS = {
+    'PRD-001': { name: '강남 프리미엄 옥외', mediaCount: 3, price: '₩3,000,000/월', desc: '강남역·역삼역·선릉역 중심 프리미엄 옥외 광고 네트워크. 하루 유동인구 합산 약 10만명 대상.', manager: '홍길동', createdAt: '2024-06-01', modifiedAt: '2026-08-10', revision: 'R3', tags: ['강남', '프리미엄', '옥외'], lcHistory: '초안 → 구성완료 → PDE검토 → 승인됨 → <strong>활성</strong>', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-002': { name: '공항 프리미엄 네트워크', mediaCount: 5, price: '₩5,200,000/월', desc: '인천공항·김포공항 실내 미디어 5개. 항공 이용객 프리미엄 타겟 패키지.', manager: '김영수', createdAt: '2024-09-01', modifiedAt: '2026-08-07', revision: 'R5', tags: ['공항', '프리미엄', '교통'], lcHistory: '초안 → 구성완료 → 승인됨 → <strong>활성</strong>', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-003': { name: '홍대·신촌 청년 네트워크', mediaCount: 2, price: '₩800,000/월', desc: '홍대 및 신촌 역세권 스탠드형 미디어 2개. 20~30대 청년층 집중 타겟.', manager: '박민서', createdAt: '2026-07-15', modifiedAt: '2026-08-12', revision: 'R2', tags: ['홍대', '신촌', '청년'], lcHistory: '초안 → <strong>구성완료</strong>', lc: 'ready', lcLabel: '구성완료', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-004': { name: '부산 센텀 프리미엄', mediaCount: 4, price: '₩4,500,000/월', desc: '부산 센텀시티·해운대 실내 프리미엄 광고 네트워크. 부산 최대 쇼핑몰 커버리지.', manager: '이지은', createdAt: '2025-11-10', modifiedAt: '2026-08-05', revision: 'R4', tags: ['부산', '센텀', '프리미엄'], lcHistory: '초안 → 구성완료 → <strong>승인됨</strong>', lc: 'approved', lcLabel: '승인됨', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-005': { name: '코엑스몰 스탠다드', mediaCount: 1, price: '₩550,000/월', desc: '코엑스몰 내 스탠드형 사이니지 1기. 쇼핑몰 방문객 타겟 스팟.', manager: '홍길동', createdAt: '2024-03-20', modifiedAt: '2026-07-28', revision: 'R7', tags: ['코엑스', '실내', '스탠다드'], lcHistory: '초안 → 구성완료 → 승인됨 → <strong>활성</strong>', lc: 'active', lcLabel: '활성', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-006': { name: '판교 IT 특화 스팟', mediaCount: 2, price: '₩1,200,000/월', desc: '판교 IT 밸리 내 옥외 광고 2기. IT·테크 기업 타겟 특화 패키지. 현재 점검 중 중지.', manager: '김영수', createdAt: '2025-04-01', modifiedAt: '2026-07-15', revision: 'R3', tags: ['판교', 'IT', '옥외'], lcHistory: '초안 → 구성완료 → 승인됨 → 활성 → <strong>중지</strong>', lc: 'paused', lcLabel: '중지', appr: '승인됨', apprClass: 'badge appr-badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-badge-approved' },
+    'PRD-007': { name: '서울역 환승 허브', mediaCount: 3, price: '₩2,800,000/월', desc: '서울역 환승 통로 내 대형 미디어 3기. 지하철·KTX·버스 환승객 동시 도달 패키지. 구성 검토 중.', manager: '이민지', createdAt: '2026-08-10', modifiedAt: '2026-08-18', revision: 'R1', tags: ['서울역', '환승', '교통'], lcHistory: '<strong>초안</strong>', lc: 'draft', lcLabel: '초안', appr: '미제출', apprClass: 'badge appr-badge', pde: 'PDE 미심사', pdeClass: 'badge' },
+    'PRD-NEW': { name: '(신규 등록 프로덕트)', mediaCount: 0, price: '(미정)', desc: '방금 등록된 프로덕트입니다. 미디어를 추가하고 PDE 검토를 요청하세요.', manager: '홍길동', createdAt: '2026-08-20', modifiedAt: '2026-08-20', revision: 'R1', tags: ['신규'], lcHistory: '<strong>초안</strong>', lc: 'draft', lcLabel: '초안', appr: '미제출', apprClass: 'badge appr-badge', pde: 'PDE 미심사', pdeClass: 'badge', isNew: true }
+  };
+
+  function fi(label, value) {
+    return '<div class="field-item"><div class="field-label">' + label + '</div><div class="field-value">' + value + '</div></div>';
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const id = new URLSearchParams(location.search).get('id') || 'PRD-001';
+    const d = PRODUCTS[id] || PRODUCTS['PRD-001'];
+
+    if (d.isNew) {
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:#EAF3FF;border:1px solid #2D84ED;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#2D84ED;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/></svg> 방금 등록된 항목입니다. Lifecycle: <strong>초안</strong> · PDE 미심사 · 미디어를 추가하고 검토를 요청하세요.';
+      var main = document.querySelector('.content-inner') || document.querySelector('main') || document.body;
+      main.insertBefore(banner, main.firstChild);
+    }
+
+    // Header
+    const titleEl = document.getElementById('prd-title');
+    if (titleEl) titleEl.textContent = d.name;
+
+    const crumbEl = document.getElementById('prd-crumb');
+    if (crumbEl) crumbEl.textContent = d.name;
+
+    const idEl = document.getElementById('prd-id');
+    if (idEl) idEl.textContent = id;
+
+    const lcEl = document.getElementById('prd-lc-badge');
+    if (lcEl) { lcEl.className = 'badge lc-' + d.lc; lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const lcHEl = document.getElementById('prd-lc-badge-h');
+    if (lcHEl) { lcHEl.className = 'badge lc-' + d.lc; lcHEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel; }
+
+    const effRevEl = document.getElementById('prd-eff-rev-val');
+    if (effRevEl) effRevEl.textContent = d.revision;
+
+    const modifiedHEl = document.getElementById('prd-modified-h');
+    if (modifiedHEl) modifiedHEl.textContent = d.modifiedAt;
+
+    const managerHEl = document.getElementById('prd-manager-h');
+    if (managerHEl) managerHEl.textContent = d.manager;
+
+    const apprEl = document.getElementById('prd-appr-badge');
+    if (apprEl) { apprEl.className = d.apprClass; apprEl.textContent = d.appr; }
+
+    const pdeEl = document.getElementById('prd-pde-badge');
+    if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.textContent = d.pde; }
+
+    // Lifecycle 프로세스 스테퍼
+    var PRD_FLOW = [
+      { key:'draft',     icon:'1', label:'초안',    gate:'기본정보 입력\nMedia Assignment' },
+      { key:'configured',icon:'2', label:'구성완료', gate:'PDE 심사\n(P-05 S3)' },
+      { key:'pde',       icon:'P', label:'PDE 검토', gate:'내부 승인요청\nFeasibility' },
+      { key:'approved',  icon:'✓', label:'승인됨',   gate:'활성화 확인' },
+      { key:'active',    icon:'▶', label:'활성',     gate:'새 Revision:\nP-06 S1~S7' },
+      { key:'suspended', icon:'⏸', label:'중지',     gate:'Feasibility 재검증\n→ 재개 or 단종' },
+      { key:'completed', icon:'■', label:'단종',     gate:'신규 연결 차단\n이력 보존' },
+    ];
+    var LC_DONE_ORDER = ['draft','configured','pde','approved','active'];
+    var curIdx = { draft:0, configured:1, pde:2, approved:3, active:4, paused:4, ready:1, suspended:5, completed:6 }[d.lc] || 0;
+    var stepperEl = document.getElementById('prd-lc-stepper');
+    var noteEl = document.getElementById('prd-lc-note');
+    if (stepperEl) {
+      var html = '';
+      PRD_FLOW.forEach(function(s, i) {
+        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
+        html += '<div class="lc-step ' + cls + '">'
+          + '<div class="lc-step-node">' + s.icon + '</div>'
+          + '<div class="lc-step-label">' + s.label + '</div>'
+          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div>'
+          + '</div>';
+        if (i < PRD_FLOW.length - 1) {
+          var arrowCls = i < curIdx ? 'done' : '';
+          html += '<div class="lc-arrow ' + arrowCls + '"><div class="lc-arrow-line"></div></div>';
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+    var NOTES = {
+      draft:'초안 상태 — 기본정보·Media Assignment·Product Option을 입력하고 구성을 완료하세요.',
+      configured:'구성완료 — PDE(미디어사 상품정책 검증)를 요청하세요.',
+      pde:'PDE 심사 중 — 결과 대기. Approved → 내부 승인 요청 단계로 진행됩니다.',
+      approved:'승인됨 — 활성화하면 스케줄 연결 및 판매가 가능합니다.',
+      active:'활성 — 운영 중. 핵심조건(Operational·Commercial) 변경은 P-06 신규 Revision, Media Assignment 변경은 Product Renewal.',
+      paused:'중지(Suspended) — 운영 일시정지. Feasibility 재검증 후 재개하거나 단종을 선택하세요.',
+      ready:'구성완료 — PDE 심사를 요청하세요.',
+      suspended:'중지(Suspended) — 운영 일시정지. Feasibility 재검증 후 재개하거나 단종을 선택하세요.',
+      completed:'단종 — 신규 캠페인·스케줄 연결이 차단됩니다. 기존 계약·이력은 보존됩니다.',
+    };
+    if (noteEl) noteEl.textContent = NOTES[d.lc] || '';
+
+    // 수정·삭제 정책 테이블
+    var PRD_POLICY = [
+      { state:'draft',     label:'초안',    edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>', note:'모든 필드 자유 편집' },
+      { state:'configured',label:'구성완료', edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>', note:'참조 없을 경우 삭제 가능' },
+      { state:'pde',       label:'PDE 검토', edit:'<span class="pol-warn">⚠ 제한 편집</span>', del:'<span class="pol-no">❌ 불가</span>', note:'Metadata 편집만 허용. 핵심조건 수정 시 PDE 재요청' },
+      { state:'approved',  label:'승인됨',   edit:'<span class="pol-warn">⚠ 재검증 필요</span>', del:'<span class="pol-no">❌ 불가</span>', note:'핵심조건 수정 시 PDE·승인 재검증. Metadata는 직접 수정 가능' },
+      { state:'active',    label:'활성',     edit:'<span class="pol-no">❌ 핵심조건 차단</span>', del:'<span class="pol-no">❌ 불가</span>', note:'Operational·Commercial → P-06 새 Revision. Media Assignment → Product Renewal. Metadata만 직접 수정' },
+      { state:'suspended', label:'중지',     edit:'<span class="pol-no">❌ 핵심조건 차단</span>', del:'<span class="pol-no">❌ 불가</span>', note:'Active와 동일. 재개 후 P-06 진행 or Renewal' },
+      { state:'completed', label:'단종',     edit:'<span class="pol-no">❌ 불가</span>', del:'<span class="pol-no">❌ 불가</span>', note:'읽기 전용. 계약·송출 이력 영구 보존' },
+    ];
+    var prdPolicyWrap = stepperEl ? stepperEl.closest('.lc-stepper-wrap') : null;
+    if (prdPolicyWrap) {
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'lc-policy-toggle';
+      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'lc-policy-table-wrap';
+      tableWrap.style.display = 'none';
+      var curStateKey = d.lc;
+      var rows = PRD_POLICY.map(function(p) {
+        var isCur = (p.state === curStateKey || (curStateKey === 'paused' && p.state === 'suspended') || (curStateKey === 'ready' && p.state === 'configured'));
+        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
+          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
+          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
+      }).join('');
+      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      toggleBtn.onclick = function() {
+        var v = tableWrap.style.display === 'none';
+        tableWrap.style.display = v ? 'block' : 'none';
+        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
+      };
+      prdPolicyWrap.appendChild(toggleBtn);
+      prdPolicyWrap.appendChild(tableWrap);
+    }
+
+    // Tab 1: 기본정보 (tab-basic)
+    var tabBasic = document.getElementById('tab-basic');
+    if (tabBasic) {
+      var tags = (d.tags || []).map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('');
+      tabBasic.innerHTML = '<div class="section-sublabel">P1-1. 프로덕트 기본 정보</div>'
+        + '<div class="card"><div class="card-title">식별 정보</div>'
+        + '<div class="field-grid">'
+        + fi('프로덕트명', d.name)
+        + fi('프로덕트 ID', '<span class="mono">' + id + '</span>')
+        + '<div class="field-item" style="grid-column:1/-1;">'
+        + '<div class="field-label">설명</div><div class="field-value">' + d.desc + '</div></div>'
+        + fi('담당자', d.manager)
+        + fi('생성일', '<span class="mono">' + d.createdAt + '</span>')
+        + fi('마지막 수정', '<span class="mono">' + d.modifiedAt + '</span>')
+        + fi('태그', '<div class="tag-group">' + (tags || '—') + '</div>')
+        + '</div>'
+        + '<div class="card-subhead">P1-2. 상태 정보</div>'
+        + '<div class="field-grid">'
+        + fi('현재 상태', '<span class="badge lc-' + d.lc + '"><span class="badge-dot"></span>' + d.lcLabel + '</span>')
+        + fi('현재 Revision', '<span class="rev-current">' + d.revision + '</span>')
+        + '<div class="field-item" style="grid-column:1/-1;">'
+        + '<div class="field-label">상태전환 이력</div><div class="field-value" style="font-size:13px;color:#596066;">' + d.lcHistory + '</div></div>'
+        + '</div>'
+        + '<div style="margin-top:12px;font-size:12px;color:#9EA5AD;">※ 생애주기 상태는 직접 변경이 아닌 허용된 전환 액션으로만 변경됩니다.</div>'
+        + '</div>';
+    }
+  });
+})();
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

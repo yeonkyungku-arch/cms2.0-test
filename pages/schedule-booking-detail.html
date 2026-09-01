@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking 상세 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    body {
+      margin: 0;
+      background: rgba(24, 29, 33, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(24, 29, 33, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    /* modal-box.sm */
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      width: 400px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #E5E7EA;
+    }
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #24292E;
+    }
+    .modal-close {
+      width: 28px; height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #9EA5AD;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: #F6F7F9; color: #24292E; }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border-top: 1px solid #E5E7EA;
+      background: #FAFAFA;
+    }
+    .modal-footer-left { margin-right: auto; }
+
+    /* 상태 뱃지 */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+    .status-badge.booking { background: #E8F0FD; color: #2D84ED; }
+
+    /* 상세 행 */
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid #F6F7F9;
+      font-size: 14px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key {
+      min-width: 90px;
+      color: #9EA5AD;
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .detail-val {
+      color: #24292E;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    /* 메모 박스 */
+    .memo-box {
+      background: #F6F7F9;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #596066;
+      line-height: 1.5;
+    }
+
+    /* 삭제 버튼 */
+    .btn-danger {
+      padding: 8px 16px;
+      height: 36px;
+      border: 1px solid #FDEEED;
+      background: #FDEEED;
+      color: #C83434;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-danger:hover { background: #fbd5d5; border-color: #fbd5d5; }
+  </style>
+</head>
+<body>
+
+<div class="modal-backdrop" onclick="handleBackdrop(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <span class="modal-title">Booking 상세</span>
+      <button class="modal-close" onclick="history.back()" title="닫기">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-row">
+        <span class="detail-key">상태</span>
+        <span class="detail-val"><span class="status-badge booking">● Booking 중</span></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">기간</span>
+        <span class="detail-val">2025.10.15 ~ 2025.10.31</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">재생 시간</span>
+        <span class="detail-val">30초</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">보장 횟수</span>
+        <span class="detail-val">200회</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">메모</span>
+        <span class="detail-val">
+          <div class="memo-box">A사 협의 중 - 가을 캠페인</div>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">등록일</span>
+        <span class="detail-val">2025.10.10</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-key">등록자</span>
+        <span class="detail-val">홍길동</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="modal-footer-left">
+        <button class="btn-danger" onclick="deleteBooking()">삭제</button>
+      </div>
+      <button class="btn btn-ghost" onclick="history.back()">닫기</button>
+      <button class="btn btn-primary" onclick="convertToSchedule()">
+        스케줄로 전환 →
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function handleBackdrop(e) {
+    if (e.target === e.currentTarget) history.back();
+  }
+  function deleteBooking() {
+    if (confirm('이 Booking을 삭제하시겠습니까? 임시 선점된 잔여 시간이 해제됩니다.')) {
+      alert('Booking이 삭제되었습니다.');
+      history.back();
+    }
+  }
+  function convertToSchedule() {
+    location.href = 'schedule-register-form';
+  }
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

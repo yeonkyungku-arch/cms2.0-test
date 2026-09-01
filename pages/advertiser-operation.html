@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>운영 확인 — D'ooh 광고주 포털</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#58C65D;--dark:#24292E;--main:#2D84ED;--warn:#F3BE4A;--danger:#E97474;--bg:#F6F7F9;--border:#E5E7EA;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+    .adv-header{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:20px;z-index:200;}
+    .adv-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--dark);text-decoration:none;margin-right:12px;}
+    .adv-nav{display:flex;gap:4px;flex:1;}
+    .adv-nav a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:#596066;text-decoration:none;}
+    .adv-nav a:hover{background:#F6F7F9;}
+    .adv-nav a.active{background:#EFF6FF;color:var(--main);font-weight:600;}
+    .adv-header-right{display:flex;align-items:center;gap:12px;}
+    .adv-avatar{width:32px;height:32px;border-radius:50%;background:var(--main);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    main{padding:80px 24px 40px;max-width:1200px;margin:0 auto;}
+    .page-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+    .page-sub{font-size:13px;color:#596066;margin-bottom:20px;}
+    /* Media cards */
+    .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px;}
+    .media-card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .media-card-thumb{height:160px;background:#E5E7EA;display:flex;align-items:center;justify-content:center;color:#9EA5AD;font-size:13px;position:relative;}
+    .media-card-thumb.playing{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;}
+    .media-card-thumb .play-icon{font-size:32px;opacity:.6;}
+    .media-card-thumb .live-dot{position:absolute;top:10px;left:10px;background:#E97474;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;display:flex;align-items:center;gap:4px;}
+    .live-pulse{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .media-card-body{padding:14px 16px;}
+    .media-name{font-size:14px;font-weight:600;margin-bottom:4px;}
+    .media-info{font-size:12px;color:#596066;margin-bottom:10px;}
+    .media-card-actions{display:flex;gap:8px;}
+    .btn{height:30px;padding:0 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:#596066;display:inline-flex;align-items:center;gap:5px;}
+    .btn:hover{background:#F6F7F9;}
+    .btn-blue{background:#EFF6FF;color:#1D6DBF;border-color:#BFDBFE;}
+    .btn-blue:hover{background:#DBEAFE;}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+    .badge-ok{background:#E8F8E9;color:#2E9E34;}
+    .badge-warn{background:#FFF8E6;color:#A67000;}
+    .badge-err{background:#FEE2E2;color:#C83434;}
+    /* Alert */
+    .alert{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;}
+    .alert-warn{background:#FFF8E6;border:1px solid #FDE68A;color:#92400E;}
+    /* Table */
+    .card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+    .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:14px;font-weight:600;}
+    table{width:100%;border-collapse:collapse;}
+    thead th{background:#F6F7F9;padding:10px 14px;font-size:12px;font-weight:600;color:#596066;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:#F6F7F9;}
+    tbody td{padding:11px 14px;font-size:13px;vertical-align:middle;}
+    .muted{color:#9EA5AD;font-size:12px;}
+    .pct-bar{width:120px;height:8px;background:#E5E7EA;border-radius:4px;overflow:hidden;}
+    .pct-fill{height:100%;border-radius:4px;background:var(--green);}
+    .pct-fill.warn{background:var(--warn);}
+    .pct-fill.danger{background:var(--danger);}
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:#fff;border-radius:12px;width:700px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.2);overflow:hidden;}
+    .modal-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .modal-head h3{font-size:15px;font-weight:700;}
+    .modal-close{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+    .modal-body{padding:20px 22px;}
+    .screenshot-area{background:#1a1a2e;border-radius:8px;height:300px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;margin-bottom:14px;position:relative;}
+    .ss-timestamp{position:absolute;bottom:10px;right:12px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;}
+    .ss-nav{display:flex;gap:8px;justify-content:center;margin-bottom:14px;}
+    .modal-dl{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:13px;}
+    .modal-dl dt{color:#596066;}
+    .modal-dl dd{color:var(--dark);font-weight:500;}
+    .modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;}
+  </style>
+</head>
+<body>
+
+<!-- Portal Header -->
+<header class="adv-header">
+  <a href="advertiser-dashboard" class="adv-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg>
+    광고주 포털
+  </a>
+  <nav class="adv-nav">
+    <a href="advertiser-dashboard">대시보드</a>
+    <a href="advertiser-approval">Schedule 승인</a>
+    <a href="advertiser-operation" class="active">운영 확인</a>
+    <a href="advertiser-report">광고 효과</a>
+  </nav>
+  <div class="adv-header-right">
+    <div class="adv-avatar">삼</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;">삼성전자 광고팀</div>
+      <div style="font-size:12px;color:#596066;">Approver</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-title">광고 운영 확인</div>
+  <div class="page-sub">T-ADV-02: 집행 중 광고의 스크린샷 및 실시간 운영 현황을 확인합니다.</div>
+
+  <!-- Warning -->
+  <div class="alert alert-warn">
+    ⚠ <strong>잠실역 대형 LED (SCH-2026-025)</strong> — 기기 오프라인으로 인해 재생이 중단되었습니다. 복구 작업이 진행 중입니다. (08-21 09:12 발생)
+  </div>
+
+  <!-- Media Cards -->
+  <div class="media-grid">
+    <!-- Normal playing -->
+    <div class="media-card">
+      <div class="media-card-thumb playing">
+        <div class="live-dot"><span class="live-pulse"></span> LIVE</div>
+        <div class="play-icon">▶</div>
+      </div>
+      <div class="media-card-body">
+        <div class="media-name">강남역 1번출구 A</div>
+        <div class="media-info">SCH-2026-019 | 갤럭시 S26 언팩 | ~08.31</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span class="badge badge-ok">정상</span>
+          <span class="muted">오늘 18,920회 재생</span>
+        </div>
+        <div class="media-card-actions">
+          <button class="btn btn-blue" onclick="openScreenshot('강남역 1번출구 A','MED-001','갤럭시 S26 언팩 15s ver.A')">🖼 스크린샷</button>
+          <button class="btn" onclick="showToast('Live View 연결 중...')">📺 Live View</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="media-card">
+      <div class="media-card-thumb playing">
+        <div class="live-dot"><span class="live-pulse"></span> LIVE</div>
+        <div class="play-icon">▶</div>
+      </div>
+      <div class="media-card-body">
+        <div class="media-name">서울역 환승통로 B</div>
+        <div class="media-info">SCH-2026-018 | 갤럭시 S26 언팩 | ~08.31</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span class="badge badge-ok">정상</span>
+          <span class="muted">오늘 12,430회 재생</span>
+        </div>
+        <div class="media-card-actions">
+          <button class="btn btn-blue" onclick="openScreenshot('서울역 환승통로 B','MED-005','갤럭시 S26 언팩 15s ver.B')">🖼 스크린샷</button>
+          <button class="btn" onclick="showToast('Live View 연결 중...')">📺 Live View</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="media-card">
+      <div class="media-card-thumb playing">
+        <div class="live-dot"><span class="live-pulse"></span> LIVE</div>
+        <div class="play-icon">▶</div>
+      </div>
+      <div class="media-card-body">
+        <div class="media-name">인천공항 T1 게이트</div>
+        <div class="media-info">SCH-2026-022 | 비스포크 AI 홈 | ~09.15</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span class="badge badge-ok">정상</span>
+          <span class="muted">오늘 8,210회 재생</span>
+        </div>
+        <div class="media-card-actions">
+          <button class="btn btn-blue" onclick="openScreenshot('인천공항 T1 게이트','MED-058','비스포크 AI 홈 20s')">🖼 스크린샷</button>
+          <button class="btn" onclick="showToast('Live View 연결 중...')">📺 Live View</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warning state -->
+    <div class="media-card">
+      <div class="media-card-thumb" style="background:#FFF8E6;">
+        <div style="text-align:center;color:#A67000;">
+          <div style="font-size:28px;">⚠</div>
+          <div style="font-size:12px;margin-top:4px;">재생 지연</div>
+        </div>
+      </div>
+      <div class="media-card-body">
+        <div class="media-name">신촌역 스탠드형 A</div>
+        <div class="media-info">SCH-2026-023 | 비스포크 AI 홈 | ~09.15</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span class="badge badge-warn">경고</span>
+          <span class="muted">오늘 6,780회 재생</span>
+        </div>
+        <div class="media-card-actions">
+          <button class="btn btn-blue" onclick="openScreenshot('신촌역 스탠드형 A','MED-003','비스포크 AI 홈 20s')">🖼 스크린샷</button>
+          <button class="btn" onclick="showToast('복구 작업 중입니다.')">📺 Live View</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div class="media-card">
+      <div class="media-card-thumb" style="background:#FEE2E2;">
+        <div style="text-align:center;color:#C83434;">
+          <div style="font-size:28px;">❌</div>
+          <div style="font-size:12px;margin-top:4px;">기기 오프라인</div>
+        </div>
+      </div>
+      <div class="media-card-body">
+        <div class="media-name">잠실역 대형 LED</div>
+        <div class="media-info">SCH-2026-025 | Neo QLED 할인 | ~08.25</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span class="badge badge-err">장애</span>
+          <span class="muted">오늘 0회 재생</span>
+        </div>
+        <div class="media-card-actions">
+          <button class="btn" disabled style="opacity:.4;cursor:not-allowed;">🖼 스크린샷</button>
+          <button class="btn" disabled style="opacity:.4;cursor:not-allowed;">📺 Live View</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily playlog -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">일별 재생 현황 (최근 5일)</div>
+      <a href="advertiser-report" class="btn" style="font-size:12px;">전체 리포트 →</a>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>미디어</th><th>날짜</th><th>계획 재생수</th><th>실제 재생수</th><th>달성률</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>강남역 1번출구 A</td><td class="muted">2026-08-20</td><td>19,200</td><td>19,180</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="pct-bar"><div class="pct-fill" style="width:99.9%;"></div></div><span>99.9%</span></div></td><td><span class="badge badge-ok">정상</span></td></tr>
+          <tr><td>서울역 환승통로 B</td><td class="muted">2026-08-20</td><td>13,000</td><td>12,940</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="pct-bar"><div class="pct-fill" style="width:99.5%;"></div></div><span>99.5%</span></div></td><td><span class="badge badge-ok">정상</span></td></tr>
+          <tr><td>인천공항 T1 게이트</td><td class="muted">2026-08-20</td><td>8,640</td><td>8,600</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="pct-bar"><div class="pct-fill" style="width:99.5%;"></div></div><span>99.5%</span></div></td><td><span class="badge badge-ok">정상</span></td></tr>
+          <tr><td>신촌역 스탠드형 A</td><td class="muted">2026-08-20</td><td>7,200</td><td>6,820</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="pct-bar"><div class="pct-fill warn" style="width:94.7%;"></div></div><span style="color:#A67000;">94.7%</span></div></td><td><span class="badge badge-warn">경고</span></td></tr>
+          <tr><td>잠실역 대형 LED</td><td class="muted">2026-08-20</td><td>5,760</td><td>1,320</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="pct-bar"><div class="pct-fill danger" style="width:22.9%;"></div></div><span style="color:#C83434;">22.9%</span></div></td><td><span class="badge badge-err">장애</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Screenshot Modal -->
+<div class="modal-overlay" id="ssModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="ssTitle">스크린샷 뷰어</h3>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="screenshot-area">
+        <div style="text-align:center;">
+          <div style="font-size:48px;opacity:.4;">🖼</div>
+          <div id="ssContent" style="margin-top:8px;font-size:13px;opacity:.7;"></div>
+        </div>
+        <div class="ss-timestamp" id="ssTimestamp"></div>
+      </div>
+      <div class="ss-nav">
+        <button class="btn" onclick="navSS(-1)">‹ 이전 스크린샷</button>
+        <span id="ssPage" style="font-size:12px;color:#596066;align-self:center;padding:0 8px;">1 / 3</span>
+        <button class="btn" onclick="navSS(1)">다음 스크린샷 ›</button>
+      </div>
+      <dl class="modal-dl" id="ssDl"></dl>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
+<a href="scenario-guide" style="position:fixed;bottom:24px;left:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+var ssPage = 1;
+var ssMedia = '';
+function openScreenshot(media, id, content) {
+  ssPage = 1; ssMedia = media;
+  document.getElementById('ssTitle').textContent = media + ' — 스크린샷';
+  document.getElementById('ssContent').textContent = '재생 중: ' + content;
+  document.getElementById('ssTimestamp').textContent = '2026-08-21 09:32:14 촬영';
+  document.getElementById('ssPage').textContent = '1 / 3';
+  document.getElementById('ssDl').innerHTML = '<dt>미디어 ID</dt><dd>' + id + '</dd><dt>현재 재생 콘텐츠</dt><dd>' + content + '</dd><dt>촬영 주기</dt><dd>30분마다 자동 촬영</dd>';
+  document.getElementById('ssModal').classList.add('open');
+}
+function navSS(dir) {
+  ssPage = Math.max(1, Math.min(3, ssPage + dir));
+  var times = ['09:32:14', '09:02:08', '08:32:01'];
+  document.getElementById('ssPage').textContent = ssPage + ' / 3';
+  document.getElementById('ssTimestamp').textContent = '2026-08-21 ' + times[ssPage-1] + ' 촬영';
+}
+function closeModal() { document.getElementById('ssModal').classList.remove('open'); }
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display='none'; }, 3000);
+}
+</script>
+</body>
+</html>

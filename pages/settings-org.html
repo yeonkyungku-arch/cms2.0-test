@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>조직·사용자 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    :root {
+      --green:#58C65D; --dark:#24292E; --main:#2D84ED;
+      --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
+    }
+    .btn-primary {
+      height:36px; padding:0 16px; background:#58C65D; color:#fff;
+      border:none; border-radius:6px; font-size:13px; font-weight:600;
+      cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;
+      text-decoration:none;
+    }
+    .btn-primary:hover { background:#4ab34f; }
+    .btn-ghost {
+      height:32px; padding:0 12px; background:#fff; color:#24292E;
+      border:1px solid #E5E7EA; border-radius:6px; font-size:12px; font-weight:500;
+      cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+    }
+    /* Settings layout */
+    .settings-layout { display:flex; gap:0; }
+    .settings-sidebar {
+      width:200px; flex-shrink:0; background:#fff; border:1px solid #E5E7EA;
+      border-radius:10px; padding:8px; height:fit-content;
+    }
+    .settings-sidebar a {
+      display:block; padding:8px 12px; border-radius:6px; font-size:13px;
+      color:#596066; text-decoration:none; margin-bottom:2px; transition:background 0.1s;
+    }
+    .settings-sidebar a:hover { background:#F6F7F9; color:#24292E; }
+    .settings-sidebar a.active { background:#E8F8E9; color:#2E9E34; font-weight:600; }
+    .settings-main { flex:1; min-width:0; padding-left:20px; }
+    /* Section card */
+    .section-card {
+      background:#fff; border:1px solid #E5E7EA; border-radius:10px;
+      padding:20px; margin-bottom:16px;
+    }
+    .section-title { font-size:14px; font-weight:700; color:#24292E; margin-bottom:14px; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+    .info-item label { font-size:11px; font-weight:600; color:#9EA5AD; display:block; margin-bottom:4px; }
+    .info-item .val { font-size:13px; color:#24292E; font-weight:500; }
+    /* Table */
+    .table-card { background:#fff; border:1px solid #E5E7EA; border-radius:10px; overflow:hidden; }
+    .table-scroll { overflow-x:auto; }
+    table { width:100%; min-width:900px; border-collapse:collapse; }
+    thead th {
+      background:#F6F7F9; padding:10px 14px; font-size:12px; font-weight:600;
+      color:#596066; text-align:left; border-bottom:1px solid #E5E7EA; white-space:nowrap;
+    }
+    tbody tr { border-bottom:1px solid #E5E7EA; transition:background 0.12s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:#F6F7F9; }
+    tbody td { padding:11px 14px; font-size:13px; color:#24292E; vertical-align:middle; }
+    .muted-text { color:#9EA5AD; font-size:12px; }
+    .badge {
+      display:inline-flex; align-items:center; padding:2px 9px;
+      border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap;
+    }
+    .role-super { background:#EDE9FE; color:#5B21B6; }
+    .role-admin { background:#DBEAFE; color:#1D4ED8; }
+    .role-operator { background:#F0F1F3; color:#596066; }
+    .status-active { background:#E8F8E9; color:#2E9E34; }
+    .status-inactive { background:#FFF8E6; color:#B45309; }
+    .table-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 0; }
+    .table-header-title { font-size:14px; font-weight:700; color:#24292E; }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main content -->
+<main class="content">
+  <div class="content-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+    </div>
+
+    <div class="settings-layout">
+      <!-- Left sidebar -->
+      <nav class="settings-sidebar">
+        <a href="settings-org" class="active">조직·사용자</a>
+        <a href="settings-permission">권한</a>
+        <a href="settings-master">공통 기준정보</a>
+        <a href="#">운영 설정</a>
+        <a href="#">알림 설정</a>
+        <a href="settings-integration">외부 연동</a>
+        <a href="settings-security">보안·접근</a>
+        <a href="settings-audit">감사·변경이력</a>
+        <a href="#">시스템 배포</a>
+      </nav>
+
+      <!-- Main area -->
+      <div class="settings-main">
+        <!-- 조직 정보 -->
+        <div class="section-card">
+          <div class="section-title">조직 정보</div>
+          <div class="info-grid">
+            <div class="info-item"><label>Organization ID</label><div class="val">ORG-0001</div></div>
+            <div class="info-item"><label>미디어사명</label><div class="val">엠앤엠네트웍스</div></div>
+            <div class="info-item"><label>사업자등록번호</label><div class="val">123-45-67890</div></div>
+            <div class="info-item"><label>대표연락처</label><div class="val">02-1234-5678</div></div>
+          </div>
+        </div>
+
+        <!-- T-SET-02 Scenario Banner -->
+        <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:700;color:#1E40AF;margin-bottom:8px;">📋 T-SET-02: Login ID 변경 시나리오</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;">
+            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#2D84ED;color:#fff;">사용자 선택</span>
+            <span style="color:#9EA5AD;">›</span>
+            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">변경 요청</span>
+            <span style="color:#9EA5AD;">›</span>
+            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">현재 비밀번호 확인</span>
+            <span style="color:#9EA5AD;">›</span>
+            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">새 Login ID 입력</span>
+            <span style="color:#9EA5AD;">›</span>
+            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">변경 완료 &amp; 이력 기록</span>
+          </div>
+          <div style="font-size:12px;color:#1E40AF;margin-top:8px;">👉 아래 사용자 테이블에서 사용자를 클릭하면 Login ID 변경 패널이 열립니다.</div>
+        </div>
+
+        <!-- 사용자 관리 -->
+        <div class="table-card">
+          <div class="table-header" style="padding:14px 16px;">
+            <span class="table-header-title">사용자 관리</span>
+            <button class="btn-primary" style="height:32px;font-size:12px;">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              사용자 초대
+            </button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>사용자명</th>
+                  <th>Login ID</th>
+                  <th>이메일</th>
+                  <th>역할</th>
+                  <th>Admin 스코프</th>
+                  <th>Sales WS</th>
+                  <th>상태</th>
+                  <th>마지막 로그인</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('홍길동','hong@mnm.co.kr','Super Admin','전체','활성')"><td>홍길동</td><td style="font-size:12px;color:#596066;">hong@mnm.co.kr</td><td>hong@mnm.co.kr</td><td><span class="badge role-super">Super Admin</span></td><td>전체</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 09:12</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('김미래','kim.m@mnm.co.kr','Admin (System)','System','활성')"><td>김미래</td><td style="font-size:12px;color:#596066;">kim.m@mnm.co.kr</td><td>kim.m@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 08:45</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('이준혁','lee.j@mnm.co.kr','Admin (Operation)','Operation','활성')"><td>이준혁</td><td style="font-size:12px;color:#596066;">lee.j@mnm.co.kr</td><td>lee.j@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 17:30</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('박소연','park.s@mnm.co.kr','Operator','—','활성')"><td>박소연</td><td style="font-size:12px;color:#596066;">park.s@mnm.co.kr</td><td>park.s@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 14:22</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('최현우','choi.h@mnm.co.kr','Operator','—','활성')"><td>최현우</td><td style="font-size:12px;color:#596066;">choi.h@mnm.co.kr</td><td>choi.h@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-16 11:05</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('정다은','jung.d@mnm.co.kr','Admin (Operation)','Operation','활성')"><td>정다은</td><td style="font-size:12px;color:#596066;">jung.d@mnm.co.kr</td><td>jung.d@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-16 09:58</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('강태양','kang.t@mnm.co.kr','Operator','—','비활성')"><td>강태양</td><td style="font-size:12px;color:#596066;">kang.t@mnm.co.kr</td><td>kang.t@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-inactive">비활성</span></td><td class="muted-text">2026-07-30 16:44</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('윤서진','yoon.s@mnm.co.kr','Operator','—','활성')"><td>윤서진</td><td style="font-size:12px;color:#596066;">yoon.s@mnm.co.kr</td><td>yoon.s@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-15 13:10</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('임채원','lim.c@mnm.co.kr','Admin (System)','System','활성')"><td>임채원</td><td style="font-size:12px;color:#596066;">lim.c@mnm.co.kr</td><td>lim.c@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 07:55</td></tr>
+                <tr style="cursor:pointer;" onclick="openUserDrawer('오지수','oh.j@mnm.co.kr','Operator','—','비활성')"><td>오지수</td><td style="font-size:12px;color:#596066;">oh.j@mnm.co.kr</td><td>oh.j@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-inactive">비활성</span></td><td class="muted-text">2026-08-01 10:30</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- User Drawer Overlay -->
+<div id="user-overlay" onclick="closeUserDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;"></div>
+
+<!-- User Detail Drawer (T-SET-02) -->
+<div id="user-drawer" style="position:fixed;top:0;right:-480px;width:480px;height:100%;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);z-index:501;transition:right 0.25s ease;display:flex;flex-direction:column;">
+  <div style="padding:18px 22px 14px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div style="font-size:16px;font-weight:700;" id="drawer-user-name">사용자 상세</div>
+      <div style="font-size:12px;color:#9EA5AD;margin-top:2px;" id="drawer-user-role"></div>
+    </div>
+    <div onclick="closeUserDrawer()" style="width:32px;height:32px;border-radius:6px;border:1px solid #E5E7EA;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#596066;">✕</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:18px 22px;">
+    <!-- 기본정보 -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">사용자 기본정보</div>
+    <div style="display:grid;grid-template-columns:110px 1fr;gap:7px 12px;font-size:13px;margin-bottom:18px;">
+      <span style="color:#596066;">이름</span><span style="font-weight:600;" id="di-name"></span>
+      <span style="color:#596066;">현재 Login ID</span><span id="di-loginid" style="font-family:monospace;font-size:12px;background:#F6F7F9;padding:2px 8px;border-radius:4px;width:fit-content;"></span>
+      <span style="color:#596066;">이메일</span><span id="di-email"></span>
+      <span style="color:#596066;">역할</span><span id="di-role"></span>
+      <span style="color:#596066;">상태</span><span id="di-status"></span>
+    </div>
+
+    <!-- Login ID 변경 -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Login ID 변경 (T-SET-02)</div>
+    <div style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:14px;">
+      ⚠ Login ID 변경 시 해당 사용자의 세션이 즉시 무효화되며, 재로그인이 필요합니다. 변경 이력은 감사 로그에 기록됩니다.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">현재 Login ID</label>
+        <input id="current-loginid" readonly style="width:100%;height:36px;border:1px solid #E5E7EA;border-radius:6px;padding:0 12px;font-size:13px;background:#F6F7F9;color:#9EA5AD;font-family:monospace;">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">새 Login ID <span style="color:#E97474;">*</span></label>
+        <input id="new-loginid" type="email" placeholder="새 Login ID (이메일 형식)" style="width:100%;height:36px;border:1px solid #CED2D6;border-radius:6px;padding:0 12px;font-size:13px;">
+        <div style="font-size:11px;color:#9EA5AD;margin-top:4px;">이메일 형식만 허용됩니다.</div>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">현재 비밀번호 확인 <span style="color:#E97474;">*</span></label>
+        <input id="confirm-pw" type="password" placeholder="관리자 비밀번호 입력 (보안 인증)" style="width:100%;height:36px;border:1px solid #CED2D6;border-radius:6px;padding:0 12px;font-size:13px;">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">변경 사유 <span style="color:#E97474;">*</span></label>
+        <textarea id="change-reason" placeholder="변경 사유를 입력하세요. 감사 로그에 기록됩니다." style="width:100%;min-height:72px;border:1px solid #CED2D6;border-radius:6px;padding:10px 12px;font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+      </div>
+    </div>
+    <div id="change-result" style="display:none;background:#E8F8E9;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;font-size:13px;color:#14532D;margin-bottom:14px;"></div>
+
+    <!-- 변경 이력 -->
+    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;">변경·접속 이력</div>
+    <div style="font-size:12px;color:#596066;margin-bottom:8px;">최근 Login 이력</div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px;" id="login-history">
+      <div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F6F7F9;border-radius:6px;font-size:12px;"><span>정상 로그인</span><span style="color:#9EA5AD;">2026-08-18 09:12</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F6F7F9;border-radius:6px;font-size:12px;"><span>정상 로그인</span><span style="color:#9EA5AD;">2026-08-17 08:44</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F6F7F9;border-radius:6px;font-size:12px;"><span>정상 로그인</span><span style="color:#9EA5AD;">2026-08-16 09:01</span></div>
+    </div>
+    <div style="font-size:12px;color:#596066;margin-bottom:8px;">Login ID 변경 이력</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;" id="id-change-history">
+        <thead><tr>
+          <th style="background:#F6F7F9;padding:6px 10px;text-align:left;border-bottom:1px solid #E5E7EA;white-space:nowrap;">변경일시</th>
+          <th style="background:#F6F7F9;padding:6px 10px;text-align:left;border-bottom:1px solid #E5E7EA;">변경 전</th>
+          <th style="background:#F6F7F9;padding:6px 10px;text-align:left;border-bottom:1px solid #E5E7EA;">변경 후</th>
+          <th style="background:#F6F7F9;padding:6px 10px;text-align:left;border-bottom:1px solid #E5E7EA;">처리자</th>
+        </tr></thead>
+        <tbody id="id-history-body">
+          <tr><td colspan="4" style="padding:10px;text-align:center;color:#9EA5AD;">변경 이력 없음</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="padding:14px 22px;border-top:1px solid #E5E7EA;display:flex;gap:8px;">
+    <button onclick="saveLoginId()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;">변경 저장</button>
+    <button onclick="closeUserDrawer()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">취소</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
+
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+var currentUser = {};
+function openUserDrawer(name, loginId, role, scope, status) {
+  currentUser = { name: name, loginId: loginId, role: role };
+  document.getElementById('drawer-user-name').textContent = name;
+  document.getElementById('drawer-user-role').textContent = role;
+  document.getElementById('di-name').textContent = name;
+  document.getElementById('di-loginid').textContent = loginId;
+  document.getElementById('di-email').textContent = loginId;
+  document.getElementById('di-role').textContent = role;
+  document.getElementById('di-status').innerHTML = '<span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;">' + status + '</span>';
+  document.getElementById('current-loginid').value = loginId;
+  document.getElementById('new-loginid').value = '';
+  document.getElementById('confirm-pw').value = '';
+  document.getElementById('change-reason').value = '';
+  document.getElementById('change-result').style.display = 'none';
+  document.getElementById('user-overlay').style.display = 'block';
+  document.getElementById('user-drawer').style.right = '0';
+}
+function closeUserDrawer() {
+  document.getElementById('user-overlay').style.display = 'none';
+  document.getElementById('user-drawer').style.right = '-480px';
+}
+function saveLoginId() {
+  var newId = document.getElementById('new-loginid').value.trim();
+  var pw = document.getElementById('confirm-pw').value.trim();
+  var reason = document.getElementById('change-reason').value.trim();
+  if (!newId || !newId.includes('@')) { alert('유효한 이메일 형식의 Login ID를 입력하세요.'); return; }
+  if (!pw) { alert('현재 비밀번호를 입력하세요.'); return; }
+  if (!reason) { alert('변경 사유를 입력하세요.'); return; }
+  var oldId = currentUser.loginId;
+  var now = '2026-08-21 ' + new Date().toTimeString().slice(0,8);
+  // Add to history
+  var tbody = document.getElementById('id-history-body');
+  if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+  var row = '<tr><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;white-space:nowrap;">' + now + '</td><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;font-family:monospace;">' + oldId + '</td><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;font-family:monospace;">' + newId + '</td><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;">홍길동 (Super Admin)</td></tr>';
+  tbody.innerHTML = row + tbody.innerHTML;
+  var r = document.getElementById('change-result');
+  r.style.display = 'block';
+  r.innerHTML = '✓ Login ID가 변경되었습니다.<br><span style="font-size:12px;color:#596066;">변경 전: ' + oldId + ' → 변경 후: ' + newId + '<br>⚠ 대상 사용자의 모든 활성 세션이 무효화되었습니다. 재로그인이 필요합니다.</span>';
+  document.getElementById('current-loginid').value = newId;
+  currentUser.loginId = newId;
+  showToast('Login ID가 변경되었습니다. 대상 사용자의 세션이 무효화됩니다.');
+}
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.style.display='none'; }, 4000);
+}
+</script>
+</body>
+</html>

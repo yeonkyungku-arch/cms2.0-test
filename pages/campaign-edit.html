@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>캠페인 수정 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    .form-section + .form-section { border-top: 1px solid #E5E7EA; }
+    .form-section-head { padding: 18px 24px 14px; border-bottom: 1px solid #E5E7EA; }
+    .form-section-title { font-size: 14px; font-weight: 600; color: #24292E; display:flex;align-items:center;gap:8px; }
+    .form-section-desc  { font-size: 12px; color: #9EA5AD; margin-top: 3px; }
+    .form-section-body  { padding: 20px 24px; }
+    .form-row { display:grid;grid-template-columns:180px 1fr;gap:0;padding:10px 0;align-items:flex-start;border-bottom:1px solid #F6F7F9; }
+    .form-row:last-child { border-bottom:none; }
+    .form-label { font-size:13px;font-weight:500;color:#596066;padding-top:8px;display:flex;align-items:center;gap:6px; }
+    .form-label .req { color:#E97474;margin-left:2px; }
+    .form-field { min-width:0; }
+    .input,.textarea,.select { width:100%;height:38px;border:1px solid #CED2D6;border-radius:4px;padding:0 12px;font-size:14px;color:#24292E;font-family:inherit;background:#fff;outline:none;transition:border-color .2s; }
+    .input:focus,.select:focus { border-color:#58C65D; }
+    .textarea { height:auto;padding:10px 12px;resize:vertical;min-height:90px; }
+    .input-hint { font-size:12px;color:#9EA5AD;margin-top:5px; }
+
+    .red-banner { display:flex;align-items:flex-start;gap:10px;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:14px 18px;margin-bottom:20px; }
+    .red-banner-icon { color:#DC2626;font-size:18px;flex-shrink:0;margin-top:1px; }
+    .red-banner-text { font-size:13px;color:#7F1D1D;line-height:1.6; }
+    .red-banner-text strong { color:#450A0A;display:block;margin-bottom:2px;font-size:14px; }
+    .red-banner-text a { color:#DC2626;font-weight:600;text-decoration:underline;cursor:pointer; }
+
+    .section-badge { font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;letter-spacing:.3px; }
+    .section-badge.editable { background:#E8F8E9;color:#2E9E34; }
+    .section-badge.locked-badge { background:#FEF2F2;color:#DC2626; }
+
+    .readonly-field { display:flex;align-items:center;gap:8px;min-height:38px;padding:8px 12px;background:#F6F7F9;border:1px solid #E5E7EA;border-radius:4px;font-size:14px;color:#596066;line-height:1.4; }
+    .lock-icon { font-size:13px;flex-shrink:0;color:#CED2D6; }
+
+    .form-actions { display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #E5E7EA;background:#fff;position:sticky;bottom:0;z-index:10; }
+    .btn { height:36px;padding:0 18px;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:inherit;transition:opacity .15s; }
+    .btn:hover { opacity:.85; }
+    .btn-ghost { background:#fff;border-color:#CED2D6;color:#596066; }
+    .btn-primary { background:#58C65D;color:#fff;border-color:#58C65D; }
+  </style>
+</head>
+<body>
+
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">프로덕트</div><a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>프로덕트 목록</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">콘텐츠</div><a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>콘텐츠 목록</a></div>
+    </li>
+    <li><a href="campaign-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">편성표</div><a href="schedule-media-month"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>미디어 편성표</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">모니터링</div><a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>운영 대시보드</a></div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub"><div class="gnb-sub-title">영업 워크스페이스</div><a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"></div>영업 대시보드</a></div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-profile">
+      <div class="topbar-avatar">구</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">구연경</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="bcrumb">
+  <a class="bcrumb-back" href="campaign-list">←</a>
+  <a href="campaign-list">캠페인</a>
+  <span class="sep">›</span>
+  <a href="campaign-detail">삼성전자 갤럭시 S25 런칭</a>
+  <span class="sep">›</span>
+  <span>수정</span>
+</div>
+
+<main class="content">
+  <div class="page-head" style="padding-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1 class="page-title">삼성전자 갤럭시 S25 런칭</h1>
+      <span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;background:#FEF9C3;color:#854D0E;">집행중</span>
+      <span style="font-size:12px;color:#9EA5AD;">CMP-2026-001</span>
+    </div>
+  </div>
+
+  <div class="red-banner">
+    <div class="red-banner-icon">🔒</div>
+    <div class="red-banner-text">
+      <strong>집행중 캠페인 — 부가 정보만 수정 가능합니다</strong>
+      요구조건(캠페인명·광고주·예산·운영기간) 변경이 필요한 경우 <a onclick="location.href='campaign-register'">새 Campaign을 생성</a>하세요.
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+
+    <!-- 수정 가능 섹션 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          수정 가능
+          <span class="section-badge editable">부가 정보</span>
+        </div>
+        <div class="form-section-desc">아래 항목은 집행 중에도 즉시 저장됩니다.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">내부 담당자</div>
+          <div class="form-field">
+            <select class="select" id="manager" style="max-width:280px;">
+              <option value="hong" selected>홍길동</option>
+              <option value="kim">김철수</option>
+              <option value="lee">이영희</option>
+              <option value="park">박민준</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">메모 / 비고</div>
+          <div class="form-field">
+            <textarea class="textarea" id="memo" placeholder="내부 관리 메모를 입력하세요"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 변경 불가 섹션 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          변경 불가
+          <span class="section-badge locked-badge">핵심 조건 — 새 캠페인 생성 필요</span>
+        </div>
+        <div class="form-section-desc">집행중에는 핵심 요구조건을 수정할 수 없습니다.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">
+            캠페인명
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field">삼성전자 갤럭시 S25 런칭</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">
+            광고주
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field">삼성전자</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">
+            예산
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field">₩500,000,000</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">
+            운영기간
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field">2026-01-15 ~ 2026-02-28</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Selection Snapshot (Immutable) — read-only 표시 -->
+    <div class="form-section">
+      <div class="form-section-head">
+        <div class="form-section-title">
+          Selection Snapshot
+          <span class="section-badge locked-badge">LOCKED — Immutable</span>
+        </div>
+        <div class="form-section-desc">선택된 Offering Revision + Variant는 Selection Snapshot으로 고정되어 수정할 수 없습니다. 변경이 필요하면 새 Campaign을 생성하세요.</div>
+      </div>
+      <div class="form-section-body">
+
+        <div class="form-row">
+          <div class="form-label">
+            Snapshot ID
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field" style="font-size:12px;color:#9EA5AD;">SEL-SNAP-20260115-001</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">
+            선택 Offering/Variant
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field">강남 프라임 패키지 — 30초 일반</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">
+            PDE Decision (당시)
+            <span style="font-size:13px;">🔒</span>
+          </div>
+          <div class="form-field">
+            <div class="readonly-field">승인 · Policy Version v2.1.3</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="location.href='campaign-detail'">취소</button>
+    <button class="btn btn-primary" onclick="saveMinor()">부가 정보 저장</button>
+  </div>
+</main>
+
+<script>
+function saveMinor() {
+  alert('저장되었습니다.'); location.href='campaign-detail';
+}
+function goScheduleMain() {
+  const t = localStorage.getItem('scheduleType') || 'media';
+  location.href = t === 'product' ? 'schedule-product-month' : 'schedule-media-month';
+}
+function setScheduleType(t) { localStorage.setItem('scheduleType', t); }
+</script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>

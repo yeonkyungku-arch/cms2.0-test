@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>캠페인 등록 — D'ooh CMS</title>
+  <link rel="stylesheet" href="../assets/css/cms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* ── Variables ── */
+    :root {
+      --green:  #58C65D;
+      --dark:   #24292E;
+      --main:   #2D84ED;
+      --warn:   #F3BE4A;
+      --danger: #E97474;
+      --bg:     #F6F7F9;
+      --border: #E5E7EA;
+      --text:   #24292E;
+      --sub:    #596066;
+      --muted:  #9EA5AD;
+      --white:  #ffffff;
+      --card-bg:#ffffff;
+      --input-bg:#ffffff;
+      --input-border: #CED2D6;
+      --step-line: #E5E7EA;
+      --step-done-bg: #58C65D;
+      --step-active-bg: #2D84ED;
+      --step-inactive-bg: #E5E7EA;
+      --step-done-text: #fff;
+      --step-active-text: #fff;
+      --step-inactive-text: #9EA5AD;
+    }
+
+    /* ── Page header ── */
+    .page-hd {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-hd-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: var(--sub);
+      text-decoration: none;
+      padding: 4px 0;
+      transition: color .15s;
+    }
+    .page-hd-back:hover { color: var(--main); }
+    .page-hd-divider { width: 1px; height: 16px; background: var(--border); }
+    .page-hd-title { font-size: 20px; font-weight: 700; color: var(--dark); flex: 1; }
+    .page-hd-actions { display: flex; gap: 8px; margin-left: auto; }
+
+    /* ── Step indicator ── */
+    .step-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 28px;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: background .2s, color .2s;
+    }
+    .step-circle.done     { background: var(--green); color: #fff; }
+    .step-circle.active   { background: var(--main);  color: #fff; box-shadow: 0 0 0 3px rgba(45,132,237,.18); }
+    .step-circle.inactive { background: var(--step-inactive-bg); color: var(--muted); }
+    .step-label {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+    .step-label.done     { color: var(--green); }
+    .step-label.active   { color: var(--main); }
+    .step-label.inactive { color: var(--muted); }
+    .step-connector {
+      flex: 1;
+      height: 2px;
+      min-width: 20px;
+      max-width: 60px;
+      background: var(--border);
+      margin: 0 8px;
+      position: relative;
+    }
+    .step-connector.done { background: var(--green); }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: background .15s, opacity .15s; white-space: nowrap; }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-primary:hover { background: #4ab34f; }
+    .btn-blue { background: var(--main); color: #fff; }
+    .btn-blue:hover { background: #1a6fd4; }
+    .btn-ghost { background: #fff; color: var(--sub); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg); }
+    .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 5px; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #d95f5f; }
+    .btn-outline-main { background: #EAF3FF; color: var(--main); border: 1px solid #c2dbfb; font-size: 12px; height: 30px; padding: 0 10px; border-radius: 5px; cursor: pointer; font-weight: 600; }
+    .btn-outline-main:hover { background: #d4eaff; }
+
+    /* ── Form cards ── */
+    .form-section { margin-bottom: 24px; }
+    .form-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--sub);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .form-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+    .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-full { grid-column: 1 / -1; }
+
+    /* ── Field ── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-required { color: var(--danger); font-size: 11px; }
+    .field-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Inputs ── */
+    .inp {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--input-bg);
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color .15s, box-shadow .15s;
+      font-family: inherit;
+    }
+    .inp:focus { outline: none; border-color: var(--main); box-shadow: 0 0 0 3px rgba(45,132,237,.12); }
+    .inp::placeholder { color: var(--muted); }
+    .inp-select {
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+      cursor: pointer;
+    }
+    .inp-search-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .inp-search-wrap .inp { flex: 1; }
+    .inp-number { width: 100px; }
+    .inp-currency-wrap { display: flex; gap: 8px; align-items: center; }
+    .inp-currency-wrap .inp { flex: 1; }
+    .inp-currency-symbol { font-size: 13px; color: var(--sub); font-weight: 600; white-space: nowrap; }
+
+    /* ── Chips multi-select ── */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--sub);
+      cursor: pointer;
+      transition: all .15s;
+      user-select: none;
+    }
+    .chip-toggle.selected { border-color: var(--main); background: #EAF3FF; color: var(--main); }
+    .chip-toggle:hover { border-color: var(--main); }
+
+    /* ── Segmented control ── */
+    .segmented {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .segmented label {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      border-right: 1px solid var(--border);
+      user-select: none;
+    }
+    .segmented label:last-child { border-right: none; }
+    .segmented input[type="radio"] { display: none; }
+    .segmented input[type="radio"]:checked + label {
+      background: var(--main);
+      color: #fff;
+    }
+
+    /* ── Priority selects (KPI) ── */
+    .kpi-list { display: flex; flex-direction: column; gap: 10px; }
+    .kpi-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+    .kpi-drag { color: var(--muted); cursor: grab; flex-shrink: 0; }
+    .kpi-name { font-size: 13px; font-weight: 600; color: var(--dark); flex: 1; }
+    .kpi-select { height: 30px; padding: 0 26px 0 10px; font-size: 12px; border: 1px solid var(--input-border); border-radius: 5px; background: var(--input-bg); color: var(--text); -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239EA5AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; cursor: pointer; font-family: inherit; }
+
+    /* ── Map placeholder ── */
+    .map-placeholder {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, #e8f1fb 0%, #dceeff 100%);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .map-placeholder svg { opacity: .4; }
+
+    /* ── Tag chip (region tags) ── */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+      background: #EAF3FF; color: var(--main);
+      border: 1px solid #c2dbfb;
+    }
+    .tag-remove { cursor: pointer; color: var(--muted); font-size: 14px; line-height: 1; }
+    .tag-remove:hover { color: var(--danger); }
+
+    /* ── Condition builder ── */
+    .condition-list { display: flex; flex-direction: column; gap: 10px; }
+    .condition-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      flex-wrap: wrap;
+    }
+    .condition-row .inp { height: 32px; font-size: 12px; }
+    .condition-row select.inp { height: 32px; font-size: 12px; min-width: 140px; }
+    .condition-row .inp[type="text"] { min-width: 160px; flex: 1; }
+    .condition-row .inp[type="number"] { width: 90px; }
+    .condition-label { font-size: 11px; color: var(--sub); font-weight: 600; white-space: nowrap; }
+    .btn-remove-row {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; line-height: 1;
+      flex-shrink: 0;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-remove-row:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Step tab panels ── */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* ── Step bottom nav ── */
+    .step-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    /* ── Summary cards (Step 4) ── */
+    .summary-section { margin-bottom: 24px; }
+    .summary-title {
+      font-size: 12px; font-weight: 700; color: var(--sub);
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .summary-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-key { font-size: 12px; font-weight: 600; color: var(--muted); width: 130px; flex-shrink: 0; }
+    .summary-val { font-size: 13px; color: var(--dark); flex: 1; }
+    .summary-empty { color: var(--muted); font-style: italic; }
+
+    /* ── Responsive ── */
+    @media (max-width: 760px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .step-label { display: none; }
+      .step-connector { min-width: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb">
+  <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
+  <ul class="gnb-nav">
+    <li><a href="dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>대시보드</a></li>
+    <li><a href="media-list"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="currentColor" fill="none"/></svg>미디어</a></li>
+    <li class="gnb-has-sub"><a href="product-list"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="16" cy="15" r="2.5" fill="currentColor"/></svg>프로덕트</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">프로덕트</div>
+    <a href="product-list"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="15" r="2.5" fill="#2D84ED"/></svg></div>프로덕트 목록</a>
+    <a href="package-list"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>패키지 목록</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="contents"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="currentColor"/></svg>콘텐츠</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">콘텐츠</div>
+    <a href="contents"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#2D84ED" stroke-width="1.5"/><path d="M8 7.5l5 2.5-5 2.5V7.5z" fill="#2D84ED"/></svg></div>콘텐츠 목록</a>
+    <a href="content-chain"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M6 10h8M10 6l4 4-4 4" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>콘텐츠 체인</a>
+    <a href="content-archive"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="7" width="14" height="10" rx="1.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M3 7l2-4h10l2 4" stroke="#9EA5AD" stroke-width="1.5" stroke-linejoin="round"/></svg></div>보관 관리</a>
+    </div>
+    </li>
+    <li><a href="campaign-list" class="active"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L3 7v6l7 4 7-4V7L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 3v10M3 7l7 4 7-4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>캠페인</a></li>
+    <li><a href="schedule-list"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="currentColor"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 7h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>스케줄</a></li>
+    <li class="gnb-has-sub"><a href="javascript:void(0)" onclick="goScheduleMain()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="currentColor"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>편성표</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">편성표</div>
+    <a href="schedule-media-month" data-type="media" onclick="setScheduleType('media')"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke-width="1.5" stroke="#2D84ED"/><circle cx="10" cy="10" r="3" stroke-width="1.5" stroke="#2D84ED"/></svg></div>미디어 편성표</a>
+    <a href="schedule-product-month" data-type="product" onclick="setScheduleType('product')"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="1.5" stroke-width="1.5" stroke="#58C65D"/><path d="M3 8h14" stroke="#58C65D" stroke-width="1.5"/><path d="M7 4V2M13 4V2" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>프로덕트 편성표</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li class="gnb-has-sub"><a href="monitoring-dashboard"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke-width="1.5" stroke="currentColor" fill="none"/><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>모니터링</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">모니터링</div>
+    <a href="monitoring-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>운영 대시보드</a>
+    <a href="monitoring-incident"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 3l7 14H3L10 3z" stroke="#E97474" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 15v.5" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>Incident Center</a>
+    <a href="monitoring-alert"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5c0 3 1.5 4.5 2 5H3c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#F3BE4A" stroke-width="1.4"/><path d="M8.5 16h3" stroke="#F3BE4A" stroke-width="1.4" stroke-linecap="round"/></svg></div>알림센터</a>
+    <a href="monitoring-control"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#58C65D" stroke-width="1.5"/><path d="M7 10h6M10 7v6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>원격 제어</a>
+    <a href="monitoring-history"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#9EA5AD" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg></div>제어·복구 이력</a>
+    </div>
+    </li>
+    <li class="gnb-has-sub"><a href="sales-dashboard"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>영업</a>
+    <div class="gnb-sub">
+    <div class="gnb-sub-title">영업 워크스페이스</div>
+    <a href="sales-dashboard"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="#2D84ED"/></svg></div>영업 대시보드</a>
+    <a href="sales-advertiser"><div class="gnb-sub-icon" style="background:#F0FDF4;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#58C65D" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#58C65D" stroke-width="1.5" stroke-linecap="round"/></svg></div>광고주 관리</a>
+    <a href="sales-opportunity"><div class="gnb-sub-icon" style="background:#FFF7ED;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5l3 2" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg></div>영업기회</a>
+    <a href="sales-proposal"><div class="gnb-sub-icon" style="background:#FEF2F2;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><rect x="4" y="3" width="12" height="14" rx="1.5" stroke="#E97474" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="#E97474" stroke-width="1.5" stroke-linecap="round"/></svg></div>제안·협상</a>
+    <a href="sales-contract"><div class="gnb-sub-icon" style="background:#EFF6FF;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#2D84ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>계약</a>
+    <a href="sales-analytics"><div class="gnb-sub-icon" style="background:#F9FAFB;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 4 3 5-7" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>영업 분석</a>
+    </div>
+    </li>
+    <div class="gnb-divider"></div>
+    <li><a href="settings-org"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>설정</a></li>
+  </ul>
+</nav>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-search">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="전체 검색">
+  </div>
+  <div class="topbar-user">
+    <div class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 3 1.5 4.5 2 5H2c.5-.5 2-2 2-5a5 5 0 015-5z" stroke="#9EA5AD" stroke-width="1.4" fill="none"/><path d="M7.5 16h3" stroke="#9EA5AD" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="dot-badge"></span>
+    </div>
+    <div class="topbar-profile">
+      <div class="topbar-avatar">홍</div>
+      <div class="topbar-profile-info">
+        <div class="topbar-profile-name">홍길동</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="content">
+  <div class="content-inner">
+
+    <!-- Page header -->
+    <div class="page-hd">
+      <a class="page-hd-back" href="campaign-list">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        캠페인 목록
+      </a>
+      <div class="page-hd-divider"></div>
+      <div class="page-hd-title">캠페인 등록</div>
+      <div class="page-hd-actions">
+        <button class="btn btn-ghost" onclick="saveDraft()">임시저장</button>
+        <button class="btn btn-blue" id="btn-next" onclick="nextStep()">
+          다음
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="step-bar" id="stepBar">
+      <div class="step-item">
+        <div class="step-circle active" id="sc-1">1</div>
+        <span class="step-label active" id="sl-1">기본 정보</span>
+      </div>
+      <div class="step-connector" id="scon-1"></div>
+      <div class="step-item">
+        <div class="step-circle inactive" id="sc-2">2</div>
+        <span class="step-label inactive" id="sl-2">광고주 요구사항</span>
+      </div>
+      <div class="step-connector" id="scon-2"></div>
+      <div class="step-item">
+        <div class="step-circle inactive" id="sc-3">3</div>
+        <span class="step-label inactive" id="sl-3">광고효과·운영요구</span>
+      </div>
+      <div class="step-connector" id="scon-3"></div>
+      <div class="step-item">
+        <div class="step-circle inactive" id="sc-4">4</div>
+        <span class="step-label inactive" id="sl-4">확인</span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         STEP 1 — 기본 정보
+    ════════════════════════════════ -->
+    <div class="step-panel active" id="panel-1">
+      <div class="form-card">
+        <div class="form-card-title">기본 정보</div>
+        <div class="form-grid">
+
+          <!-- 캠페인명 -->
+          <div class="field form-full">
+            <label class="field-label">캠페인명 <span class="field-required">*</span></label>
+            <input id="f-name" class="inp" type="text" placeholder="캠페인명을 입력하세요">
+          </div>
+
+          <!-- 광고주 -->
+          <div class="field">
+            <label class="field-label">광고주 <span class="field-required">*</span></label>
+            <div class="inp-search-wrap">
+              <input id="f-advertiser" class="inp" type="text" placeholder="광고주 검색">
+              <button class="btn-outline-main" onclick="">신규 등록</button>
+            </div>
+          </div>
+
+          <!-- 대행사 -->
+          <div class="field">
+            <label class="field-label">대행사</label>
+            <div class="inp-search-wrap">
+              <input id="f-agency" class="inp" type="text" placeholder="대행사 검색 (선택)">
+              <button class="btn-outline-main" onclick="">신규 등록</button>
+            </div>
+          </div>
+
+          <!-- 광고주 담당자 -->
+          <div class="field">
+            <label class="field-label">광고주 담당자</label>
+            <select id="f-contact" class="inp inp-select">
+              <option value="">담당자 선택 (선택)</option>
+              <option>김민준 (마케팅팀장)</option>
+              <option>이서연 (브랜드매니저)</option>
+              <option>박지훈 (광고팀)</option>
+            </select>
+          </div>
+
+          <!-- 담당 매니저 -->
+          <div class="field">
+            <label class="field-label">담당 매니저 <span class="field-required">*</span></label>
+            <select id="f-manager" class="inp inp-select">
+              <option value="hong" selected>홍길동</option>
+              <option>김영수</option>
+              <option>이지은</option>
+              <option>박민서</option>
+            </select>
+          </div>
+
+          <!-- 유입경로 -->
+          <div class="field">
+            <label class="field-label">유입경로 <span class="field-required">*</span></label>
+            <select id="f-source" class="inp inp-select">
+              <option value="">유입경로 선택</option>
+              <option value="direct">직접문의</option>
+              <option value="inbound">인바운드</option>
+              <option value="referral">추천</option>
+              <option value="platform">플랫폼</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <span></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="saveDraft()">임시저장</button>
+          <button class="btn btn-blue" onclick="nextStep()">
+            다음 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         STEP 2 — 광고주 요구사항
+    ════════════════════════════════ -->
+    <div class="step-panel" id="panel-2">
+
+      <!-- 캠페인 목표 -->
+      <div class="form-card">
+        <div class="form-card-title">캠페인 목표</div>
+        <div class="field">
+          <label class="field-label">캠페인 목표 <span class="field-required">*</span></label>
+          <div class="chip-group" id="objectives-chips">
+            <div class="chip-toggle" data-val="brand" onclick="toggleChip(this)">브랜드인지도</div>
+            <div class="chip-toggle" data-val="purchase" onclick="toggleChip(this)">구매의향</div>
+            <div class="chip-toggle" data-val="visit" onclick="toggleChip(this)">방문유도</div>
+            <div class="chip-toggle" data-val="event" onclick="toggleChip(this)">이벤트참여</div>
+            <div class="chip-toggle" data-val="other" onclick="toggleChip(this)">기타</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 광고 기간 -->
+      <div class="form-card">
+        <div class="form-card-title">광고 기간</div>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">요청 시작일 <span class="field-required">*</span></label>
+            <input id="f-start" class="inp" type="date">
+          </div>
+          <div class="field">
+            <label class="field-label">요청 종료일 <span class="field-required">*</span></label>
+            <input id="f-end" class="inp" type="date">
+          </div>
+        </div>
+      </div>
+
+      <!-- 타깃 지역 -->
+      <div class="form-card">
+        <div class="form-card-title">타깃 지역</div>
+        <div class="field">
+          <label class="field-label">타깃 지역</label>
+          <div class="map-placeholder">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="16" r="8" stroke="#9EA5AD" stroke-width="1.8"/><path d="M18 24c0 0 8 6 8 10H10c0-4 8-10 8-10z" stroke="#9EA5AD" stroke-width="1.8" stroke-linejoin="round" fill="none"/><circle cx="18" cy="16" r="3" fill="#9EA5AD" opacity=".5"/></svg>
+            <span>지도에서 지역을 선택하세요</span>
+          </div>
+          <div class="chip-group" style="margin-bottom:8px;">
+            <div class="chip-toggle" data-val="seoul" onclick="toggleChip(this)">서울</div>
+            <div class="chip-toggle" data-val="gyeonggi" onclick="toggleChip(this)">경기</div>
+            <div class="chip-toggle" data-val="incheon" onclick="toggleChip(this)">인천</div>
+            <div class="chip-toggle" data-val="busan" onclick="toggleChip(this)">부산</div>
+            <div class="chip-toggle" data-val="daegu" onclick="toggleChip(this)">대구</div>
+            <div class="chip-toggle" data-val="gwangju" onclick="toggleChip(this)">광주</div>
+            <div class="chip-toggle" data-val="daejeon" onclick="toggleChip(this)">대전</div>
+            <div class="chip-toggle" data-val="ulsan" onclick="toggleChip(this)">울산</div>
+            <div class="chip-toggle" data-val="jeju" onclick="toggleChip(this)">제주</div>
+          </div>
+          <div class="tag-list" id="region-tags"></div>
+        </div>
+      </div>
+
+      <!-- 상품 선택 방식 -->
+      <div class="form-card">
+        <div class="form-card-title">상품 선택</div>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">상품 선택 방식 <span class="field-required">*</span></label>
+            <div class="segmented">
+              <input type="radio" name="selectionMode" id="sm-auto" value="auto" checked>
+              <label for="sm-auto" onclick="onSelectionModeChange('auto')">자동추천 (Auto)</label>
+              <input type="radio" name="selectionMode" id="sm-manual" value="manual">
+              <label for="sm-manual" onclick="onSelectionModeChange('manual')">직접선택 (Manual)</label>
+            </div>
+          </div>
+          <div class="field" id="manual-candidates-field" style="display:none;">
+            <label class="field-label">상품 후보 <span style="font-size:11px;color:var(--muted);font-weight:400;">(직접선택 시)</span></label>
+            <input class="inp" type="text" placeholder="상품명 검색 후 추가">
+            <div class="tag-list" id="manual-tags">
+              <div class="tag">강남 프라임 패키지 <span class="tag-remove" onclick="removeTag(this)">×</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 슬롯·소재·예산 -->
+      <div class="form-card">
+        <div class="form-card-title">슬롯·소재·예산</div>
+        <div class="form-grid">
+
+          <!-- 요청 슬롯 시간 -->
+          <div class="field">
+            <label class="field-label">요청 슬롯 시간 <span class="field-required">*</span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input id="f-slot" class="inp" type="number" min="1" placeholder="15" style="width:100px;">
+              <select class="inp inp-select" style="width:70px;">
+                <option>초</option>
+                <option>분</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 요청 재생시간 -->
+          <div class="field">
+            <label class="field-label">요청 재생시간 <span style="font-size:11px;color:var(--muted);font-weight:400;">(조건 시)</span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input id="f-playback" class="inp" type="number" min="1" placeholder="30" style="width:100px;">
+              <span style="font-size:13px;color:var(--sub);">초</span>
+            </div>
+          </div>
+
+          <!-- 콘텐츠 참조 (campaign.contentRevisionRef) -->
+          <div class="field">
+            <label class="field-label">콘텐츠 참조 <span style="font-size:11px;color:var(--muted);font-weight:400;">(contentRevisionRef)</span></label>
+            <input class="inp" type="text" placeholder="Content Revision / Chain 검색 (선택)">
+            <div class="field-hint">미선택 시 희망 재생시간 필수 입력</div>
+          </div>
+
+          <!-- 예산 -->
+          <div class="field">
+            <label class="field-label">예산</label>
+            <div class="inp-currency-wrap">
+              <select id="f-currency" class="inp inp-select" style="width:80px;" onchange="updateCurrencySymbol()">
+                <option value="KRW">KRW</option>
+                <option value="USD">USD</option>
+                <option value="JPY">JPY</option>
+              </select>
+              <input id="f-budget" class="inp" type="number" min="0" placeholder="0" style="flex:1;">
+              <span class="inp-currency-symbol" id="currency-symbol">원</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost" onclick="prevStep()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          이전
+        </button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="saveDraft()">임시저장</button>
+          <button class="btn btn-blue" onclick="nextStep()">
+            다음 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         STEP 3 — 광고효과·운영 요구
+    ════════════════════════════════ -->
+    <div class="step-panel" id="panel-3">
+
+      <!-- KPI 우선순위 -->
+      <div class="form-card">
+        <div class="form-card-title">광고효과 요구 — 기본 KPI 우선순위</div>
+        <div class="field-label" style="margin-bottom:12px;">각 지표의 우선순위를 선택하세요 (중복 선택 가능, 미사용 가능)</div>
+        <div class="kpi-list">
+          <div class="kpi-row">
+            <svg class="kpi-drag" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="1.2" fill="currentColor"/><circle cx="5" cy="8" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="11" cy="4" r="1.2" fill="currentColor"/><circle cx="11" cy="8" r="1.2" fill="currentColor"/><circle cx="11" cy="12" r="1.2" fill="currentColor"/></svg>
+            <span class="kpi-name">유동인구 <span style="font-size:11px;color:var(--muted);font-weight:400;">footTraffic</span></span>
+            <select class="kpi-select" id="kpi-foot">
+              <option value="">미사용</option>
+              <option value="1">1순위</option>
+              <option value="2">2순위</option>
+              <option value="3">3순위</option>
+              <option value="4">4순위</option>
+            </select>
+          </div>
+          <div class="kpi-row">
+            <svg class="kpi-drag" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="1.2" fill="currentColor"/><circle cx="5" cy="8" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="11" cy="4" r="1.2" fill="currentColor"/><circle cx="11" cy="8" r="1.2" fill="currentColor"/><circle cx="11" cy="12" r="1.2" fill="currentColor"/></svg>
+            <span class="kpi-name">노출 수용자 <span style="font-size:11px;color:var(--muted);font-weight:400;">exposedAudience</span></span>
+            <select class="kpi-select" id="kpi-exp">
+              <option value="">미사용</option>
+              <option value="1">1순위</option>
+              <option value="2">2순위</option>
+              <option value="3">3순위</option>
+              <option value="4">4순위</option>
+            </select>
+          </div>
+          <div class="kpi-row">
+            <svg class="kpi-drag" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="1.2" fill="currentColor"/><circle cx="5" cy="8" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="11" cy="4" r="1.2" fill="currentColor"/><circle cx="11" cy="8" r="1.2" fill="currentColor"/><circle cx="11" cy="12" r="1.2" fill="currentColor"/></svg>
+            <span class="kpi-name">주목 수용자 <span style="font-size:11px;color:var(--muted);font-weight:400;">attentionAudience</span></span>
+            <select class="kpi-select" id="kpi-att">
+              <option value="">미사용</option>
+              <option value="1">1순위</option>
+              <option value="2">2순위</option>
+              <option value="3">3순위</option>
+              <option value="4">4순위</option>
+            </select>
+          </div>
+          <div class="kpi-row">
+            <svg class="kpi-drag" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="1.2" fill="currentColor"/><circle cx="5" cy="8" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="11" cy="4" r="1.2" fill="currentColor"/><circle cx="11" cy="8" r="1.2" fill="currentColor"/><circle cx="11" cy="12" r="1.2" fill="currentColor"/></svg>
+            <span class="kpi-name">순위 <span style="font-size:11px;color:var(--muted);font-weight:400;">ranking</span></span>
+            <select class="kpi-select" id="kpi-rank">
+              <option value="">미사용</option>
+              <option value="1">1순위</option>
+              <option value="2">2순위</option>
+              <option value="3">3순위</option>
+              <option value="4">4순위</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 옵션 세그먼트 (수용자) -->
+      <div class="form-card">
+        <div class="form-card-title">광고효과 요구 — 수용자 세그먼트 <span style="font-size:12px;color:var(--muted);font-weight:400;">(선택)</span></div>
+        <div class="form-grid">
+
+          <!-- 성별 -->
+          <div class="field">
+            <label class="field-label">성별</label>
+            <div class="chip-group" id="gender-chips">
+              <div class="chip-toggle" data-val="male" onclick="toggleChip(this)">남성</div>
+              <div class="chip-toggle" data-val="female" onclick="toggleChip(this)">여성</div>
+              <div class="chip-toggle selected" data-val="all" onclick="toggleChip(this)">전체</div>
+            </div>
+          </div>
+
+          <!-- 연령대 -->
+          <div class="field">
+            <label class="field-label">연령대</label>
+            <div class="chip-group" id="age-chips">
+              <div class="chip-toggle" data-val="10" onclick="toggleChip(this)">10대</div>
+              <div class="chip-toggle" data-val="20" onclick="toggleChip(this)">20대</div>
+              <div class="chip-toggle" data-val="30" onclick="toggleChip(this)">30대</div>
+              <div class="chip-toggle" data-val="40" onclick="toggleChip(this)">40대</div>
+              <div class="chip-toggle" data-val="50" onclick="toggleChip(this)">50대</div>
+              <div class="chip-toggle" data-val="60" onclick="toggleChip(this)">60대+</div>
+            </div>
+          </div>
+
+          <!-- 지역 세그먼트 -->
+          <div class="field form-full">
+            <label class="field-label">지역 세그먼트</label>
+            <input class="inp" type="text" placeholder="지역 태그 추가">
+            <div class="tag-list" id="audience-region-tags">
+              <div class="tag">수도권 <span class="tag-remove" onclick="removeTag(this)">×</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 운영 요구 -->
+      <div class="form-card">
+        <div class="form-card-title">광고 운영 요구</div>
+        <div class="form-grid">
+
+          <!-- 운영 모드 -->
+          <div class="field">
+            <label class="field-label">운영 모드 <span class="field-required">*</span></label>
+            <select id="f-opmode" class="inp inp-select" onchange="onOpModeChange()">
+              <option value="">운영 모드 선택</option>
+              <option value="rolling">일반 (Rolling)</option>
+              <option value="conditional">조건광고 (Conditional)</option>
+              <option value="hybrid">혼합 (Hybrid)</option>
+            </select>
+          </div>
+
+          <!-- 조건 광고 최대 횟수 -->
+          <div class="field" id="conditional-plays-field" style="display:none;">
+            <label class="field-label">요청 조건광고 횟수 <span style="font-size:11px;color:var(--muted);font-weight:400;">(선택)</span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input id="f-cond-plays" class="inp" type="number" min="0" placeholder="0" style="width:120px;">
+              <span style="font-size:13px;color:var(--sub);">회</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 조건 규칙 빌더 -->
+        <div id="condition-builder" style="display:none;margin-top:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div class="field-label">조건 규칙</div>
+            <button class="btn btn-ghost btn-sm" onclick="addConditionRow()">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              규칙 추가
+            </button>
+          </div>
+          <div class="condition-list" id="condition-list">
+            <div class="condition-row">
+              <span class="condition-label">#1</span>
+              <select class="inp inp-select" style="min-width:140px;height:32px;font-size:12px;">
+                <option value="">트리거 유형 ▼</option>
+                <option value="weather">날씨</option>
+                <option value="time">시간대</option>
+                <option value="temp">온도</option>
+                <option value="footfall">유동인구</option>
+                <option value="event">이벤트</option>
+              </select>
+              <input class="inp" type="text" placeholder="트리거 값 입력" style="flex:1;min-width:140px;height:32px;font-size:12px;">
+              <input class="inp" type="number" placeholder="최대실행" style="width:90px;height:32px;font-size:12px;" min="1">
+              <button class="btn-remove-row" onclick="removeConditionRow(this)" title="삭제">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost" onclick="prevStep()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          이전
+        </button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="saveDraft()">임시저장</button>
+          <button class="btn btn-blue" onclick="nextStep()">
+            다음 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         STEP 4 — 확인
+    ════════════════════════════════ -->
+    <div class="step-panel" id="panel-4">
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#E8F8E9;display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l4 4 6-7" stroke="#58C65D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--dark);">입력 내용을 확인하세요</div>
+          <div style="font-size:12px;color:var(--muted);">등록 전 모든 항목을 검토해 주세요.</div>
+        </div>
+      </div>
+
+      <!-- Summary: 기본 정보 -->
+      <div class="summary-section">
+        <div class="summary-title">기본 정보</div>
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-key">캠페인명</span>
+            <span class="summary-val" id="s-name"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">광고주</span>
+            <span class="summary-val" id="s-advertiser"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">대행사</span>
+            <span class="summary-val" id="s-agency"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">광고주 담당자</span>
+            <span class="summary-val" id="s-contact"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">담당 매니저</span>
+            <span class="summary-val" id="s-manager">홍길동</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">유입경로</span>
+            <span class="summary-val" id="s-source"><span class="summary-empty">—</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary: 광고주 요구사항 -->
+      <div class="summary-section">
+        <div class="summary-title">광고주 요구사항</div>
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-key">캠페인 목표</span>
+            <span class="summary-val" id="s-objectives"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">요청 기간</span>
+            <span class="summary-val" id="s-period"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">타깃 지역</span>
+            <span class="summary-val" id="s-regions"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">상품 선택 방식</span>
+            <span class="summary-val" id="s-selmode"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">요청 슬롯 시간</span>
+            <span class="summary-val" id="s-slot"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">예산</span>
+            <span class="summary-val" id="s-budget"><span class="summary-empty">—</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary: 광고효과·운영 -->
+      <div class="summary-section">
+        <div class="summary-title">광고효과·운영 요구</div>
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-key">KPI 우선순위</span>
+            <span class="summary-val" id="s-kpi"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">수용자 성별</span>
+            <span class="summary-val" id="s-gender"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">수용자 연령대</span>
+            <span class="summary-val" id="s-age"><span class="summary-empty">—</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">운영 모드</span>
+            <span class="summary-val" id="s-opmode"><span class="summary-empty">—</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost" onclick="prevStep()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          이전
+        </button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="saveDraft()">임시저장</button>
+          <button class="btn btn-primary" onclick="submitCampaign()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            캠페인 등록
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-inner -->
+</main>
+
+<script>
+/* ── State ── */
+var currentStep = 1;
+var totalSteps = 4;
+
+/* ── Step navigation ── */
+function updateStepUI() {
+  for (var i = 1; i <= totalSteps; i++) {
+    var sc = document.getElementById('sc-' + i);
+    var sl = document.getElementById('sl-' + i);
+    var panel = document.getElementById('panel-' + i);
+    panel.classList.remove('active');
+    sc.className = 'step-circle';
+    sl.className = 'step-label';
+    if (i < currentStep) {
+      sc.classList.add('done');
+      sl.classList.add('done');
+      sc.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else if (i === currentStep) {
+      sc.classList.add('active');
+      sl.classList.add('active');
+      sc.textContent = i;
+      panel.classList.add('active');
+    } else {
+      sc.classList.add('inactive');
+      sl.classList.add('inactive');
+      sc.textContent = i;
+    }
+    if (i < totalSteps) {
+      var con = document.getElementById('scon-' + i);
+      con.className = 'step-connector' + (i < currentStep ? ' done' : '');
+    }
+  }
+  // Update header button
+  var btnNext = document.getElementById('btn-next');
+  if (currentStep === totalSteps) {
+    btnNext.textContent = '캠페인 등록';
+    btnNext.className = 'btn btn-primary';
+    btnNext.onclick = submitCampaign;
+  } else {
+    btnNext.innerHTML = '다음 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    btnNext.className = 'btn btn-blue';
+    btnNext.onclick = nextStep;
+  }
+}
+
+function nextStep() {
+  if (currentStep < totalSteps) {
+    currentStep++;
+    if (currentStep === totalSteps) buildSummary();
+    updateStepUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+function prevStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    updateStepUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+/* ── Chip toggle ── */
+function toggleChip(el) {
+  el.classList.toggle('selected');
+}
+
+/* ── Tag removal ── */
+function removeTag(btn) {
+  btn.parentElement.remove();
+}
+
+/* ── Selection mode ── */
+function onSelectionModeChange(mode) {
+  document.getElementById('manual-candidates-field').style.display = mode === 'manual' ? 'flex' : 'none';
+  document.getElementById('manual-candidates-field').style.flexDirection = 'column';
+}
+
+/* ── Operational mode ── */
+function onOpModeChange() {
+  var mode = document.getElementById('f-opmode').value;
+  var showCond = (mode === 'conditional' || mode === 'hybrid');
+  document.getElementById('condition-builder').style.display = showCond ? 'block' : 'none';
+  document.getElementById('conditional-plays-field').style.display = showCond ? 'flex' : 'none';
+  if (showCond) document.getElementById('conditional-plays-field').style.flexDirection = 'column';
+}
+
+/* ── Condition rows ── */
+var condRowCount = 1;
+function addConditionRow() {
+  condRowCount++;
+  var list = document.getElementById('condition-list');
+  var row = document.createElement('div');
+  row.className = 'condition-row';
+  row.innerHTML =
+    '<span class="condition-label">#' + condRowCount + '</span>' +
+    '<select class="inp inp-select" style="min-width:140px;height:32px;font-size:12px;">' +
+      '<option value="">트리거 유형 ▼</option>' +
+      '<option value="weather">날씨</option>' +
+      '<option value="time">시간대</option>' +
+      '<option value="temp">온도</option>' +
+      '<option value="footfall">유동인구</option>' +
+      '<option value="event">이벤트</option>' +
+    '</select>' +
+    '<input class="inp" type="text" placeholder="트리거 값 입력" style="flex:1;min-width:140px;height:32px;font-size:12px;">' +
+    '<input class="inp" type="number" placeholder="최대실행" style="width:90px;height:32px;font-size:12px;" min="1">' +
+    '<button class="btn-remove-row" onclick="removeConditionRow(this)" title="삭제">×</button>';
+  list.appendChild(row);
+}
+function removeConditionRow(btn) {
+  var list = document.getElementById('condition-list');
+  if (list.children.length <= 1) return; // keep at least one
+  btn.closest('.condition-row').remove();
+  // re-number
+  var rows = list.querySelectorAll('.condition-row');
+  rows.forEach(function(r, idx) { r.querySelector('.condition-label').textContent = '#' + (idx + 1); });
+  condRowCount = rows.length;
+}
+
+/* ── Currency symbol ── */
+function updateCurrencySymbol() {
+  var map = { KRW: '원', USD: '$', JPY: '¥' };
+  var cur = document.getElementById('f-currency').value;
+  document.getElementById('currency-symbol').textContent = map[cur] || '';
+}
+
+/* ── Build summary ── */
+function buildSummary() {
+  function val(id) { return document.getElementById(id).value.trim(); }
+  function sel(id) { var el = document.getElementById(id); return el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : ''; }
+  function chips(groupId) {
+    var selected = document.querySelectorAll('#' + groupId + ' .chip-toggle.selected');
+    return Array.from(selected).map(function(c) { return c.textContent.trim(); }).join(', ');
+  }
+  function kpiLine() {
+    var items = [
+      { label: '유동인구',    id: 'kpi-foot' },
+      { label: '노출 수용자', id: 'kpi-exp'  },
+      { label: '주목 수용자', id: 'kpi-att'  },
+      { label: '순위',        id: 'kpi-rank' }
+    ];
+    var parts = items
+      .map(function(k) { var v = document.getElementById(k.id).value; return v ? k.label + ' ' + v + '순위' : null; })
+      .filter(Boolean);
+    return parts.length ? parts.join(' / ') : '';
+  }
+
+  function set(id, text) {
+    var el = document.getElementById(id);
+    el.innerHTML = text ? text : '<span class="summary-empty">—</span>';
+  }
+
+  set('s-name',       val('f-name'));
+  set('s-advertiser', val('f-advertiser'));
+  set('s-agency',     val('f-agency'));
+  set('s-contact',    sel('f-contact') !== '담당자 선택 (선택)' ? sel('f-contact') : '');
+  set('s-manager',    sel('f-manager'));
+  set('s-source',     sel('f-source') !== '유입경로 선택' ? sel('f-source') : '');
+
+  set('s-objectives', chips('objectives-chips'));
+  var start = val('f-start'); var end = val('f-end');
+  set('s-period', (start && end) ? start + ' ~ ' + end : (start || end));
+  set('s-regions', chips('gender-chips') ? chips('objectives-chips') : '');
+  // regions: from chip-group inside the map section
+  var regionChips = document.querySelectorAll('.map-placeholder ~ .chip-group .chip-toggle.selected');
+  var regionText = Array.from(regionChips).map(function(c) { return c.textContent.trim(); }).join(', ');
+  set('s-regions', regionText);
+  var smVal = document.querySelector('input[name="selectionMode"]:checked');
+  set('s-selmode', smVal ? (smVal.value === 'auto' ? '자동추천 (Auto)' : '직접선택 (Manual)') : '');
+  var slotVal = val('f-slot');
+  set('s-slot', slotVal ? slotVal + ' 초' : '');
+  var budget = val('f-budget');
+  var cur = document.getElementById('f-currency').value;
+  set('s-budget', budget ? cur + ' ' + Number(budget).toLocaleString() : '');
+
+  set('s-kpi',    kpiLine());
+  set('s-gender', chips('gender-chips'));
+  set('s-age',    chips('age-chips'));
+  var opMode = document.getElementById('f-opmode');
+  set('s-opmode', opMode.options[opMode.selectedIndex] && opMode.value ? opMode.options[opMode.selectedIndex].text : '');
+}
+
+/* ── Draft save ── */
+function saveDraft() {
+  var btn = event.currentTarget;
+  var orig = btn.textContent;
+  btn.textContent = '저장됨 ✓';
+  btn.disabled = true;
+  setTimeout(function() { btn.textContent = orig; btn.disabled = false; }, 1500);
+}
+
+/* ── Submit ── */
+function submitCampaign() {
+  var name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('캠페인명을 입력하세요.'); currentStep = 1; updateStepUI(); return; }
+  alert('캠페인이 등록되었습니다.');
+  location.href = 'campaign-detail?id=CMP-NEW';
+}
+
+/* ── Init ── */
+updateStepUI();
+</script>
+<script src="../assets/js/cms.js"></script>
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+</body>
+</html>
