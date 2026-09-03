@@ -72,6 +72,42 @@
     .role-operator { background:#F0F1F3; color:#596066; }
     .status-active { background:#E8F8E9; color:#2E9E34; }
     .status-inactive { background:#FFF8E6; color:#B45309; }
+    .status-pending { background:#EAF3FF; color:#1D4ED8; }
+
+    /* Invite User modal */
+    .invite-modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(16,24,32,.4); z-index:600;
+      align-items:center; justify-content:center; padding:24px;
+    }
+    .invite-modal-overlay.open { display:flex; }
+    .invite-modal {
+      background:#fff; border-radius:12px; width:480px; max-width:100%;
+      max-height:88vh; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.18);
+    }
+    .invite-modal-head { padding:18px 22px; border-bottom:1px solid #E5E7EA; display:flex; align-items:center; justify-content:space-between; }
+    .invite-modal-title { font-size:16px; font-weight:700; color:#24292E; }
+    .invite-modal-sub { font-size:12px; color:#9EA5AD; margin-top:2px; }
+    .invite-modal-close { width:32px; height:32px; border-radius:6px; border:1px solid #E5E7EA; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; color:#596066; }
+    .invite-modal-body { padding:18px 22px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; }
+    .invite-field label { font-size:12px; font-weight:600; color:#596066; display:block; margin-bottom:5px; }
+    .invite-field label .req { color:#E97474; margin-left:2px; }
+    .invite-field input, .invite-field select {
+      width:100%; height:36px; border:1px solid #CED2D6; border-radius:6px; padding:0 12px;
+      font-size:13px; color:#24292E; font-family:inherit; background:#fff;
+    }
+    .invite-field input:focus, .invite-field select:focus { outline:none; border-color:#2D84ED; }
+    .invite-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .invite-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#F6F7F9; border-radius:8px; }
+    .invite-toggle-row-label { font-size:13px; color:#24292E; font-weight:500; }
+    .invite-toggle-row-hint { font-size:11px; color:#9EA5AD; margin-top:2px; }
+    .invite-toggle { position:relative; width:38px; height:22px; flex-shrink:0; }
+    .invite-toggle input { opacity:0; width:0; height:0; position:absolute; }
+    .invite-toggle-slider { position:absolute; inset:0; background:#CED2D6; border-radius:11px; cursor:pointer; transition:background .15s; }
+    .invite-toggle-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .15s; }
+    .invite-toggle input:checked + .invite-toggle-slider { background:#58C65D; }
+    .invite-toggle input:checked + .invite-toggle-slider::before { transform:translateX(16px); }
+    .invite-modal-foot { padding:14px 22px; border-top:1px solid #E5E7EA; display:flex; gap:8px; }
     .table-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 0; }
     .table-header-title { font-size:14px; font-weight:700; color:#24292E; }
   </style>
@@ -227,7 +263,7 @@
         <div class="table-card">
           <div class="table-header" style="padding:14px 16px;">
             <span class="table-header-title">사용자 관리</span>
-            <button class="btn-primary" style="height:32px;font-size:12px;">
+            <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openInviteModal()">
               <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
               사용자 초대
             </button>
@@ -246,7 +282,7 @@
                   <th>마지막 로그인</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="user-table-body">
                 <tr style="cursor:pointer;" onclick="openUserDrawer('홍길동','hong@mnm.co.kr','Super Admin','전체','활성')"><td>홍길동</td><td style="font-size:12px;color:#596066;">hong@mnm.co.kr</td><td>hong@mnm.co.kr</td><td><span class="badge role-super">Super Admin</span></td><td>전체</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 09:12</td></tr>
                 <tr style="cursor:pointer;" onclick="openUserDrawer('김미래','kim.m@mnm.co.kr','Admin (System)','System','활성')"><td>김미래</td><td style="font-size:12px;color:#596066;">kim.m@mnm.co.kr</td><td>kim.m@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 08:45</td></tr>
                 <tr style="cursor:pointer;" onclick="openUserDrawer('이준혁','lee.j@mnm.co.kr','Admin (Operation)','Operation','활성')"><td>이준혁</td><td style="font-size:12px;color:#596066;">lee.j@mnm.co.kr</td><td>lee.j@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 17:30</td></tr>
@@ -345,6 +381,77 @@
   </div>
 </div>
 
+<!-- Invite User Modal (S-C1-3 사용자 관리) -->
+<div class="invite-modal-overlay" id="invite-overlay" onclick="if(event.target===this)closeInviteModal()">
+  <div class="invite-modal">
+    <div class="invite-modal-head">
+      <div>
+        <div class="invite-modal-title">사용자 초대</div>
+        <div class="invite-modal-sub">초대 링크가 입력한 이메일로 발송됩니다. 계정 상태는 "초대됨"으로 시작합니다.</div>
+      </div>
+      <div class="invite-modal-close" onclick="closeInviteModal()">✕</div>
+    </div>
+    <div class="invite-modal-body">
+      <div class="invite-field">
+        <label>이름 <span class="req">*</span></label>
+        <input id="inv-name" type="text" placeholder="예: 홍길동">
+      </div>
+      <div class="invite-field">
+        <label>이메일 (Login ID) <span class="req">*</span></label>
+        <input id="inv-email" type="email" placeholder="name@company.co.kr">
+      </div>
+      <div class="invite-row-2">
+        <div class="invite-field">
+          <label>연락처</label>
+          <input id="inv-phone" type="tel" placeholder="010-0000-0000">
+        </div>
+        <div class="invite-field">
+          <label>소속 부서</label>
+          <select id="inv-dept">
+            <option value="">선택 안 함</option>
+            <option>운영팀</option>
+            <option>시스템팀</option>
+            <option>영업팀</option>
+            <option>마케팅팀</option>
+            <option>기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="invite-row-2">
+        <div class="invite-field">
+          <label>역할 <span class="req">*</span></label>
+          <select id="inv-role" onchange="onInviteRoleChange()">
+            <option value="Operator">Operator</option>
+            <option value="Admin">Admin</option>
+            <option value="Super Admin">Super Admin</option>
+          </select>
+        </div>
+        <div class="invite-field" id="inv-scope-field" style="display:none;">
+          <label>Admin 관리 Scope <span class="req">*</span></label>
+          <select id="inv-scope">
+            <option value="System">System</option>
+            <option value="Operation">Operation</option>
+          </select>
+        </div>
+      </div>
+      <div class="invite-toggle-row">
+        <div>
+          <div class="invite-toggle-row-label">Sales Workspace 접근</div>
+          <div class="invite-toggle-row-hint">활성화 시 영업 워크스페이스 메뉴가 노출됩니다 (Overlay — 실제 권한은 역할에 따름).</div>
+        </div>
+        <label class="invite-toggle">
+          <input id="inv-sales-ws" type="checkbox">
+          <span class="invite-toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="invite-modal-foot">
+      <button onclick="submitInvite()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;">초대 보내기</button>
+      <button onclick="closeInviteModal()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">취소</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
 
@@ -400,6 +507,56 @@ function showToast(msg) {
   t.textContent = msg; t.style.display = 'block';
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function(){ t.style.display='none'; }, 4000);
+}
+
+function openInviteModal() {
+  document.getElementById('inv-name').value = '';
+  document.getElementById('inv-email').value = '';
+  document.getElementById('inv-phone').value = '';
+  document.getElementById('inv-dept').value = '';
+  document.getElementById('inv-role').value = 'Operator';
+  document.getElementById('inv-scope').value = 'System';
+  document.getElementById('inv-sales-ws').checked = false;
+  onInviteRoleChange();
+  document.getElementById('invite-overlay').classList.add('open');
+}
+function closeInviteModal() {
+  document.getElementById('invite-overlay').classList.remove('open');
+}
+function onInviteRoleChange() {
+  var role = document.getElementById('inv-role').value;
+  document.getElementById('inv-scope-field').style.display = (role === 'Admin') ? 'block' : 'none';
+}
+function submitInvite() {
+  var name = document.getElementById('inv-name').value.trim();
+  var email = document.getElementById('inv-email').value.trim();
+  var role = document.getElementById('inv-role').value;
+  var scope = document.getElementById('inv-scope').value;
+  var salesWs = document.getElementById('inv-sales-ws').checked;
+
+  if (!name) { alert('이름을 입력하세요.'); return; }
+  if (!email || !email.includes('@')) { alert('유효한 이메일 형식을 입력하세요.'); return; }
+
+  var roleClass = role === 'Super Admin' ? 'role-super' : role === 'Admin' ? 'role-admin' : 'role-operator';
+  var roleLabel = role === 'Admin' ? 'Admin (' + scope + ')' : role;
+  var scopeLabel = role === 'Operator' ? '—' : scope;
+
+  var row = document.createElement('tr');
+  row.style.cursor = 'pointer';
+  row.onclick = function() { openUserDrawer(name, email, roleLabel, scopeLabel, '초대됨'); };
+  row.innerHTML =
+    '<td>' + name + '</td>' +
+    '<td style="font-size:12px;color:#596066;">' + email + '</td>' +
+    '<td>' + email + '</td>' +
+    '<td><span class="badge ' + roleClass + '">' + role + '</span></td>' +
+    '<td>' + scopeLabel + '</td>' +
+    '<td>' + (salesWs ? '<span class="badge status-active">활성</span>' : '<span class="badge status-inactive">비활성</span>') + '</td>' +
+    '<td><span class="badge status-pending">초대됨</span></td>' +
+    '<td class="muted-text">—</td>';
+  document.getElementById('user-table-body').prepend(row);
+
+  closeInviteModal();
+  showToast(name + '(' + email + ')님에게 초대 메일을 발송했습니다.');
 }
 </script>
 </body>
