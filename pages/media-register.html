@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <style>
     /* ── Design tokens ── */
     :root {
@@ -318,17 +319,11 @@
 
     /* ── Map placeholder ── */
     .map-placeholder {
-      width: 100%; height: 200px;
-      background: #E8EDF2;
+      width: 100%; height: 220px;
       border: 1px solid var(--border-input); border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: var(--text-muted);
-      flex-direction: column; gap: 8px;
+      overflow: hidden;
     }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) .map-placeholder { background: #21282F; }
-    }
-    :root[data-theme="dark"] .map-placeholder { background: #21282F; }
+    .map-search-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
     .coord-row { display: flex; gap: 10px; margin-top: 8px; }
     .coord-row .input-unit { flex: 1; }
 
@@ -847,9 +842,10 @@
               <div class="form-field">
                 <div class="addr-search-row">
                   <input type="text" class="input readonly" id="addrMain" value="서울 강남구 강남대로 396" readonly>
-                  <button type="button" class="btn btn-ghost btn-sm">주소 검색</button>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="searchAddress()">주소 검색</button>
                 </div>
                 <input type="text" class="input" style="margin-top:8px;" placeholder="상세 주소 (동, 층, 호 등)">
+                <div class="map-search-hint">주소 검색 시 아래 지도가 자동으로 이동합니다.</div>
               </div>
             </div>
           </div>
@@ -867,10 +863,8 @@
             <div class="form-row">
               <div class="form-label">지도 위치<span class="req">*</span></div>
               <div class="form-field">
-                <div class="map-placeholder">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.4;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                  지도에서 위치를 선택하세요
-                </div>
+                <div class="map-placeholder" id="mediaRegisterMap"></div>
+                <div class="map-search-hint">지도를 클릭하거나 핀을 드래그해 정확한 설치 위치를 지정하세요.</div>
               </div>
             </div>
             <div class="form-row">
@@ -878,11 +872,11 @@
               <div class="form-field">
                 <div class="coord-row">
                   <div class="input-unit">
-                    <input type="number" value="37.49793" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
+                    <input type="number" id="regLat" value="37.49793" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
                     <span class="input-unit-label">위도</span>
                   </div>
                   <div class="input-unit">
-                    <input type="number" value="127.02762" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
+                    <input type="number" id="regLng" value="127.02762" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
                     <span class="input-unit-label">경도</span>
                   </div>
                 </div>
@@ -1128,7 +1122,7 @@
                     <span class="attached-chip">카메라 <button type="button" onclick="this.parentNode.remove()">×</button></span>
                     <span class="attached-chip">스피커 <button type="button" onclick="this.parentNode.remove()">×</button></span>
                   </div>
-                  <button type="button" class="btn-add">+ 추가</button>
+                  <button type="button" class="btn-add" onclick="addAttachedDevice()">+ 추가</button>
                 </div>
                 <div class="input-hint">예: 카메라, 스피커, IR 수신기, NFC 리더</div>
               </div>
@@ -1369,6 +1363,7 @@
   </main>
 
   <script src="../assets/js/app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script>
     /* ── Tag input ── */
     function addTag(e) {
@@ -1425,6 +1420,46 @@
       r.addEventListener('change', syncFan);
     });
     syncFan();
+
+    /* ── 위치 지도 (좌표 선택) ── */
+    var regMap, regMarker;
+    (function initRegMap() {
+      var el = document.getElementById('mediaRegisterMap');
+      if (!el || typeof L === 'undefined') return;
+      var lat = parseFloat(document.getElementById('regLat').value);
+      var lng = parseFloat(document.getElementById('regLng').value);
+      regMap = L.map(el).setView([lat, lng], 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(regMap);
+      regMarker = L.marker([lat, lng], { draggable: true }).addTo(regMap);
+      regMarker.on('dragend', function() { setRegCoords(regMarker.getLatLng()); });
+      regMap.on('click', function(e) { regMarker.setLatLng(e.latlng); setRegCoords(e.latlng); });
+    })();
+    function setRegCoords(latlng) {
+      document.getElementById('regLat').value = latlng.lat.toFixed(5);
+      document.getElementById('regLng').value = latlng.lng.toFixed(5);
+    }
+    function searchAddress() {
+      var q = prompt('검색할 주소를 입력하세요', document.getElementById('addrMain').value);
+      if (!q) return;
+      document.getElementById('addrMain').value = q;
+      if (regMap && regMarker) {
+        regMap.setView(regMap.getCenter(), 16);
+        regMap.panTo(regMarker.getLatLng());
+      }
+    }
+
+    /* ── 부착기기 추가 ── */
+    function addAttachedDevice() {
+      var name = prompt('추가할 부착 장치명을 입력하세요 (예: NFC 리더)');
+      if (!name || !name.trim()) return;
+      var chip = document.createElement('span');
+      chip.className = 'attached-chip';
+      chip.innerHTML = name.trim() + ' <button type="button" onclick="this.parentNode.remove()">×</button>';
+      document.getElementById('attachedChips').appendChild(chip);
+    }
 
     /* ── Form submit ── */
     function submitForm() {
