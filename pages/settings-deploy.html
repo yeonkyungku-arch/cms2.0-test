@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>공통 기준정보 — D'ooh CMS</title>
+  <title>시스템 기능 설정 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
   <style>
@@ -11,12 +11,6 @@
       --green:#58C65D; --dark:#24292E; --main:#2D84ED;
       --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
     }
-    .btn-primary {
-      height:36px; padding:0 16px; background:#58C65D; color:#fff;
-      border:none; border-radius:6px; font-size:13px; font-weight:600;
-      cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;
-    }
-    .btn-primary:hover { background:#4ab34f; }
     .settings-layout { display:flex; gap:0; }
     .settings-sidebar {
       width:200px; flex-shrink:0; background:#fff; border:1px solid #E5E7EA;
@@ -34,18 +28,9 @@
       letter-spacing: .05em; padding: 6px 12px 4px;
     }
     .settings-main { flex:1; min-width:0; padding-left:20px; }
-    /* Tabs */
-    .tabs { display:flex; gap:0; border-bottom:1px solid #E5E7EA; margin-bottom:16px; }
-    .tab-btn {
-      padding:10px 18px; font-size:13px; font-weight:500; color:#596066;
-      background:none; border:none; border-bottom:2px solid transparent;
-      cursor:pointer; transition:color 0.1s; white-space:nowrap;
-    }
-    .tab-btn.active { color:#2D84ED; font-weight:700; border-bottom-color:#2D84ED; }
-    .tab-btn:hover:not(.active) { color:#24292E; }
     .table-card { background:#fff; border:1px solid #E5E7EA; border-radius:10px; overflow:hidden; }
     .table-scroll { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; }
+    table { width:100%; min-width:960px; border-collapse:collapse; }
     thead th {
       background:#F6F7F9; padding:10px 14px; font-size:12px; font-weight:600;
       color:#596066; text-align:left; border-bottom:1px solid #E5E7EA; white-space:nowrap;
@@ -53,12 +38,45 @@
     tbody tr { border-bottom:1px solid #E5E7EA; transition:background 0.12s; }
     tbody tr:last-child { border-bottom:none; }
     tbody tr:hover { background:#F6F7F9; }
-    tbody td { padding:11px 14px; font-size:13px; color:#24292E; vertical-align:middle; }
-    .muted-text { color:#9EA5AD; font-size:12px; }
-    .badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
-    .lc-active { background:#E8F8E9; color:#2E9E34; }
-    .lc-inactive { background:#FFF8E6; color:#B45309; }
-    .table-toolbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #E5E7EA; }
+    tbody td { padding:10px 14px; font-size:12px; color:#24292E; vertical-align:middle; }
+    .muted-text { color:#9EA5AD; font-size:11px; }
+    .badge { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .badge-svc { background:#F0F1F3; color:#596066; }
+    .ready-yes { background:#E8F8E9; color:#2E9E34; }
+    .ready-no  { background:#F0F1F3; color:#9EA5AD; }
+    .no-delete-notice {
+      display:flex; align-items:center; gap:8px;
+      background:#FFF8E6; border:1px solid #FCD34D; border-radius:8px;
+      padding:10px 14px; font-size:12px; color:#92400E; margin-bottom:14px;
+    }
+    .admin-only-notice {
+      display:flex; align-items:center; gap:8px;
+      background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px;
+      padding:10px 14px; font-size:12px; color:#1D4ED8; margin-bottom:14px;
+    }
+    /* Toggle switch */
+    .fa-toggle { position:relative; display:inline-block; width:38px; height:22px; flex-shrink:0; }
+    .fa-toggle input { opacity:0; width:0; height:0; position:absolute; }
+    .fa-toggle-slider {
+      position:absolute; inset:0; background:#CED2D6; border-radius:11px; cursor:pointer; transition:background .15s;
+    }
+    .fa-toggle-slider::before {
+      content:''; position:absolute; width:16px; height:16px; left:3px; top:3px;
+      background:#fff; border-radius:50%; transition:transform .15s;
+    }
+    .fa-toggle input:checked + .fa-toggle-slider { background:#58C65D; }
+    .fa-toggle input:checked + .fa-toggle-slider::before { transform:translateX(16px); }
+    .fa-toggle input:disabled + .fa-toggle-slider { background:#EEF0F3; cursor:not-allowed; }
+    .fa-toggle input:disabled + .fa-toggle-slider::before { background:#F6F7F9; box-shadow:inset 0 0 0 1px #E5E7EA; }
+    .fa-toggle-row { display:flex; align-items:center; gap:8px; }
+    .fa-toggle-label { font-size:11px; color:#9EA5AD; }
+    .rollout-stage { display:flex; align-items:center; gap:0; margin-bottom:16px; }
+    .rollout-step {
+      display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px;
+      font-size:11.5px; font-weight:600; background:#F0F1F3; color:#9EA5AD;
+    }
+    .rollout-step.live { background:#E8F8E9; color:#2E9E34; }
+    .rollout-arrow { color:#CED2D6; margin:0 6px; font-size:12px; }
   </style>
 </head>
 <body>
@@ -143,9 +161,7 @@
 
 <main class="content">
   <div class="content-inner">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
-    </div>
+    <div style="font-size:20px;font-weight:700;color:#24292E;margin-bottom:20px;">설정</div>
 
     <div class="settings-layout">
       <nav class="settings-sidebar">
@@ -158,7 +174,7 @@
           <div class="settings-nav-group-title">정책 및 운영</div>
           <a href="settings-policy">정책 관리</a>
           <a href="#">운영 설정</a>
-          <a href="settings-master" class="active">코드 설정</a>
+          <a href="settings-master">코드 설정</a>
         </div>
         <div class="settings-nav-group">
           <div class="settings-nav-group-title">알림</div>
@@ -167,7 +183,7 @@
         <div class="settings-nav-group">
           <div class="settings-nav-group-title">시스템 관리</div>
           <a href="settings-integration">연동 관리</a>
-          <a href="settings-deploy">시스템 기능 설정</a>
+          <a href="settings-deploy" class="active">시스템 기능 설정</a>
         </div>
         <div class="settings-nav-group">
           <div class="settings-nav-group-title">보안 및 감사</div>
@@ -177,108 +193,177 @@
       </nav>
 
       <div class="settings-main">
-        <div class="tabs">
-          <button class="tab-btn active" onclick="switchTab(this,'tab-region')">지역 기준정보</button>
-          <button class="tab-btn" onclick="switchTab(this,'tab-industry')">업종 분류</button>
-          <button class="tab-btn" onclick="switchTab(this,'tab-mediatype')">미디어 유형</button>
-          <button class="tab-btn" onclick="switchTab(this,'tab-code')">공통 코드</button>
+        <div class="admin-only-notice">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#1D4ED8" stroke-width="1.5"/><path d="M10 6v5M10 14v.5" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/></svg>
+          System Admin 전용 화면입니다. 여기서는 배포된 기능(Feature)의 노출·활성화만 제어하며, 정책·업무 Rule 자체는 변경하지 않습니다.
         </div>
 
-        <!-- 지역 기준정보 tab -->
-        <div id="tab-region" class="tab-content">
-          <div class="table-card">
-            <div class="table-toolbar">
-              <span style="font-size:13px;font-weight:600;color:#24292E;">지역 기준정보</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;">
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                코드 추가
-              </button>
-            </div>
-            <div class="table-scroll">
-              <table>
-                <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
-                  <tr><td>REG-001</td><td>서울특별시</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
-                  <tr><td>REG-002</td><td>강남구</td><td>REG-001</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
-                  <tr><td>REG-003</td><td>마포구</td><td>REG-001</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
-                  <tr><td>REG-004</td><td>경기도</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
-                  <tr><td>REG-005</td><td>성남시</td><td>REG-004</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
-                  <tr><td>REG-006</td><td>부산광역시</td><td>—</td><td><span class="badge lc-inactive">비활성</span></td><td class="muted-text">2025-11-05</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="rollout-stage">
+          <span class="muted-text" style="margin-right:10px;">개발 순서</span>
+          <span class="rollout-step live">CMS</span>
+          <span class="rollout-arrow">→</span>
+          <span class="rollout-step">ADeX</span>
+          <span class="rollout-arrow">→</span>
+          <span class="rollout-step">RMS</span>
+          <span class="rollout-arrow">→</span>
+          <span class="rollout-step">DMS</span>
         </div>
 
-        <!-- 업종 분류 tab (hidden) -->
-        <div id="tab-industry" class="tab-content" style="display:none;">
-          <div class="table-card">
-            <div class="table-toolbar">
-              <span style="font-size:13px;font-weight:600;color:#24292E;">업종 분류</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;">
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                코드 추가
-              </button>
-            </div>
-            <div class="table-scroll">
-              <table>
-                <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
-                  <tr><td>IND-001</td><td>식음료</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
-                  <tr><td>IND-002</td><td>패션·뷰티</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
-                  <tr><td>IND-003</td><td>금융·보험</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
-                  <tr><td>IND-004</td><td>IT·전자</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="no-delete-notice">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#F3BE4A" stroke-width="1.5"/><path d="M10 6v5M10 14v.5" stroke="#F3BE4A" stroke-width="1.5" stroke-linecap="round"/></svg>
+          아직 배포되지 않았거나 필수 Service/Version/License/Schema가 준비되지 않은 기능은 Activation이 Read-only Off로 잠깁니다.
         </div>
 
-        <!-- 미디어 유형 tab (hidden) -->
-        <div id="tab-mediatype" class="tab-content" style="display:none;">
-          <div class="table-card">
-            <div class="table-toolbar">
-              <span style="font-size:13px;font-weight:600;color:#24292E;">미디어 유형</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;">
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                코드 추가
-              </button>
-            </div>
-            <div class="table-scroll">
-              <table>
-                <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
-                  <tr><td>MT-OF</td><td>옥외고정 (OF)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
-                  <tr><td>MT-IFC</td><td>실내고정근접 (IFC)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
-                  <tr><td>MT-VF</td><td>차량고정 (VF)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
-                  <tr><td>MT-OM</td><td>옥외이동 (OM)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- 공통 코드 tab (hidden) -->
-        <div id="tab-code" class="tab-content" style="display:none;">
-          <div class="table-card">
-            <div class="table-toolbar">
-              <span style="font-size:13px;font-weight:600;color:#24292E;">공통 코드</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;">
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                코드 추가
-              </button>
-            </div>
-            <div class="table-scroll">
-              <table>
-                <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
-                  <tr><td>LC-ACT</td><td>활성 (Active)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
-                  <tr><td>LC-INA</td><td>비활성 (Inactive)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
-                  <tr><td>LC-DFT</td><td>초안 (Draft)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
-                  <tr><td>LC-RET</td><td>폐기 (Retired)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
-                </tbody>
-              </table>
-            </div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature Key</th>
+                  <th>소속 Microservice</th>
+                  <th>Dependency Readiness</th>
+                  <th>Feature Activation</th>
+                  <th>비고</th>
+                </tr>
+              </thead>
+              <tbody id="feature-table-body">
+                <tr>
+                  <td style="font-family:monospace;">pde.policy_engine</td>
+                  <td><span class="badge badge-svc">CMS</span></td>
+                  <td><span class="badge ready-yes">Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" checked onchange="onToggle(this,'pde.policy_engine')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>On</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">Content/Chain/Schedule PDE Decision 공통 엔진</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">content.chain_management</td>
+                  <td><span class="badge badge-svc">CMS</span></td>
+                  <td><span class="badge ready-yes">Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" checked onchange="onToggle(this,'content.chain_management')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>On</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">Content Chain 등록·재생 순서·검증</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">sales.workspace_overlay</td>
+                  <td><span class="badge badge-svc">CMS</span></td>
+                  <td><span class="badge ready-yes">Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" checked onchange="onToggle(this,'sales.workspace_overlay')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>On</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">영업 워크스페이스 접근 Overlay — 실제 CRUD/승인은 Domain 권한 별도</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">media.group_management</td>
+                  <td><span class="badge badge-svc">CMS</span></td>
+                  <td><span class="badge ready-no">Not Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" disabled onchange="onToggle(this,'media.group_management')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>Off</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">배포 Manifest 미등록 — CMS 1.5 범위 제외(Sync Group Reference로 대체)</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">adex.exchange_sync</td>
+                  <td><span class="badge badge-svc">ADeX</span></td>
+                  <td><span class="badge ready-no">Not Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" disabled onchange="onToggle(this,'adex.exchange_sync')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>Off</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">ADeX Microservice 미배포</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">rms.remote_control</td>
+                  <td><span class="badge badge-svc">RMS</span></td>
+                  <td><span class="badge ready-no">Not Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" disabled onchange="onToggle(this,'rms.remote_control')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>Off</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">RMS Microservice 미배포 — 원격 제어 화면은 UI Mock만 존재</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">rms.sync_group_playback</td>
+                  <td><span class="badge badge-svc">RMS</span></td>
+                  <td><span class="badge ready-no">Not Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" disabled onchange="onToggle(this,'rms.sync_group_playback')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>Off</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">RMS 선행 필요 — Sync Group Reference 실제 실행 담당</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">dms.advertising_effect</td>
+                  <td><span class="badge badge-svc">DMS</span></td>
+                  <td><span class="badge ready-no">Not Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" disabled onchange="onToggle(this,'dms.advertising_effect')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>Off</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">DMS Microservice 미배포 — Effect KPI는 Not Available로 표시 중</td>
+                </tr>
+                <tr>
+                  <td style="font-family:monospace;">dms.recommendation_engine</td>
+                  <td><span class="badge badge-svc">DMS</span></td>
+                  <td><span class="badge ready-no">Not Ready</span></td>
+                  <td>
+                    <div class="fa-toggle-row">
+                      <label class="fa-toggle">
+                        <input type="checkbox" disabled onchange="onToggle(this,'dms.recommendation_engine')">
+                        <span class="fa-toggle-slider"></span>
+                      </label>
+                      <span class="fa-toggle-label" data-fa-state>Off</span>
+                    </div>
+                  </td>
+                  <td class="muted-text">DMS 완성 후 미디어 플랜 추천 결과 반영 예정</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -287,12 +372,18 @@
 </main>
 
 <script>
-function switchTab(btn, tabId) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-  btn.classList.add('active');
-  document.getElementById(tabId).style.display = '';
+function onToggle(el, key) {
+  var state = el.checked ? 'On' : 'Off';
+  var label = el.closest('.fa-toggle-row').querySelector('[data-fa-state]');
+  label.textContent = state;
+  console.log('Feature Activation changed:', key, '->', state);
 }
+
+function goScheduleMain() {
+  const t = localStorage.getItem('scheduleType') || 'media';
+  location.href = t === 'product' ? 'schedule-product-month' : 'schedule-media-month';
+}
+function setScheduleType(t) { localStorage.setItem('scheduleType', t); }
 </script>
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>

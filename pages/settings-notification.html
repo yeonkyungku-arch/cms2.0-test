@@ -22,6 +22,11 @@
     }
     .settings-sidebar a:hover { background:var(--bg); color:var(--dark); }
     .settings-sidebar a.active { background:#E8F8E9; color:#2E9E34; font-weight:600; }
+    .settings-nav-group + .settings-nav-group { margin-top: 14px; }
+    .settings-nav-group-title {
+      font-size: 10.5px; font-weight: 700; color: #9EA5AD; text-transform: uppercase;
+      letter-spacing: .05em; padding: 6px 12px 4px;
+    }
     .settings-main { flex:1; min-width:0; padding-left:20px; }
 
     .card { background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px; }
@@ -173,14 +178,31 @@
 
     <div class="settings-layout">
       <nav class="settings-sidebar">
-        <a href="settings-org">조직·사용자</a>
-        <a href="settings-permission">권한</a>
-        <a href="settings-master">공통 기준정보</a>
-        <a href="settings-policy">PDE 정책 관리</a>
-        <a href="settings-notification" class="active">알림 설정</a>
-        <a href="settings-integration">외부 연동</a>
-        <a href="settings-security">보안·접근</a>
-        <a href="settings-audit">감사·변경이력</a>
+        <div class="settings-nav-group">
+          <div class="settings-nav-group-title">조직 및 권한</div>
+          <a href="settings-org">조직 관리</a>
+          <a href="settings-permission">권한 관리</a>
+        </div>
+        <div class="settings-nav-group">
+          <div class="settings-nav-group-title">정책 및 운영</div>
+          <a href="settings-policy">정책 관리</a>
+          <a href="#">운영 설정</a>
+          <a href="settings-master">코드 설정</a>
+        </div>
+        <div class="settings-nav-group">
+          <div class="settings-nav-group-title">알림</div>
+          <a href="settings-notification" class="active">알림 설정</a>
+        </div>
+        <div class="settings-nav-group">
+          <div class="settings-nav-group-title">시스템 관리</div>
+          <a href="settings-integration">연동 관리</a>
+          <a href="settings-deploy">시스템 기능 설정</a>
+        </div>
+        <div class="settings-nav-group">
+          <div class="settings-nav-group-title">보안 및 감사</div>
+          <a href="settings-security">보안 및 접속 설정</a>
+          <a href="settings-audit">감사·변경이력</a>
+        </div>
       </nav>
 
       <div class="settings-main">
