@@ -720,6 +720,7 @@
                   <option value="I">실내 (I)</option>
                   <option value="V">기내 (V)</option>
                 </select>
+                <div class="input-hint" id="installTypeHint">기내는 고정 설치 주소 대신 아래 위치 정보에 차고지 주소를 입력합니다.</div>
               </div>
             </div>
 
@@ -733,50 +734,13 @@
               </div>
             </div>
 
-            <div class="classify-grid">
-              <div class="classify-cell">
-                <span class="classify-cell form-label-inline">이동성<span class="req" style="color:var(--danger);">*</span></span>
-                <select class="select" id="mobility" onchange="regenCode(); onMobilityChange();">
-                  <option value="">선택하세요</option>
-                  <option value="M">이동형 (M)</option>
-                  <option value="F" selected>고정형 (F)</option>
-                </select>
-                <div class="input-hint" id="installTypeHint">이동형은 아래 위치 정보에 실제 설치 주소 대신 차고지 주소를 입력합니다.</div>
-              </div>
-              <div class="classify-cell">
-                <span class="classify-cell form-label-inline">시청 거리<span class="req" style="color:var(--danger);">*</span></span>
-                <select class="select" id="viewingDistance" onchange="regenCode()">
-                  <option value="">선택하세요</option>
-                  <option value="L">먼 거리 (L)</option>
-                  <option value="C">가까운 거리 (C)</option>
-                  <option value="E">근접 (E)</option>
-                </select>
-              </div>
-              <div class="classify-cell">
-                <span class="classify-cell form-label-inline">시청 대상<span class="req" style="color:var(--danger);">*</span></span>
-                <select class="select" id="audienceType" onchange="regenCode()">
-                  <option value="">선택하세요</option>
-                  <option value="PD">보행자 (PD)</option>
-                  <option value="PS">탑승자 (PS)</option>
-                  <option value="DS">모두 (DS)</option>
-                </select>
-              </div>
-            </div>
-
             <div class="form-row" style="margin-top:14px;">
               <div class="form-label">미디어 유형<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">자동 생성</span></div>
               <div class="form-field">
                 <div class="mediatype-row">
                   <div class="mediatype-code" id="mediaTypeCode">—</div>
-                  <button type="button" class="btn-regen" onclick="regenCode()">보정 재생성</button>
-                  <select class="select" style="width:160px;flex-shrink:0;" title="코드 수동 보정">
-                    <option value="">코드 보정 선택…</option>
-                    <option value="O-F-L-PD">O-F-L-PD (옥외 고정 원거리 보행)</option>
-                    <option value="I-F-C-DS">I-F-C-DS (실내 고정 근거리 모두)</option>
-                    <option value="V-M-E-PS">V-M-E-PS (기내 이동 근접 탑승자)</option>
-                  </select>
                 </div>
-                <div class="input-hint">설치 장소 · 이동성 · 시청거리 · 시청대상을 선택하면 자동으로 생성됩니다</div>
+                <div class="input-hint">설치 유형(설치 장소)에 따라 자동으로 생성됩니다 — 별도 입력이 필요하지 않습니다</div>
               </div>
             </div>
           </div>
@@ -1406,15 +1370,17 @@
       input.value = '';
     }
 
-    /* ── mediaTypeCode auto-generation ── */
+    /* ── 미디어 유형 자동 생성 (설치 유형만으로 결정, 별도 입력 불필요) ── */
+    var MEDIA_TYPE_BY_LOCATION = {
+      O: 'OF (옥외고정)',
+      I: 'IFC (실내고정근접)',
+      V: 'VF (차량고정)'
+    };
     function regenCode() {
-      const loc  = document.getElementById('installationLocation').value;
-      const mob  = document.getElementById('mobility').value;
-      const vd   = document.getElementById('viewingDistance').value;
-      const aud  = document.getElementById('audienceType').value;
-      const el   = document.getElementById('mediaTypeCode');
-      if (loc && mob && vd && aud) {
-        el.textContent = `${loc}-${mob}-${vd}-${aud}`;
+      const loc = document.getElementById('installationLocation').value;
+      const el  = document.getElementById('mediaTypeCode');
+      if (loc && MEDIA_TYPE_BY_LOCATION[loc]) {
+        el.textContent = MEDIA_TYPE_BY_LOCATION[loc];
         el.style.color = 'var(--text-primary)';
       } else {
         el.textContent = '—';
@@ -1473,21 +1439,8 @@
       row.style.display = (led && led.checked) ? '' : 'none';
     }
     syncPitchVisibility();
-    onMobilityChange();
 
-    function onMobilityChange() {
-      var isMobile = document.getElementById('mobility').value === 'M';
-      document.getElementById('addrSectionTitle').textContent = isMobile ? '차고지 정보' : '주소 정보';
-      document.getElementById('addrSectionDesc').textContent = isMobile
-        ? '이동형 미디어의 차고지 주소를 검색하여 입력합니다'
-        : '설치 주소를 검색하여 입력합니다';
-      document.getElementById('addrFieldLabel').innerHTML = (isMobile ? '차고지 주소' : '설치 주소') + '<span class="req">*</span>';
-      document.getElementById('installTypeHint').textContent = isMobile
-        ? '이동형은 아래 위치 정보에 실제 설치 주소 대신 차고지 주소를 입력합니다.'
-        : '고정형은 아래 위치 정보에 실제 설치 주소를 입력합니다.';
-    }
-
-    /* ── 설치 유형(설치 장소)에 따른 광고물 유형 목록 ── */
+    /* ── 설치 유형(설치 장소)에 따른 광고물 유형 목록 + 차고지 주소 규칙 ── */
     var AD_FIXTURE_OPTIONS = {
       O: ['옥외 전광판 (LED)', '옥외 스탠드형 사이니지', '기타'],
       I: ['실내 근접형 사이니지', '키오스크', '기타'],
@@ -1496,16 +1449,19 @@
     function onInstallLocationChange() {
       var loc = document.getElementById('installationLocation').value;
       var sel = document.getElementById('adFixtureType');
-      sel.innerHTML = '';
-      if (!loc) {
-        sel.innerHTML = '<option value="">설치 유형을 먼저 선택하세요</option>';
-        regenCode();
-        return;
-      }
-      sel.innerHTML = '<option value="">선택하세요</option>' +
-        AD_FIXTURE_OPTIONS[loc].map(function(v) { return '<option value="' + v + '">' + v + '</option>'; }).join('');
+      sel.innerHTML = loc
+        ? '<option value="">선택하세요</option>' + AD_FIXTURE_OPTIONS[loc].map(function(v) { return '<option value="' + v + '">' + v + '</option>'; }).join('')
+        : '<option value="">설치 유형을 먼저 선택하세요</option>';
       regenCode();
+
+      var isVehicle = loc === 'V';
+      document.getElementById('addrSectionTitle').textContent = isVehicle ? '차고지 정보' : '주소 정보';
+      document.getElementById('addrSectionDesc').textContent = isVehicle
+        ? '기내(차량) 미디어의 차고지 주소를 검색하여 입력합니다'
+        : '설치 주소를 검색하여 입력합니다';
+      document.getElementById('addrFieldLabel').innerHTML = (isVehicle ? '차고지 주소' : '설치 주소') + '<span class="req">*</span>';
     }
+    onInstallLocationChange();
     function searchAddress() {
       var q = prompt('검색할 주소를 입력하세요', document.getElementById('addrMain').value);
       if (!q) return;
