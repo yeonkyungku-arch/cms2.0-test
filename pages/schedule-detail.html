@@ -6,167 +6,261 @@
   <title>스케줄 상세 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <style>
-    /* ── State banner ── */
-    .state-banner {
-      background: #fff;
-      border: 1px solid #E5E7EA;
-      border-radius: 10px;
-      padding: 16px 24px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .state-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .state-title { font-size: 18px; font-weight: 700; color: #24292E; }
-    .state-meta { font-size: 12px; color: #9EA5AD; }
+    /* ── Page header ── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 4px; flex-wrap: wrap; }
+    .page-header-left { display: flex; flex-direction: column; gap: 6px; }
+    .page-title { font-size: 20px; font-weight: 700; color: #24292E; }
+    .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .page-id { font-size: 12px; color: #9EA5AD; font-family: monospace; }
+    .breadcrumb { font-size: 12px; color: #9EA5AD; margin-bottom: 12px; }
+    .breadcrumb a { color: #9EA5AD; text-decoration: none; }
+    .breadcrumb a:hover { color: #2D84ED; }
+    .sch-header { margin-bottom: 20px; }
+    .sch-header-status { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .sch-header-meta { display: flex; align-items: center; gap: 16px; margin-top: 6px; font-size: 12px; color: #9EA5AD; flex-wrap: wrap; }
+    .sch-header-meta strong { color: #596066; font-weight: 600; }
+    .sch-header-meta a { color: #2D84ED; text-decoration: none; }
+    .sch-header-meta a:hover { text-decoration: underline; }
 
     /* ── Badges ── */
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; border-radius: 20px;
-      font-size: 12px; font-weight: 600; white-space: nowrap;
-    }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .lc-active     { background: #E8F8E9; color: #2E9E34; }
-    .lc-active .badge-dot { background: #58C65D; animation: pulse-dot 1.6s ease infinite; }
-    .lc-draft      { background: #F0F1F3; color: #596066; }
-    .lc-scheduled  { background: #E6FAF9; color: #0EA5A0; }
-    .lc-pending    { background: #FFF8E6; color: #B45309; }
-    .lc-done       { background: #F0F1F3; color: #596066; }
-    .appr-approved { background: #E8F8E9; color: #2E9E34; }
-    .appr-pending  { background: #FFF8E6; color: #B45309; }
-    .appr-none     { background: #F0F1F3; color: #596066; }
-    .appr-rejected { background: #FEE2E2; color: #991B1B; }
-    .pde-approved  { background: #E8F8E9; color: #2E9E34; border-left: 3px solid #58C65D; border-radius: 4px; padding: 4px 10px; }
-    .source-campaign { background: #EAF3FF; color: #2D84ED; }
-    .rev-effective   { background: #E8F8E9; color: #2E9E34; }
-    .rev-draft       { background: #FFF8E6; color: #B45309; }
-    .rev-superseded  { background: #F0F1F3; color: #9EA5AD; }
-    .conflict-valid  { background: #E8F8E9; color: #2E9E34; }
-    .conflict-warn   { background: #FFF8E6; color: #B45309; }
-    .conflict-err    { background: #FEE2E2; color: #991B1B; }
-    .fsb-pass  { color: #2E9E34; }
-    .fsb-warn  { color: #B45309; }
-    .fsb-fail  { color: #991B1B; }
+    .lc-draft    { background: #F0F1F3; color: #596066; }
+    .lc-draft    .badge-dot { background: #9EA5AD; }
+    .lc-pending  { background: #FFF8E6; color: #B45309; }
+    .lc-pending  .badge-dot { background: #F3BE4A; }
+    .lc-approved { background: #F0EAFA; color: #7C5CBF; }
+    .lc-approved .badge-dot { background: #7C5CBF; }
+    .lc-active   { background: #E8F8E9; color: #2E9E34; }
+    .lc-active   .badge-dot { background: #58C65D; }
+    .lc-paused   { background: #FFFBE6; color: #B45309; }
+    .lc-paused   .badge-dot { background: #F3BE4A; }
+    .lc-done     { background: #F0F1F3; color: #596066; }
+    .lc-done     .badge-dot { background: #9EA5AD; }
+    .appr-badge     { background: #EAF3FF; color: #2D84ED; }
+    .appr-approved  { background: #E8F8E9; color: #2E9E34; }
+    .appr-pending   { background: #FFF8E6; color: #B45309; }
+    .pde-approved   { background: #E8F8E9; color: #2E9E34; }
+    .badge-gray  { background: #F0F1F3; color: #596066; }
+    .badge-blue  { background: #DBEAFE; color: #1D4ED8; }
 
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.72); }
-    }
+    /* Action button */
+    .action-btn { height: 34px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px; }
+    .action-btn-primary { background: #58C65D; color: #fff; }
+    .action-btn-primary:hover { background: #4ab34f; }
 
-    /* ── Transition action buttons ── */
-    .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; white-space: nowrap; }
-    .btn-danger  { background: #FEE2E2; color: #991B1B; }
-    .btn-ghost   { background: #F0F1F3; color: #596066; }
-    .btn-primary { background: #58C65D; color: #fff; }
-    .btn-warn    { background: #FFF8E6; color: #B45309; border: 1px solid #F3BE4A; }
-
-    /* ── Tabs ── */
-    .tab-bar {
-      display: flex;
-      border-bottom: 2px solid #E5E7EA;
-      margin-bottom: 16px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      gap: 0;
-    }
-    .tab-btn {
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #596066;
-      border: none;
-      border-bottom: 2px solid transparent;
-      background: none;
-      cursor: pointer;
-      white-space: nowrap;
-      margin-bottom: -2px;
-      transition: color .15s, border-color .15s;
-    }
-    .tab-btn.active { color: #2D84ED; border-bottom-color: #2D84ED; font-weight: 600; }
-    .tab-btn:hover:not(.active) { color: #24292E; }
+    /* ── Tabs (S1~S5) ── */
+    .detail-main { background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; overflow: hidden; }
+    .tab-groups { display: flex; gap: 0; flex-wrap: nowrap; overflow-x: auto; background: #fff; border-bottom: 1px solid #E5E7EA; padding: 0 8px; }
+    .detail-main .tab-panel { padding: 22px 24px; }
+    .detail-main .tab-panel .card { border: none; padding: 0; margin-bottom: 0; }
+    .detail-main .tab-panel .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .detail-main .tab-panel .card + .card { margin-top: 28px; padding-top: 24px; border-top: 1px solid #F0F1F3; }
+    .tab-group-btn { display: inline-flex; align-items: center; gap: 7px; padding: 13px 14px; font-size: 13px; font-weight: 500; color: #9EA5AD; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; margin-bottom: -1px; transition: color 0.12s ease, border-color 0.12s ease; }
+    .tab-group-btn .grp-num { font-weight: 600; color: #CED2D6; transition: color 0.12s ease; }
+    .tab-group-btn:hover { color: #596066; }
+    .tab-group-btn.active { color: #24292E; font-weight: 600; border-bottom-color: #24292E; }
+    .tab-group-btn.active .grp-num { color: #24292E; }
     .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .tab-panel.group-active { display: block; }
+    .section-sublabel { font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase; letter-spacing: 0.6px; margin: 0 0 6px; }
 
-    /* ── Cards ── */
-    .card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
-    .card-head { padding: 14px 20px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; justify-content: space-between; }
-    .card-title { font-size: 14px; font-weight: 600; color: #24292E; }
-    .card-body { padding: 16px 20px; }
+    /* ── Section card ── */
+    .card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+    .card-title { font-size: 16px; font-weight: 700; color: #24292E; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #E5E7EA; }
+    .card-subhead { font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase; letter-spacing: .05em; margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid #F0F1F3; }
+    .card-subhead:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
-    /* ── Info rows ── */
-    .info-grid { display: grid; grid-template-columns: 140px 1fr; gap: 0; }
-    .info-row { display: contents; }
-    .info-label { padding: 9px 0; font-size: 13px; font-weight: 500; color: #596066; border-bottom: 1px solid #F6F7F9; }
-    .info-value { padding: 9px 0; font-size: 13px; color: #24292E; border-bottom: 1px solid #F6F7F9; }
-    .info-label:last-of-type, .info-value:last-of-type { border-bottom: none; }
+    /* ── Field grid ── */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+    .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .field-grid.one { grid-template-columns: 1fr; }
+    .field-item { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; }
+    .field-value { font-size: 14px; color: #24292E; }
+    .field-value.large { font-size: 18px; font-weight: 700; }
+    .field-value.mono { font-family: monospace; }
+
+    /* ── Tags ── */
+    .tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #F0F1F3; color: #596066; }
 
     /* ── KPI cards ── */
-    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; }
-    .kpi-card { background: #F6F7F9; border-radius: 8px; padding: 14px 16px; }
-    .kpi-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; margin-bottom: 6px; }
-    .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; }
-    .kpi-unit  { font-size: 12px; color: #596066; margin-top: 2px; }
+    .kpi-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .kpi-card { flex: 1; min-width: 140px; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 8px; padding: 14px 16px; }
+    .kpi-card.highlight { background: #EAFAEB; border-color: #C1E9C3; }
+    .kpi-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; font-variant-numeric: tabular-nums; }
+    .kpi-card.highlight .kpi-value { color: #2E9E34; }
+    .kpi-unit { font-size: 12px; font-weight: 400; color: #9EA5AD; margin-left: 2px; }
+    .kpi-formula { font-size: 11px; color: #9EA5AD; margin-top: 4px; }
 
-    /* ── Table inside card ── */
-    .inner-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .inner-table th { background: #F6F7F9; padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #596066; border-bottom: 1px solid #E5E7EA; white-space: nowrap; }
-    .inner-table td { padding: 11px 12px; border-bottom: 1px solid #F0F1F3; color: #24292E; vertical-align: middle; }
-    .inner-table tr:last-child td { border-bottom: none; }
+    /* ── Table inside cards ── */
+    .inner-table-wrap { overflow-x: auto; }
+    .inner-table { width: 100%; border-collapse: collapse; }
+    .inner-table thead th { background: #F6F7F9; padding: 9px 12px; font-size: 12px; font-weight: 600; color: #596066; text-align: left; border-bottom: 1px solid #E5E7EA; white-space: nowrap; }
+    .inner-table tbody td { padding: 11px 12px; font-size: 13px; color: #24292E; border-bottom: 1px solid #F0F1F3; vertical-align: middle; }
+    .inner-table tbody tr:last-child td { border-bottom: none; }
+    .num { font-variant-numeric: tabular-nums; }
+    .center { text-align: center; }
 
-    /* ── Feasibility checklist ── */
-    .fsb-list { list-style: none; padding: 0; margin: 0; }
-    .fsb-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #F0F1F3; font-size: 13px; }
-    .fsb-item:last-child { border-bottom: none; }
-    .fsb-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
-    .fsb-desc { color: #596066; font-size: 12px; margin-top: 2px; }
+    /* ── Operating day chips ── */
+    .day-chips { display: flex; gap: 6px; }
+    .day-chip { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+    .day-chip.on  { background: #2D84ED; color: #fff; }
+    .day-chip.off { background: #F0F1F3; color: #9EA5AD; }
 
-    /* ── PDE panel ── */
-    .pde-panel { border-left: 4px solid #58C65D; background: #F0FAF1; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 12px; }
-    .pde-panel-title { font-size: 13px; font-weight: 700; color: #2E9E34; margin-bottom: 6px; }
-    .pde-condition-list { list-style: none; padding: 0; margin: 0; }
-    .pde-condition-list li { font-size: 12px; color: #596066; padding: 3px 0; display: flex; align-items: center; gap: 6px; }
-    .pde-condition-list li::before { content: '✓'; color: #58C65D; font-weight: 700; }
+    /* ── Revision pill ── */
+    .rev-current { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; background: #2D84ED; color: #fff; }
+    .rev-past { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #F0F1F3; color: #596066; }
+    .guide-url { font-size: 13px; color: #2D84ED; text-decoration: none; }
+    .guide-url:hover { text-decoration: underline; }
 
-    /* ── Approval workflow card ── */
-    .appr-card { background: #F6F7F9; border-radius: 8px; padding: 14px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
-    .appr-field { }
-    .appr-field-label { font-size: 11px; color: #9EA5AD; font-weight: 600; margin-bottom: 4px; }
-    .appr-field-value { font-size: 13px; font-weight: 500; color: #24292E; }
+    /* ── Lifecycle flow (S1-4) ── */
+    .lc-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+    .lc-flow-step { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #F0F1F3; color: #9EA5AD; border: 1px solid #E5E7EA; }
+    .lc-flow-step.cur { font-weight: 700; background: #58C65D; color: #fff; border-color: #58C65D; }
+    .lc-flow-arrow { width: 16px; height: 1px; background: #CED2D6; }
 
-    /* ── Operational stats ── */
-    .ops-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .ops-stat { background: #F6F7F9; border-radius: 8px; padding: 12px 14px; }
-    .ops-stat-label { font-size: 11px; color: #9EA5AD; font-weight: 600; }
-    .ops-stat-val { font-size: 20px; font-weight: 700; color: #24292E; margin-top: 4px; }
-    .ops-stat-sub { font-size: 11px; color: #596066; margin-top: 2px; }
+    /* ── PDE decision counts (S1-5) ── */
+    .pde-count-row { display: flex; gap: 10px; }
+    .pde-count-card { flex: 1; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 8px; padding: 10px 12px; }
+    .pde-count-card.pos { background: #EAFAEB; border-color: #C1E9C3; }
+    .pde-count-label { font-size: 11px; color: #9EA5AD; margin-bottom: 4px; }
+    .pde-count-val { font-size: 20px; font-weight: 700; color: #24292E; }
+    .pde-count-card.pos .pde-count-val { color: #2E9E34; }
 
-    /* ── Immutability notice ── */
-    .immutability-notice { background: #FFF8E6; border: 1px solid #F3BE4A; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #B45309; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    /* ── Item selector (S2-1) ── */
+    .item-select-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .item-select-card { flex: 1; min-width: 180px; padding: 12px 16px; background: #F6F7F9; border: 2px solid #E5E7EA; border-radius: 8px; cursor: pointer; text-align: left; font-family: inherit; transition: all .15s ease; }
+    .item-select-card.active { background: #fff; border-color: #58C65D; }
+    .item-select-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .item-select-no { font-size: 11px; font-family: monospace; color: #9EA5AD; font-weight: 600; }
+    .item-select-card.active .item-select-no { color: #2E9E34; }
+    .item-select-name { font-size: 13px; font-weight: 600; color: #9EA5AD; }
+    .item-select-card.active .item-select-name { color: #24292E; }
+    .item-select-sub { font-size: 11px; font-family: monospace; color: #9EA5AD; margin-top: 2px; }
 
-    /* ── Feasibility Gate cards ── */
-    .gate-card { border-radius:8px; padding:16px 20px; margin-bottom:20px; }
-    .gate-failed { border:1.5px solid #F3BE4A; background:#FFFBEB; }
-    .gate-stale { border:1.5px solid #9EA5AD; background:#F9FAFB; }
-    .btn-outline { height:30px; padding:0 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #CED2D6; background:#fff; color:#596066; }
+    /* ── Schedule item card (S2-1) ── */
+    .item-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .item-detail-box { background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 8px; padding: 14px 16px; }
+    .item-detail-box-title { font-size: 11px; font-weight: 700; color: #9EA5AD; letter-spacing: .06em; margin-bottom: 12px; text-transform: uppercase; }
+    .item-detail-sub { display: flex; gap: 16px; margin-top: 10px; }
+    .item-detail-sub-col .field-label { margin-bottom: 3px; }
+    @media (max-width: 900px) { .item-detail-grid { grid-template-columns: 1fr; } }
 
-    /* ── Audit timeline ── */
-    .audit-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F0F1F3; font-size: 13px; }
-    .audit-row:last-child { border-bottom: none; }
-    .audit-time { font-size: 11px; color: #9EA5AD; white-space: nowrap; min-width: 130px; font-variant-numeric: tabular-nums; }
-    .audit-dot  { width: 8px; height: 8px; border-radius: 50%; background: #CED2D6; flex-shrink: 0; margin-top: 3px; }
-    .audit-dot.green { background: #58C65D; }
-    .audit-actor { font-weight: 600; color: #24292E; }
-    .audit-desc { color: #596066; }
+    /* ── 콘텐츠 편성 (Media → Content flow) ── */
+    .mc-panel { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
+    .mc-panel-head { padding: 12px 16px; background: #fff; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .mc-panel-title { font-size: 13px; font-weight: 600; color: #24292E; }
+    .mc-panel-note { font-size: 12px; color: #9EA5AD; }
+    .mc-body { background: #F6F7F9; }
+    .mc-row { display: flex; align-items: center; border-bottom: 1px solid #E5E7EA; }
+    .mc-row:last-child { border-bottom: none; }
+    .mc-media-col { flex: 0 0 220px; padding: 12px 16px; border-right: 1px solid #E5E7EA; }
+    .mc-media-id { font-size: 10px; font-family: monospace; color: #2D84ED; margin-bottom: 2px; }
+    .mc-media-name { font-size: 13px; font-weight: 500; color: #24292E; }
+    .mc-arrow { padding: 0 12px; color: #CED2D6; font-size: 14px; flex-shrink: 0; }
+    .mc-content-col { flex: 1; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+    .mc-content-thumb { width: 28px; height: 28px; border-radius: 4px; background: #1a1a2e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #e0e0ff; font-size: 10px; opacity: .85; }
+    .mc-content-name { font-size: 13px; font-weight: 600; color: #24292E; }
+    .mc-content-rev { font-size: 11px; color: #9EA5AD; font-family: monospace; }
+    .mc-pkg-group + .mc-pkg-group { border-top: 2px solid #E5E7EA; }
+    .mc-pkg-head { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #E5E7EA; }
+    .mc-pkg-bar { width: 4px; height: 16px; border-radius: 2px; background: #2D84ED; flex-shrink: 0; }
+    .mc-pkg-id { font-size: 11px; font-family: monospace; color: #9EA5AD; }
+    .mc-pkg-name { font-size: 13px; font-weight: 600; color: #24292E; }
+    .mc-pkg-rev { font-size: 11px; font-family: monospace; color: #9EA5AD; }
+    .mc-pkg-count { margin-left: auto; font-size: 11px; color: #9EA5AD; }
+    @media (max-width: 700px) { .mc-row { flex-direction: column; align-items: stretch; } .mc-media-col { border-right: none; border-bottom: 1px solid #E5E7EA; flex: none; } .mc-arrow { display: none; } }
+
+    /* ── S3 운영현황 summary ── */
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .stat-card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 16px 18px; }
+    .stat-label { font-size: 12px; color: #9EA5AD; margin-bottom: 8px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: #24292E; }
+    @media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+
+    /* ── 운영 이슈 리스트 ── */
+    .issue-list { display: flex; flex-direction: column; gap: 8px; }
+    .issue-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 6px; font-size: 13px; }
+
+    /* ── 2-month 송출 캘린더 (S3-2) ── */
+    .cal-legend { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+    .cal-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #596066; }
+    .cal-legend-dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+    .cal-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+    .cal-month-label { font-size: 13px; font-weight: 600; color: #24292E; margin-bottom: 8px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-dow { text-align: center; font-size: 11px; color: #9EA5AD; padding: 2px 0; }
+    .cal-cell { background: #EAFAEB; border: 1px solid #C1E9C3; border-radius: 4px; padding: 5px 3px; text-align: center; cursor: pointer; transition: outline .1s ease; }
+    .cal-cell.rate-warn { background: #FFF8E6; border-color: #F3BE4A; }
+    .cal-cell.rate-bad  { background: #FDEAEA; border-color: #F5C6C6; }
+    .cal-cell.selected  { outline: 2px solid #58C65D; }
+    .cal-cell-d { font-size: 11px; color: #2E9E34; font-weight: 600; }
+    .cal-cell.rate-warn .cal-cell-d { color: #B45309; }
+    .cal-cell.rate-bad  .cal-cell-d { color: #B03030; }
+    .cal-cell-r { font-size: 9px; color: #2E9E34; opacity: .8; }
+    .cal-cell.rate-warn .cal-cell-r { color: #B45309; }
+    .cal-cell.rate-bad  .cal-cell-r { color: #B03030; }
+    @media (max-width: 900px) { .cal-2col { grid-template-columns: 1fr; } }
+
+    /* ── Revision Snapshot modal ── */
+    .rev-snap-overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,32,0.4); z-index: 500; align-items: center; justify-content: center; padding: 24px; }
+    .rev-snap-overlay.open { display: flex; }
+    .rev-snap-modal { background: #fff; border: 1px solid #E5E7EA; border-radius: 12px; width: 560px; max-width: 100%; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+    .rev-snap-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #E5E7EA; }
+    .rev-snap-title { font-size: 15px; font-weight: 700; color: #24292E; display: flex; align-items: center; gap: 8px; }
+    .rev-snap-sub { font-size: 12px; color: #9EA5AD; margin-top: 4px; }
+    .rev-snap-close { border: none; background: none; font-size: 16px; color: #9EA5AD; cursor: pointer; padding: 4px; }
+    .rev-snap-close:hover { color: #24292E; }
+    .rev-snap-body { padding: 20px 22px; overflow-y: auto; }
+    .rev-snap-body .field-grid { margin-bottom: 0; }
+
+    /* ── Audit row ── */
+    .audit-row { display: flex; gap: 32px; flex-wrap: wrap; }
+    .audit-item { display: flex; flex-direction: column; gap: 3px; }
+
+    /* ── Detail layout: 편성 탭 + 우측 미디어 위치 패널 ── */
+    .detail-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
+    .sched-side-panel { position: sticky; top: 16px; display: flex; flex-direction: column; }
+    .sched-side-panel .card { margin-bottom: 0; padding: 0; overflow: hidden; }
+    .sched-map-head { padding: 14px 16px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; gap: 8px; }
+    .sched-map-title { font-size: 13px; font-weight: 600; color: #24292E; }
+    .sched-map-count { font-size: 12px; color: #9EA5AD; margin-left: auto; }
+    #schedMediaMap { height: 200px; }
+    .sched-media-list-item { display: flex; align-items: center; gap: 8px; padding: 11px 16px; cursor: pointer; border-bottom: 1px solid #F0F1F3; transition: background .12s ease; }
+    .sched-media-list-item:last-child { border-bottom: 1px solid #E5E7EA; }
+    .sched-media-list-item:hover { background: #F6FEF6; }
+    .sched-media-list-item.selected { background: #EAFAEB; }
+    .sched-media-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: #58C65D; }
+    .sched-media-dot.warn { background: #E97474; }
+    .sched-media-list-item-name { font-size: 13px; color: #24292E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sched-media-list-item.selected .sched-media-list-item-name { font-weight: 600; }
+    .sched-media-list-item-sub { font-size: 11px; color: #9EA5AD; }
+    .sched-media-status { font-size: 11px; font-weight: 500; flex-shrink: 0; }
+    .sched-media-status.ok { color: #2E9E34; }
+    .sched-media-status.warn { color: #E97474; }
+    .sched-content-area { padding: 14px 16px; background: #F6F7F9; min-height: 56px; }
+    .sched-content-empty { font-size: 12px; color: #9EA5AD; text-align: center; padding: 12px 0; }
+    .sched-content-label { font-size: 11px; font-weight: 600; color: #596066; margin-bottom: 10px; }
+    .sched-content-card { background: #fff; border: 1px solid #E5E7EA; border-radius: 6px; overflow: hidden; }
+    .sched-content-thumb { height: 110px; background: #1a1a2e; position: relative; display: flex; align-items: center; justify-content: center; }
+    .sched-content-thumb-play { font-size: 26px; color: #e0e0ff; opacity: .85; }
+    .sched-content-thumb-dur { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.4); border-radius: 4px; padding: 2px 7px; font-size: 11px; color: #fff; font-family: monospace; }
+    .sched-content-meta { padding: 12px 14px; }
+    .sched-content-meta-name { font-size: 13px; font-weight: 600; color: #24292E; margin-bottom: 4px; }
+    .sched-content-meta-id { font-size: 11px; color: #9EA5AD; font-family: monospace; }
+    @media (max-width: 960px) { .detail-layout { grid-template-columns: 1fr; } .sched-side-panel { position: static; } }
+
+    @media (max-width: 700px) { .field-grid, .field-grid.three, .item-detail-grid { grid-template-columns: 1fr; } .kpi-row { flex-direction: column; } }
   </style>
 </head>
 <body>
 
-<!-- ── GNB ── -->
+<!-- ① GNB -->
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
   <ul class="gnb-nav">
@@ -223,7 +317,7 @@
   </ul>
 </nav>
 
-<!-- ── Topbar ── -->
+<!-- ② Topbar -->
 <header class="topbar">
   <div class="topbar-search">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#9EA5AD" stroke-width="1.5"/><path d="M9.5 9.5L12 12" stroke="#9EA5AD" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -238,796 +332,612 @@
       <div class="topbar-avatar">홍</div>
       <div class="topbar-profile-info">
         <div class="topbar-profile-name">홍길동</div>
-        <div class="topbar-profile-org">D'ooh Admin</div>
+        <div class="topbar-profile-org">엠앤엠네트웍스</div>
       </div>
     </div>
   </div>
 </header>
 
-<!-- ── Breadcrumb ── -->
-<div class="bcrumb">
-  <a href="schedule-list" class="bcrumb-back">‹</a>
-  <a href="schedule-list">스케줄</a>
-  <span class="sep">/</span>
-  <span class="cur">강남역 갤럭시 S25 광고 25Q4</span>
-</div>
-
-<!-- ── Content ── -->
+<!-- ③ Main content -->
 <main class="content">
+  <div class="content-inner">
 
-  <!-- ── State Banner ── -->
-  <div class="state-banner">
-    <div class="state-left">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="schedule-list">스케줄</a> &rsaquo; <span id="sch-crumb">삼성전자 갤럭시 S25 런칭 캠페인</span>
+    </div>
+
+    <!-- Page header -->
+    <div class="page-header sch-header">
+      <div class="page-header-left">
+        <div class="page-meta">
+          <div class="page-title" id="sch-title">삼성전자 갤럭시 S25 런칭 캠페인</div>
+          <span class="page-id" id="sch-id">SCH-2026-0012</span>
+        </div>
+        <div class="sch-header-status">
+          <span class="badge lc-active" id="sch-lc-badge"><span class="badge-dot"></span>집행중</span>
+          <span class="badge appr-badge appr-approved" id="sch-appr-badge">확정</span>
+        </div>
+        <div class="sch-header-meta">
+          <span>운영 기간 <strong id="sch-period">2026-01-20 ~ 2026-02-10</strong></span>
+          <span>담당 <strong id="sch-manager">홍길동</strong></span>
+          <span><a href="product-detail?id=PRD-001" id="sch-product-link">PRD-001 강남 프리미엄 옥외</a></span>
+        </div>
+      </div>
+      <div class="action-group" style="display:flex;align-items:center;gap:8px;">
+        <button class="action-btn action-btn-primary" onclick="location.href='schedule-edit'">수정</button>
+      </div>
+    </div>
+
+    <div class="detail-layout">
       <div>
-        <div class="state-title" id="sch-title">강남역 갤럭시 S25 광고 25Q4</div>
-        <div class="state-meta" style="margin-top:4px;" id="sch-meta">SCH-2025-0041 · 삼성전자 · 2025-10-15 ~ 12-31</div>
-      </div>
-      <span class="badge lc-active" id="sch-lc-badge" style="font-size:13px; padding:4px 12px;"><span class="badge-dot"></span>집행중</span>
-      <span class="badge appr-approved" id="sch-appr-badge" style="font-size:12px;">승인됨</span>
-      <span class="badge pde-approved" id="sch-pde-badge" style="font-size:12px;">PDE 승인</span>
-    </div>
-    <div id="sch-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn btn-warn" onclick="goStateSch('paused')">일시중지</button>
-      <button class="btn btn-ghost" onclick="location.href='schedule-edit'">새 Revision</button>
-    </div>
-  </div>
-
-  <!-- Lifecycle 프로세스 스테퍼 -->
-  <div class="lc-stepper-wrap" style="margin-bottom:12px;">
-    <div class="lc-stepper-title">Lifecycle 프로세스 (T-SCH-01 · P-04)</div>
-    <div class="lc-stepper" id="sch-lc-stepper"><!-- JS가 채움 --></div>
-    <div class="lc-note" id="sch-lc-note"></div>
-  </div>
-
-  <!-- ── Tabs ── -->
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="showTab('basic',this)">기본정보</button>
-    <button class="tab-btn" onclick="showTab('items',this)">Schedule Item 편성</button>
-    <button class="tab-btn" onclick="showTab('loop',this)">기준 루프 보장</button>
-    <button class="tab-btn" onclick="showTab('feasibility',this)">Feasibility 검증</button>
-    <button class="tab-btn" onclick="showTab('pde',this)">PDE 검토</button>
-    <button class="tab-btn" onclick="showTab('ops',this)">운영 상태</button>
-    <button class="tab-btn" onclick="showTab('revision',this)">Revision</button>
-    <button class="tab-btn" onclick="showTab('audit',this)">Audit</button>
-  </div>
-
-  <!-- ===== TAB 1: 기본정보 ===== -->
-  <div id="tab-basic" class="tab-panel active">
-    <div class="card">
-      <div class="card-head"><span class="card-title">스케줄 기본 정보</span></div>
-      <div class="card-body">
-        <div class="info-grid">
-          <div class="info-label">스케줄 ID</div>
-          <div class="info-value" style="color:#9EA5AD; font-variant-numeric:tabular-nums;">SCH-2025-0041</div>
-          <div class="info-label">스케줄명</div>
-          <div class="info-value" style="font-weight:600;">강남역 갤럭시 S25 광고 25Q4</div>
-          <div class="info-label">태그</div>
-          <div class="info-value">
-            <span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;margin-right:4px;">강남</span>
-            <span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;">Q4</span>
+        <div class="detail-main">
+          <div class="tab-groups" id="tabGroups">
+            <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">S1</span>스케줄 정보</button>
+            <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">S2</span>편성 정보</button>
+            <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">S3</span>운영 현황</button>
+            <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')"><span class="grp-num">S4</span>변경 이력</button>
+            <button class="tab-group-btn" data-group="g5" onclick="switchGroup('g5')"><span class="grp-num">S5</span>감사</button>
           </div>
-          <div class="info-label">광고주</div>
-          <div class="info-value">삼성전자</div>
-          <div class="info-label">생성 출처</div>
-          <div class="info-value"><span class="badge source-campaign">캠페인</span></div>
-          <div class="info-label">연계 캠페인</div>
-          <div class="info-value" style="color:#2D84ED;">CMP-2026-001 — 삼성전자 갤럭시 S25 런칭</div>
-          <div class="info-label">담당자</div>
-          <div class="info-value">홍길동</div>
-          <div class="info-label">운영기간</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-15 ~ 2025-12-31</div>
-          <div class="info-label">운영 방식</div>
-          <div class="info-value">Rolling</div>
-          <div class="info-label">등록일</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-14</div>
-          <div class="info-label">Lifecycle 상태</div>
-          <div class="info-value"><span class="badge lc-active"><span class="badge-dot"></span>집행중 (Active)</span></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Approval Workflow Card -->
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">승인 워크플로우</span>
-        <span style="font-size:12px;color:#58C65D;display:flex;align-items:center;gap:4px;">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#58C65D"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Feasibility 통과
-        </span>
-      </div>
-      <div class="card-body">
-        <div class="appr-card">
-          <div class="appr-field">
-            <div class="appr-field-label">승인 상태</div>
-            <div class="appr-field-value"><span class="badge appr-approved">승인됨</span></div>
-          </div>
-          <div class="appr-field">
-            <div class="appr-field-label">승인자</div>
-            <div class="appr-field-value">김관리 (Admin)</div>
-          </div>
-          <div class="appr-field">
-            <div class="appr-field-label">승인일시</div>
-            <div class="appr-field-value">2025-10-10 16:45</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- PDE Card -->
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">PDE 검토 결과</span>
-        <span style="font-size:12px;color:#B45309;font-weight:600;">Amber — 조건부 승인</span>
-      </div>
-      <div class="card-body">
-        <div style="background:#FFFBEB;border:1px solid #F3BE4A;border-radius:8px;padding:14px 18px;">
-          <div style="font-size:13px;font-weight:700;color:#B45309;margin-bottom:8px;">PDE 결정: Approved</div>
-          <div class="info-grid">
-            <div class="info-label">검토일</div>
-            <div class="info-value">2025-10-08</div>
-            <div class="info-label">사유</div>
-            <div class="info-value">일반 옥외광고, 업종·지역·시간대 제한 없음</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 2: Schedule Item 편성 ===== -->
-  <div id="tab-items" class="tab-panel">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Schedule Item 편성</span>
-        <button class="btn btn-ghost" style="opacity:0.5; cursor:not-allowed;" title="집행중 상태에서는 New Revision을 통해 변경하세요">+ Item 추가</button>
-      </div>
-      <div class="card-body" style="padding:0;">
-        <div style="overflow-x:auto;">
-          <table class="inner-table" style="min-width:900px;">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>대상 유형</th>
-                <th>Product명 (Revision)</th>
-                <th>슬롯</th>
-                <th>콘텐츠 유형</th>
-                <th>Content명 (Revision)</th>
-                <th>운영 요일</th>
-                <th>시간대</th>
-                <th>운영 상태</th>
-                <th>충돌</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="font-weight:600; color:#596066;">Item 1</td>
-                <td>프로덕트</td>
-                <td style="color:#2D84ED;">PRD-001 강남 프리미엄 옥외 (R3)</td>
-                <td>30초</td>
-                <td>콘텐츠</td>
-                <td style="color:#2D84ED;">CNT-001 갤럭시 S25 런칭 30초 (R1)</td>
-                <td>월~금</td>
-                <td>09:00 ~ 22:00</td>
-                <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
-                <td><span class="badge conflict-valid">Valid</span></td>
-              </tr>
-              <tr>
-                <td style="font-weight:600; color:#596066;">Item 2</td>
-                <td>프로덕트</td>
-                <td style="color:#2D84ED;">강남 프리미엄 옥외 PRD-001 (R3)</td>
-                <td>15초</td>
-                <td>콘텐츠</td>
-                <td style="color:#2D84ED;">갤럭시 S25 런칭 30초 CNT-001 (R1)</td>
-                <td>토~일</td>
-                <td>10:00 ~ 21:00</td>
-                <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
-                <td><span class="badge conflict-valid">Valid</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div style="font-size:12px; color:#9EA5AD; padding: 0 4px;">
-      ※ 집행중 상태에서 Item 핵심 조건(Product Revision, Slot, Content, 기간/시간) 변경은 New Revision을 생성하여 진행합니다.
-    </div>
-  </div>
-
-  <!-- ===== TAB 3: 기준 루프 보장 ===== -->
-  <div id="tab-loop" class="tab-panel">
-    <div class="card">
-      <div class="card-head"><span class="card-title">기준 루프 보장 현황</span></div>
-      <div class="card-body">
-        <div class="kpi-row" style="margin-bottom:16px;">
-          <div class="kpi-card">
-            <div class="kpi-label">Reference Slot Duration</div>
-            <div class="kpi-value">30</div>
-            <div class="kpi-unit">초</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Reference Loop Duration</div>
-            <div class="kpi-value">180</div>
-            <div class="kpi-unit">초</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">유효 운영시간</div>
-            <div class="kpi-value">13</div>
-            <div class="kpi-unit">시간/일 (09:00~22:00)</div>
-          </div>
-        </div>
-        <div class="kpi-row">
-          <div class="kpi-card">
-            <div class="kpi-label">예상 최소 집행횟수/일</div>
-            <div class="kpi-value">260</div>
-            <div class="kpi-unit">회</div>
-          </div>
-          <div class="kpi-card" style="background:#E8F8E9;">
-            <div class="kpi-label" style="color:#2E9E34;">실제 집행횟수/일 (어제)</div>
-            <div class="kpi-value" style="color:#2E9E34;">274</div>
-            <div class="kpi-unit" style="color:#2E9E34;">회 ✓ 보장 충족</div>
-          </div>
-        </div>
-        <div style="margin-top:12px; font-size:12px; color:#9EA5AD; background:#F6F7F9; border-radius:6px; padding:10px 12px;">
-          ⓘ Expected Minimum Plays = FLOOR(유효운영시간 / RLD). Assigned Slot이 RSD보다 짧아도 동일 Reference Loop 기준 사용.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 4: Feasibility 검증 ===== -->
-  <div id="tab-feasibility" class="tab-panel">
-
-    <!-- Feasibility Gate Card -->
-    <div class="gate-card gate-passed" style="border:1.5px solid #58C65D; border-radius:8px; padding:16px 20px; background:#F0FDF4; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
-      <div>
-        <div style="font-size:14px;font-weight:700;color:#2E9E34;">✓ Feasibility 검증 통과</div>
-        <div style="font-size:12px;color:#596066;margin-top:4px;">검증일시: 2026-08-18 14:32 &nbsp;·&nbsp; 유효기간 내 (48h) &nbsp;·&nbsp; 담당자: 홍길동</div>
-      </div>
-      <div style="text-align:right;">
-        <button class="btn btn-outline" style="font-size:12px;" onclick="if(confirm('Feasibility 재검증을 요청하시겠습니까?'))alert('재검증 요청이 전송되었습니다.')">재검증 요청</button>
-      </div>
-    </div>
-
-    <!-- STALE/FAILED gate card examples (reference only — shown based on gate status) -->
-    <!--
-    STALE (48h 초과):
-    <div class="gate-card gate-stale" style="border:1.5px solid #9EA5AD; border-radius:8px; padding:16px 20px; background:#F9FAFB; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
-      <div>
-        <div style="font-size:14px;font-weight:700;color:#596066;">⏰ Feasibility 검증 만료</div>
-        <div style="font-size:12px;color:#9EA5AD;margin-top:4px;">검증일시: 2026-08-16 10:00 · 유효기간 초과 (48h) — 승인요청 전 재검증 필요</div>
-      </div>
-      <div><button class="btn btn-outline">재검증 요청</button></div>
-    </div>
-
-    FAILED:
-    <div class="gate-card gate-failed" style="border:1.5px solid #F3BE4A; border-radius:8px; padding:16px 20px; background:#FFFBEB; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
-      <div>
-        <div style="font-size:14px;font-weight:700;color:#B45309;">⚠ Feasibility 검증 미통과</div>
-        <div style="font-size:12px;color:#596066;margin-top:4px;">슬롯 가용성 부족 — 승인요청이 차단됩니다. 검증 결과를 확인하세요.</div>
-      </div>
-      <div><button class="btn btn-warn">검증 재시도</button></div>
-    </div>
-    -->
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Feasibility 검증 결과</span>
-        <span style="font-size:12px; color:#9EA5AD;">평가 기준시각: 2025-10-13 14:22:07 · Inventory v2025.10.13.0142</span>
-      </div>
-      <div class="card-body">
-        <div style="margin-bottom:16px; padding:10px 14px; background:#E8F8E9; border-radius:8px; display:flex; align-items:center; gap:10px;">
-          <span style="font-size:20px;">✅</span>
-          <div>
-            <div style="font-size:14px; font-weight:700; color:#2E9E34;">Feasibility 통과</div>
-            <div style="font-size:12px; color:#596066; margin-top:2px;">모든 검증 항목이 통과되었습니다. 승인 후 예약 전환이 가능합니다.</div>
-          </div>
-        </div>
-        <ul class="fsb-list">
-          <li class="fsb-item">
-            <div class="fsb-icon fsb-pass">✅</div>
-            <div style="flex:1;">
-              <div style="font-weight:600; color:#24292E;">기간 합리성</div>
-              <div class="fsb-desc">운영 시작일·종료일이 유효하며 최소 운영 기간 조건을 충족합니다.</div>
+          <!-- ══════════ S1. 스케줄 정보 ══════════ -->
+          <div class="tab-panel group-active" data-group="g1" id="tab-s1-basic">
+            <div class="section-sublabel">S1-1. 기본 정보</div>
+            <div class="card">
+              <div class="card-title">기본 정보</div>
+              <div class="field-grid">
+                <div class="field-item"><div class="field-label">Schedule ID</div><div class="field-value mono" id="s1-id">SCH-2026-0012</div></div>
+                <div class="field-item"><div class="field-label">Schedule명</div><div class="field-value" style="font-weight:600;" id="s1-name">삼성전자 갤럭시 S25 런칭 캠페인</div></div>
+                <div class="field-item" style="grid-column:1/-1;">
+                  <div class="field-label">태그</div>
+                  <div class="tag-group"><span class="tag">OOH</span><span class="tag">강남구</span><span class="tag">갤럭시</span><span class="tag">2026-Q1</span></div>
+                </div>
+                <div class="field-item"><div class="field-label">Schedule Source</div><div class="field-value"><span class="tag" style="background:#F0F1F3;">Manual</span></div></div>
+                <div class="field-item"><div class="field-label">광고주</div><div class="field-value" id="s1-advertiser">삼성전자</div></div>
+              </div>
             </div>
-          </li>
-          <li class="fsb-item">
-            <div class="fsb-icon fsb-pass">✅</div>
-            <div style="flex:1;">
-              <div style="font-weight:600; color:#24292E;">매체 가용성</div>
-              <div class="fsb-desc">대상 매체 2개소 모두 운영기간 내 가용 상태입니다.</div>
+
+            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-2. 운영 정보</div>
+            <div class="card">
+              <div class="card-title">운영 정보</div>
+              <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:8px;">전체 운영기간</div>
+              <div class="field-grid" style="margin-bottom:14px;">
+                <div class="item-detail-box"><div class="field-label">Start Date</div><div class="field-value mono" style="font-size:15px;font-weight:600;">2026-01-20</div></div>
+                <div class="item-detail-box"><div class="field-label">End Date</div><div class="field-value mono" style="font-size:15px;font-weight:600;">2026-02-10</div></div>
+              </div>
+              <div class="card-subhead">Item별 운영조건</div>
+              <div class="inner-table-wrap">
+                <table class="inner-table">
+                  <thead><tr><th>Item</th><th>Operating Days</th><th>Daily Start Time</th><th>Daily End Time</th></tr></thead>
+                  <tbody>
+                    <tr><td>Item #1</td><td>월·화·수·목·금·토</td><td class="mono">06:00</td><td class="mono">24:00</td></tr>
+                    <tr><td>Item #2</td><td>월·화·수·목·금·토</td><td class="mono">06:00</td><td class="mono">24:00</td></tr>
+                    <tr><td>Item #3</td><td>월·화·수·목·금·토</td><td class="mono">06:00</td><td class="mono">24:00</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </li>
-          <li class="fsb-item">
-            <div class="fsb-icon fsb-pass">✅</div>
-            <div style="flex:1;">
-              <div style="font-weight:600; color:#24292E;">슬롯 가용성</div>
-              <div class="fsb-desc">Item 1(30초) 및 Item 2(15초) 슬롯 모두 Inventory 확보 완료.</div>
+
+            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-3. 연결 정보</div>
+            <div class="card">
+              <div class="card-title">연결 정보</div>
+              <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">Campaign</div>
+              <div class="field-grid">
+                <div class="field-item"><div class="field-label">Campaign ID</div><div class="field-value"><a href="campaign-list" class="guide-url mono">GAL-2026-S25</a></div></div>
+                <div class="field-item"><div class="field-label">Selection Snapshot ID</div><div class="field-value mono">SNAP-SEL-20251228-001</div></div>
+              </div>
+              <div class="card-subhead">Contract</div>
+              <div class="field-grid">
+                <div class="field-item"><div class="field-label">Contract Basis Snapshot</div><div class="field-value mono">SNAP-CTR-20251215-003</div></div>
+              </div>
+              <div class="card-subhead">운영 Product Revision Snapshot</div>
+              <div class="inner-table-wrap">
+                <table class="inner-table">
+                  <thead><tr><th>Product</th><th>Revision Snapshot</th><th>Snapshot 일시</th></tr></thead>
+                  <tbody>
+                    <tr><td><a href="product-detail?id=PRD-001" class="guide-url mono">PRD-001</a></td><td class="mono">SNAP-PRD-001-R2-20251228</td><td>2025-12-28 14:30</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </li>
-          <li class="fsb-item">
-            <div class="fsb-icon fsb-pass">✅</div>
-            <div style="flex:1;">
-              <div style="font-weight:600; color:#24292E;">예산 충분성</div>
-              <div class="fsb-desc">예상 집행금액이 승인된 캠페인 예산 범위 내입니다.</div>
+
+            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-4. 상태 정보</div>
+            <div class="card">
+              <div class="card-title">상태 정보</div>
+              <div style="padding-bottom:14px;border-bottom:1px solid #F0F1F3;margin-bottom:14px;">
+                <div class="field-label" style="margin-bottom:4px;">Schedule Lifecycle</div>
+                <div class="lc-flow" id="sch-lc-flow"></div>
+              </div>
+              <div style="padding-bottom:14px;border-bottom:1px solid #F0F1F3;margin-bottom:14px;">
+                <div class="field-label" style="margin-bottom:4px;">Schedule Revision Lifecycle</div>
+                <div class="lc-flow" id="sch-rev-flow"></div>
+              </div>
+              <div class="field-grid">
+                <div class="field-item"><div class="field-label">Approval Status</div><div class="field-value"><span class="badge appr-badge appr-approved">Approved</span></div></div>
+                <div class="field-item"><div class="field-label">Approval Authority</div><div class="field-value">홍길동 (엠앤엠네트웍스 · 디지털옥외팀장)</div></div>
+              </div>
             </div>
-          </li>
-          <li class="fsb-item">
-            <div class="fsb-icon fsb-pass">✅</div>
-            <div style="flex:1;">
-              <div style="font-weight:600; color:#24292E;">콘텐츠 검증</div>
-              <div class="fsb-desc">Item 1·2의 Content Revision이 유효하며 업종 제한 조건 없음.</div>
+
+            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-5. 정책 적용 정보</div>
+            <div class="card">
+              <div class="card-title">정책 적용 정보</div>
+              <div class="field-grid" style="margin-bottom:16px;">
+                <div class="field-item"><div class="field-label">Effective PolicySet Reference</div><div class="field-value mono">PS-KR-OOH-2025-Q4 v4.2.1</div></div>
+                <div class="field-item"><div class="field-label">PolicySet Reference Status</div><div class="field-value"><span class="badge appr-badge appr-approved">Current</span></div></div>
+                <div class="field-item"><div class="field-label">Decision Context Status</div><div class="field-value"><span class="badge appr-badge appr-approved">Resolved</span></div></div>
+                <div class="field-item"><div class="field-label">Needs Revalidation</div><div class="field-value" style="color:#2E9E34;font-weight:600;">No</div></div>
+              </div>
+              <div class="field-label" style="margin-bottom:8px;">PDE Decision</div>
+              <div class="pde-count-row">
+                <div class="pde-count-card pos"><div class="pde-count-label">Approved</div><div class="pde-count-val">3</div></div>
+                <div class="pde-count-card"><div class="pde-count-label">Restricted</div><div class="pde-count-val">0</div></div>
+                <div class="pde-count-card"><div class="pde-count-label">Deferred</div><div class="pde-count-val">0</div></div>
+                <div class="pde-count-card"><div class="pde-count-label">Rejected</div><div class="pde-count-val">0</div></div>
+              </div>
             </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">기술 검증 결과 (Technical Validation)</span></div>
-      <div class="card-body">
-        <div style="padding:10px 14px; background:#E8F8E9; border-radius:8px; font-size:13px; color:#2E9E34; font-weight:600;">✅ Technical Validation Success — Revision Draft → Review Pending 전환 완료</div>
-      </div>
-    </div>
-  </div>
+          </div>
 
-  <!-- ===== TAB 5: PDE 검토 ===== -->
-  <div id="tab-pde" class="tab-panel">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">PDE 정책 검토</span>
-        <span style="font-size:12px; color:#9EA5AD;">Policy Version: PDE-2025.10.02 · 판단일시: 2025-10-13 15:00:41</span>
-      </div>
-      <div class="card-body">
-        <!-- PDE approved panel with green left-border -->
-        <div class="pde-panel">
-          <div class="pde-panel-title">🟢 PDE Decision: 승인 (Approved)</div>
-          <div style="font-size:12px; color:#596066; margin-bottom:10px;">법률·지역·미디어사 정책 기준 모두 충족. 편성 집행이 허용됩니다.</div>
-        </div>
-        <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:8px;">충족 조건 목록</div>
-        <ul class="pde-condition-list">
-          <li>업종 제한 없음 — 전자기기(삼성전자) 강남역 매체 운영 허용</li>
-          <li>경쟁사 독점 정책 없음 — 해당 기간 동일 제조사 경쟁 스케줄 없음</li>
-          <li>지역 광고 규제 적합 — 강남구·마포구 디지털 OOH 운영 요건 충족</li>
-          <li>콘텐츠 등급 적합 — 전체 이용가 콘텐츠, 시간대 제한 없음</li>
-          <li>미디어사 인벤토리 정책 준수 — 슬롯·루프·보장 조건 적합</li>
-        </ul>
-        <div style="margin-top:14px; font-size:12px; color:#9EA5AD; padding:8px 12px; background:#F6F7F9; border-radius:6px;">
-          ⓘ PDE Approved ≠ Schedule Approval Approved. PDE 정책 판단과 업무 승인(Approval)은 별도 절차입니다.
-        </div>
-      </div>
-    </div>
-
-    <!-- 정책 적용·재검증 card -->
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">정책 적용 · 재검증 (Policy Revalidation)</span>
-        <span id="pde-revalidation-status" style="font-size:12px; color:#2E9E34; font-weight:600;">최신 정책 적용 완료</span>
-      </div>
-      <div class="card-body">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3;">
-          <div>
-            <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:2px;">현재 적용 PDE 버전</div>
-            <div style="font-size:12px; color:#9EA5AD;">PDE Engine v2025.10.02 — 2025-10-13 적용</div>
-          </div>
-          <span style="font-size:11px; padding:2px 9px; border-radius:20px; background:#E8F8E9; color:#2E9E34; font-weight:600;">최신</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #F0F1F3;">
-          <div>
-            <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:2px;">PDE 최신 배포 버전</div>
-            <div style="font-size:12px; color:#9EA5AD;">v2025.10.02 — 2025-10-13 배포 · 정책 5건 포함</div>
-          </div>
-          <span style="font-size:11px; padding:2px 9px; border-radius:20px; background:#E8F8E9; color:#2E9E34; font-weight:600;">일치</span>
-        </div>
-        <div style="padding:12px 0;">
-          <div style="font-size:13px; font-weight:600; color:#24292E; margin-bottom:8px;">정책 변경 시 재검증</div>
-          <div style="font-size:12px; color:#596066; margin-bottom:12px;">PDE 정책이 새로 업데이트되거나 수동으로 재검증이 필요한 경우 아래 버튼을 실행하세요. 재검증 결과에 따라 Schedule 상태가 변경될 수 있습니다.</div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button onclick="runPdeRevalidation()" id="pde-reval-btn" style="height:34px;padding:0 16px;background:#2D84ED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">PDE 재검증 실행</button>
-            <a href="settings-policy" style="height:34px;padding:0 16px;background:#F6F7F9;color:#596066;border:1px solid #E5E7EA;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;">정책 관리</a>
-          </div>
-          <div id="pde-reval-result" style="display:none; margin-top:12px; padding:10px 14px; border-radius:6px; font-size:12px;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TAB 6: 운영 상태 ===== -->
-  <div id="tab-ops" class="tab-panel">
-    <div class="card">
-      <div class="card-head"><span class="card-title">운영 상태 요약 (Operational Health Summary)</span></div>
-      <div class="card-body">
-        <div class="ops-stat-row">
-          <div class="ops-stat">
-            <div class="ops-stat-label">오늘 송출 횟수</div>
-            <div class="ops-stat-val" style="color:#2E9E34;">1,248</div>
-            <div class="ops-stat-sub">목표 대비 102%</div>
-          </div>
-          <div class="ops-stat">
-            <div class="ops-stat-label">누적 송출 횟수</div>
-            <div class="ops-stat-val">18,304</div>
-            <div class="ops-stat-sub">집행 3일차</div>
-          </div>
-          <div class="ops-stat">
-            <div class="ops-stat-label">운영 매체</div>
-            <div class="ops-stat-val">8</div>
-            <div class="ops-stat-sub">2개 Item · 8개소</div>
-          </div>
-          <div class="ops-stat">
-            <div class="ops-stat-label">Item 운영 상태</div>
-            <div class="ops-stat-val" style="font-size:16px;">
-              <span style="color:#2E9E34;">2 운영중</span>
+          <!-- ══════════ S2. 편성 정보 ══════════ -->
+          <div class="tab-panel" data-group="g2" id="tab-s2-items">
+            <div class="section-sublabel">S2-1. 편성 구성</div>
+            <div class="card">
+              <div class="card-title">편성 구성</div>
+              <div class="item-select-row" id="itemSelectRow"></div>
+              <div id="itemDetailArea"></div>
             </div>
-            <div class="ops-stat-sub">오류 없음</div>
+
+            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">Capacity / 보장 정보</div>
+            <div class="card">
+              <div class="card-title">Capacity / 보장 정보</div>
+              <div class="kpi-row" style="margin-bottom:12px;">
+                <div class="kpi-card"><div class="kpi-label">Reference Slot Duration</div><div class="kpi-value">30<span class="kpi-unit">초</span></div></div>
+                <div class="kpi-card"><div class="kpi-label">Total Slot Count</div><div class="kpi-value">6</div></div>
+                <div class="kpi-card"><div class="kpi-label">Reference Loop Duration</div><div class="kpi-value">180<span class="kpi-unit">초</span></div></div>
+              </div>
+              <div class="kpi-row">
+                <div class="kpi-card highlight"><div class="kpi-label">Effective Operating Time</div><div class="kpi-value">18<span class="kpi-unit">h / day</span></div></div>
+                <div class="kpi-card highlight"><div class="kpi-label">Expected Minimum Plays</div><div class="kpi-value">2,160<span class="kpi-unit">회 / day</span></div></div>
+              </div>
+              <div style="margin-top:12px;font-size:12px;color:#9EA5AD;background:#F6F7F9;border-radius:6px;padding:8px 12px;">
+                ※ Expected Minimum Plays = (Effective Operating Time × 3600) ÷ Reference Loop Duration × Item Slot Count
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════ S3. 운영 현황 ══════════ -->
+          <div class="tab-panel" data-group="g3" id="tab-s3-ops">
+            <div class="stat-row">
+              <div class="stat-card"><div class="stat-label">전체 운영일</div><div class="stat-value">22일</div></div>
+              <div class="stat-card"><div class="stat-label">이행률 (전체)</div><div class="stat-value" style="color:#2E9E34;">98.2%</div></div>
+              <div class="stat-card"><div class="stat-label">운영 이슈</div><div class="stat-value" style="color:#E97474;">3건</div></div>
+              <div class="stat-card"><div class="stat-label">잔여 운영일</div><div class="stat-value" style="color:#9EA5AD;">0일</div></div>
+            </div>
+
+            <div class="section-sublabel">S3-1. 운영 요약</div>
+            <div class="card">
+              <div class="card-title">운영 요약</div>
+              <div class="field-grid">
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">Item별 이행률</div>
+                  <div class="inner-table-wrap">
+                    <table class="inner-table">
+                      <thead><tr><th>Item</th><th>이행률</th><th>비고</th></tr></thead>
+                      <tbody>
+                        <tr><td>Item #1</td><td style="color:#2E9E34;font-weight:600;">100%</td><td>이상 없음</td></tr>
+                        <tr><td>Item #2</td><td style="color:#2E9E34;font-weight:600;">100%</td><td>이상 없음</td></tr>
+                        <tr><td>Item #3</td><td style="color:#B45309;font-weight:600;">94.6%</td><td>네트워크 장애 2건</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">운영 이슈</div>
+                  <div class="issue-list">
+                    <div class="issue-item"><span>미게재</span><span style="font-weight:700;color:#E97474;">2건</span></div>
+                    <div class="issue-item"><span>장애</span><span style="font-weight:700;color:#B45309;">1건</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S3-2. 운영 상세 — 송출 Calendar</div>
+            <div class="card">
+              <div class="card-title">운영 상세 — 송출 Calendar</div>
+              <div class="cal-legend">
+                <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#58C65D;"></span>정상 (100%)</span>
+                <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#B45309;"></span>일부 이행 (80~99%)</span>
+                <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#E97474;"></span>미이행 (&lt;80%)</span>
+              </div>
+              <div class="cal-2col" id="calGrid"></div>
+              <div style="border-top:1px solid #E5E7EA;padding-top:16px;">
+                <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">일별 송출 상세 <span id="calSelLabel" style="font-weight:400;color:#9EA5AD;"></span></div>
+                <div id="calDetailArea" style="font-size:13px;color:#9EA5AD;">위 캘린더에서 날짜를 선택하세요.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════ S4. 변경 이력 ══════════ -->
+          <div class="tab-panel" data-group="g4" id="tab-s4-revision">
+            <div class="section-sublabel">S4-1. Revision 목록</div>
+            <div class="card">
+              <div class="card-title">Revision 목록</div>
+              <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;color:#9EA5AD;">
+                현재 Effective Revision: <span class="rev-current" style="font-size:13px;">R2</span>
+              </div>
+              <div class="inner-table-wrap">
+                <table class="inner-table">
+                  <thead><tr><th>Revision</th><th>상태</th><th>변경 사유</th><th>Effective Period</th><th>작성자</th><th></th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="rev-current">R2</span> <span style="font-size:11px;color:#9EA5AD;">현재</span></td>
+                      <td><span class="badge appr-badge appr-approved">Effective</span></td>
+                      <td>콘텐츠 추가 (Galaxy S25 버즈 15s)</td>
+                      <td class="mono" style="font-size:11px;">2026-01-05 ~ 현재</td>
+                      <td>홍길동</td>
+                      <td><button class="guide-url" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;" onclick="openRevSnapshot('R2')">Snapshot 보기</button></td>
+                    </tr>
+                    <tr>
+                      <td><span class="rev-past">R1</span></td>
+                      <td><span class="badge-gray badge" style="background:#F0F1F3;color:#596066;">Superseded</span></td>
+                      <td>최초 확정 등록</td>
+                      <td class="mono" style="font-size:11px;">2025-12-28 ~ 2026-01-04</td>
+                      <td>홍길동</td>
+                      <td><button class="guide-url" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;" onclick="openRevSnapshot('R1')">Snapshot 보기</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="margin-top:12px;font-size:12px;color:#9EA5AD;">※ 과거 Revision은 immutable — 수정 불가합니다.</div>
+            </div>
+          </div>
+
+          <!-- Revision Snapshot Modal -->
+          <div class="rev-snap-overlay" id="revSnapOverlay" onclick="if(event.target===this)closeRevSnapshot()">
+            <div class="rev-snap-modal">
+              <div class="rev-snap-head">
+                <div>
+                  <div class="rev-snap-title">Revision Snapshot <span class="rev-current" id="revSnapId">R2</span></div>
+                  <div class="rev-snap-sub">조회 전용(Read-only) — 해당 Revision 당시 스케줄 정의</div>
+                </div>
+                <button class="rev-snap-close" onclick="closeRevSnapshot()">✕</button>
+              </div>
+              <div class="rev-snap-body" id="revSnapBody"></div>
+            </div>
+          </div>
+
+          <!-- ══════════ S5. 감사 ══════════ -->
+          <div class="tab-panel" data-group="g5" id="tab-s5-audit">
+            <div class="stat-row" style="grid-template-columns:repeat(3,1fr);">
+              <div class="stat-card"><div class="stat-label">최초 생성일 / 생성자</div><div class="field-value" style="font-weight:600;">2025-12-15 / 홍길동</div></div>
+              <div class="stat-card"><div class="stat-label">최종 수정일 / 수정자</div><div class="field-value" style="font-weight:600;">2026-01-05 09:15 / 홍길동</div></div>
+              <div class="stat-card"><div class="stat-label">현재 Revision / 상태</div><div class="field-value" style="font-weight:600;">R2 / 집행중</div></div>
+            </div>
+            <div class="section-sublabel">S5-1. Audit Log</div>
+            <div class="card">
+              <div class="card-title">Audit Log</div>
+              <div class="inner-table-wrap">
+                <table class="inner-table">
+                  <thead><tr><th>일시</th><th>액터</th><th>이벤트 유형</th><th>대상</th><th>변경 전</th><th>변경 후</th></tr></thead>
+                  <tbody>
+                    <tr><td class="mono" style="font-size:11px;">2026-01-20 00:00</td><td><span class="badge badge-gray">System</span></td><td>상태 변경</td><td>Schedule Lifecycle</td><td>예약</td><td>집행중</td></tr>
+                    <tr><td class="mono" style="font-size:11px;">2026-01-05 09:15</td><td>홍길동</td><td>Item 추가</td><td>Schedule Item #3</td><td>—</td><td>신규 (15s / CNT-2026-0042)</td></tr>
+                    <tr><td class="mono" style="font-size:11px;">2026-01-05 09:10</td><td>홍길동</td><td>Revision 확정</td><td>Revision R2</td><td>Draft</td><td>Effective</td></tr>
+                    <tr><td class="mono" style="font-size:11px;">2025-12-28 14:30</td><td>홍길동</td><td>Approval</td><td>Approval Status</td><td>Pending</td><td>Approved</td></tr>
+                    <tr><td class="mono" style="font-size:11px;">2025-12-28 14:20</td><td>홍길동</td><td>Revision 확정</td><td>Revision R1</td><td>Draft</td><td>Effective</td></tr>
+                    <tr><td class="mono" style="font-size:11px;">2025-12-20 16:44</td><td>홍길동</td><td>운영시간 수정</td><td>End Time (전체)</td><td>23:00</td><td>23:59</td></tr>
+                    <tr><td class="mono" style="font-size:11px;">2025-12-15 11:02</td><td>홍길동</td><td>생성</td><td>SCH-2026-0012</td><td>—</td><td>등록 완료</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /detail-main -->
+      </div>
+
+      <!-- ── 우측 사이드 패널: 미디어 위치 (탭과 무관하게 항상 노출) ── -->
+      <aside class="sched-side-panel">
+        <div class="card">
+          <div class="sched-map-head">
+            <span class="sched-map-title">미디어 위치</span>
+            <span class="sched-map-count" id="schedMediaCount">3개 운영 중</span>
+          </div>
+          <div id="schedMediaMap"></div>
+          <div id="schedMediaList"></div>
+          <div class="sched-content-area" id="schedContentArea">
+            <div class="sched-content-empty">미디어를 선택하면 송출 콘텐츠를 확인할 수 있습니다</div>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Item별 운영 현황</span></div>
-      <div class="card-body" style="padding:0;">
-        <table class="inner-table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>매체</th>
-              <th>운영 상태</th>
-              <th>오늘 송출</th>
-              <th>목표 대비</th>
-              <th>마지막 송출</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="font-weight:600; color:#596066;">Item 1</td>
-              <td>강남역 A출구 외 4개소</td>
-              <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
-              <td style="font-variant-numeric:tabular-nums;">826회</td>
-              <td style="color:#2E9E34; font-weight:600;">+3%</td>
-              <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">14:35:02</td>
-            </tr>
-            <tr>
-              <td style="font-weight:600; color:#596066;">Item 2</td>
-              <td>신촌역 B출구 외 3개소</td>
-              <td><span class="badge lc-active"><span class="badge-dot"></span>운영중</span></td>
-              <td style="font-variant-numeric:tabular-nums;">422회</td>
-              <td style="color:#2E9E34; font-weight:600;">+1%</td>
-              <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">14:34:58</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div style="font-size:12px; color:#9EA5AD; padding:0 4px;">
-      ※ CMS Item State = 실행계획 상태. 실제 재생 증적 SSOT = Playback/PoP Log. 장비 Health/제어 SSOT = RMS.
-    </div>
-  </div>
 
-  <!-- ===== TAB 7: Revision ===== -->
-  <div id="tab-revision" class="tab-panel">
-    <div class="immutability-notice">
-      ⚠️ Revision은 승인 후 불변(Immutable)입니다. 핵심 조건 변경은 New Revision 생성 후 재검증·재승인 절차를 따릅니다.
-    </div>
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Revision 이력</span>
-        <button class="btn btn-ghost">New Revision 생성</button>
-      </div>
-      <div class="card-body" style="padding:0;">
-        <table class="inner-table">
-          <thead>
-            <tr>
-              <th>Revision</th>
-              <th>변경 내역</th>
-              <th>적용 기간 (From ~ To)</th>
-              <th>Revision 상태</th>
-              <th>생성일</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="background:#F0FAF1;">
-              <td style="font-weight:700; color:#2E9E34;">R1 (현재 적용)</td>
-              <td>최초 등록</td>
-              <td style="font-variant-numeric:tabular-nums; font-size:12px; color:#596066;">2025-10-15 ~ (진행 중)</td>
-              <td><span class="badge rev-effective">Effective</span></td>
-              <td style="font-size:12px; color:#9EA5AD; font-variant-numeric:tabular-nums;">2025-10-10</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">R1 상세 — Revision Lifecycle</span></div>
-      <div class="card-body">
-        <div class="info-grid">
-          <div class="info-label">Revision ID</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums; color:#9EA5AD;">SCH-2025-0041-R1</div>
-          <div class="info-label">Revision Lifecycle</div>
-          <div class="info-value"><span class="badge rev-effective">Effective (적용중)</span></div>
-          <div class="info-label">Effective From</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-15 00:00:00</div>
-          <div class="info-label">Effective To</div>
-          <div class="info-value" style="color:#9EA5AD;">(진행 중 — 다음 Revision 적용 시 자동 마감)</div>
-          <div class="info-label">Technical Validation</div>
-          <div class="info-value" style="color:#2E9E34;">✅ Success</div>
-          <div class="info-label">PDE Decision</div>
-          <div class="info-value" style="color:#2E9E34;">✅ Approved</div>
-          <div class="info-label">승인 상태</div>
-          <div class="info-value"><span class="badge appr-approved">승인</span></div>
-        </div>
-      </div>
-    </div>
   </div>
-
-  <!-- ===== TAB 8: Audit ===== -->
-  <div id="tab-audit" class="tab-panel">
-    <div class="card">
-      <div class="card-head"><span class="card-title">생성 / 수정 정보</span></div>
-      <div class="card-body">
-        <div class="info-grid">
-          <div class="info-label">생성자</div>
-          <div class="info-value">홍길동</div>
-          <div class="info-label">생성일시</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-10 09:14:22</div>
-          <div class="info-label">최종 수정자</div>
-          <div class="info-value">홍길동</div>
-          <div class="info-label">최종 수정일시</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums;">2025-10-14 18:03:11</div>
-          <div class="info-label">담당자</div>
-          <div class="info-value">홍길동 (D'ooh Admin)</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">상태 변경 이력</span></div>
-      <div class="card-body">
-        <div class="audit-row">
-          <div class="audit-time">2026-08-19</div>
-          <div class="audit-dot"></div>
-          <div><div><span class="audit-actor">홍길동</span> — <span class="audit-desc">조회 · 상세 페이지 조회 (운영 정상 확인)</span></div></div>
-        </div>
-        <div class="audit-row">
-          <div class="audit-time">2025-10-15 00:00:01</div>
-          <div class="audit-dot green"></div>
-          <div><div><span class="audit-actor">System</span> — <span class="audit-desc">집행 시작 · Lifecycle: Scheduled → Active (운영 시작일 도달)</span></div></div>
-        </div>
-        <div class="audit-row">
-          <div class="audit-time">2025-10-14 18:03:11</div>
-          <div class="audit-dot green"></div>
-          <div><div><span class="audit-actor">홍길동</span> — <span class="audit-desc">등록 · 스케줄 SCH-2025-0041 최초 등록 및 R1 생성</span></div></div>
-        </div>
-        <div class="audit-row">
-          <div class="audit-time">2025-10-10 16:45:00</div>
-          <div class="audit-dot green"></div>
-          <div><div><span class="audit-actor">김관리</span> — <span class="audit-desc">승인 · Approval: Pending → Approved</span></div></div>
-        </div>
-        <div class="audit-row">
-          <div class="audit-time">2025-10-08 15:00:41</div>
-          <div class="audit-dot"></div>
-          <div><div><span class="audit-actor">System (PDE)</span> — <span class="audit-desc">PDE 검토 · PDE Decision: Approved. Policy v2025.10.02 적용</span></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">Inventory Release 상태</span></div>
-      <div class="card-body">
-        <div class="info-grid">
-          <div class="info-label">해제 상태</div>
-          <div class="info-value" style="color:#9EA5AD;">운영 중 (종결 시 미래 Inventory 해제 예정)</div>
-          <div class="info-label">해제 예정 시각</div>
-          <div class="info-value" style="font-variant-numeric:tabular-nums; color:#9EA5AD;">2025-12-31 23:59:59 (운영 종료 시)</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </main>
 
+<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-function showTab(id, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  btn.classList.add('active');
-}
-</script>
-<script>
+/* ══════════ 헤더 데이터 스위처 (schedule-list.html의 ?id= 링크 대응) ══════════ */
 (function() {
-  const SCHEDULES = {
-    'SCH-2025-0041': { title: '강남역 갤럭시 S25 광고 25Q4', advertiser: '삼성전자', period: '2025-10-15 ~ 2025-12-31', campaign: 'CMP-2026-001', campaignName: '삼성전자 갤럭시 S25 런칭', manager: '홍길동', registeredAt: '2025-10-14', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['강남', 'Q4'], apprReviewer: '김관리 (Admin)', apprDate: '2025-10-10 16:45', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '일반 옥외광고, 업종·지역·시간대 제한 없음', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0037': { title: '강남 여름 시즌 캠페인', advertiser: '삼성전자', period: '2025-07-01 ~ 2025-08-31', campaign: 'CMP-2025-061', campaignName: '삼성전자 비스포크 가을 이벤트', manager: '홍길동', registeredAt: '2025-07-01', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['강남', '여름', '삼성'], apprReviewer: '김관리 (Admin)', apprDate: '2025-06-28 10:30', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '일반 소비재 광고, 제한사항 없음', lc: 'active', lcLabel: '집행중', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0039': { title: '공항 브랜드 패키지 Q4', advertiser: '현대자동차', period: '2025-11-01 ~ 2025-11-30', campaign: 'CMP-2026-003', campaignName: '현대자동차 아이오닉9 브랜드 캠페인', manager: '김민준', registeredAt: '2025-10-10', mode: 'Fixed', source: '직접', sourceClass: 'source-direct', tags: ['공항', 'Q4', '현대'], apprReviewer: '이관리 (Admin)', apprDate: '2025-10-08 11:00', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '공항 내 자동차 브랜드 광고, 제한사항 없음', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0040': { title: '코엑스 신제품 런칭 스팟', advertiser: 'LG전자', period: '2025-11-15 ~ 2025-12-15', campaign: 'CMP-2026-002', campaignName: 'LG생활건강 봄 시즌 프로모션', manager: '이수아', registeredAt: '2025-10-12', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['코엑스', '신제품', 'LG'], apprReviewer: '김관리 (Admin)', apprDate: '2025-10-11 14:20', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '가전제품 광고, 코엑스 실내 위치 적합', lc: 'scheduled', lcLabel: '예약', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' },
-    'SCH-2025-0042': { title: '홍대 팝업 스팟 조건광고', advertiser: '나이키코리아', period: '2025-11-01 ~ 2025-11-17', campaign: 'CMP-2026-003', campaignName: '현대자동차 아이오닉9 브랜드 캠페인', manager: '홍길동', registeredAt: '2025-10-13', mode: 'Fixed', source: '캠페인', sourceClass: 'source-campaign', tags: ['홍대', '나이키', '팝업'], apprReviewer: '(대기 중)', apprDate: '—', pdeResult: '검토중', pdeStyle: 'background:#FFFBEB;border:1px solid #F3BE4A;', pdeReason: '스포츠 브랜드 광고 정책 검토 중 — 위치·시간대 적합성 확인 필요', lc: 'pending', lcLabel: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
-    'SCH-2025-0043': { title: '롯데타운 연말 프로모션', advertiser: '롯데백화점', period: '2025-12-01 ~ 2025-12-31', campaign: 'CMP-2026-004', campaignName: '카카오페이 2026 브랜드 어웨어니스', manager: '박지은', registeredAt: '2025-10-15', mode: 'Rolling', source: '직접', sourceClass: 'source-direct', tags: ['롯데', '연말', '프로모션'], apprReviewer: '(대기 중)', apprDate: '—', pdeResult: '검토중', pdeStyle: 'background:#FFFBEB;border:1px solid #F3BE4A;', pdeReason: '연말 소비 촉진 광고 — 위치·노출 빈도 정책 확인 중', lc: 'pending', lcLabel: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', pde: 'PDE 검토중', pdeClass: 'badge' },
-    'SCH-2025-0044': { title: '카카오 브랜드 디스플레이', advertiser: '카카오', period: '2025-12-01 ~ 2025-12-31', campaign: 'CMP-2026-004', campaignName: '카카오페이 2026 브랜드 어웨어니스', manager: '홍길동', registeredAt: '2025-10-15', mode: 'Fixed', source: '직접', sourceClass: 'source-direct', tags: ['카카오', '브랜드'], apprReviewer: '(미요청)', apprDate: '—', pdeResult: '미심사', pdeStyle: 'background:#F0F1F3;border:1px solid #CED2D6;', pdeReason: '승인 요청 전 — PDE 심사 미진행', lc: 'draft', lcLabel: '초안', appr: '미요청', apprClass: 'badge appr-none', pde: 'PDE 미심사', pdeClass: 'badge' },
-    'SCH-2025-0022': { title: 'SK하이닉스 AI 칩 캠페인', advertiser: 'SK하이닉스', period: '2025-06-01 ~ 2025-07-31', campaign: 'CMP-2025-089', campaignName: '네이버 클라우드 B2B 어웨어니스', manager: '이수아', registeredAt: '2025-05-28', mode: 'Rolling', source: '캠페인', sourceClass: 'source-campaign', tags: ['SK하이닉스', 'AI', '반도체'], apprReviewer: '김관리 (Admin)', apprDate: '2025-05-27 09:15', pdeResult: 'Approved', pdeStyle: 'background:#E8F8E9;border:1px solid #58C65D;', pdeReason: '기술·반도체 B2B 광고, 제한사항 없음', lc: 'done', lcLabel: '완료', appr: '승인됨', apprClass: 'badge appr-approved', pde: 'PDE 승인', pdeClass: 'badge pde-approved' }
+  var SCHEDULES = {
+    'SCH-2026-0012': { title:'삼성전자 갤럭시 S25 런칭 캠페인', advertiser:'삼성전자', period:'2026-01-20 ~ 2026-02-10', manager:'홍길동', product:'PRD-001', productName:'강남 프리미엄 옥외', lc:'active', lcLabel:'집행중', appr:'확정' },
+    'SCH-2025-0041': { title:'강남역 갤럭시 S25 광고 25Q4', advertiser:'삼성전자', period:'2025-10-15 ~ 2025-12-31', manager:'홍길동', product:'PRD-001', productName:'강남 프리미엄 옥외', lc:'active', lcLabel:'집행중', appr:'확정' },
+    'SCH-2025-0037': { title:'강남 여름 시즌 캠페인', advertiser:'삼성전자', period:'2025-07-01 ~ 2025-08-31', manager:'홍길동', product:'PRD-001', productName:'강남 프리미엄 옥외', lc:'active', lcLabel:'집행중', appr:'확정' },
+    'SCH-2025-0039': { title:'공항 브랜드 패키지 Q4', advertiser:'현대자동차', period:'2025-11-01 ~ 2025-11-30', manager:'김민준', product:'PRD-002', productName:'공항 프리미엄 네트워크', lc:'approved', lcLabel:'예약', appr:'확정' },
+    'SCH-2025-0040': { title:'코엑스 신제품 런칭 스팟', advertiser:'LG전자', period:'2025-11-15 ~ 2025-12-15', manager:'이수아', product:'PRD-005', productName:'코엑스몰 스탠다드', lc:'approved', lcLabel:'예약', appr:'확정' },
+    'SCH-2025-0042': { title:'홍대 팝업 스팟 조건광고', advertiser:'나이키코리아', period:'2025-11-01 ~ 2025-11-17', manager:'홍길동', product:'PRD-003', productName:'홍대·신촌 청년 네트워크', lc:'pending', lcLabel:'승인대기', appr:'미확정' },
+    'SCH-2025-0043': { title:'롯데타운 연말 프로모션', advertiser:'롯데백화점', period:'2025-12-01 ~ 2025-12-31', manager:'박지은', product:'PRD-004', productName:'부산 센텀 프리미엄', lc:'pending', lcLabel:'승인대기', appr:'미확정' },
+    'SCH-2025-0044': { title:'카카오 브랜드 디스플레이', advertiser:'카카오', period:'2025-12-01 ~ 2025-12-31', manager:'홍길동', product:'PRD-001', productName:'강남 프리미엄 옥외', lc:'draft', lcLabel:'초안', appr:'미확정' },
+    'SCH-2025-0022': { title:'SK하이닉스 AI 칩 캠페인', advertiser:'SK하이닉스', period:'2025-06-01 ~ 2025-07-31', manager:'이수아', product:'PRD-006', productName:'판교 IT 특화 스팟', lc:'done', lcLabel:'완료', appr:'확정' }
   };
+  var params = new URLSearchParams(location.search);
+  var id = params.get('id') || 'SCH-2026-0012';
+  var d = SCHEDULES[id] || SCHEDULES['SCH-2026-0012'];
 
-  function infoRow(label, value) {
-    return '<div class="info-label">' + label + '</div><div class="info-value">' + value + '</div>';
-  }
+  document.getElementById('sch-crumb').textContent = d.title;
+  document.getElementById('sch-title').textContent = d.title;
+  document.getElementById('sch-id').textContent = id;
+  document.getElementById('sch-period').textContent = d.period;
+  document.getElementById('sch-manager').textContent = d.manager;
+  document.getElementById('sch-product-link').textContent = d.product + ' ' + d.productName;
+  document.getElementById('sch-product-link').href = 'product-detail?id=' + d.product;
+  document.getElementById('s1-id').textContent = id;
+  document.getElementById('s1-name').textContent = d.title;
+  document.getElementById('s1-advertiser').textContent = d.advertiser;
 
-  function goStateSch(s) { var u = new URL(location.href); u.searchParams.set('state', s); location.href = u.toString(); }
-  const STATE_OVERRIDES_SCH = {
-    'draft':    { lc: 'draft',     label: '초안',    appr: '미요청', apprClass: 'badge appr-none', actions: '<button class="btn" style="background:#E8F8E9;color:#2E9E34;border:1px solid #58C65D;" onclick="alert(\'Feasibility 확인 완료 — 가용 슬롯 확인됨\')">Feasibility 확인</button><button class="btn btn-primary" onclick="goStateSch(\'review\')">승인요청</button>' },
-    'review':   { lc: 'pending',   label: '승인대기', appr: '승인대기', apprClass: 'badge appr-pending', actions: '<button class="btn btn-primary" onclick="goStateSch(\'approved\')">승인</button>' },
-    'approved': { lc: 'scheduled', label: '예약',    appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-primary" onclick="goStateSch(\'active\')">집행시작</button>' },
-    'active':   { lc: 'active',    label: '집행중',  appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-outline" onclick="goStateSch(\'paused\')">일시중지</button><button class="btn" onclick="location.href=\'schedule-edit\'" style="background:#EAF3FF;color:#2D84ED;border:1px solid #2D84ED;">새 Revision</button>' },
-    'paused':   { lc: 'paused',    label: '일시중지', appr: '승인됨', apprClass: 'badge appr-approved', actions: '<button class="btn btn-primary" onclick="goStateSch(\'active\')">재개</button>' }
-  };
+  var lcEl = document.getElementById('sch-lc-badge');
+  lcEl.className = 'badge lc-' + d.lc;
+  lcEl.innerHTML = '<span class="badge-dot"></span>' + d.lcLabel;
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const params = new URLSearchParams(location.search);
-    const id = params.get('id') || 'SCH-2025-0041';
-    const stateParam = params.get('state');
-    const d = SCHEDULES[id] || SCHEDULES['SCH-2025-0041'];
-
-    // Apply state override
-    var ov = stateParam && STATE_OVERRIDES_SCH[stateParam] ? STATE_OVERRIDES_SCH[stateParam] : null;
-    var lcVal = ov ? ov.lc : d.lc;
-    var lcLabel = ov ? ov.label : d.lcLabel;
-
-    // Lifecycle 프로세스 스테퍼
-    var SCH_FLOW = [
-      { key:'draft',    icon:'1', label:'초안',     gate:'기본정보·매체·\n콘텐츠 설정' },
-      { key:'check',    icon:'F', label:'Feasibility\n확인',  gate:'FRESH Feasibility\n필수 Gate (T-SCH-01)' },
-      { key:'review',   icon:'2', label:'승인요청',  gate:'검토자 승인\n(T-SCH-02)' },
-      { key:'approved', icon:'✓', label:'예약',      gate:'집행 시작\n확인' },
-      { key:'active',   icon:'▶', label:'집행중',    gate:'일시중지 or\n새 Revision' },
-      { key:'paused',   icon:'⏸', label:'일시중지',  gate:'재개\n(Feasibility 재검증)' },
-      { key:'completed',icon:'■', label:'완료',      gate:'실적 분석\n(T-MON-01)' },
-    ];
-    var SCH_IDX = { draft:0, check:1, pending:2, review:2, approved:3, scheduled:3, active:4, paused:5, completed:6 };
-    var curKey = stateParam || d.lc || 'draft';
-    var curIdx = SCH_IDX[curKey] !== undefined ? SCH_IDX[curKey] : 0;
-    var stepperEl = document.getElementById('sch-lc-stepper');
-    if (stepperEl) {
-      var html = '';
-      SCH_FLOW.forEach(function(s, i) {
-        var cls = i < curIdx ? 'done' : (i === curIdx ? 'current' : '');
-        html += '<div class="lc-step ' + cls + '"><div class="lc-step-node">' + s.icon + '</div>'
-          + '<div class="lc-step-label">' + s.label.replace(/\n/g,'<br>') + '</div>'
-          + '<div class="lc-step-gate">' + s.gate.replace(/\n/g,'<br>') + '</div></div>';
-        if (i < SCH_FLOW.length - 1) {
-          var mandatory = (i === 1) ? 'mandatory' : '';
-          html += '<div class="lc-arrow ' + (i < curIdx ? 'done' : '') + ' ' + mandatory + '"><div class="lc-arrow-line"></div>'
-            + (mandatory ? '<div class="lc-arrow-gate">필수 Gate</div>' : '') + '</div>';
-        }
-      });
-      stepperEl.innerHTML = html;
-    }
-    var SCH_NOTES = {
-      draft:'초안 — 기본정보·매체·콘텐츠를 설정하세요. Feasibility 확인이 승인요청 전 필수입니다.',
-      check:'Feasibility 확인 중 — 슬롯 가용성·보장횟수 충족 여부를 검증합니다. FRESH 상태여야 합니다.',
-      review:'승인요청 — 검토자 승인을 기다리는 중.',
-      pending:'승인요청 — 검토자 승인을 기다리는 중.',
-      approved:'예약(Approved) — 집행 시작을 확인하세요.',
-      scheduled:'예약(Approved) — 집행 시작을 확인하세요.',
-      active:'집행중 — 스케줄 운영 중. 일시중지 또는 새 Revision이 가능합니다.',
-      paused:'일시중지 — Feasibility 재검증 후 재개하거나 종료를 선택하세요.',
-      completed:'완료 — 집행 종료. 모니터링·실적 분석 리포트를 확인하세요.',
-    };
-    var noteEl = document.getElementById('sch-lc-note');
-    if (noteEl) noteEl.textContent = SCH_NOTES[curKey] || '';
-
-    // 수정·삭제 정책 테이블
-    var SCH_POLICY = [
-      { state:'draft',     label:'초안',     edit:'<span class="pol-ok">✅ 직접 편집</span>',      del:'<span class="pol-ok">✅ 가능</span>',       note:'모든 항목 편집. 수정 후 Feasibility 재실행 필요' },
-      { state:'check',     label:'Feasibility확인', edit:'<span class="pol-ok">✅ 직접 편집</span>', del:'<span class="pol-ok">✅ 가능</span>',   note:'수정 시 Feasibility Stale → 재실행 후 승인요청' },
-      { state:'review',    label:'승인요청',  edit:'<span class="pol-warn">⚠ 반려 후 수정</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'반려 처리 → 수정 → Feasibility 재실행 → 재제출' },
-      { state:'pending',   label:'승인대기',  edit:'<span class="pol-warn">⚠ 반려 후 수정</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'반려 처리 → 수정 → Feasibility 재실행 → 재제출' },
-      { state:'approved',  label:'예약',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-warn">⚠ 취소 가능</span>', note:'수정 시 취소 후 재등록. 취소는 광고주 협의 필요' },
-      { state:'scheduled', label:'예약',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-warn">⚠ 취소 가능</span>', note:'취소는 광고주 협의 필요' },
-      { state:'active',    label:'집행중',    edit:'<span class="pol-no">❌ 핵심조건 차단</span>',  del:'<span class="pol-no">❌ 불가</span>',       note:'새 Revision → Impact Analysis → 재승인. 강제취소 = 영업팀 승인 필요' },
-      { state:'paused',    label:'일시중지',  edit:'<span class="pol-warn">⚠ Revision 필요</span>', del:'<span class="pol-no">❌ 불가</span>',      note:'핵심조건 변경 → Revision → Feasibility → 재승인' },
-      { state:'completed', label:'완료',      edit:'<span class="pol-no">❌ 불가</span>',           del:'<span class="pol-no">❌ 불가</span>',       note:'읽기 전용. 실적·PoP·정산 근거 보존' },
-    ];
-    var schStepperEl = document.getElementById('sch-lc-stepper');
-    var schPolicyWrap = schStepperEl ? schStepperEl.closest('.lc-stepper-wrap') : null;
-    if (schPolicyWrap) {
-      var toggleBtn = document.createElement('button');
-      toggleBtn.className = 'lc-policy-toggle';
-      toggleBtn.innerHTML = '▾ 수정·삭제 정책 보기';
-      var tableWrap = document.createElement('div');
-      tableWrap.className = 'lc-policy-table-wrap';
-      tableWrap.style.display = 'none';
-      var rows = SCH_POLICY.map(function(p) {
-        var isCur = p.state === curKey;
-        return '<tr' + (isCur ? ' class="current-row"' : '') + '>'
-          + '<td>' + p.label + (isCur ? ' <span style="font-size:10px;color:#2D84ED;">◀ 현재</span>' : '') + '</td>'
-          + '<td>' + p.edit + '</td><td>' + p.del + '</td><td style="color:#596066;">' + p.note + '</td></tr>';
-      }).join('');
-      tableWrap.innerHTML = '<table class="lc-policy-table"><thead><tr><th>Lifecycle 상태</th><th>수정</th><th>삭제/취소</th><th>세부 정책</th></tr></thead><tbody>' + rows + '</tbody></table>';
-      toggleBtn.onclick = function() {
-        var v = tableWrap.style.display === 'none';
-        tableWrap.style.display = v ? 'block' : 'none';
-        toggleBtn.innerHTML = (v ? '▴' : '▾') + ' 수정·삭제 정책 ' + (v ? '접기' : '보기');
-      };
-      schPolicyWrap.appendChild(toggleBtn);
-      schPolicyWrap.appendChild(tableWrap);
-    }
-
-    var apprClass = ov ? ov.apprClass : d.apprClass;
-    var apprText = ov ? ov.appr : d.appr;
-
-    // Header
-    const titleEl = document.getElementById('sch-title');
-    if (titleEl) titleEl.textContent = d.title;
-
-    const metaEl = document.getElementById('sch-meta');
-    if (metaEl) metaEl.textContent = id + ' · ' + d.advertiser + ' · ' + d.period;
-
-    const lcEl = document.getElementById('sch-lc-badge');
-    if (lcEl) { lcEl.className = 'badge lc-' + lcVal; lcEl.style.cssText = 'font-size:13px; padding:4px 12px;'; lcEl.innerHTML = '<span class="badge-dot"></span>' + lcLabel; }
-
-    const apprEl = document.getElementById('sch-appr-badge');
-    if (apprEl) { apprEl.className = apprClass; apprEl.style.cssText = 'font-size:12px;'; apprEl.textContent = apprText; }
-
-    // Render state-transition action buttons if action container exists
-    var actEl = document.getElementById('sch-actions');
-    if (actEl && ov) actEl.innerHTML = ov.actions;
-
-    const pdeEl = document.getElementById('sch-pde-badge');
-    if (pdeEl) { pdeEl.className = d.pdeClass; pdeEl.style.cssText = 'font-size:12px;'; pdeEl.textContent = d.pde; }
-
-    // Tab: 기본정보 (tab-basic)
-    var tabBasic = document.getElementById('tab-basic');
-    if (tabBasic) {
-      var tags = (d.tags || []).map(function(t) {
-        return '<span style="display:inline-flex;align-items:center;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:2px 10px;font-size:12px;color:#2E9E34;margin-right:4px;">' + t + '</span>';
-      }).join('');
-      var isApproved = d.appr === '승인됨';
-      tabBasic.innerHTML = '<div class="card"><div class="card-head"><span class="card-title">스케줄 기본 정보</span></div>'
-        + '<div class="card-body"><div class="info-grid">'
-        + infoRow('스케줄 ID', '<span style="color:#9EA5AD;font-variant-numeric:tabular-nums;">' + id + '</span>')
-        + infoRow('스케줄명', '<span style="font-weight:600;">' + d.title + '</span>')
-        + infoRow('태그', tags || '—')
-        + infoRow('광고주', d.advertiser)
-        + infoRow('생성 출처', '<span class="badge ' + d.sourceClass + '">' + d.source + '</span>')
-        + infoRow('연계 캠페인', '<span style="color:#2D84ED;">' + d.campaign + ' — ' + d.campaignName + '</span>')
-        + infoRow('담당자', d.manager)
-        + infoRow('운영기간', '<span style="font-variant-numeric:tabular-nums;">' + d.period + '</span>')
-        + infoRow('운영 방식', d.mode)
-        + infoRow('등록일', '<span style="font-variant-numeric:tabular-nums;">' + d.registeredAt + '</span>')
-        + infoRow('Lifecycle 상태', '<span class="badge lc-' + d.lc + '"><span class="badge-dot"></span>' + d.lcLabel + ' (' + (d.lc === 'active' ? 'Active' : d.lc === 'scheduled' ? 'Scheduled' : d.lc === 'pending' ? 'Pending' : d.lc === 'done' ? 'Done' : 'Draft') + ')</span>')
-        + '</div></div></div>'
-        + '<div class="card"><div class="card-head"><span class="card-title">승인 워크플로우</span>'
-        + (isApproved ? '<span style="font-size:12px;color:#58C65D;display:flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#58C65D"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>Feasibility 통과</span>' : '')
-        + '</div><div class="card-body"><div class="appr-card">'
-        + '<div class="appr-field"><div class="appr-field-label">승인 상태</div><div class="appr-field-value"><span class="' + d.apprClass + '">' + d.appr + '</span></div></div>'
-        + '<div class="appr-field"><div class="appr-field-label">승인자</div><div class="appr-field-value">' + d.apprReviewer + '</div></div>'
-        + '<div class="appr-field"><div class="appr-field-label">승인일시</div><div class="appr-field-value">' + d.apprDate + '</div></div>'
-        + '</div></div></div>'
-        + '<div class="card"><div class="card-head"><span class="card-title">PDE 검토 결과</span></div>'
-        + '<div class="card-body"><div style="' + d.pdeStyle + 'border-radius:8px;padding:14px 18px;">'
-        + '<div style="font-size:13px;font-weight:700;color:#24292E;margin-bottom:8px;">PDE 결정: ' + d.pdeResult + '</div>'
-        + '<div class="info-grid"><div class="info-label">사유</div><div class="info-value">' + d.pdeReason + '</div></div>'
-        + '</div></div></div>';
-    }
-  });
+  var apprEl = document.getElementById('sch-appr-badge');
+  apprEl.className = 'badge appr-badge ' + (d.appr === '확정' ? 'appr-approved' : 'appr-pending');
+  apprEl.textContent = d.appr;
 })();
 
-function runPdeRevalidation() {
-  var btn = document.getElementById('pde-reval-btn');
-  btn.textContent = '검증 중...';
-  btn.disabled = true;
-  var result = document.getElementById('pde-reval-result');
-  result.style.display = 'none';
-  setTimeout(function() {
-    result.style.display = 'block';
-    result.style.background = '#F0FAF1';
-    result.style.color = '#2E9E34';
-    result.style.border = '1px solid #A7F3AD';
-    result.innerHTML = '✅ PDE 재검증 완료 (v2025.10.02)<br>'
-      + '· 업종 제한 정책 — PASS<br>'
-      + '· 경쟁사 독점 정책 — PASS<br>'
-      + '· 지역 규제 정책 — PASS<br>'
-      + '· 콘텐츠 등급 정책 — PASS<br>'
-      + '· 인벤토리 루프 정책 — PASS<br>'
-      + '<strong>결과: 승인 유지 (모든 정책 충족)</strong>';
-    document.getElementById('pde-revalidation-status').textContent = '재검증 완료 ✓';
-    btn.textContent = '✓ 재검증 완료';
-    btn.style.background = '#58C65D';
-  }, 1800);
+/* ══════════ S1-4. Lifecycle Flow ══════════ */
+function renderFlow(elId, steps, current) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var html = '';
+  steps.forEach(function(s, i) {
+    html += '<span class="lc-flow-step' + (s === current ? ' cur' : '') + '">' + s + '</span>';
+    if (i < steps.length - 1) html += '<span class="lc-flow-arrow"></span>';
+  });
+  el.innerHTML = html;
 }
+renderFlow('sch-lc-flow', ['등록 대기','미확정','예약','집행중','일시정지','종료'], '집행중');
+renderFlow('sch-rev-flow', ['Draft','Pending Approval','Approved','Effective','Superseded'], 'Effective');
+
+/* ══════════ S2. 편성 정보 — Item selector + 콘텐츠 편성 ══════════ */
+var SCHEDULE_ITEMS = [
+  {
+    no: 1, targetType: 'Product', targetId: 'PRD-001', targetName: '강남 프리미엄 옥외', targetRev: 'R2',
+    salesVariant: 'Fixed Impression', assignedSlot: 'Slot #1 ~ #4', slotDur: '30초', days: '월·화·수·목·금·토', opWindow: '06:00 ~ 24:00',
+    products: [{ productId:'PRD-001', productName:'강남 프리미엄 옥외', productRev:'R2', mediaContents: [
+      { mediaId:'MED-001', mediaName:'강남역 1번출구 A', contentRev:'CNT-2026-0041 Rev.1', contentName:'Galaxy S25 런칭 30s' },
+      { mediaId:'MED-012', mediaName:'역삼역 2번출구 B', contentRev:'CNT-2026-0041 Rev.1', contentName:'Galaxy S25 런칭 30s' },
+      { mediaId:'MED-018', mediaName:'선릉역 1번출구 C', contentRev:'CNT-2026-0042 Rev.1', contentName:'Galaxy S25 버즈 15s' }
+    ]}]
+  },
+  {
+    no: 2, targetType: 'Package', targetId: 'PKG-0023', targetName: '강남 A급 패키지', targetRev: 'R1',
+    salesVariant: 'Fixed Duration', assignedSlot: 'Slot #5 ~ #6', slotDur: '15초', days: '월·화·수·목·금·토', opWindow: '09:00 ~ 21:00',
+    products: [
+      { productId:'PRD-002', productName:'역삼 스탠다드 옥외', productRev:'R1', mediaContents: [
+        { mediaId:'MED-021', mediaName:'역삼역 3번출구 A', contentRev:'CNT-2026-0041 Rev.1', contentName:'Galaxy S25 런칭 30s' },
+        { mediaId:'MED-022', mediaName:'역삼역 4번출구 B', contentRev:'CNT-2026-0041 Rev.1', contentName:'Galaxy S25 런칭 30s' }
+      ]},
+      { productId:'PRD-003', productName:'선릉 프리미엄 옥외', productRev:'R2', mediaContents: [
+        { mediaId:'MED-031', mediaName:'선릉역 2번출구 A', contentRev:'CNT-2026-0042 Rev.1', contentName:'Galaxy S25 버즈 15s' },
+        { mediaId:'MED-032', mediaName:'선릉역 3번출구 B', contentRev:'CNT-2026-0042 Rev.1', contentName:'Galaxy S25 버즈 15s' },
+        { mediaId:'MED-033', mediaName:'선릉역 4번출구 C', contentRev:'CNT-2026-0041 Rev.1', contentName:'Galaxy S25 런칭 30s' }
+      ]}
+    ]
+  }
+];
+var DAYS_SHORT = ['월','화','수','목','금','토','일'];
+
+function dayPillsHtml(days) {
+  var active = days.split('·').map(function(d) { return d.trim(); });
+  return '<div class="day-chips">' + DAYS_SHORT.map(function(d) {
+    var on = active.indexOf(d) !== -1;
+    return '<span class="day-chip ' + (on ? 'on' : 'off') + '">' + d + '</span>';
+  }).join('') + '</div>';
+}
+
+function mediaContentRowsHtml(list) {
+  return list.map(function(mc) {
+    return '<div class="mc-row">'
+      + '<div class="mc-media-col"><div class="mc-media-id">' + mc.mediaId + '</div><div class="mc-media-name">' + mc.mediaName + '</div></div>'
+      + '<div class="mc-arrow">&rarr;</div>'
+      + '<div class="mc-content-col"><div class="mc-content-thumb">&#9654;</div><div><div class="mc-content-name">' + mc.contentName + '</div><div class="mc-content-rev">' + mc.contentRev + '</div></div></div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderItemDetail(item) {
+  var isPackage = item.targetType === 'Package';
+  var html = '<div class="item-detail-grid">'
+    + '<div class="item-detail-box"><div class="item-detail-box-title">운영 대상</div>'
+    + '<div class="field-label" style="margin-bottom:4px;">Target</div>'
+    + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span class="tag" style="' + (isPackage ? 'background:#DBEAFE;color:#1D4ED8;' : '') + '">' + item.targetType + '</span><span class="mono" style="font-size:12px;color:#2D84ED;">' + item.targetId + '</span></div>'
+    + '<div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">' + item.targetName + '</div>'
+    + '<div class="item-detail-sub"><div class="item-detail-sub-col"><div class="field-label">Revision</div><span class="mono" style="font-size:14px;font-weight:700;color:#2E9E34;">' + item.targetRev + '</span></div>'
+    + '<div class="item-detail-sub-col"><div class="field-label">Sales Condition</div><span style="font-size:12px;color:#24292E;">' + item.salesVariant + '</span></div></div></div>'
+    + '<div class="item-detail-box"><div class="item-detail-box-title">편성 조건</div>'
+    + '<div class="field-grid" style="margin-bottom:10px;"><div class="field-item"><div class="field-label">Assigned Slot</div><span class="mono" style="font-size:12px;">' + item.assignedSlot + '</span></div>'
+    + '<div class="field-item"><div class="field-label">Slot Duration</div><span class="mono" style="font-size:14px;font-weight:700;">' + item.slotDur + '</span></div>'
+    + '<div class="field-item"><div class="field-label">Operating Window</div><span class="mono" style="font-size:12px;">' + item.opWindow + '</span></div></div>'
+    + '<div class="field-label" style="margin-bottom:6px;">Operating Days</div>' + dayPillsHtml(item.days) + '</div>'
+    + '</div>';
+
+  html += '<div class="mc-panel"><div class="mc-panel-head"><span class="mc-panel-title">콘텐츠 편성</span>'
+    + '<span class="tag" style="' + (isPackage ? 'background:#DBEAFE;color:#1D4ED8;' : 'background:#2D84ED;color:#fff;') + '">' + (isPackage ? '패키지 구성' : 'Media별 콘텐츠') + '</span>'
+    + '<span class="mc-panel-note">' + (isPackage ? '— ' + item.products.length + '개 Product 구성' : '— Media마다 다른 콘텐츠 적용') + '</span></div>'
+    + '<div class="mc-body">';
+
+  if (!isPackage) {
+    html += mediaContentRowsHtml(item.products[0] ? item.products[0].mediaContents : []);
+  } else {
+    item.products.forEach(function(prod) {
+      html += '<div class="mc-pkg-group"><div class="mc-pkg-head"><div class="mc-pkg-bar"></div>'
+        + '<span class="tag" style="background:#F0F1F3;">Product</span>'
+        + '<span class="mc-pkg-id mono">' + prod.productId + '</span>'
+        + '<span class="mc-pkg-name">' + prod.productName + '</span>'
+        + '<span class="mc-pkg-rev mono">Rev.' + prod.productRev + '</span>'
+        + '<span class="mc-pkg-count">' + prod.mediaContents.length + '개 Media</span></div>'
+        + mediaContentRowsHtml(prod.mediaContents) + '</div>';
+    });
+  }
+  html += '</div></div>';
+  document.getElementById('itemDetailArea').innerHTML = html;
+}
+
+function selectItem(idx) {
+  document.querySelectorAll('.item-select-card').forEach(function(c, i) { c.classList.toggle('active', i === idx); });
+  renderItemDetail(SCHEDULE_ITEMS[idx]);
+}
+
+(function() {
+  var row = document.getElementById('itemSelectRow');
+  row.innerHTML = SCHEDULE_ITEMS.map(function(it, i) {
+    return '<button type="button" class="item-select-card' + (i === 0 ? ' active' : '') + '" onclick="selectItem(' + i + ')">'
+      + '<div class="item-select-head"><span class="item-select-no mono">Item ' + String(it.no).padStart(2,'0') + '</span>'
+      + '<span class="tag" style="' + (it.targetType === 'Package' ? 'background:#DBEAFE;color:#1D4ED8;' : '') + '">' + it.targetType + '</span></div>'
+      + '<div class="item-select-name">' + it.targetName + '</div>'
+      + '<div class="item-select-sub">' + it.targetId + ' · Rev.' + it.targetRev + '</div></button>';
+  }).join('');
+  renderItemDetail(SCHEDULE_ITEMS[0]);
+})();
+
+/* ══════════ S3-2. 2개월 송출 Calendar ══════════ */
+var CAL_DATA = {
+  '01-20':100,'01-21':100,'01-22':100,'01-23':100,'01-24':100,'01-25':72,
+  '01-26':100,'01-27':100,'01-28':100,'01-29':100,'01-30':97,'01-31':100,
+  '02-01':100,'02-02':100,'02-03':68,'02-04':100,'02-05':100,
+  '02-06':100,'02-07':100,'02-08':100,'02-09':100,'02-10':100
+};
+function rateClass(r) { if (r >= 100) return ''; if (r >= 80) return 'rate-warn'; return 'rate-bad'; }
+
+(function() {
+  var months = [
+    { label:'2026년 1월', days:[20,21,22,23,24,25,26,27,28,29,30,31], startDow:1, pfx:'01' },
+    { label:'2026년 2월', days:[1,2,3,4,5,6,7,8,9,10], startDow:0, pfx:'02' }
+  ];
+  var html = months.map(function(m) {
+    var cells = '';
+    for (var i = 0; i < m.startDow; i++) cells += '<div></div>';
+    m.days.forEach(function(d) {
+      var key = m.pfx + '-' + String(d).padStart(2, '0');
+      var rate = CAL_DATA[key] || 0;
+      cells += '<div class="cal-cell ' + rateClass(rate) + '" data-key="' + key + '" onclick="selectCalDay(\'' + key + '\')"><div class="cal-cell-d">' + d + '</div><div class="cal-cell-r">' + rate + '%</div></div>';
+    });
+    return '<div><div class="cal-month-label">' + m.label + '</div><div class="cal-grid">'
+      + ['일','월','화','수','목','금','토'].map(function(d) { return '<div class="cal-dow">' + d + '</div>'; }).join('')
+      + cells + '</div></div>';
+  }).join('');
+  document.getElementById('calGrid').innerHTML = html;
+})();
+
+function selectCalDay(key) {
+  document.querySelectorAll('.cal-cell').forEach(function(c) { c.classList.toggle('selected', c.dataset.key === key); });
+  document.getElementById('calSelLabel').textContent = '— 2026-' + key;
+  document.getElementById('calDetailArea').innerHTML =
+    '<div class="inner-table-wrap"><table class="inner-table"><thead><tr><th>시각</th><th>Item</th><th>Media</th><th>콘텐츠</th><th>계획</th><th>실제</th><th>상태</th></tr></thead><tbody>'
+    + '<tr><td class="mono">06:00</td><td>#1</td><td>MED-001</td><td>Galaxy S25 런칭 30s</td><td>1회</td><td>1회</td><td><span class="badge appr-badge appr-approved">정상</span></td></tr>'
+    + '<tr><td class="mono">06:00</td><td>#2</td><td>MED-012</td><td>Galaxy S25 런칭 30s</td><td>1회</td><td>1회</td><td><span class="badge appr-badge appr-approved">정상</span></td></tr>'
+    + '<tr><td class="mono">06:00</td><td>#3</td><td>MED-018</td><td>Galaxy S25 버즈 15s</td><td>1회</td><td>1회</td><td><span class="badge appr-badge appr-approved">정상</span></td></tr>'
+    + '<tr><td class="mono">06:03</td><td>#1</td><td>MED-001</td><td>Galaxy S25 런칭 30s</td><td>1회</td><td>1회</td><td><span class="badge appr-badge appr-approved">정상</span></td></tr>'
+    + '<tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td></td></tr>'
+    + '</tbody></table></div>';
+}
+
+/* ══════════ S4. Revision Snapshot 모달 ══════════ */
+var REV_SNAPSHOTS = {
+  R2: { period:'2026-01-05 ~ 현재', reason:'콘텐츠 추가 (Galaxy S25 버즈 15s)', author:'홍길동', status:'Effective',
+    fields:[['Schedule ID','SCH-2026-0012'],['운영기간','2026-01-20 ~ 2026-02-10'],['Items','3개 (30s×2, 15s×1)'],['콘텐츠','CNT-2026-0041, CNT-2026-0042'],['PolicySet','PS-KR-OOH-2025-Q4 v4.2.1']] },
+  R1: { period:'2025-12-28 ~ 2026-01-04', reason:'최초 확정 등록', author:'홍길동', status:'Superseded',
+    fields:[['Schedule ID','SCH-2026-0012'],['운영기간','2026-01-20 ~ 2026-02-10'],['Items','2개 (30s×2)'],['콘텐츠','CNT-2026-0041'],['PolicySet','PS-KR-OOH-2025-Q4 v4.2.1']] }
+};
+function openRevSnapshot(rev) {
+  var snap = REV_SNAPSHOTS[rev];
+  if (!snap) return;
+  document.getElementById('revSnapId').textContent = rev;
+  var html = '<div style="font-size:12px;color:#9EA5AD;margin-bottom:16px;">Effective Period: ' + snap.period + ' · 변경 사유: ' + snap.reason + ' · 작성자: ' + snap.author + '</div><div class="field-grid">';
+  snap.fields.forEach(function(f) {
+    html += '<div class="field-item"><div class="field-label">' + f[0] + '</div><div class="field-value">' + f[1] + '</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('revSnapBody').innerHTML = html;
+  document.getElementById('revSnapOverlay').classList.add('open');
+}
+function closeRevSnapshot() { document.getElementById('revSnapOverlay').classList.remove('open'); }
+
+/* ══════════ Tab group switch ══════════ */
+function switchGroup(group) {
+  document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
+  document.querySelectorAll('.detail-main > .tab-panel').forEach(function(p) { p.classList.toggle('group-active', p.dataset.group === group); });
+}
+
+/* ══════════ 우측 패널: 미디어 위치 지도 + 리스트 + 콘텐츠 미리보기 ══════════ */
+var MEDIA_LOCS = [
+  { id:'MED-001', name:'강남역 1번출구 A', address:'서울 강남구 강남대로 396', lat:37.497942, lng:127.027621, status:'normal', content:{ id:'CNT-2026-0041', name:'Galaxy S25 런칭 30s', dur:'30초' } },
+  { id:'MED-012', name:'역삼역 2번출구 B', address:'서울 강남구 테헤란로 152', lat:37.5007, lng:127.0363, status:'normal', content:{ id:'CNT-2026-0041', name:'Galaxy S25 런칭 30s', dur:'30초' } },
+  { id:'MED-018', name:'선릉역 1번출구 C', address:'서울 강남구 선릉로 428', lat:37.5049, lng:127.0490, status:'warning', content:{ id:'CNT-2026-0042', name:'Galaxy S25 버즈 15s', dur:'15초' } }
+];
+var schedMap, schedMarkers = {}, schedSelected = null;
+
+function renderMediaList() {
+  document.getElementById('schedMediaCount').textContent = MEDIA_LOCS.length + '개 운영 중';
+  document.getElementById('schedMediaList').innerHTML = MEDIA_LOCS.map(function(loc) {
+    return '<div class="sched-media-list-item' + (schedSelected === loc.id ? ' selected' : '') + '" data-mid="' + loc.id + '" onclick="selectSchedMedia(\'' + loc.id + '\')">'
+      + '<span class="sched-media-dot' + (loc.status === 'warning' ? ' warn' : '') + '"></span>'
+      + '<div style="min-width:0;flex:1;"><div class="sched-media-list-item-name">' + loc.name + '</div><div class="sched-media-list-item-sub">' + loc.id + ' · ' + loc.address + '</div></div>'
+      + '<span class="sched-media-status ' + (loc.status === 'warning' ? 'warn' : 'ok') + '">' + (loc.status === 'warning' ? '경고' : '정상') + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function selectSchedMedia(id) {
+  schedSelected = (schedSelected === id) ? null : id;
+  renderMediaList();
+  var area = document.getElementById('schedContentArea');
+  if (!schedSelected) {
+    area.innerHTML = '<div class="sched-content-empty">미디어를 선택하면 송출 콘텐츠를 확인할 수 있습니다</div>';
+    return;
+  }
+  var loc = MEDIA_LOCS.find(function(l) { return l.id === schedSelected; });
+  area.innerHTML = '<div class="sched-content-label">' + loc.name + ' — 송출 콘텐츠</div>'
+    + '<div class="sched-content-card"><div class="sched-content-thumb"><span class="sched-content-thumb-play">&#9654;</span><span class="sched-content-thumb-dur">' + loc.content.dur + '</span></div>'
+    + '<div class="sched-content-meta"><div class="sched-content-meta-name">' + loc.content.name + '</div><div class="sched-content-meta-id">' + loc.content.id + '</div></div></div>';
+  if (schedMap && schedMarkers[id]) {
+    schedMap.panTo([loc.lat, loc.lng]);
+    schedMarkers[id].openPopup();
+  }
+}
+
+(function() {
+  renderMediaList();
+  if (typeof L === 'undefined') return;
+  var mapEl = document.getElementById('schedMediaMap');
+  if (!mapEl) return;
+  schedMap = L.map(mapEl, { scrollWheelZoom: false, zoomControl: false }).setView([37.501, 127.038], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 19
+  }).addTo(schedMap);
+  var bounds = [];
+  MEDIA_LOCS.forEach(function(loc) {
+    var color = loc.status === 'warning' ? '#E97474' : '#58C65D';
+    var icon = L.divIcon({ className:'', html:'<div style="width:13px;height:13px;border-radius:50%;background:' + color + ';border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>', iconSize:[13,13], iconAnchor:[6.5,6.5], popupAnchor:[0,-10] });
+    var marker = L.marker([loc.lat, loc.lng], { icon: icon }).addTo(schedMap)
+      .bindPopup('<b>' + loc.name + '</b><br>' + loc.address)
+      .on('click', function() { selectSchedMedia(loc.id); });
+    schedMarkers[loc.id] = marker;
+    bounds.push([loc.lat, loc.lng]);
+  });
+  if (bounds.length) schedMap.fitBounds(bounds, { padding: [40, 40] });
+})();
 </script>
-<a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 </body>
 </html>
