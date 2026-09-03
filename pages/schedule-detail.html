@@ -42,9 +42,7 @@
     .appr-badge     { background: #EAF3FF; color: #2D84ED; }
     .appr-approved  { background: #E8F8E9; color: #2E9E34; }
     .appr-pending   { background: #FFF8E6; color: #B45309; }
-    .pde-approved   { background: #E8F8E9; color: #2E9E34; }
     .badge-gray  { background: #F0F1F3; color: #596066; }
-    .badge-blue  { background: #DBEAFE; color: #1D4ED8; }
 
     /* Action button */
     .action-btn { height: 34px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px; }
@@ -95,7 +93,6 @@
     .kpi-value { font-size: 22px; font-weight: 700; color: #24292E; font-variant-numeric: tabular-nums; }
     .kpi-card.highlight .kpi-value { color: #2E9E34; }
     .kpi-unit { font-size: 12px; font-weight: 400; color: #9EA5AD; margin-left: 2px; }
-    .kpi-formula { font-size: 11px; color: #9EA5AD; margin-top: 4px; }
 
     /* ── Table inside cards ── */
     .inner-table-wrap { overflow-x: auto; }
@@ -103,8 +100,6 @@
     .inner-table thead th { background: #F6F7F9; padding: 9px 12px; font-size: 12px; font-weight: 600; color: #596066; text-align: left; border-bottom: 1px solid #E5E7EA; white-space: nowrap; }
     .inner-table tbody td { padding: 11px 12px; font-size: 13px; color: #24292E; border-bottom: 1px solid #F0F1F3; vertical-align: middle; }
     .inner-table tbody tr:last-child td { border-bottom: none; }
-    .num { font-variant-numeric: tabular-nums; }
-    .center { text-align: center; }
 
     /* ── Operating day chips ── */
     .day-chips { display: flex; gap: 6px; }
@@ -125,12 +120,6 @@
     .lc-flow-arrow { width: 16px; height: 1px; background: #CED2D6; }
 
     /* ── PDE decision counts (S1-5) ── */
-    .pde-count-row { display: flex; gap: 10px; }
-    .pde-count-card { flex: 1; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 8px; padding: 10px 12px; }
-    .pde-count-card.pos { background: #EAFAEB; border-color: #C1E9C3; }
-    .pde-count-label { font-size: 11px; color: #9EA5AD; margin-bottom: 4px; }
-    .pde-count-val { font-size: 20px; font-weight: 700; color: #24292E; }
-    .pde-count-card.pos .pde-count-val { color: #2E9E34; }
 
     /* ── Item selector (S2-1) ── */
     .item-select-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -176,12 +165,13 @@
     .mc-pkg-count { margin-left: auto; font-size: 11px; color: #9EA5AD; }
     @media (max-width: 700px) { .mc-row { flex-direction: column; align-items: stretch; } .mc-media-col { border-right: none; border-bottom: 1px solid #E5E7EA; flex: none; } .mc-arrow { display: none; } }
 
-    /* ── S3 운영현황 summary ── */
-    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-    .stat-card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 16px 18px; }
-    .stat-label { font-size: 12px; color: #9EA5AD; margin-bottom: 8px; }
-    .stat-value { font-size: 24px; font-weight: 700; color: #24292E; }
-    @media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+    /* ── Availability summary strip (재사용: S3 운영요약 / S5 감사 요약) ── */
+    .avail-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; background: #F6F7F9; border: 1px solid #E5E7EA; border-radius: 10px; padding: 16px 0; margin-bottom: 20px; }
+    .avail-item { text-align: center; padding: 0 8px; border-left: 1px solid #E5E7EA; }
+    .avail-item:first-child { border-left: none; }
+    .avail-label { font-size: 11px; font-weight: 600; color: #9EA5AD; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 6px; }
+    .avail-value { font-size: 18px; font-weight: 700; color: #24292E; }
+    @media (max-width: 900px) { .avail-summary { grid-template-columns: repeat(2, 1fr); } .avail-item { border-left: none; border-top: 1px solid #E5E7EA; padding-top: 10px; } .avail-item:nth-child(-n+2) { border-top: none; } }
 
     /* ── 운영 이슈 리스트 ── */
     .issue-list { display: flex; flex-direction: column; gap: 8px; }
@@ -350,8 +340,8 @@
     <!-- Page header -->
     <div class="page-header sch-header">
       <div class="page-header-left">
+        <div class="page-title" id="sch-title">삼성전자 갤럭시 S25 런칭 캠페인</div>
         <div class="page-meta">
-          <div class="page-title" id="sch-title">삼성전자 갤럭시 S25 런칭 캠페인</div>
           <span class="page-id" id="sch-id">SCH-2026-0012</span>
         </div>
         <div class="sch-header-status">
@@ -370,9 +360,8 @@
     </div>
 
     <div class="detail-layout">
-      <div>
-        <div class="detail-main">
-          <div class="tab-groups" id="tabGroups">
+      <div class="detail-main">
+        <div class="tab-groups" id="tabGroups">
             <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">S1</span>스케줄 정보</button>
             <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">S2</span>편성 정보</button>
             <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">S3</span>운영 현황</button>
@@ -392,18 +381,19 @@
                   <div class="field-label">태그</div>
                   <div class="tag-group"><span class="tag">OOH</span><span class="tag">강남구</span><span class="tag">갤럭시</span><span class="tag">2026-Q1</span></div>
                 </div>
-                <div class="field-item"><div class="field-label">Schedule Source</div><div class="field-value"><span class="tag" style="background:#F0F1F3;">Manual</span></div></div>
+                <div class="field-item"><div class="field-label">Schedule Source</div><div class="field-value"><span class="tag">Manual</span></div></div>
                 <div class="field-item"><div class="field-label">광고주</div><div class="field-value" id="s1-advertiser">삼성전자</div></div>
               </div>
             </div>
+          </div>
 
-            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-2. 운영 정보</div>
+          <div class="tab-panel" data-group="g1" id="tab-s1-operation">
+            <div class="section-sublabel">S1-2. 운영 정보</div>
             <div class="card">
               <div class="card-title">운영 정보</div>
-              <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:8px;">전체 운영기간</div>
-              <div class="field-grid" style="margin-bottom:14px;">
-                <div class="item-detail-box"><div class="field-label">Start Date</div><div class="field-value mono" style="font-size:15px;font-weight:600;">2026-01-20</div></div>
-                <div class="item-detail-box"><div class="field-label">End Date</div><div class="field-value mono" style="font-size:15px;font-weight:600;">2026-02-10</div></div>
+              <div class="field-grid">
+                <div class="field-item"><div class="field-label">Start Date</div><div class="field-value large mono">2026-01-20</div></div>
+                <div class="field-item"><div class="field-label">End Date</div><div class="field-value large mono">2026-02-10</div></div>
               </div>
               <div class="card-subhead">Item별 운영조건</div>
               <div class="inner-table-wrap">
@@ -417,8 +407,10 @@
                 </table>
               </div>
             </div>
+          </div>
 
-            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-3. 연결 정보</div>
+          <div class="tab-panel" data-group="g1" id="tab-s1-linked">
+            <div class="section-sublabel">S1-3. 연결 정보</div>
             <div class="card">
               <div class="card-title">연결 정보</div>
               <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">Campaign</div>
@@ -440,16 +432,18 @@
                 </table>
               </div>
             </div>
+          </div>
 
-            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-4. 상태 정보</div>
+          <div class="tab-panel" data-group="g1" id="tab-s1-status">
+            <div class="section-sublabel">S1-4. 상태 정보</div>
             <div class="card">
               <div class="card-title">상태 정보</div>
-              <div style="padding-bottom:14px;border-bottom:1px solid #F0F1F3;margin-bottom:14px;">
-                <div class="field-label" style="margin-bottom:4px;">Schedule Lifecycle</div>
+              <div class="field-item" style="margin-bottom:16px;">
+                <div class="field-label">Schedule Lifecycle</div>
                 <div class="lc-flow" id="sch-lc-flow"></div>
               </div>
-              <div style="padding-bottom:14px;border-bottom:1px solid #F0F1F3;margin-bottom:14px;">
-                <div class="field-label" style="margin-bottom:4px;">Schedule Revision Lifecycle</div>
+              <div class="field-item" style="margin-bottom:16px;">
+                <div class="field-label">Schedule Revision Lifecycle</div>
                 <div class="lc-flow" id="sch-rev-flow"></div>
               </div>
               <div class="field-grid">
@@ -457,22 +451,24 @@
                 <div class="field-item"><div class="field-label">Approval Authority</div><div class="field-value">홍길동 (엠앤엠네트웍스 · 디지털옥외팀장)</div></div>
               </div>
             </div>
+          </div>
 
-            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S1-5. 정책 적용 정보</div>
+          <div class="tab-panel" data-group="g1" id="tab-s1-policy">
+            <div class="section-sublabel">S1-5. 정책 적용 정보</div>
             <div class="card">
               <div class="card-title">정책 적용 정보</div>
-              <div class="field-grid" style="margin-bottom:16px;">
+              <div class="field-grid">
                 <div class="field-item"><div class="field-label">Effective PolicySet Reference</div><div class="field-value mono">PS-KR-OOH-2025-Q4 v4.2.1</div></div>
                 <div class="field-item"><div class="field-label">PolicySet Reference Status</div><div class="field-value"><span class="badge appr-badge appr-approved">Current</span></div></div>
                 <div class="field-item"><div class="field-label">Decision Context Status</div><div class="field-value"><span class="badge appr-badge appr-approved">Resolved</span></div></div>
                 <div class="field-item"><div class="field-label">Needs Revalidation</div><div class="field-value" style="color:#2E9E34;font-weight:600;">No</div></div>
               </div>
-              <div class="field-label" style="margin-bottom:8px;">PDE Decision</div>
-              <div class="pde-count-row">
-                <div class="pde-count-card pos"><div class="pde-count-label">Approved</div><div class="pde-count-val">3</div></div>
-                <div class="pde-count-card"><div class="pde-count-label">Restricted</div><div class="pde-count-val">0</div></div>
-                <div class="pde-count-card"><div class="pde-count-label">Deferred</div><div class="pde-count-val">0</div></div>
-                <div class="pde-count-card"><div class="pde-count-label">Rejected</div><div class="pde-count-val">0</div></div>
+              <div class="card-subhead">PDE Decision</div>
+              <div class="kpi-row">
+                <div class="kpi-card highlight"><div class="kpi-label">Approved</div><div class="kpi-value">3</div></div>
+                <div class="kpi-card"><div class="kpi-label">Restricted</div><div class="kpi-value">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Deferred</div><div class="kpi-value">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Rejected</div><div class="kpi-value">0</div></div>
               </div>
             </div>
           </div>
@@ -486,7 +482,6 @@
               <div id="itemDetailArea"></div>
             </div>
 
-            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">Capacity / 보장 정보</div>
             <div class="card">
               <div class="card-title">Capacity / 보장 정보</div>
               <div class="kpi-row" style="margin-bottom:12px;">
@@ -505,20 +500,19 @@
           </div>
 
           <!-- ══════════ S3. 운영 현황 ══════════ -->
-          <div class="tab-panel" data-group="g3" id="tab-s3-ops">
-            <div class="stat-row">
-              <div class="stat-card"><div class="stat-label">전체 운영일</div><div class="stat-value">22일</div></div>
-              <div class="stat-card"><div class="stat-label">이행률 (전체)</div><div class="stat-value" style="color:#2E9E34;">98.2%</div></div>
-              <div class="stat-card"><div class="stat-label">운영 이슈</div><div class="stat-value" style="color:#E97474;">3건</div></div>
-              <div class="stat-card"><div class="stat-label">잔여 운영일</div><div class="stat-value" style="color:#9EA5AD;">0일</div></div>
-            </div>
-
+          <div class="tab-panel" data-group="g3" id="tab-s3-summary">
             <div class="section-sublabel">S3-1. 운영 요약</div>
             <div class="card">
               <div class="card-title">운영 요약</div>
+              <div class="avail-summary">
+                <div class="avail-item"><div class="avail-label">전체 운영일</div><div class="avail-value">22일</div></div>
+                <div class="avail-item"><div class="avail-label">이행률 (전체)</div><div class="avail-value" style="color:#2E9E34;">98.2%</div></div>
+                <div class="avail-item"><div class="avail-label">운영 이슈</div><div class="avail-value" style="color:#E97474;">3건</div></div>
+                <div class="avail-item"><div class="avail-label">잔여 운영일</div><div class="avail-value" style="color:#9EA5AD;">0일</div></div>
+              </div>
               <div class="field-grid">
                 <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">Item별 이행률</div>
+                  <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">Item별 이행률</div>
                   <div class="inner-table-wrap">
                     <table class="inner-table">
                       <thead><tr><th>Item</th><th>이행률</th><th>비고</th></tr></thead>
@@ -531,7 +525,7 @@
                   </div>
                 </div>
                 <div>
-                  <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">운영 이슈</div>
+                  <div class="card-subhead" style="margin-top:0;padding-top:0;border-top:none;">운영 이슈</div>
                   <div class="issue-list">
                     <div class="issue-item"><span>미게재</span><span style="font-weight:700;color:#E97474;">2건</span></div>
                     <div class="issue-item"><span>장애</span><span style="font-weight:700;color:#B45309;">1건</span></div>
@@ -539,8 +533,10 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="card-subhead" style="border-top:none;padding-top:0;margin-top:22px;">S3-2. 운영 상세 — 송출 Calendar</div>
+          <div class="tab-panel" data-group="g3" id="tab-s3-calendar">
+            <div class="section-sublabel">S3-2. 운영 상세 — 송출 Calendar</div>
             <div class="card">
               <div class="card-title">운영 상세 — 송출 Calendar</div>
               <div class="cal-legend">
@@ -549,10 +545,8 @@
                 <span class="cal-legend-item"><span class="cal-legend-dot" style="background:#E97474;"></span>미이행 (&lt;80%)</span>
               </div>
               <div class="cal-2col" id="calGrid"></div>
-              <div style="border-top:1px solid #E5E7EA;padding-top:16px;">
-                <div style="font-size:13px;font-weight:600;color:#24292E;margin-bottom:10px;">일별 송출 상세 <span id="calSelLabel" style="font-weight:400;color:#9EA5AD;"></span></div>
-                <div id="calDetailArea" style="font-size:13px;color:#9EA5AD;">위 캘린더에서 날짜를 선택하세요.</div>
-              </div>
+              <div class="card-subhead">일별 송출 상세 <span id="calSelLabel" style="text-transform:none;font-weight:400;letter-spacing:normal;color:#9EA5AD;"></span></div>
+              <div id="calDetailArea" style="font-size:13px;color:#9EA5AD;">위 캘린더에서 날짜를 선택하세요.</div>
             </div>
           </div>
 
@@ -607,12 +601,19 @@
 
           <!-- ══════════ S5. 감사 ══════════ -->
           <div class="tab-panel" data-group="g5" id="tab-s5-audit">
-            <div class="stat-row" style="grid-template-columns:repeat(3,1fr);">
-              <div class="stat-card"><div class="stat-label">최초 생성일 / 생성자</div><div class="field-value" style="font-weight:600;">2025-12-15 / 홍길동</div></div>
-              <div class="stat-card"><div class="stat-label">최종 수정일 / 수정자</div><div class="field-value" style="font-weight:600;">2026-01-05 09:15 / 홍길동</div></div>
-              <div class="stat-card"><div class="stat-label">현재 Revision / 상태</div><div class="field-value" style="font-weight:600;">R2 / 집행중</div></div>
+            <div class="section-sublabel">S5-1. 감사 정보</div>
+            <div class="card">
+              <div class="card-title">감사 정보</div>
+              <div class="audit-row">
+                <div class="audit-item"><div class="field-label">최초 생성일</div><div class="field-value">2025-12-15</div></div>
+                <div class="audit-item"><div class="field-label">생성자</div><div class="field-value">홍길동</div></div>
+                <div class="audit-item"><div class="field-label">최종 수정일</div><div class="field-value">2026-01-05 09:15</div></div>
+                <div class="audit-item"><div class="field-label">최종 수정자</div><div class="field-value">홍길동</div></div>
+                <div class="audit-item"><div class="field-label">현재 Revision</div><div class="field-value"><span class="rev-current">R2</span></div></div>
+                <div class="audit-item"><div class="field-label">Lifecycle 상태</div><div class="field-value"><span class="badge lc-active" style="font-size:12px;"><span class="badge-dot"></span>집행중</span></div></div>
+              </div>
             </div>
-            <div class="section-sublabel">S5-1. Audit Log</div>
+
             <div class="card">
               <div class="card-title">Audit Log</div>
               <div class="inner-table-wrap">
@@ -632,8 +633,7 @@
             </div>
           </div>
 
-        </div><!-- /detail-main -->
-      </div>
+      </div><!-- /detail-main -->
 
       <!-- ── 우측 사이드 패널: 미디어 위치 (탭과 무관하게 항상 노출) ── -->
       <aside class="sched-side-panel">
