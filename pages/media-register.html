@@ -716,11 +716,12 @@
               <div class="form-field">
                 <select class="select" id="installationLocation" onchange="onInstallLocationChange()">
                   <option value="">선택하세요</option>
-                  <option value="O">옥외 (O)</option>
                   <option value="I">실내 (I)</option>
-                  <option value="V">기내 (V)</option>
+                  <option value="O">옥외 (O)</option>
+                  <option value="VI">이동수단 실내 (VI)</option>
+                  <option value="VO">이동수단 실외 (VO)</option>
                 </select>
-                <div class="input-hint" id="installTypeHint">기내는 고정 설치 주소 대신 아래 위치 정보에 차고지 주소를 입력합니다.</div>
+                <div class="input-hint" id="installTypeHint">이동수단(실내·실외)은 고정 설치 주소 대신 아래 위치 정보에 차고지 주소를 입력합니다.</div>
               </div>
             </div>
 
@@ -746,17 +747,58 @@
           </div>
         </div>
 
-        <!-- 2-2. 설치 정보 -->
+        <!-- 2-2. 위치 정보 (주소 + 지도 + 좌표) -->
         <div class="form-card">
           <div class="section-head">
             <div>
-              <div class="section-title">설치 정보</div>
-              <div class="section-desc">현장 사진과 설치 높이를 기록합니다 (선택)</div>
+              <div class="section-title" id="addrSectionTitle">위치 정보</div>
+              <div class="section-desc" id="addrSectionDesc">설치 주소를 검색하고, 지도에서 정확한 위치를 선택합니다. 좌표는 자동으로 기록됩니다</div>
             </div>
           </div>
           <div class="section-body">
             <div class="form-row">
-              <div class="form-label">현장 사진</div>
+              <div class="form-label" id="addrFieldLabel">설치 주소<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="addr-search-row">
+                  <input type="text" class="input readonly" id="addrMain" value="서울 강남구 강남대로 396" readonly>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="searchAddress()">주소 검색</button>
+                </div>
+                <input type="text" class="input" style="margin-top:8px;" placeholder="상세 주소 (동, 층, 호 등)">
+                <div class="map-search-hint">주소 검색 시 아래 지도가 자동으로 이동합니다.</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">좌표<span class="req">*</span><br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">지도에서 선택 및 확인</span></div>
+              <div class="form-field">
+                <div class="map-placeholder" id="mediaRegisterMap"></div>
+                <div class="map-search-hint">지도를 클릭하거나 핀을 드래그해 정확한 설치 위치를 지정하세요.</div>
+                <div class="coord-row" style="margin-top:8px;">
+                  <div class="input-unit">
+                    <input type="number" id="regLat" value="37.49793" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
+                    <span class="input-unit-label">위도</span>
+                  </div>
+                  <div class="input-unit">
+                    <input type="number" id="regLng" value="127.02762" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
+                    <span class="input-unit-label">경도</span>
+                  </div>
+                </div>
+                <div class="input-hint">지도 핀을 이동하면 자동으로 업데이트됩니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-3. 설치 정보 -->
+        <div class="form-card">
+          <div class="section-head">
+            <div>
+              <div class="section-title">설치 정보</div>
+              <div class="section-desc">설치 사진 이미지를 등록합니다 (선택)</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">설치 사진 이미지</div>
               <div class="form-field">
                 <div class="photo-upload-area">
                   <label class="photo-thumb" for="photo-upload-1">
@@ -790,77 +832,25 @@
           </div>
         </div>
 
-        <!-- 2-3. 관리 코드 -->
+        <!-- 2-4. 관리 코드 -->
         <div class="form-card">
           <div class="section-head">
             <div>
               <div class="section-title">관리 코드</div>
-              <div class="section-desc">사내 자산 관리 코드를 입력합니다 (선택)</div>
+              <div class="section-desc">사내 자산·시설물 관리 코드를 입력합니다 (선택)</div>
             </div>
           </div>
           <div class="section-body">
+            <div class="form-row">
+              <div class="form-label">시설물 코드</div>
+              <div class="form-field">
+                <input type="text" class="input" placeholder="예: FAC-KN-1102" style="max-width:280px;">
+              </div>
+            </div>
             <div class="form-row">
               <div class="form-label">자산 코드</div>
               <div class="form-field">
                 <input type="text" class="input" placeholder="예: ASSET-2024-0042" style="max-width:280px;">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2-4. 주소 정보 -->
-        <div class="form-card">
-          <div class="section-head">
-            <div>
-              <div class="section-title" id="addrSectionTitle">주소 정보</div>
-              <div class="section-desc" id="addrSectionDesc">설치 주소를 검색하여 입력합니다</div>
-            </div>
-          </div>
-          <div class="section-body">
-            <div class="form-row">
-              <div class="form-label" id="addrFieldLabel">설치 주소<span class="req">*</span></div>
-              <div class="form-field">
-                <div class="addr-search-row">
-                  <input type="text" class="input readonly" id="addrMain" value="서울 강남구 강남대로 396" readonly>
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="searchAddress()">주소 검색</button>
-                </div>
-                <input type="text" class="input" style="margin-top:8px;" placeholder="상세 주소 (동, 층, 호 등)">
-                <div class="map-search-hint">주소 검색 시 아래 지도가 자동으로 이동합니다.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2-5. 위치 정보 (지도) -->
-        <div class="form-card">
-          <div class="section-head">
-            <div>
-              <div class="section-title">위치 정보</div>
-              <div class="section-desc">지도에서 정확한 설치 위치를 선택합니다. 좌표는 자동으로 기록됩니다</div>
-            </div>
-          </div>
-          <div class="section-body">
-            <div class="form-row">
-              <div class="form-label">지도 위치<span class="req">*</span></div>
-              <div class="form-field">
-                <div class="map-placeholder" id="mediaRegisterMap"></div>
-                <div class="map-search-hint">지도를 클릭하거나 핀을 드래그해 정확한 설치 위치를 지정하세요.</div>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-label">좌표<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">자동 기록</span></div>
-              <div class="form-field">
-                <div class="coord-row">
-                  <div class="input-unit">
-                    <input type="number" id="regLat" value="37.49793" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
-                    <span class="input-unit-label">위도</span>
-                  </div>
-                  <div class="input-unit">
-                    <input type="number" id="regLng" value="127.02762" step="0.00001" readonly style="background:var(--surface-sub);color:var(--text-secondary);">
-                    <span class="input-unit-label">경도</span>
-                  </div>
-                </div>
-                <div class="input-hint">지도 핀을 이동하면 자동으로 업데이트됩니다</div>
               </div>
             </div>
           </div>
@@ -1008,12 +998,12 @@
           </div>
         </div>
 
-        <!-- 3-2. 셋탑/플레이어 정보 -->
+        <!-- 3-2. 셋탑 정보 -->
         <div class="form-card">
           <div class="section-head">
             <div>
-              <div class="section-title">셋탑 · 플레이어 정보</div>
-              <div class="section-desc">재생 장치의 기본 정보와 네트워크를 입력합니다</div>
+              <div class="section-title">셋탑 정보</div>
+              <div class="section-desc">재생 장치의 기본 정보, 네트워크, 부착 기기를 입력합니다</div>
             </div>
           </div>
           <div class="section-body">
@@ -1094,35 +1084,24 @@
               </div>
             </div>
 
-          </div>
-        </div>
-
-        <!-- 3-3. 부착기기 -->
-        <div class="form-card">
-          <div class="section-head">
-            <div>
-              <div class="section-title">부착기기</div>
-              <div class="section-desc">미디어에 부착된 외부 장치를 추가합니다 (선택)</div>
-            </div>
-          </div>
-          <div class="section-body">
             <div class="form-row">
-              <div class="form-label">부착 장치</div>
+              <div class="form-label">부착 기기</div>
               <div class="form-field">
                 <div class="attached-row">
                   <div class="attached-chips" id="attachedChips">
                     <span class="attached-chip">카메라 <button type="button" onclick="this.parentNode.remove()">×</button></span>
-                    <span class="attached-chip">스피커 <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                    <span class="attached-chip">터치 센서 <button type="button" onclick="this.parentNode.remove()">×</button></span>
                   </div>
                   <button type="button" class="btn-add" onclick="addAttachedDevice()">+ 추가</button>
                 </div>
-                <div class="input-hint">예: 카메라, 스피커, IR 수신기, NFC 리더</div>
+                <div class="input-hint">예: 카메라, 터치 센서</div>
               </div>
             </div>
+
           </div>
         </div>
 
-        <!-- 3-4. MCU -->
+        <!-- 3-3. MCU -->
         <div class="form-card">
           <div class="section-head">
             <div>
@@ -1176,7 +1155,7 @@
           </div>
         </div>
 
-        <!-- 3-5. 센서(Sensor) -->
+        <!-- 3-4. 센서(Sensor) -->
         <div class="form-card">
           <div class="section-head">
             <div>
@@ -1259,12 +1238,12 @@
           </div>
         </div>
 
-        <!-- 3-6. 팬(Fan) -->
+        <!-- 3-5. 연결 장비 -->
         <div class="form-card">
           <div class="section-head">
             <div>
-              <div class="section-title">팬 (Fan)</div>
-              <div class="section-desc">냉각 팬 유형과 수량을 입력합니다 (선택)</div>
+              <div class="section-title">연결 장비</div>
+              <div class="section-desc">냉각 팬, 전원·냉각·제어 등 미디어에 연결된 부가 장비를 선택합니다 (선택)</div>
             </div>
           </div>
           <div class="section-body">
@@ -1285,18 +1264,6 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- 3-7. 연결 장비 -->
-        <div class="form-card">
-          <div class="section-head">
-            <div>
-              <div class="section-title">연결 장비</div>
-              <div class="section-desc">미디어에 연결된 전원·냉각·제어 등 부가 장비를 선택합니다 (선택)</div>
-            </div>
-          </div>
-          <div class="section-body">
             <div class="form-row">
               <div class="form-label">전원 장비</div>
               <div class="form-field">
@@ -1372,9 +1339,10 @@
 
     /* ── 미디어 유형 자동 생성 (설치 유형만으로 결정, 별도 입력 불필요) ── */
     var MEDIA_TYPE_BY_LOCATION = {
-      O: 'OF (옥외고정)',
-      I: 'IFC (실내고정근접)',
-      V: 'VF (차량고정)'
+      I:  'IFC (실내고정근접)',
+      O:  'OF (옥외고정)',
+      VI: 'VIF (이동수단 실내고정)',
+      VO: 'VOF (이동수단 실외고정)'
     };
     function regenCode() {
       const loc = document.getElementById('installationLocation').value;
@@ -1442,9 +1410,10 @@
 
     /* ── 설치 유형(설치 장소)에 따른 광고물 유형 목록 + 차고지 주소 규칙 ── */
     var AD_FIXTURE_OPTIONS = {
-      O: ['옥외 전광판 (LED)', '옥외 스탠드형 사이니지', '기타'],
-      I: ['실내 근접형 사이니지', '키오스크', '기타'],
-      V: ['차량 광고판 (버스)', '차량 내부 사이니지', '기타']
+      I:  ['실내 근접형 사이니지', '키오스크', '기타'],
+      O:  ['옥외 전광판 (LED)', '옥외 스탠드형 사이니지', '기타'],
+      VI: ['차량 내부 사이니지', '기타'],
+      VO: ['차량 광고판 (버스)', '기타']
     };
     function onInstallLocationChange() {
       var loc = document.getElementById('installationLocation').value;
@@ -1454,10 +1423,10 @@
         : '<option value="">설치 유형을 먼저 선택하세요</option>';
       regenCode();
 
-      var isVehicle = loc === 'V';
+      var isVehicle = loc === 'VI' || loc === 'VO';
       document.getElementById('addrSectionTitle').textContent = isVehicle ? '차고지 정보' : '주소 정보';
       document.getElementById('addrSectionDesc').textContent = isVehicle
-        ? '기내(차량) 미디어의 차고지 주소를 검색하여 입력합니다'
+        ? '이동수단 미디어의 차고지 주소를 검색하여 입력합니다'
         : '설치 주소를 검색하여 입력합니다';
       document.getElementById('addrFieldLabel').innerHTML = (isVehicle ? '차고지 주소' : '설치 주소') + '<span class="req">*</span>';
     }
