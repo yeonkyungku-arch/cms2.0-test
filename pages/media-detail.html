@@ -944,6 +944,7 @@ function switchGroup(group) {
   document.querySelectorAll('.tab-group-btn').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.group === group); });
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('group-active', p.dataset.group === group); });
 }
+switchGroup('g1');
 
 function confirmTransition(action, message) {
   if (message && !confirm(message + '\n\n계속하시겠습니까?')) return;
