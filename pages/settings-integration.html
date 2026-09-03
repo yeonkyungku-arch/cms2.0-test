@@ -71,6 +71,29 @@
       border-radius:6px; padding:6px 12px; letter-spacing:2px;
     }
     .key-hint { font-size:11px; color:#9EA5AD; margin-top:6px; }
+    /* 연동 설정 모달 (invite-modal과 동일한 셸) */
+    .int-modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(16,24,32,.4); z-index:600;
+      align-items:center; justify-content:center; padding:24px;
+    }
+    .int-modal-overlay.open { display:flex; }
+    .int-modal {
+      background:#fff; border-radius:12px; width:440px; max-width:100%;
+      max-height:88vh; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.18);
+    }
+    .int-modal-head { padding:18px 22px; border-bottom:1px solid #E5E7EA; display:flex; align-items:center; justify-content:space-between; }
+    .int-modal-title { font-size:16px; font-weight:700; color:#24292E; }
+    .int-modal-sub { font-size:12px; color:#9EA5AD; margin-top:2px; }
+    .int-modal-close { width:32px; height:32px; border-radius:6px; border:1px solid #E5E7EA; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; color:#596066; }
+    .int-modal-body { padding:18px 22px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; }
+    .int-field label { font-size:12px; font-weight:600; color:#596066; display:block; margin-bottom:5px; }
+    .int-field input, .int-field select {
+      width:100%; height:36px; border:1px solid #CED2D6; border-radius:6px; padding:0 12px;
+      font-size:13px; color:#24292E; font-family:inherit; background:#fff;
+    }
+    .int-field input:focus, .int-field select:focus { outline:none; border-color:#2D84ED; }
+    .int-modal-foot { padding:14px 22px; border-top:1px solid #E5E7EA; display:flex; gap:8px; }
   </style>
 </head>
 <body>
@@ -202,8 +225,8 @@
             <div class="int-endpoint">https://pde.mnmnetworks.com/api/v2</div>
             <div class="int-last">마지막 연결: 2026-08-18 09:10:23</div>
             <div class="int-actions">
-              <button class="btn-ghost">설정</button>
-              <button class="btn-ghost">테스트</button>
+              <button class="btn-ghost" onclick="openIntConfig('PDE')">설정</button>
+              <button class="btn-ghost" onclick="testIntegration('PDE')">테스트</button>
             </div>
           </div>
           <div class="int-card">
@@ -214,8 +237,8 @@
             <div class="int-endpoint">https://adex-api.mnmnetworks.com/v1</div>
             <div class="int-last">마지막 연결: 2026-08-18 08:55:44</div>
             <div class="int-actions">
-              <button class="btn-ghost">설정</button>
-              <button class="btn-ghost">테스트</button>
+              <button class="btn-ghost" onclick="openIntConfig('ADeX')">설정</button>
+              <button class="btn-ghost" onclick="testIntegration('ADeX')">테스트</button>
             </div>
           </div>
           <div class="int-card">
@@ -226,8 +249,8 @@
             <div class="int-endpoint">https://rms-stage.mnmnetworks.com/api</div>
             <div class="int-last">마지막 연결: 2026-08-17 15:30:01</div>
             <div class="int-actions">
-              <button class="btn-ghost">설정</button>
-              <button class="btn-ghost">테스트</button>
+              <button class="btn-ghost" onclick="openIntConfig('RMS')">설정</button>
+              <button class="btn-ghost" onclick="testIntegration('RMS')">테스트</button>
             </div>
           </div>
           <div class="int-card">
@@ -238,8 +261,8 @@
             <div class="int-endpoint">https://dms.mnmnetworks.com/api/v1</div>
             <div class="int-last">마지막 연결: 2026-08-10 11:20:00</div>
             <div class="int-actions">
-              <button class="btn-ghost">설정</button>
-              <button class="btn-ghost">테스트</button>
+              <button class="btn-ghost" onclick="openIntConfig('DMS')">설정</button>
+              <button class="btn-ghost" onclick="testIntegration('DMS')">테스트</button>
             </div>
           </div>
         </div>
@@ -248,8 +271,8 @@
         <div class="api-key-card">
           <div class="api-key-row">
             <span class="api-key-label">API Key</span>
-            <div class="api-key-val">sk-mnm-••••••••••••••••••••••ABCD</div>
-            <button class="btn-danger-ghost">재발급</button>
+            <div class="api-key-val" id="apiKeyVal">sk-mnm-••••••••••••••••••••••ABCD</div>
+            <button class="btn-danger-ghost" onclick="regenApiKey()">재발급</button>
           </div>
           <div class="key-hint" style="margin-top:10px;">* API Key 재발급은 Admin-System 권한 이상만 가능합니다. 재발급 시 기존 키는 즉시 폐기됩니다.</div>
         </div>
@@ -258,6 +281,81 @@
   </div>
 </main>
 
+<!-- 연동 설정 모달 -->
+<div class="int-modal-overlay" id="intModalOverlay" onclick="if(event.target===this)closeIntConfig()">
+  <div class="int-modal">
+    <div class="int-modal-head">
+      <div>
+        <div class="int-modal-title" id="intModalTitle">연동 설정</div>
+        <div class="int-modal-sub">엔드포인트·인증 정보를 변경합니다</div>
+      </div>
+      <button class="int-modal-close" onclick="closeIntConfig()">&times;</button>
+    </div>
+    <div class="int-modal-body">
+      <div class="int-field">
+        <label>Endpoint URL</label>
+        <input type="text" id="intCfgEndpoint">
+      </div>
+      <div class="int-field">
+        <label>인증 방식</label>
+        <select id="intCfgAuth">
+          <option>API Key</option>
+          <option>OAuth 2.0</option>
+          <option>Basic Auth</option>
+        </select>
+      </div>
+      <div class="int-field">
+        <label>타임아웃 (초)</label>
+        <input type="number" id="intCfgTimeout" value="10" min="1">
+      </div>
+    </div>
+    <div class="int-modal-foot">
+      <button class="btn-ghost" onclick="closeIntConfig()" style="flex:1;">취소</button>
+      <button class="btn-primary" onclick="saveIntConfig()" style="flex:1;justify-content:center;">저장</button>
+    </div>
+  </div>
+</div>
+
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
+
+<script>
+var INTEGRATIONS = {
+  PDE:  { name:'PDE 연동',  endpoint:'https://pde.mnmnetworks.com/api/v2' },
+  ADeX: { name:'ADeX 연동', endpoint:'https://adex-api.mnmnetworks.com/v1' },
+  RMS:  { name:'RMS 연동',  endpoint:'https://rms-stage.mnmnetworks.com/api' },
+  DMS:  { name:'DMS 연동',  endpoint:'https://dms.mnmnetworks.com/api/v1' }
+};
+var intCfgTarget = null;
+
+function openIntConfig(key) {
+  var svc = INTEGRATIONS[key];
+  intCfgTarget = key;
+  document.getElementById('intModalTitle').textContent = svc.name + ' 설정';
+  document.getElementById('intCfgEndpoint').value = svc.endpoint;
+  document.getElementById('intCfgAuth').value = 'API Key';
+  document.getElementById('intCfgTimeout').value = 10;
+  document.getElementById('intModalOverlay').classList.add('open');
+}
+function closeIntConfig() {
+  document.getElementById('intModalOverlay').classList.remove('open');
+  intCfgTarget = null;
+}
+function saveIntConfig() {
+  if (intCfgTarget) { INTEGRATIONS[intCfgTarget].endpoint = document.getElementById('intCfgEndpoint').value; }
+  closeIntConfig();
+  alert('연동 설정이 저장되었습니다.');
+}
+function testIntegration(key) {
+  alert(INTEGRATIONS[key].name + ' 연결 테스트 중...\n\n✓ 연결 성공 (응답시간 128ms)');
+}
+function regenApiKey() {
+  if (!confirm('API Key를 재발급하시겠습니까?\n기존 키는 즉시 폐기되어 연동 중인 시스템의 재설정이 필요합니다.')) return;
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var suffix = '';
+  for (var i = 0; i < 4; i++) { suffix += chars[Math.floor(Math.random() * chars.length)]; }
+  document.getElementById('apiKeyVal').textContent = 'sk-mnm-••••••••••••••••••••••' + suffix;
+  alert('API Key가 재발급되었습니다.');
+}
+</script>
 </body>
 </html>
