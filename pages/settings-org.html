@@ -110,6 +110,28 @@
     .invite-modal-foot { padding:14px 22px; border-top:1px solid #E5E7EA; display:flex; gap:8px; }
     .table-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 0; }
     .table-header-title { font-size:14px; font-weight:700; color:#24292E; }
+
+    /* Settings tabs (조직 정보 / 사용자 관리) */
+    .settings-tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid #E5E7EA; }
+    .settings-tab-btn {
+      padding:10px 4px; margin-right:20px; background:none; border:none; border-bottom:2px solid transparent;
+      font-size:14px; font-weight:600; color:#9EA5AD; cursor:pointer;
+    }
+    .settings-tab-btn.active { color:#24292E; border-bottom-color:#2D84ED; }
+    .settings-tab-panel { display:none; }
+    .settings-tab-panel.active { display:block; }
+
+    /* User drawer section groups */
+    .drawer-section-label {
+      font-size:11px; font-weight:700; color:#9EA5AD; letter-spacing:.06em;
+      text-transform:uppercase; margin-bottom:8px;
+    }
+    .drawer-field-grid { display:grid; grid-template-columns:110px 1fr; gap:8px 12px; font-size:13px; margin-bottom:18px; }
+    .drawer-divider { border-top:1px solid #F0F1F3; margin:18px 0; }
+    .loginid-change-toggle {
+      font-size:12px; font-weight:600; color:#2D84ED; background:none; border:none;
+      cursor:pointer; padding:0; display:flex; align-items:center; gap:4px;
+    }
   </style>
 </head>
 <body>
@@ -231,72 +253,91 @@
 
       <!-- Main area -->
       <div class="settings-main">
-        <!-- 조직 정보 -->
-        <div class="section-card">
-          <div class="section-title">조직 정보</div>
-          <div class="info-grid">
-            <div class="info-item"><label>Organization ID</label><div class="val">ORG-0001</div></div>
-            <div class="info-item"><label>미디어사명</label><div class="val">엠앤엠네트웍스</div></div>
-            <div class="info-item"><label>사업자등록번호</label><div class="val">123-45-67890</div></div>
-            <div class="info-item"><label>대표연락처</label><div class="val">02-1234-5678</div></div>
-          </div>
+
+        <div class="settings-tabs">
+          <button class="settings-tab-btn active" data-tab="org" onclick="switchSettingsTab('org')">조직 정보</button>
+          <button class="settings-tab-btn" data-tab="users" onclick="switchSettingsTab('users')">사용자 관리</button>
         </div>
 
-        <!-- T-SET-02 Scenario Banner -->
-        <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:700;color:#1E40AF;margin-bottom:8px;">📋 T-SET-02: Login ID 변경 시나리오</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;">
-            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#2D84ED;color:#fff;">사용자 선택</span>
-            <span style="color:#9EA5AD;">›</span>
-            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">변경 요청</span>
-            <span style="color:#9EA5AD;">›</span>
-            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">현재 비밀번호 확인</span>
-            <span style="color:#9EA5AD;">›</span>
-            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">새 Login ID 입력</span>
-            <span style="color:#9EA5AD;">›</span>
-            <span style="padding:3px 10px;border-radius:20px;font-weight:600;background:#E5E7EA;color:#596066;">변경 완료 &amp; 이력 기록</span>
-          </div>
-          <div style="font-size:12px;color:#1E40AF;margin-top:8px;">👉 아래 사용자 테이블에서 사용자를 클릭하면 Login ID 변경 패널이 열립니다.</div>
-        </div>
+        <!-- ══════════ TAB: 조직 정보 ══════════ -->
+        <div class="settings-tab-panel active" id="tab-panel-org">
 
-        <!-- 사용자 관리 -->
-        <div class="table-card">
-          <div class="table-header" style="padding:14px 16px;">
-            <span class="table-header-title">사용자 관리</span>
-            <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openInviteModal()">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              사용자 초대
-            </button>
+          <!-- 기본 정보 -->
+          <div class="section-card">
+            <div class="section-title">기본 정보</div>
+            <div class="info-grid">
+              <div class="info-item"><label>Organization ID</label><div class="val">ORG-0001</div></div>
+              <div class="info-item"><label>미디어사명</label><div class="val">엠앤엠네트웍스</div></div>
+              <div class="info-item"><label>사업자등록번호</label><div class="val">123-45-67890</div></div>
+              <div class="info-item"><label>대표연락처</label><div class="val">02-1234-5678</div></div>
+              <div class="info-item"><label>기본 시간대</label><div class="val">Asia/Seoul (UTC+9)</div></div>
+              <div class="info-item"><label>기본 언어</label><div class="val">한국어 (ko-KR)</div></div>
+            </div>
           </div>
-          <div class="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>사용자명</th>
-                  <th>Login ID</th>
-                  <th>이메일</th>
-                  <th>역할</th>
-                  <th>Admin 스코프</th>
-                  <th>Sales WS</th>
-                  <th>상태</th>
-                  <th>마지막 로그인</th>
-                </tr>
-              </thead>
-              <tbody id="user-table-body">
-                <tr style="cursor:pointer;" onclick="openUserDrawer('홍길동','hong@mnm.co.kr','Super Admin','전체','활성')"><td>홍길동</td><td style="font-size:12px;color:#596066;">hong@mnm.co.kr</td><td>hong@mnm.co.kr</td><td><span class="badge role-super">Super Admin</span></td><td>전체</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 09:12</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('김미래','kim.m@mnm.co.kr','Admin (System)','System','활성')"><td>김미래</td><td style="font-size:12px;color:#596066;">kim.m@mnm.co.kr</td><td>kim.m@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 08:45</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('이준혁','lee.j@mnm.co.kr','Admin (Operation)','Operation','활성')"><td>이준혁</td><td style="font-size:12px;color:#596066;">lee.j@mnm.co.kr</td><td>lee.j@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 17:30</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('박소연','park.s@mnm.co.kr','Operator','—','활성')"><td>박소연</td><td style="font-size:12px;color:#596066;">park.s@mnm.co.kr</td><td>park.s@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-17 14:22</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('최현우','choi.h@mnm.co.kr','Operator','—','활성')"><td>최현우</td><td style="font-size:12px;color:#596066;">choi.h@mnm.co.kr</td><td>choi.h@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-16 11:05</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('정다은','jung.d@mnm.co.kr','Admin (Operation)','Operation','활성')"><td>정다은</td><td style="font-size:12px;color:#596066;">jung.d@mnm.co.kr</td><td>jung.d@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>Operation</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-16 09:58</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('강태양','kang.t@mnm.co.kr','Operator','—','비활성')"><td>강태양</td><td style="font-size:12px;color:#596066;">kang.t@mnm.co.kr</td><td>kang.t@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-inactive">비활성</span></td><td class="muted-text">2026-07-30 16:44</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('윤서진','yoon.s@mnm.co.kr','Operator','—','활성')"><td>윤서진</td><td style="font-size:12px;color:#596066;">yoon.s@mnm.co.kr</td><td>yoon.s@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-15 13:10</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('임채원','lim.c@mnm.co.kr','Admin (System)','System','활성')"><td>임채원</td><td style="font-size:12px;color:#596066;">lim.c@mnm.co.kr</td><td>lim.c@mnm.co.kr</td><td><span class="badge role-admin">Admin</span></td><td>System</td><td><span class="badge status-active">활성</span></td><td><span class="badge status-active">활성</span></td><td class="muted-text">2026-08-18 07:55</td></tr>
-                <tr style="cursor:pointer;" onclick="openUserDrawer('오지수','oh.j@mnm.co.kr','Operator','—','비활성')"><td>오지수</td><td style="font-size:12px;color:#596066;">oh.j@mnm.co.kr</td><td>oh.j@mnm.co.kr</td><td><span class="badge role-operator">Operator</span></td><td>—</td><td><span class="badge status-inactive">비활성</span></td><td><span class="badge status-inactive">비활성</span></td><td class="muted-text">2026-08-01 10:30</td></tr>
-              </tbody>
-            </table>
+
+          <!-- 조직 구조 (부서 관리) -->
+          <div class="table-card">
+            <div class="table-header" style="padding:14px 16px;">
+              <span class="table-header-title">조직 구조 · 부서 관리</span>
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="alert('부서 추가 폼은 준비 중입니다.')">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                부서 추가
+              </button>
+            </div>
+            <div class="table-scroll">
+              <table style="min-width:600px;">
+                <thead>
+                  <tr>
+                    <th>부서 ID</th>
+                    <th>부서명</th>
+                    <th>상위 부서</th>
+                    <th>부서 책임자</th>
+                    <th>소속 인원</th>
+                  </tr>
+                </thead>
+                <tbody id="dept-table-body">
+                  <tr><td class="muted-text">DEPT-01</td><td style="font-weight:600;">시스템팀</td><td class="muted-text">—</td><td>김미래</td><td class="muted-text">2명</td></tr>
+                  <tr><td class="muted-text">DEPT-02</td><td style="font-weight:600;">운영팀</td><td class="muted-text">—</td><td>이준혁</td><td class="muted-text">4명</td></tr>
+                  <tr><td class="muted-text">DEPT-03</td><td style="font-weight:600;">영업팀</td><td class="muted-text">—</td><td class="muted-text">담당자 미지정</td><td class="muted-text">1명</td></tr>
+                  <tr><td class="muted-text">DEPT-04</td><td style="font-weight:600;">마케팅팀</td><td class="muted-text">—</td><td class="muted-text">담당자 미지정</td><td class="muted-text">1명</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding:10px 16px;font-size:12px;color:#9EA5AD;border-top:1px solid #F0F1F3;">사용자 초대 시 "소속 부서" 선택 목록은 이 표를 기준으로 합니다.</div>
           </div>
-        </div>
+
+        </div><!-- /tab-panel-org -->
+
+        <!-- ══════════ TAB: 사용자 관리 ══════════ -->
+        <div class="settings-tab-panel" id="tab-panel-users">
+
+          <div class="table-card">
+            <div class="table-header" style="padding:14px 16px;">
+              <span class="table-header-title">사용자 관리</span>
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openInviteModal()">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                사용자 초대
+              </button>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>사용자</th>
+                    <th>역할</th>
+                    <th>관리 범위</th>
+                    <th>영업 WS</th>
+                    <th>계정 상태</th>
+                    <th>마지막 로그인</th>
+                  </tr>
+                </thead>
+                <tbody id="user-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div><!-- /tab-panel-users -->
+
       </div>
     </div>
 
@@ -306,7 +347,7 @@
 <!-- User Drawer Overlay -->
 <div id="user-overlay" onclick="closeUserDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;"></div>
 
-<!-- User Detail Drawer (T-SET-02) -->
+<!-- User Detail Drawer -->
 <div id="user-drawer" style="position:fixed;top:0;right:-480px;width:480px;height:100%;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);z-index:501;transition:right 0.25s ease;display:flex;flex-direction:column;">
   <div style="padding:18px 22px 14px;border-bottom:1px solid #E5E7EA;display:flex;align-items:center;justify-content:space-between;">
     <div>
@@ -316,51 +357,70 @@
     <div onclick="closeUserDrawer()" style="width:32px;height:32px;border-radius:6px;border:1px solid #E5E7EA;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#596066;">✕</div>
   </div>
   <div style="overflow-y:auto;flex:1;padding:18px 22px;">
-    <!-- 기본정보 -->
-    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">사용자 기본정보</div>
-    <div style="display:grid;grid-template-columns:110px 1fr;gap:7px 12px;font-size:13px;margin-bottom:18px;">
+
+    <!-- 기본 정보 -->
+    <div class="drawer-section-label">기본 정보</div>
+    <div class="drawer-field-grid">
       <span style="color:#596066;">이름</span><span style="font-weight:600;" id="di-name"></span>
-      <span style="color:#596066;">현재 Login ID</span><span id="di-loginid" style="font-family:monospace;font-size:12px;background:#F6F7F9;padding:2px 8px;border-radius:4px;width:fit-content;"></span>
+      <span style="color:#596066;">Login ID</span><span id="di-loginid" style="font-family:monospace;font-size:12px;background:#F6F7F9;padding:2px 8px;border-radius:4px;width:fit-content;"></span>
       <span style="color:#596066;">이메일</span><span id="di-email"></span>
-      <span style="color:#596066;">역할</span><span id="di-role"></span>
-      <span style="color:#596066;">상태</span><span id="di-status"></span>
+      <span style="color:#596066;">연락처</span><span id="di-phone"></span>
+      <span style="color:#596066;">소속</span><span id="di-dept"></span>
     </div>
 
-    <!-- Login ID 변경 -->
-    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Login ID 변경 (T-SET-02)</div>
-    <div style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:14px;">
-      ⚠ Login ID 변경 시 해당 사용자의 세션이 즉시 무효화되며, 재로그인이 필요합니다. 변경 이력은 감사 로그에 기록됩니다.
+    <!-- 권한 및 접근 -->
+    <div class="drawer-section-label">권한 및 접근</div>
+    <div class="drawer-field-grid">
+      <span style="color:#596066;">역할</span><span id="di-role-badge"></span>
+      <span style="color:#596066;">관리 범위</span><span id="di-admin-scope"></span>
+      <span style="color:#596066;">접근 범위</span><span id="di-access-scope"></span>
+      <span style="color:#596066;">영업 워크스페이스</span><span id="di-sales-ws"></span>
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
-      <div>
-        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">현재 Login ID</label>
-        <input id="current-loginid" readonly style="width:100%;height:36px;border:1px solid #E5E7EA;border-radius:6px;padding:0 12px;font-size:13px;background:#F6F7F9;color:#9EA5AD;font-family:monospace;">
-      </div>
-      <div>
-        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">새 Login ID <span style="color:#E97474;">*</span></label>
-        <input id="new-loginid" type="email" placeholder="새 Login ID (이메일 형식)" style="width:100%;height:36px;border:1px solid #CED2D6;border-radius:6px;padding:0 12px;font-size:13px;">
-        <div style="font-size:11px;color:#9EA5AD;margin-top:4px;">이메일 형식만 허용됩니다.</div>
-      </div>
-      <div>
-        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">현재 비밀번호 확인 <span style="color:#E97474;">*</span></label>
-        <input id="confirm-pw" type="password" placeholder="관리자 비밀번호 입력 (보안 인증)" style="width:100%;height:36px;border:1px solid #CED2D6;border-radius:6px;padding:0 12px;font-size:13px;">
-      </div>
-      <div>
-        <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">변경 사유 <span style="color:#E97474;">*</span></label>
-        <textarea id="change-reason" placeholder="변경 사유를 입력하세요. 감사 로그에 기록됩니다." style="width:100%;min-height:72px;border:1px solid #CED2D6;border-radius:6px;padding:10px 12px;font-size:13px;resize:vertical;font-family:inherit;"></textarea>
-      </div>
-    </div>
-    <div id="change-result" style="display:none;background:#E8F8E9;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;font-size:13px;color:#14532D;margin-bottom:14px;"></div>
 
-    <!-- 변경 이력 -->
-    <div style="font-size:11px;font-weight:700;color:#9EA5AD;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;">변경·접속 이력</div>
-    <div style="font-size:12px;color:#596066;margin-bottom:8px;">최근 Login 이력</div>
+    <!-- 계정 -->
+    <div class="drawer-section-label">계정</div>
+    <div class="drawer-field-grid" style="margin-bottom:10px;">
+      <span style="color:#596066;">계정 상태</span><span id="di-status"></span>
+    </div>
+    <button class="loginid-change-toggle" onclick="toggleLoginIdForm()" id="loginid-toggle-btn">▸ Login ID 변경</button>
+    <div id="loginid-change-panel" style="display:none;margin-top:12px;">
+      <div style="background:#FFF8E6;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:14px;">
+        ⚠ Login ID 변경 시 해당 사용자의 세션이 즉시 무효화되며, 재로그인이 필요합니다. 변경 이력은 감사 로그에 기록됩니다.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">현재 Login ID</label>
+          <input id="current-loginid" readonly style="width:100%;height:36px;border:1px solid #E5E7EA;border-radius:6px;padding:0 12px;font-size:13px;background:#F6F7F9;color:#9EA5AD;font-family:monospace;">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">새 Login ID <span style="color:#E97474;">*</span></label>
+          <input id="new-loginid" type="email" placeholder="새 Login ID (이메일 형식)" style="width:100%;height:36px;border:1px solid #CED2D6;border-radius:6px;padding:0 12px;font-size:13px;">
+          <div style="font-size:11px;color:#9EA5AD;margin-top:4px;">이메일 형식만 허용됩니다.</div>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">현재 비밀번호 확인 <span style="color:#E97474;">*</span></label>
+          <input id="confirm-pw" type="password" placeholder="관리자 비밀번호 입력 (보안 인증)" style="width:100%;height:36px;border:1px solid #CED2D6;border-radius:6px;padding:0 12px;font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#596066;display:block;margin-bottom:4px;">변경 사유 <span style="color:#E97474;">*</span></label>
+          <textarea id="change-reason" placeholder="변경 사유를 입력하세요. 감사 로그에 기록됩니다." style="width:100%;min-height:64px;border:1px solid #CED2D6;border-radius:6px;padding:10px 12px;font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+        </div>
+      </div>
+      <div id="change-result" style="display:none;background:#E8F8E9;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;font-size:13px;color:#14532D;margin-bottom:14px;"></div>
+      <button onclick="saveLoginId()" style="height:34px;padding:0 16px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;">변경 저장</button>
+    </div>
+
+    <div class="drawer-divider"></div>
+
+    <!-- 활동 -->
+    <div class="drawer-section-label">활동</div>
+    <div style="font-size:12px;color:#596066;margin-bottom:8px;">최근 로그인</div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px;" id="login-history">
       <div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F6F7F9;border-radius:6px;font-size:12px;"><span>정상 로그인</span><span style="color:#9EA5AD;">2026-08-18 09:12</span></div>
       <div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F6F7F9;border-radius:6px;font-size:12px;"><span>정상 로그인</span><span style="color:#9EA5AD;">2026-08-17 08:44</span></div>
       <div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F6F7F9;border-radius:6px;font-size:12px;"><span>정상 로그인</span><span style="color:#9EA5AD;">2026-08-16 09:01</span></div>
     </div>
-    <div style="font-size:12px;color:#596066;margin-bottom:8px;">Login ID 변경 이력</div>
+    <div style="font-size:12px;color:#596066;margin-bottom:8px;">변경 이력</div>
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:12px;" id="id-change-history">
         <thead><tr>
@@ -376,12 +436,11 @@
     </div>
   </div>
   <div style="padding:14px 22px;border-top:1px solid #E5E7EA;display:flex;gap:8px;">
-    <button onclick="saveLoginId()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;">변경 저장</button>
-    <button onclick="closeUserDrawer()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">취소</button>
+    <button onclick="closeUserDrawer()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">닫기</button>
   </div>
 </div>
 
-<!-- Invite User Modal (S-C1-3 사용자 관리) -->
+<!-- Invite User Modal -->
 <div class="invite-modal-overlay" id="invite-overlay" onclick="if(event.target===this)closeInviteModal()">
   <div class="invite-modal">
     <div class="invite-modal-head">
@@ -409,11 +468,6 @@
           <label>소속 부서</label>
           <select id="inv-dept">
             <option value="">선택 안 함</option>
-            <option>운영팀</option>
-            <option>시스템팀</option>
-            <option>영업팀</option>
-            <option>마케팅팀</option>
-            <option>기타</option>
           </select>
         </div>
       </div>
@@ -427,17 +481,22 @@
           </select>
         </div>
         <div class="invite-field" id="inv-scope-field" style="display:none;">
-          <label>Admin 관리 Scope <span class="req">*</span></label>
+          <label>관리 범위 <span class="req">*</span></label>
           <select id="inv-scope">
             <option value="System">System</option>
             <option value="Operation">Operation</option>
           </select>
         </div>
       </div>
+      <div class="invite-field">
+        <label>접근 범위</label>
+        <input id="inv-access-scope" type="text" placeholder="예: 대한민국 > 수도권 > 서울지사 (미입력 시 전체)">
+        <div class="input-hint" style="font-size:11px;color:#9EA5AD;margin-top:4px;">Country → Region Group → Branch 단위로 볼 수 있는 범위를 지정합니다.</div>
+      </div>
       <div class="invite-toggle-row">
         <div>
-          <div class="invite-toggle-row-label">Sales Workspace 접근</div>
-          <div class="invite-toggle-row-hint">활성화 시 영업 워크스페이스 메뉴가 노출됩니다 (Overlay — 실제 권한은 역할에 따름).</div>
+          <div class="invite-toggle-row-label">영업 워크스페이스 접근 허용</div>
+          <div class="invite-toggle-row-hint">활성화 시 영업 워크스페이스 메뉴가 노출됩니다 (Overlay — 실제 Action 권한은 역할에 따름).</div>
         </div>
         <label class="invite-toggle">
           <input id="inv-sales-ws" type="checkbox">
@@ -458,27 +517,86 @@
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
 
 <script>
+var USERS = {
+  'hong@mnm.co.kr':  { name:'홍길동', loginId:'hong@mnm.co.kr',  email:'hong@mnm.co.kr',  phone:'010-1234-5678', dept:'시스템팀', role:'Super Admin', roleClass:'role-super',   adminScope:'전체',      accessScope:'전체',                          salesWs:true,  status:'active',   statusLabel:'활성',   lastLogin:'2026-08-18 09:12' },
+  'kim.m@mnm.co.kr': { name:'김미래', loginId:'kim.m@mnm.co.kr', email:'kim.m@mnm.co.kr', phone:'010-2345-6789', dept:'시스템팀', role:'Admin',       roleClass:'role-admin',   adminScope:'System',    accessScope:'전체',                          salesWs:false, status:'active',   statusLabel:'활성',   lastLogin:'2026-08-18 08:45' },
+  'lee.j@mnm.co.kr': { name:'이준혁', loginId:'lee.j@mnm.co.kr', email:'lee.j@mnm.co.kr', phone:'010-3456-7890', dept:'운영팀',   role:'Admin',       roleClass:'role-admin',   adminScope:'Operation', accessScope:'대한민국 > 수도권 > 서울지사',      salesWs:false, status:'active',   statusLabel:'활성',   lastLogin:'2026-08-17 17:30' },
+  'park.s@mnm.co.kr':{ name:'박소연', loginId:'park.s@mnm.co.kr',email:'park.s@mnm.co.kr',phone:'010-4567-8901', dept:'운영팀',   role:'Operator',    roleClass:'role-operator',adminScope:'—',         accessScope:'대한민국 > 수도권 > 서울지사 > 강남',salesWs:false, status:'active',   statusLabel:'활성',   lastLogin:'2026-08-17 14:22' },
+  'choi.h@mnm.co.kr':{ name:'최현우', loginId:'choi.h@mnm.co.kr',email:'choi.h@mnm.co.kr',phone:'010-5678-9012', dept:'운영팀',   role:'Operator',    roleClass:'role-operator',adminScope:'—',         accessScope:'대한민국 > 수도권 > 서울지사 > 홍대',salesWs:false, status:'active',   statusLabel:'활성',   lastLogin:'2026-08-16 11:05' },
+  'jung.d@mnm.co.kr':{ name:'정다은', loginId:'jung.d@mnm.co.kr',email:'jung.d@mnm.co.kr',phone:'010-6789-0123', dept:'운영팀',   role:'Admin',       roleClass:'role-admin',   adminScope:'Operation', accessScope:'대한민국 > 영남권 > 부산지사',      salesWs:true,  status:'active',   statusLabel:'활성',   lastLogin:'2026-08-16 09:58' },
+  'kang.t@mnm.co.kr':{ name:'강태양', loginId:'kang.t@mnm.co.kr',email:'kang.t@mnm.co.kr',phone:'010-7890-1234', dept:'운영팀',   role:'Operator',    roleClass:'role-operator',adminScope:'—',         accessScope:'대한민국 > 영남권 > 부산지사',      salesWs:false, status:'inactive', statusLabel:'비활성', lastLogin:'2026-07-30 16:44' },
+  'yoon.s@mnm.co.kr':{ name:'윤서진', loginId:'yoon.s@mnm.co.kr',email:'yoon.s@mnm.co.kr',phone:'010-8901-2345', dept:'영업팀',   role:'Operator',    roleClass:'role-operator',adminScope:'—',         accessScope:'대한민국 > 수도권 > 서울지사 > 잠실',salesWs:true,  status:'active',   statusLabel:'활성',   lastLogin:'2026-08-15 13:10' },
+  'lim.c@mnm.co.kr': { name:'임채원', loginId:'lim.c@mnm.co.kr', email:'lim.c@mnm.co.kr', phone:'010-9012-3456', dept:'시스템팀', role:'Admin',       roleClass:'role-admin',   adminScope:'System',    accessScope:'전체',                          salesWs:false, status:'active',   statusLabel:'활성',   lastLogin:'2026-08-18 07:55' },
+  'oh.j@mnm.co.kr':  { name:'오지수', loginId:'oh.j@mnm.co.kr',  email:'oh.j@mnm.co.kr',  phone:'010-0123-4567', dept:'마케팅팀', role:'Operator',    roleClass:'role-operator',adminScope:'—',         accessScope:'대한민국 > 수도권 > 서울지사',      salesWs:false, status:'inactive', statusLabel:'비활성', lastLogin:'2026-08-01 10:30' }
+};
+
+function renderUserTable() {
+  var tbody = document.getElementById('user-table-body');
+  var rows = '';
+  Object.keys(USERS).forEach(function(key) {
+    var u = USERS[key];
+    rows += '<tr style="cursor:pointer;" onclick="openUserDrawer(\'' + key + '\')">' +
+      '<td><div style="font-weight:600;">' + u.name + '</div><div class="muted-text">' + u.email + '</div></td>' +
+      '<td><span class="badge ' + u.roleClass + '">' + u.role + '</span></td>' +
+      '<td>' + u.adminScope + '</td>' +
+      '<td>' + (u.salesWs ? '<span class="badge status-active">사용</span>' : '<span class="badge role-operator">미사용</span>') + '</td>' +
+      '<td><span class="badge status-' + u.status + '">' + u.statusLabel + '</span></td>' +
+      '<td class="muted-text">' + u.lastLogin + '</td>' +
+      '</tr>';
+  });
+  tbody.innerHTML = rows;
+}
+renderUserTable();
+
+function switchSettingsTab(tab) {
+  document.querySelectorAll('.settings-tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.getElementById('tab-panel-org').classList.toggle('active', tab === 'org');
+  document.getElementById('tab-panel-users').classList.toggle('active', tab === 'users');
+}
+
 var currentUser = {};
-function openUserDrawer(name, loginId, role, scope, status) {
-  currentUser = { name: name, loginId: loginId, role: role };
-  document.getElementById('drawer-user-name').textContent = name;
-  document.getElementById('drawer-user-role').textContent = role;
-  document.getElementById('di-name').textContent = name;
-  document.getElementById('di-loginid').textContent = loginId;
-  document.getElementById('di-email').textContent = loginId;
-  document.getElementById('di-role').textContent = role;
-  document.getElementById('di-status').innerHTML = '<span style="background:#E8F8E9;color:#2E9E34;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;">' + status + '</span>';
-  document.getElementById('current-loginid').value = loginId;
+function openUserDrawer(key) {
+  var u = USERS[key];
+  if (!u) return;
+  currentUser = { key: key, loginId: u.loginId };
+
+  document.getElementById('drawer-user-name').textContent = u.name;
+  document.getElementById('drawer-user-role').textContent = u.role;
+
+  document.getElementById('di-name').textContent = u.name;
+  document.getElementById('di-loginid').textContent = u.loginId;
+  document.getElementById('di-email').textContent = u.email;
+  document.getElementById('di-phone').textContent = u.phone;
+  document.getElementById('di-dept').textContent = u.dept;
+
+  document.getElementById('di-role-badge').innerHTML = '<span class="badge ' + u.roleClass + '">' + u.role + '</span>';
+  document.getElementById('di-admin-scope').textContent = u.adminScope;
+  document.getElementById('di-access-scope').textContent = u.accessScope;
+  document.getElementById('di-sales-ws').innerHTML = u.salesWs ? '<span class="badge status-active">사용</span>' : '<span class="badge role-operator">미사용</span>';
+
+  document.getElementById('di-status').innerHTML = '<span class="badge status-' + u.status + '">' + u.statusLabel + '</span>';
+
+  document.getElementById('current-loginid').value = u.loginId;
   document.getElementById('new-loginid').value = '';
   document.getElementById('confirm-pw').value = '';
   document.getElementById('change-reason').value = '';
   document.getElementById('change-result').style.display = 'none';
+  document.getElementById('loginid-change-panel').style.display = 'none';
+  document.getElementById('loginid-toggle-btn').textContent = '▸ Login ID 변경';
+
   document.getElementById('user-overlay').style.display = 'block';
   document.getElementById('user-drawer').style.right = '0';
 }
 function closeUserDrawer() {
   document.getElementById('user-overlay').style.display = 'none';
   document.getElementById('user-drawer').style.right = '-480px';
+}
+function toggleLoginIdForm() {
+  var panel = document.getElementById('loginid-change-panel');
+  var btn = document.getElementById('loginid-toggle-btn');
+  var open = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : 'block';
+  btn.textContent = (open ? '▸' : '▾') + ' Login ID 변경';
 }
 function saveLoginId() {
   var newId = document.getElementById('new-loginid').value.trim();
@@ -489,7 +607,6 @@ function saveLoginId() {
   if (!reason) { alert('변경 사유를 입력하세요.'); return; }
   var oldId = currentUser.loginId;
   var now = '2026-08-21 ' + new Date().toTimeString().slice(0,8);
-  // Add to history
   var tbody = document.getElementById('id-history-body');
   if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
   var row = '<tr><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;white-space:nowrap;">' + now + '</td><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;font-family:monospace;">' + oldId + '</td><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;font-family:monospace;">' + newId + '</td><td style="padding:6px 10px;border-bottom:1px solid #E5E7EA;">홍길동 (Super Admin)</td></tr>';
@@ -499,6 +616,7 @@ function saveLoginId() {
   r.innerHTML = '✓ Login ID가 변경되었습니다.<br><span style="font-size:12px;color:#596066;">변경 전: ' + oldId + ' → 변경 후: ' + newId + '<br>⚠ 대상 사용자의 모든 활성 세션이 무효화되었습니다. 재로그인이 필요합니다.</span>';
   document.getElementById('current-loginid').value = newId;
   currentUser.loginId = newId;
+  if (USERS[currentUser.key]) { USERS[currentUser.key].loginId = newId; }
   showToast('Login ID가 변경되었습니다. 대상 사용자의 세션이 무효화됩니다.');
 }
 var toastTimer;
@@ -509,13 +627,23 @@ function showToast(msg) {
   toastTimer = setTimeout(function(){ t.style.display='none'; }, 4000);
 }
 
+function populateInviteDeptOptions() {
+  var sel = document.getElementById('inv-dept');
+  var deptNames = Array.from(document.querySelectorAll('#dept-table-body tr')).map(function(tr) {
+    return tr.children[1].textContent.trim();
+  });
+  sel.innerHTML = '<option value="">선택 안 함</option>' + deptNames.map(function(d) { return '<option>' + d + '</option>'; }).join('');
+}
+
 function openInviteModal() {
+  populateInviteDeptOptions();
   document.getElementById('inv-name').value = '';
   document.getElementById('inv-email').value = '';
   document.getElementById('inv-phone').value = '';
   document.getElementById('inv-dept').value = '';
   document.getElementById('inv-role').value = 'Operator';
   document.getElementById('inv-scope').value = 'System';
+  document.getElementById('inv-access-scope').value = '';
   document.getElementById('inv-sales-ws').checked = false;
   onInviteRoleChange();
   document.getElementById('invite-overlay').classList.add('open');
@@ -530,30 +658,26 @@ function onInviteRoleChange() {
 function submitInvite() {
   var name = document.getElementById('inv-name').value.trim();
   var email = document.getElementById('inv-email').value.trim();
+  var phone = document.getElementById('inv-phone').value.trim();
+  var dept = document.getElementById('inv-dept').value;
   var role = document.getElementById('inv-role').value;
   var scope = document.getElementById('inv-scope').value;
+  var accessScope = document.getElementById('inv-access-scope').value.trim();
   var salesWs = document.getElementById('inv-sales-ws').checked;
 
   if (!name) { alert('이름을 입력하세요.'); return; }
   if (!email || !email.includes('@')) { alert('유효한 이메일 형식을 입력하세요.'); return; }
 
   var roleClass = role === 'Super Admin' ? 'role-super' : role === 'Admin' ? 'role-admin' : 'role-operator';
-  var roleLabel = role === 'Admin' ? 'Admin (' + scope + ')' : role;
-  var scopeLabel = role === 'Operator' ? '—' : scope;
+  var adminScope = role === 'Operator' ? '—' : scope;
 
-  var row = document.createElement('tr');
-  row.style.cursor = 'pointer';
-  row.onclick = function() { openUserDrawer(name, email, roleLabel, scopeLabel, '초대됨'); };
-  row.innerHTML =
-    '<td>' + name + '</td>' +
-    '<td style="font-size:12px;color:#596066;">' + email + '</td>' +
-    '<td>' + email + '</td>' +
-    '<td><span class="badge ' + roleClass + '">' + role + '</span></td>' +
-    '<td>' + scopeLabel + '</td>' +
-    '<td>' + (salesWs ? '<span class="badge status-active">활성</span>' : '<span class="badge status-inactive">비활성</span>') + '</td>' +
-    '<td><span class="badge status-pending">초대됨</span></td>' +
-    '<td class="muted-text">—</td>';
-  document.getElementById('user-table-body').prepend(row);
+  USERS[email] = {
+    name: name, loginId: email, email: email, phone: phone || '—', dept: dept || '—',
+    role: role, roleClass: roleClass, adminScope: adminScope,
+    accessScope: accessScope || '전체', salesWs: salesWs,
+    status: 'pending', statusLabel: '초대됨', lastLogin: '—'
+  };
+  renderUserTable();
 
   closeInviteModal();
   showToast(name + '(' + email + ')님에게 초대 메일을 발송했습니다.');
