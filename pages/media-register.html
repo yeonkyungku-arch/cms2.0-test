@@ -712,14 +712,14 @@
           <div class="section-body">
 
             <div class="form-row">
-              <div class="form-label">설치 유형<span class="req" style="color:var(--danger);">*</span></div>
+              <div class="form-label">설치 유형 (설치 장소)<span class="req" style="color:var(--danger);">*</span></div>
               <div class="form-field">
-                <select class="select" id="installType" onchange="onInstallTypeChange()">
+                <select class="select" id="installationLocation" onchange="onInstallLocationChange()">
                   <option value="">선택하세요</option>
-                  <option value="고정" selected>고정</option>
-                  <option value="이동형">이동형</option>
+                  <option value="O">옥외 (O)</option>
+                  <option value="I">실내 (I)</option>
+                  <option value="V">기내 (V)</option>
                 </select>
-                <div class="input-hint" id="installTypeHint">고정형 미디어는 아래 위치 정보에 실제 설치 주소를 입력합니다.</div>
               </div>
             </div>
 
@@ -727,33 +727,21 @@
               <div class="form-label">광고물 유형<span class="req" style="color:var(--danger);">*</span></div>
               <div class="form-field">
                 <select class="select" id="adFixtureType">
-                  <option value="">선택하세요</option>
-                  <option value="옥외 전광판 (LED)">옥외 전광판 (LED)</option>
-                  <option value="실내 근접형 사이니지">실내 근접형 사이니지</option>
-                  <option value="차량 광고판 (버스)">차량 광고판 (버스)</option>
-                  <option value="키오스크">키오스크</option>
-                  <option value="기타">기타</option>
+                  <option value="">설치 유형을 먼저 선택하세요</option>
                 </select>
+                <div class="input-hint">선택한 설치 유형에 해당하는 광고물 유형만 표시됩니다</div>
               </div>
             </div>
 
             <div class="classify-grid">
               <div class="classify-cell">
-                <span class="classify-cell form-label-inline">설치 장소<span class="req" style="color:var(--danger);">*</span></span>
-                <select class="select" id="installationLocation" onchange="regenCode()">
-                  <option value="">선택하세요</option>
-                  <option value="O">옥외 (O)</option>
-                  <option value="I">실내 (I)</option>
-                  <option value="V">기내 (V)</option>
-                </select>
-              </div>
-              <div class="classify-cell">
                 <span class="classify-cell form-label-inline">이동성<span class="req" style="color:var(--danger);">*</span></span>
-                <select class="select" id="mobility" onchange="regenCode()">
+                <select class="select" id="mobility" onchange="regenCode(); onMobilityChange();">
                   <option value="">선택하세요</option>
                   <option value="M">이동형 (M)</option>
-                  <option value="F">고정형 (F)</option>
+                  <option value="F" selected>고정형 (F)</option>
                 </select>
+                <div class="input-hint" id="installTypeHint">이동형은 아래 위치 정보에 실제 설치 주소 대신 차고지 주소를 입력합니다.</div>
               </div>
               <div class="classify-cell">
                 <span class="classify-cell form-label-inline">시청 거리<span class="req" style="color:var(--danger);">*</span></span>
@@ -1485,17 +1473,38 @@
       row.style.display = (led && led.checked) ? '' : 'none';
     }
     syncPitchVisibility();
+    onMobilityChange();
 
-    function onInstallTypeChange() {
-      var isMobile = document.getElementById('installType').value === '이동형';
+    function onMobilityChange() {
+      var isMobile = document.getElementById('mobility').value === 'M';
       document.getElementById('addrSectionTitle').textContent = isMobile ? '차고지 정보' : '주소 정보';
       document.getElementById('addrSectionDesc').textContent = isMobile
         ? '이동형 미디어의 차고지 주소를 검색하여 입력합니다'
         : '설치 주소를 검색하여 입력합니다';
       document.getElementById('addrFieldLabel').innerHTML = (isMobile ? '차고지 주소' : '설치 주소') + '<span class="req">*</span>';
       document.getElementById('installTypeHint').textContent = isMobile
-        ? '이동형 미디어는 실제 설치 위치 대신 차고지 주소를 입력합니다.'
-        : '고정형 미디어는 아래 위치 정보에 실제 설치 주소를 입력합니다.';
+        ? '이동형은 아래 위치 정보에 실제 설치 주소 대신 차고지 주소를 입력합니다.'
+        : '고정형은 아래 위치 정보에 실제 설치 주소를 입력합니다.';
+    }
+
+    /* ── 설치 유형(설치 장소)에 따른 광고물 유형 목록 ── */
+    var AD_FIXTURE_OPTIONS = {
+      O: ['옥외 전광판 (LED)', '옥외 스탠드형 사이니지', '기타'],
+      I: ['실내 근접형 사이니지', '키오스크', '기타'],
+      V: ['차량 광고판 (버스)', '차량 내부 사이니지', '기타']
+    };
+    function onInstallLocationChange() {
+      var loc = document.getElementById('installationLocation').value;
+      var sel = document.getElementById('adFixtureType');
+      sel.innerHTML = '';
+      if (!loc) {
+        sel.innerHTML = '<option value="">설치 유형을 먼저 선택하세요</option>';
+        regenCode();
+        return;
+      }
+      sel.innerHTML = '<option value="">선택하세요</option>' +
+        AD_FIXTURE_OPTIONS[loc].map(function(v) { return '<option value="' + v + '">' + v + '</option>'; }).join('');
+      regenCode();
     }
     function searchAddress() {
       var q = prompt('검색할 주소를 입력하세요', document.getElementById('addrMain').value);
