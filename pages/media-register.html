@@ -699,15 +699,41 @@
       <!-- ═════════════════════════════════ STEP 2: 광고물·위치 ═════════════════════════════════ -->
       <div class="step-panel" id="panel-step-2">
 
-        <!-- 2-1. 미디어 분류 -->
+        <!-- 2-1. 광고물 정보 -->
         <div class="form-card">
           <div class="section-head">
             <div>
-              <div class="section-title">미디어 분류</div>
-              <div class="section-desc">광고물 유형 코드(mediaTypeCode)는 분류값으로 자동 생성됩니다</div>
+              <div class="section-title">광고물 정보</div>
+              <div class="section-desc">설치 유형·광고물 유형을 선택하면 미디어 유형(코드)이 분류값으로 자동 생성됩니다</div>
             </div>
           </div>
           <div class="section-body">
+
+            <div class="form-row">
+              <div class="form-label">설치 유형<span class="req" style="color:var(--danger);">*</span></div>
+              <div class="form-field">
+                <select class="select" id="installType" onchange="onInstallTypeChange()">
+                  <option value="">선택하세요</option>
+                  <option value="고정" selected>고정</option>
+                  <option value="이동형">이동형</option>
+                </select>
+                <div class="input-hint" id="installTypeHint">고정형 미디어는 아래 위치 정보에 실제 설치 주소를 입력합니다.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-label">광고물 유형<span class="req" style="color:var(--danger);">*</span></div>
+              <div class="form-field">
+                <select class="select" id="adFixtureType">
+                  <option value="">선택하세요</option>
+                  <option value="옥외 전광판 (LED)">옥외 전광판 (LED)</option>
+                  <option value="실내 근접형 사이니지">실내 근접형 사이니지</option>
+                  <option value="차량 광고판 (버스)">차량 광고판 (버스)</option>
+                  <option value="키오스크">키오스크</option>
+                  <option value="기타">기타</option>
+                </select>
+              </div>
+            </div>
 
             <div class="classify-grid">
               <div class="classify-cell">
@@ -748,7 +774,7 @@
             </div>
 
             <div class="form-row" style="margin-top:14px;">
-              <div class="form-label">광고물 유형코드<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">자동 생성</span></div>
+              <div class="form-label">미디어 유형<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">자동 생성</span></div>
               <div class="form-field">
                 <div class="mediatype-row">
                   <div class="mediatype-code" id="mediaTypeCode">—</div>
@@ -832,13 +858,13 @@
         <div class="form-card">
           <div class="section-head">
             <div>
-              <div class="section-title">주소 정보</div>
-              <div class="section-desc">설치 주소를 검색하여 입력합니다</div>
+              <div class="section-title" id="addrSectionTitle">주소 정보</div>
+              <div class="section-desc" id="addrSectionDesc">설치 주소를 검색하여 입력합니다</div>
             </div>
           </div>
           <div class="section-body">
             <div class="form-row">
-              <div class="form-label">설치 주소<span class="req">*</span></div>
+              <div class="form-label" id="addrFieldLabel">설치 주소<span class="req">*</span></div>
               <div class="form-field">
                 <div class="addr-search-row">
                   <input type="text" class="input readonly" id="addrMain" value="서울 강남구 강남대로 396" readonly>
@@ -1440,6 +1466,17 @@
     function setRegCoords(latlng) {
       document.getElementById('regLat').value = latlng.lat.toFixed(5);
       document.getElementById('regLng').value = latlng.lng.toFixed(5);
+    }
+    function onInstallTypeChange() {
+      var isMobile = document.getElementById('installType').value === '이동형';
+      document.getElementById('addrSectionTitle').textContent = isMobile ? '차고지 정보' : '주소 정보';
+      document.getElementById('addrSectionDesc').textContent = isMobile
+        ? '이동형 미디어의 차고지 주소를 검색하여 입력합니다'
+        : '설치 주소를 검색하여 입력합니다';
+      document.getElementById('addrFieldLabel').innerHTML = (isMobile ? '차고지 주소' : '설치 주소') + '<span class="req">*</span>';
+      document.getElementById('installTypeHint').textContent = isMobile
+        ? '이동형 미디어는 실제 설치 위치 대신 차고지 주소를 입력합니다.'
+        : '고정형 미디어는 아래 위치 정보에 실제 설치 주소를 입력합니다.';
     }
     function searchAddress() {
       var q = prompt('검색할 주소를 입력하세요', document.getElementById('addrMain').value);
