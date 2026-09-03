@@ -6,6 +6,7 @@
   <title>미디어 상세 — D'ooh CMS</title>
   <link rel="stylesheet" href="../assets/css/cms.css">
   <link rel="stylesheet" href="../assets/css/app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <style>
     :root {
       --green:#58C65D; --dark:#24292E; --main:#2D84ED;
@@ -141,20 +142,33 @@
       font-size:12px; color:#1D4ED8; font-weight:500;
     }
 
-    /* Map placeholder */
+    /* Detail layout: 2/3 tabs + 1/3 side panel */
+    .detail-layout { display:grid; grid-template-columns:2fr 1fr; gap:20px; align-items:start; }
+    .media-side-panel { display:flex; flex-direction:column; gap:16px; position:sticky; top:16px; }
+    .media-side-panel .card { margin-bottom:0; }
+    .side-schedule-item { padding-bottom:10px; border-bottom:1px solid #F0F1F3; }
+    .side-schedule-item:last-child { border-bottom:none; padding-bottom:0; }
+    .side-schedule-item .sched-name { font-size:12.5px; font-weight:600; color:#24292E; }
+    .side-schedule-item .sched-content { font-size:12px; color:#596066; margin-top:2px; }
+    .side-schedule-item a { font-size:11px; color:#2D84ED; text-decoration:none; }
+    @media (max-width:960px) {
+      .detail-layout { grid-template-columns:1fr; }
+      .media-side-panel { position:static; }
+    }
+
+    /* Map */
     .map-placeholder {
-      height:200px; background:#F6F7F9; border:1px dashed #CED2D6;
-      border-radius:8px; display:flex; align-items:center; justify-content:center;
-      color:#9EA5AD; font-size:13px; flex-direction:column; gap:8px;
+      height:220px; background:#F6F7F9; border:1px solid #E5E7EA;
+      border-radius:8px; overflow:hidden;
     }
 
     /* photo strip */
     .photo-strip { display:flex; gap:10px; flex-wrap:wrap; }
     .photo-thumb {
-      width:88px; height:66px; background:#F6F7F9; border:1px solid #E5E7EA;
-      border-radius:6px; display:flex; align-items:center; justify-content:center;
-      color:#CED2D6; font-size:20px;
+      width:140px; height:100px; background:#F6F7F9; border:1px solid #E5E7EA;
+      border-radius:6px; overflow:hidden;
     }
+    .photo-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 
     /* MCU/sensor rows */
     .sensor-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F1F3; }
@@ -346,11 +360,13 @@
       <div class="lc-note" id="med-lc-note"></div>
     </div>
 
+    <div class="detail-layout">
     <div class="detail-main">
     <div class="tab-groups" id="tabGroups">
       <button class="tab-group-btn active" data-group="g1" onclick="switchGroup('g1')"><span class="grp-num">M1</span>미디어 정보</button>
       <button class="tab-group-btn" data-group="g2" onclick="switchGroup('g2')"><span class="grp-num">M2</span>기기 정보</button>
-      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">M3</span>감사</button>
+      <button class="tab-group-btn" data-group="g3" onclick="switchGroup('g3')"><span class="grp-num">M3</span>운영 현황</button>
+      <button class="tab-group-btn" data-group="g4" onclick="switchGroup('g4')"><span class="grp-num">M4</span>감사</button>
     </div>
 
     <!-- ====== M1. 미디어 정보 ====== -->
@@ -423,9 +439,9 @@
         </div>
         <div class="card-subhead">설치 사진 이미지</div>
         <div class="photo-strip">
-          <div class="photo-thumb">🖼</div>
-          <div class="photo-thumb">🖼</div>
-          <div class="photo-thumb">🖼</div>
+          <div class="photo-thumb"><img src="https://picsum.photos/seed/med001-install-1/280/200" alt="설치 사진 1" loading="lazy"></div>
+          <div class="photo-thumb"><img src="https://picsum.photos/seed/med001-install-2/280/200" alt="설치 사진 2" loading="lazy"></div>
+          <div class="photo-thumb"><img src="https://picsum.photos/seed/med001-install-3/280/200" alt="설치 사진 3" loading="lazy"></div>
         </div>
         <div style="margin-top:10px;font-size:12px;color:#9EA5AD;">※ 미디어 종류 코드(ex. OF, IFC)는 지표분과_얼라이언스 18 슬라이드 기준을 참고해 시스템이 자동 생성합니다.</div>
       </div>
@@ -447,10 +463,7 @@
           </div>
         </div>
         <div class="card-subhead">좌표 기반 지도</div>
-        <div class="map-placeholder">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#CED2D6" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <span>지도 핀 표시 영역 — 서울 강남구 강남대로 396</span>
-        </div>
+        <div class="map-placeholder" id="mediaLocationMap"></div>
         <div class="field-grid" style="margin-top:14px;">
           <div class="field-item">
             <div class="field-label">좌표 위도</div>
@@ -658,7 +671,7 @@
       </div>
     </div>
 
-    <!-- ====== M3. 감사 ====== -->
+    <!-- ====== M3. 운영 현황 ====== -->
     <!-- M3-1. 소속프로덕트 -->
     <div class="tab-panel" data-group="g3" id="panel-audit-affiliation">
       <div class="section-sublabel">M3-1. 소속프로덕트</div>
@@ -846,9 +859,9 @@
       </div>
     </div>
 
-    <!-- M3-6. 감사 로그 (기존 Audit + Revision 이력 통합 — 동일 사건 중복 기재는 병합) -->
-    <div class="tab-panel" data-group="g3" id="panel-auditlog">
-      <div class="section-sublabel">M3-6. 감사 로그</div>
+    <!-- ====== M4. 감사 (기존 Audit + Revision 이력 통합 — 동일 사건 중복 기재는 병합) ====== -->
+    <div class="tab-panel" data-group="g4" id="panel-auditlog">
+      <div class="section-sublabel">감사 로그</div>
       <div class="card">
         <div class="card-title">감사 로그 — MED-001 <span style="font-size:11px;color:#9EA5AD;font-weight:400;">일시 · 유형 · 변경한 자 · 변경 내용</span></div>
         <div class="audit-row">
@@ -892,6 +905,50 @@
     </div>
 
     </div><!-- /detail-main -->
+
+    <!-- ── 우측 사이드 패널: 위치·상태·설치사진·현재 송출 (화면 1/3 폭, 탭과 무관하게 항상 노출) ── -->
+    <aside class="media-side-panel">
+      <div class="card">
+        <div class="card-title" style="font-size:13px;">위치</div>
+        <div id="mediaSideMap" style="height:160px;border-radius:8px;overflow:hidden;"></div>
+        <div style="font-size:12px;color:#9EA5AD;margin-top:8px;">서울 강남구 강남대로 396</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="font-size:13px;">미디어 상태</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="state-badge lc-active"><span class="state-dot"></span>활성</span>
+          <span class="op-badge op-normal"><span class="op-dot"></span>정상</span>
+          <span class="pde-badge pde-approved" style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">PDE 승인</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="font-size:13px;">설치 사진</div>
+        <div class="photo-strip">
+          <div class="photo-thumb" style="width:100%;height:90px;"><img src="https://picsum.photos/seed/med001-install-1/280/200" alt="설치 사진 1" loading="lazy"></div>
+          <div class="photo-thumb" style="width:100%;height:90px;"><img src="https://picsum.photos/seed/med001-install-2/280/200" alt="설치 사진 2" loading="lazy"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="font-size:13px;">현재 송출 중</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="side-schedule-item">
+            <div class="sched-name">삼성전자 갤럭시 S25</div>
+            <div class="sched-content">갤럭시 S25 런칭 30초</div>
+            <a href="schedule-detail">상세 보기 →</a>
+          </div>
+          <div class="side-schedule-item">
+            <div class="sched-name">현대카드 DIGITAL</div>
+            <div class="sched-content">현대카드 ZERO 15초</div>
+            <a href="schedule-detail">상세 보기 →</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    </div><!-- /detail-layout -->
 
   </div><!-- /.content-inner -->
 </main>
@@ -1093,6 +1150,23 @@ function confirmTransition(action, message) {
         + '<div class="card"><div class="card-title">태그</div>'
         + '<div class="tag-list">' + (tags || '<span style="color:#9EA5AD;font-size:13px;">태그 없음</span>') + '</div></div>';
     }
+  });
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function() {
+  if (typeof L === 'undefined') return;
+  var lat = 37.497942, lng = 127.027621;
+  ['mediaLocationMap', 'mediaSideMap'].forEach(function(id) {
+    var mapEl = document.getElementById(id);
+    if (!mapEl) return;
+    var map = L.map(mapEl, { scrollWheelZoom: false }).setView([lat, lng], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup('강남역 1번출구 A<br>서울 강남구 강남대로 396');
   });
 })();
 </script>
