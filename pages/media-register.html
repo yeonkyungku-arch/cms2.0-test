@@ -390,6 +390,8 @@
       transition: border-color 0.12s;
     }
     .sensor-loc:focus { border-color: var(--accent); }
+    .sensor-multi { display: flex; gap: 10px; flex: 1; font-size: 12px; color: var(--text-secondary); }
+    .sensor-multi label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
 
     /* ── Peripheral checkbox cols ── */
     .checkbox-cols {
@@ -937,10 +939,10 @@
               <div class="form-label">패널 유형<span class="req">*</span></div>
               <div class="form-field">
                 <div class="radio-group">
-                  <label><input type="radio" name="panelType" value="LCD"> LCD</label>
-                  <label><input type="radio" name="panelType" value="LED" checked> LED</label>
-                  <label><input type="radio" name="panelType" value="EPD"> 전자종이 (EPD)</label>
-                  <label><input type="radio" name="panelType" value="OTHER"> 기타</label>
+                  <label><input type="radio" name="panelType" value="LCD" onchange="syncPitchVisibility()"> LCD</label>
+                  <label><input type="radio" name="panelType" value="LED" checked onchange="syncPitchVisibility()"> LED</label>
+                  <label><input type="radio" name="panelType" value="EPD" onchange="syncPitchVisibility()"> 전자종이 (EPD)</label>
+                  <label><input type="radio" name="panelType" value="OTHER" onchange="syncPitchVisibility()"> 기타</label>
                 </div>
               </div>
             </div>
@@ -965,8 +967,19 @@
               <div class="form-field">
                 <div class="input-unit" style="max-width:160px;">
                   <input type="number" placeholder="55" min="1">
-                  <span class="input-unit-label">px (대각)</span>
+                  <span class="input-unit-label">인치 (대각)</span>
                 </div>
+              </div>
+            </div>
+
+            <div class="form-row" id="pitchRow">
+              <div class="form-label">간격 (Pitch)<span class="req">*</span></div>
+              <div class="form-field">
+                <div class="input-unit" style="max-width:160px;">
+                  <input type="number" placeholder="2.5" step="0.1" min="0">
+                  <span class="input-unit-label">mm</span>
+                </div>
+                <div class="input-hint">LED 패널의 픽셀 피치 — LED 선택 시 필수 입력</div>
               </div>
             </div>
 
@@ -1070,16 +1083,17 @@
             </div>
 
             <div class="form-row">
-              <div class="form-label">MAC 주소</div>
+              <div class="form-label">셋탑 ID<span class="req">*</span></div>
               <div class="form-field">
-                <input type="text" class="input" placeholder="AA:BB:CC:DD:EE:FF" style="max-width:200px;font-family:'Pretendard',monospace;letter-spacing:0.5px;">
+                <input type="text" class="input" placeholder="예: STB-KN-001" style="max-width:240px;">
+                <div class="input-hint">기기 고유 식별자 — 자산 코드와 별개로 셋탑 자체를 식별합니다</div>
               </div>
             </div>
 
             <div class="form-row">
-              <div class="form-label">자산 코드</div>
+              <div class="form-label">MAC 주소</div>
               <div class="form-field">
-                <input type="text" class="input" placeholder="플레이어 자산 코드" style="max-width:240px;">
+                <input type="text" class="input" placeholder="AA:BB:CC:DD:EE:FF" style="max-width:200px;font-family:'Pretendard',monospace;letter-spacing:0.5px;">
               </div>
             </div>
 
@@ -1238,20 +1252,18 @@
               </div>
               <div class="sensor-row">
                 <span class="sensor-name">온도</span>
-                <select class="select">
-                  <option value="">없음</option>
-                  <option>내부</option>
-                  <option>외부</option>
-                </select>
+                <div class="sensor-multi">
+                  <label><input type="checkbox"> 내부</label>
+                  <label><input type="checkbox"> 외부</label>
+                </div>
                 <input type="text" class="sensor-loc" placeholder="위치">
               </div>
               <div class="sensor-row">
                 <span class="sensor-name">습도</span>
-                <select class="select">
-                  <option value="">없음</option>
-                  <option>내부</option>
-                  <option>외부</option>
-                </select>
+                <div class="sensor-multi">
+                  <label><input type="checkbox"> 내부</label>
+                  <label><input type="checkbox"> 외부</label>
+                </div>
                 <input type="text" class="sensor-loc" placeholder="위치">
               </div>
               <div class="sensor-row">
@@ -1467,6 +1479,13 @@
       document.getElementById('regLat').value = latlng.lat.toFixed(5);
       document.getElementById('regLng').value = latlng.lng.toFixed(5);
     }
+    function syncPitchVisibility() {
+      var led = document.querySelector('input[name="panelType"][value="LED"]');
+      var row = document.getElementById('pitchRow');
+      row.style.display = (led && led.checked) ? '' : 'none';
+    }
+    syncPitchVisibility();
+
     function onInstallTypeChange() {
       var isMobile = document.getElementById('installType').value === '이동형';
       document.getElementById('addrSectionTitle').textContent = isMobile ? '차고지 정보' : '주소 정보';
