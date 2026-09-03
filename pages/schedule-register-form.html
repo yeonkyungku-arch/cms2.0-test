@@ -123,11 +123,14 @@
     #mode-hybrid:checked ~ .main-wrap .cond-rules-section { display: block; }
     #mode-rolling:checked ~ .main-wrap .cond-rules-section { display: none; }
 
-    /* ── 기본 콘텐츠: 기존 선택 vs 신규 등록 ── */
-    #content-mode-existing:checked ~ .main-wrap .content-existing-panel { display: block; }
-    #content-mode-existing:checked ~ .main-wrap .content-new-panel { display: none; }
-    #content-mode-new:checked ~ .main-wrap .content-existing-panel { display: none; }
-    #content-mode-new:checked ~ .main-wrap .content-new-panel { display: block; }
+    /* ── 콘텐츠 등록 풀 ── */
+    .content-pool-list { display: flex; flex-direction: column; gap: 8px; }
+    .content-pool-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #E5E7EA; border-radius: 8px; background: #FAFBFC; }
+    .content-pool-thumb { width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px; background: #F0F1F3; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .content-pool-info { flex: 1; min-width: 0; }
+    .content-pool-name { font-size: 13px; font-weight: 600; color: #24292E; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .content-pool-meta { font-size: 12px; color: #9EA5AD; margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+    .content-pool-badge { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: #F0F1F3; color: #596066; }
 
     /* ── 하단 액션 바 ── */
     .action-bar {
@@ -147,10 +150,6 @@
 <input class="state" type="radio" name="op-mode" id="mode-rolling" checked>
 <input class="state" type="radio" name="op-mode" id="mode-cond">
 <input class="state" type="radio" name="op-mode" id="mode-hybrid">
-<!-- CSS State: default content source -->
-<input class="state" type="radio" name="content-mode" id="content-mode-existing" checked>
-<input class="state" type="radio" name="content-mode" id="content-mode-new">
-
 <!-- GNB -->
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
@@ -356,7 +355,7 @@
       <div class="section-head">
         <div>
           <div class="section-title">운영 계획</div>
-          <div class="section-desc">공통 운영 기간·요일·시간·콘텐츠를 설정합니다 — 모든 Schedule Item에 기본 적용되며, 필요한 항목만 개별적으로 재정의할 수 있습니다</div>
+          <div class="section-desc">공통 운영 기간·요일·시간을 설정합니다 — 모든 Schedule Item에 기본 적용되며, 필요한 항목만 개별적으로 재정의할 수 있습니다</div>
         </div>
       </div>
       <div class="section-body">
@@ -403,92 +402,6 @@
           </div>
         </div>
 
-        <!-- schedule.items[].contentRefType / contentRevisionId 기본값 (공통 적용, Item별 재정의 가능) -->
-        <div class="form-row">
-          <div class="form-label">기본 콘텐츠 <span class="req">*</span></div>
-          <div class="form-field">
-            <div class="seg-ctrl" style="margin-bottom:12px;">
-              <input type="radio" name="content-mode-ui" id="cm-existing-ui" checked onclick="document.getElementById('content-mode-existing').checked=true">
-              <label for="cm-existing-ui">기존 콘텐츠 선택</label>
-              <input type="radio" name="content-mode-ui" id="cm-new-ui" onclick="document.getElementById('content-mode-new').checked=true">
-              <label for="cm-new-ui">새 콘텐츠 등록</label>
-            </div>
-
-            <!-- 기존 콘텐츠 선택 -->
-            <div class="content-existing-panel">
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <select class="select" style="width:160px;">
-                  <option selected>콘텐츠</option>
-                  <option>콘텐츠 체인</option>
-                </select>
-                <div style="display:flex;gap:6px;flex:1;min-width:260px;">
-                  <select class="select" style="flex:1;">
-                    <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
-                    <option selected>갤럭시 S25 런칭 15초 (R2) — 승인</option>
-                    <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
-                  </select>
-                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                </div>
-              </div>
-              <div class="input-hint">모든 Schedule Item에 기본 적용됩니다 — 선택 즉시 Revision이 잠깁니다. 항목별로 다른 콘텐츠가 필요하면 해당 Item에서 재정의하세요</div>
-            </div>
-
-            <!-- 새 콘텐츠 등록 (등록 즉시 이 스케줄에 적용 — 콘텐츠 자체 승인 절차는 별도 진행) -->
-            <div class="content-new-panel" hidden>
-              <div style="background:#FFF8E6;border:1px solid #F3BE4A;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92610A;margin-bottom:14px;">
-                ⚠ 등록과 동시에 이 스케줄에 적용됩니다. 콘텐츠의 기술검증·PDE 정책 검토는 등록 후 별도로 진행되며, 검토 결과(Restricted/Rejected 등)에 따라 이 스케줄의 운영이 사후 제한될 수 있습니다.
-              </div>
-              <div class="sched-item-grid">
-                <div class="sched-item-field">
-                  <div class="sched-item-label">콘텐츠명 <span class="req">*</span></div>
-                  <input type="text" class="input" placeholder="콘텐츠명 입력">
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">태그</div>
-                  <input type="text" class="input" placeholder="쉼표로 구분">
-                </div>
-                <div class="sched-item-field span2">
-                  <div class="sched-item-label">원본 소스 <span class="req">*</span></div>
-                  <div style="display:flex;gap:8px;align-items:center;">
-                    <input type="file" class="input" style="flex:1;">
-                    <span style="color:#9EA5AD;font-size:12px;">또는</span>
-                    <input type="text" class="input" placeholder="외부 URL" style="flex:1;">
-                  </div>
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">설정 재생시간 <span class="req">*</span></div>
-                  <div style="display:flex;align-items:center;gap:6px;">
-                    <input type="number" class="input" style="width:100px;" placeholder="0">
-                    <span style="font-size:12px;color:#596066;">초</span>
-                  </div>
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">광고 유형 <span class="req">*</span></div>
-                  <select class="select">
-                    <option selected>상업광고</option>
-                    <option>공익광고</option>
-                    <option>자사광고</option>
-                    <option>미디어아트</option>
-                  </select>
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">광고 업종 <span class="req">*</span></div>
-                  <select class="select"><option value="">업종 검색·선택</option></select>
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">광고주 <span class="req">*</span></div>
-                  <div style="display:flex;gap:6px;">
-                    <select class="select" style="flex:1;"><option value="">광고주 검색·선택</option></select>
-                    <button class="btn btn-ghost" style="white-space:nowrap;">신규 등록</button>
-                  </div>
-                </div>
-              </div>
-              <button class="btn btn-primary" style="margin-top:14px;" type="button">등록하고 이 스케줄에 적용</button>
-              <div class="input-hint" style="margin-top:8px;">등록된 콘텐츠는 Draft 상태로 생성되며, 이 스케줄의 기본 콘텐츠로 즉시 잠깁니다. 항목별로 다른 콘텐츠가 필요하면 해당 Item에서 재정의하세요</div>
-            </div>
-          </div>
-        </div>
-
         <!-- schedule.operationMode -->
         <div class="form-row">
           <div class="form-label">운영 방식 <span class="req">*</span></div>
@@ -507,12 +420,65 @@
       </div>
     </div>
 
-    <!-- ③ Schedule Item 편성 -->
+    <!-- ③ 콘텐츠 등록 (풀) -->
+    <div class="form-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">콘텐츠 등록</div>
+          <div class="section-desc">이 스케줄에서 사용할 콘텐츠 소재를 업로드하거나 URL로 등록합니다 — 등록한 콘텐츠는 아래 Schedule Item에 자유롭게 배정할 수 있습니다</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="seg-ctrl" style="margin-bottom:10px;">
+          <input type="radio" name="pool-src-ui" id="pool-src-file-ui" checked onclick="togglePoolSource('file')">
+          <label for="pool-src-file-ui">파일 업로드</label>
+          <input type="radio" name="pool-src-ui" id="pool-src-url-ui" onclick="togglePoolSource('url')">
+          <label for="pool-src-url-ui">URL 등록</label>
+        </div>
+
+        <div id="poolSrcFileRow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <input type="file" class="input" style="flex:1;min-width:200px;" id="poolFileInput">
+          <input type="text" class="input" placeholder="콘텐츠명 (미입력 시 파일명)" style="width:220px;" id="poolFileName">
+          <button class="btn btn-ghost" type="button" onclick="addPoolItem('file')">+ 풀에 추가</button>
+        </div>
+        <div id="poolSrcUrlRow" style="display:none;gap:8px;flex-wrap:wrap;align-items:center;">
+          <input type="text" class="input" placeholder="외부 URL" style="flex:1;min-width:200px;" id="poolUrlInput">
+          <input type="text" class="input" placeholder="콘텐츠명" style="width:180px;" id="poolUrlName">
+          <input type="number" class="input" placeholder="재생시간(초)" style="width:130px;" id="poolUrlDuration">
+          <button class="btn btn-ghost" type="button" onclick="addPoolItem('url')">+ 풀에 추가</button>
+        </div>
+
+        <div class="input-hint" style="margin:10px 0 14px;">여기서 등록한 콘텐츠는 Draft로 생성됩니다 — 광고 유형·업종·광고주 등 나머지 필수 정보는 콘텐츠 상세에서 입력해야 승인(Approved) 심사를 받을 수 있습니다. 승인 전에는 Schedule Item에 배정만 가능하고, 이 스케줄은 콘텐츠가 승인되기 전까지 확정(Scheduled/Active)되지 않습니다.</div>
+
+        <div class="content-pool-list" id="contentPoolList">
+          <div class="content-pool-item" data-pool-name="신규_캠페인_소재_A.mp4">
+            <div class="content-pool-thumb">🎬</div>
+            <div class="content-pool-info">
+              <div class="content-pool-name">신규_캠페인_소재_A.mp4</div>
+              <div class="content-pool-meta">1920×1080 · 30초 <span class="content-pool-badge">Draft</span></div>
+            </div>
+            <button class="rule-del-btn" type="button" onclick="this.closest('.content-pool-item').remove()" title="풀에서 제거">×</button>
+          </div>
+          <div class="content-pool-item" data-pool-name="신규_캠페인_소재_B.mp4">
+            <div class="content-pool-thumb">🎬</div>
+            <div class="content-pool-info">
+              <div class="content-pool-name">신규_캠페인_소재_B.mp4</div>
+              <div class="content-pool-meta">3840×2160 · 15초 <span class="content-pool-badge">Draft</span></div>
+            </div>
+            <button class="rule-del-btn" type="button" onclick="this.closest('.content-pool-item').remove()" title="풀에서 제거">×</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ④ Schedule Item 편성 -->
     <div class="form-card">
       <div class="section-head">
         <div>
           <div class="section-title">Schedule Item 편성</div>
-          <div class="section-desc">프로덕트·슬롯 조합을 항목별로 등록합니다 — 콘텐츠·운영 요일·시간은 기본적으로 공통 운영 계획을 따르며 필요한 항목만 재정의합니다</div>
+          <div class="section-desc">프로덕트·슬롯 조합을 항목별로 등록하고, 위에서 등록한 콘텐츠 중 하나를 각 항목에 배정합니다 — 운영 요일·시간은 기본적으로 공통 운영 계획을 따르며 필요한 항목만 재정의합니다</div>
         </div>
         <button class="btn btn-ghost" style="font-size:13px;" onclick="addItem()">+ Item 추가</button>
       </div>
@@ -560,39 +526,45 @@
                 </select>
               </div>
 
-              <div class="sched-item-divider"></div>
-
-              <!-- Item별 콘텐츠/운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
-              <div class="sched-item-field span2">
-                <label class="sched-item-override-toggle">
-                  <input type="checkbox" onclick="toggleItemOverride(this)">
-                  이 항목만 공통 콘텐츠·운영 요일·시간과 다르게 설정
-                </label>
+              <!-- schedule.items[].contentRefType -->
+              <div class="sched-item-field">
+                <div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div>
+                <select class="select">
+                  <option selected>콘텐츠</option>
+                  <option>콘텐츠 체인</option>
+                </select>
               </div>
-              <div class="sched-item-override" hidden>
-                <!-- schedule.items[].contentRefType (조건부, 공통값 재정의) -->
-                <div class="sched-item-field">
-                  <div class="sched-item-label">콘텐츠 유형</div>
-                  <select class="select">
-                    <option selected>콘텐츠</option>
-                    <option>콘텐츠 체인</option>
-                  </select>
-                </div>
 
-                <!-- schedule.items[].contentRevisionId (조건부, 공통값 재정의) -->
-                <div class="sched-item-field span2">
-                  <div class="sched-item-label">콘텐츠 선택</div>
-                  <div style="display:flex;gap:6px;">
-                    <select class="select" style="flex:1;">
+              <!-- schedule.items[].contentRevisionId — 위 콘텐츠 등록 풀 + 기존 승인 콘텐츠 중에서 배정 -->
+              <div class="sched-item-field span2">
+                <div class="sched-item-label">콘텐츠 배정 <span class="req">*</span></div>
+                <div style="display:flex;gap:6px;">
+                  <select class="select" style="flex:1;">
+                    <optgroup label="이번 스케줄에 등록한 콘텐츠">
+                      <option selected>신규_캠페인_소재_A.mp4 — 1920×1080 · 권장 (대상 해상도 일치)</option>
+                      <option>신규_캠페인_소재_B.mp4 — 3840×2160</option>
+                    </optgroup>
+                    <optgroup label="기존 승인된 콘텐츠 검색">
                       <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
                       <option>갤럭시 S25 런칭 15초 (R2) — 승인</option>
                       <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
-                    </select>
-                    <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                  </div>
-                  <div class="input-hint">선택 후 Revision이 잠깁니다</div>
+                    </optgroup>
+                  </select>
+                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
                 </div>
+                <div class="input-hint">풀 항목은 Draft이므로 승인 전까지 이 스케줄이 확정되지 않습니다. 승인된 콘텐츠는 선택 즉시 Revision이 잠깁니다.</div>
+              </div>
 
+              <div class="sched-item-divider"></div>
+
+              <!-- Item별 운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
+              <div class="sched-item-field span2">
+                <label class="sched-item-override-toggle">
+                  <input type="checkbox" onclick="toggleItemOverride(this)">
+                  이 항목만 공통 운영 요일·시간과 다르게 설정
+                </label>
+              </div>
+              <div class="sched-item-override" hidden>
                 <!-- schedule.items[].operatingDays (조건부, 공통값 재정의) -->
                 <div class="sched-item-field span2">
                   <div class="sched-item-label">운영 요일</div>
@@ -645,28 +617,43 @@
                 <div class="sched-item-label">슬롯 시간 <span class="req">*</span></div>
                 <select class="select"><option selected>15초</option><option>30초</option></select>
               </div>
+
+              <!-- schedule.items[].contentRefType -->
+              <div class="sched-item-field">
+                <div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div>
+                <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
+              </div>
+
+              <!-- schedule.items[].contentRevisionId -->
+              <div class="sched-item-field span2">
+                <div class="sched-item-label">콘텐츠 배정 <span class="req">*</span></div>
+                <div style="display:flex;gap:6px;">
+                  <select class="select" style="flex:1;">
+                    <optgroup label="이번 스케줄에 등록한 콘텐츠">
+                      <option>신규_캠페인_소재_A.mp4 — 1920×1080</option>
+                      <option selected>신규_캠페인_소재_B.mp4 — 3840×2160 · 권장 (대상 해상도 일치)</option>
+                    </optgroup>
+                    <optgroup label="기존 승인된 콘텐츠 검색">
+                      <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
+                      <option>갤럭시 S25 런칭 15초 (R2) — 승인</option>
+                      <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
+                    </optgroup>
+                  </select>
+                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
+                </div>
+                <div class="input-hint">풀 항목은 Draft이므로 승인 전까지 이 스케줄이 확정되지 않습니다.</div>
+              </div>
+
               <div class="sched-item-divider"></div>
 
-              <!-- Item별 콘텐츠/운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
+              <!-- Item별 운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
               <div class="sched-item-field span2">
                 <label class="sched-item-override-toggle">
                   <input type="checkbox" checked onclick="toggleItemOverride(this)">
-                  이 항목만 공통 콘텐츠·운영 요일·시간과 다르게 설정
+                  이 항목만 공통 운영 요일·시간과 다르게 설정
                 </label>
               </div>
               <div class="sched-item-override">
-                <div class="sched-item-field">
-                  <div class="sched-item-label">콘텐츠 유형</div>
-                  <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
-                </div>
-                <div class="sched-item-field span2">
-                  <div class="sched-item-label">콘텐츠 선택</div>
-                  <div style="display:flex;gap:6px;">
-                    <select class="select" style="flex:1;"><option selected>갤럭시 S25 런칭 30초 (R1) — 승인</option></select>
-                    <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                  </div>
-                  <div class="input-hint">선택 후 Revision이 잠깁니다</div>
-                </div>
                 <div class="sched-item-field span2">
                   <div class="sched-item-label">운영 요일</div>
                   <div class="day-chips">
@@ -695,7 +682,7 @@
       </div>
     </div>
 
-    <!-- ④ 조건 광고 규칙 (operationMode=조건광고 or 혼합 시 표시) -->
+    <!-- ⑤ 조건 광고 규칙 (operationMode=조건광고 or 혼합 시 표시) -->
     <div class="form-card cond-rules-section">
       <div class="section-head">
         <div>
@@ -743,7 +730,7 @@
       </div>
     </div>
 
-    <!-- ⑤ Revision 관리 -->
+    <!-- ⑥ Revision 관리 -->
     <div class="form-card">
       <div class="section-head">
         <div>
@@ -781,6 +768,59 @@
 <script>
 let itemCount = 2;
 let ruleCount = 2;
+let poolCount = 2;
+
+function togglePoolSource(type) {
+  document.getElementById('poolSrcFileRow').style.display = type === 'file' ? 'flex' : 'none';
+  document.getElementById('poolSrcUrlRow').style.display = type === 'url' ? 'flex' : 'none';
+}
+
+function addPoolItem(type) {
+  poolCount++;
+  var name, meta;
+  if (type === 'file') {
+    var fileInput = document.getElementById('poolFileInput');
+    var nameInput = document.getElementById('poolFileName');
+    var fileName = fileInput.files[0] ? fileInput.files[0].name : '';
+    name = nameInput.value.trim() || fileName;
+    if (!name) { alert('파일을 선택하거나 콘텐츠명을 입력하세요.'); return; }
+    meta = '해상도 자동 추출 예정 · 재생시간 자동 추출 예정';
+    fileInput.value = ''; nameInput.value = '';
+  } else {
+    var urlInput = document.getElementById('poolUrlInput');
+    var urlName = document.getElementById('poolUrlName');
+    var urlDuration = document.getElementById('poolUrlDuration');
+    if (!urlInput.value.trim()) { alert('URL을 입력하세요.'); return; }
+    name = urlName.value.trim() || urlInput.value.trim();
+    meta = (urlDuration.value ? urlDuration.value + '초' : '재생시간 미입력') + ' · URL 소스';
+    urlInput.value = ''; urlName.value = ''; urlDuration.value = '';
+  }
+  var el = document.createElement('div');
+  el.className = 'content-pool-item';
+  el.dataset.poolName = name;
+  el.innerHTML = '<div class="content-pool-thumb">🎬</div>'
+    + '<div class="content-pool-info"><div class="content-pool-name">' + name + '</div>'
+    + '<div class="content-pool-meta">' + meta + ' <span class="content-pool-badge">Draft</span></div></div>'
+    + '<button class="rule-del-btn" type="button" onclick="this.closest(\'.content-pool-item\').remove()" title="풀에서 제거">×</button>';
+  document.getElementById('contentPoolList').appendChild(el);
+}
+
+function buildContentOptions() {
+  var poolWrap = document.getElementById('contentPoolList');
+  var poolOptions = '';
+  if (poolWrap) {
+    poolWrap.querySelectorAll('.content-pool-item').forEach(function(item) {
+      var name = item.dataset.poolName || item.querySelector('.content-pool-name').textContent;
+      poolOptions += '<option>' + name + '</option>';
+    });
+  }
+  return '<optgroup label="이번 스케줄에 등록한 콘텐츠">' + (poolOptions || '<option disabled>등록된 콘텐츠 없음</option>') + '</optgroup>'
+    + '<optgroup label="기존 승인된 콘텐츠 검색">'
+    + '<option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>'
+    + '<option>갤럭시 S25 런칭 15초 (R2) — 승인</option>'
+    + '<option>갤럭시 S25 런칭 30초 (R1) — 승인</option>'
+    + '</optgroup>';
+}
 
 function addItem() {
   itemCount++;
@@ -797,25 +837,23 @@ function addItem() {
         <div class="sched-item-field"><div class="sched-item-label">대상 유형 <span class="req">*</span></div><select class="select"><option selected>프로덕트</option><option>패키지 프로덕트</option></select></div>
         <div class="sched-item-field"><div class="sched-item-label">프로덕트 선택 <span class="req">*</span></div><select class="select"><option value="">프로덕트 검색·선택</option></select></div>
         <div class="sched-item-field"><div class="sched-item-label">슬롯 시간 <span class="req">*</span></div><select class="select"><option value="">슬롯 선택</option></select></div>
+        <div class="sched-item-field"><div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div><select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select></div>
+        <div class="sched-item-field span2">
+          <div class="sched-item-label">콘텐츠 배정 <span class="req">*</span></div>
+          <div style="display:flex;gap:6px;">
+            <select class="select" style="flex:1;">${buildContentOptions()}</select>
+            <button class="btn btn-ghost" style="white-space:nowrap;" type="button">검색</button>
+          </div>
+          <div class="input-hint">풀 항목은 Draft이므로 승인 전까지 이 스케줄이 확정되지 않습니다.</div>
+        </div>
         <div class="sched-item-divider"></div>
         <div class="sched-item-field span2">
           <label class="sched-item-override-toggle">
             <input type="checkbox" onclick="toggleItemOverride(this)">
-            이 항목만 공통 콘텐츠·운영 요일·시간과 다르게 설정
+            이 항목만 공통 운영 요일·시간과 다르게 설정
           </label>
         </div>
         <div class="sched-item-override" hidden>
-          <div class="sched-item-field">
-            <div class="sched-item-label">콘텐츠 유형</div>
-            <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
-          </div>
-          <div class="sched-item-field span2">
-            <div class="sched-item-label">콘텐츠 선택</div>
-            <div style="display:flex;gap:6px;">
-              <select class="select" style="flex:1;"><option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option></select>
-              <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-            </div>
-          </div>
           <div class="sched-item-field span2">
             <div class="sched-item-label">운영 요일</div>
             <div class="day-chips">
