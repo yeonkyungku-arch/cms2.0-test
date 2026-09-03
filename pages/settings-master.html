@@ -60,6 +60,30 @@
     .lc-active { background:#E8F8E9; color:#2E9E34; }
     .lc-inactive { background:#FFF8E6; color:#B45309; }
     .table-toolbar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #E5E7EA; }
+    /* 코드 추가 모달 */
+    .code-modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(16,24,32,.4); z-index:600;
+      align-items:center; justify-content:center; padding:24px;
+    }
+    .code-modal-overlay.open { display:flex; }
+    .code-modal {
+      background:#fff; border-radius:12px; width:420px; max-width:100%;
+      max-height:88vh; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.18);
+    }
+    .code-modal-head { padding:18px 22px; border-bottom:1px solid #E5E7EA; display:flex; align-items:center; justify-content:space-between; }
+    .code-modal-title { font-size:16px; font-weight:700; color:#24292E; }
+    .code-modal-sub { font-size:12px; color:#9EA5AD; margin-top:2px; }
+    .code-modal-close { width:32px; height:32px; border-radius:6px; border:1px solid #E5E7EA; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; color:#596066; }
+    .code-modal-body { padding:18px 22px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; }
+    .code-field label { font-size:12px; font-weight:600; color:#596066; display:block; margin-bottom:5px; }
+    .code-field label .req { color:#E97474; margin-left:2px; }
+    .code-field input, .code-field select {
+      width:100%; height:36px; border:1px solid #CED2D6; border-radius:6px; padding:0 12px;
+      font-size:13px; color:#24292E; font-family:inherit; background:#fff;
+    }
+    .code-field input:focus, .code-field select:focus { outline:none; border-color:#2D84ED; }
+    .code-modal-foot { padding:14px 22px; border-top:1px solid #E5E7EA; display:flex; gap:8px; }
   </style>
 </head>
 <body>
@@ -193,7 +217,7 @@
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">지역 기준정보</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="alert('지역 코드 추가 폼은 준비 중입니다.')">
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openCodeModal('region','REG','지역 기준정보')">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 코드 추가
               </button>
@@ -201,7 +225,7 @@
             <div class="table-scroll">
               <table>
                 <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
+                <tbody id="tbody-region">
                   <tr><td>REG-001</td><td>서울특별시</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
                   <tr><td>REG-002</td><td>강남구</td><td>REG-001</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
                   <tr><td>REG-003</td><td>마포구</td><td>REG-001</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-01-10</td></tr>
@@ -219,7 +243,7 @@
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">업종 분류</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="alert('업종 코드 추가 폼은 준비 중입니다.')">
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openCodeModal('industry','IND','업종 분류')">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 코드 추가
               </button>
@@ -227,7 +251,7 @@
             <div class="table-scroll">
               <table>
                 <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
+                <tbody id="tbody-industry">
                   <tr><td>IND-001</td><td>식음료</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
                   <tr><td>IND-002</td><td>패션·뷰티</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
                   <tr><td>IND-003</td><td>금융·보험</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2026-02-14</td></tr>
@@ -243,7 +267,7 @@
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">미디어 유형</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="alert('미디어 유형 코드 추가 폼은 준비 중입니다.')">
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openCodeModal('mediatype','MT','미디어 유형')">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 코드 추가
               </button>
@@ -251,7 +275,7 @@
             <div class="table-scroll">
               <table>
                 <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
+                <tbody id="tbody-mediatype">
                   <tr><td>MT-OF</td><td>옥외고정 (OF)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
                   <tr><td>MT-IFC</td><td>실내고정근접 (IFC)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
                   <tr><td>MT-VF</td><td>차량고정 (VF)</td><td>—</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-09-01</td></tr>
@@ -267,7 +291,7 @@
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">공통 코드</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="alert('공통 코드 추가 폼은 준비 중입니다.')">
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openCodeModal('code','LC','공통 코드')">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 코드 추가
               </button>
@@ -275,7 +299,7 @@
             <div class="table-scroll">
               <table>
                 <thead><tr><th>Code</th><th>명칭</th><th>상위코드</th><th>상태</th><th>수정일</th></tr></thead>
-                <tbody>
+                <tbody id="tbody-code">
                   <tr><td>LC-ACT</td><td>활성 (Active)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
                   <tr><td>LC-INA</td><td>비활성 (Inactive)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
                   <tr><td>LC-DFT</td><td>초안 (Draft)</td><td>LIFECYCLE</td><td><span class="badge lc-active">활성</span></td><td class="muted-text">2025-08-01</td></tr>
@@ -290,10 +314,89 @@
   </div>
 </main>
 
+<!-- 코드 추가 모달 (4개 탭 공용) -->
+<div class="code-modal-overlay" id="code-overlay" onclick="if(event.target===this)closeCodeModal()">
+  <div class="code-modal">
+    <div class="code-modal-head">
+      <div>
+        <div class="code-modal-title" id="code-modal-title">코드 추가</div>
+        <div class="code-modal-sub" id="code-modal-sub">새 코드를 등록합니다</div>
+      </div>
+      <div class="code-modal-close" onclick="closeCodeModal()">✕</div>
+    </div>
+    <div class="code-modal-body">
+      <div class="code-field">
+        <label>Code <span class="req">*</span></label>
+        <input id="code-id" type="text" placeholder="예: REG-007">
+      </div>
+      <div class="code-field">
+        <label>명칭 <span class="req">*</span></label>
+        <input id="code-name" type="text" placeholder="예: 인천광역시">
+      </div>
+      <div class="code-field">
+        <label>상위코드</label>
+        <input id="code-parent" type="text" placeholder="미입력 시 최상위(—)">
+      </div>
+      <div class="code-field">
+        <label>상태</label>
+        <select id="code-status">
+          <option value="active">활성</option>
+          <option value="inactive">비활성</option>
+        </select>
+      </div>
+    </div>
+    <div class="code-modal-foot">
+      <button onclick="submitCode()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;flex:1;">코드 추가</button>
+      <button onclick="closeCodeModal()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">취소</button>
+    </div>
+  </div>
+</div>
+
 <script>
 function switchSettingsTab(tab) {
   document.querySelectorAll('.settings-tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
   document.querySelectorAll('.settings-tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
+}
+
+var CODE_TBODY_BY_CATEGORY = { region:'tbody-region', industry:'tbody-industry', mediatype:'tbody-mediatype', code:'tbody-code' };
+var codeModalCategory = null;
+var codeModalPrefix = null;
+
+function openCodeModal(category, prefix, label) {
+  codeModalCategory = category;
+  codeModalPrefix = prefix;
+  document.getElementById('code-modal-title').textContent = label + ' 코드 추가';
+  document.getElementById('code-modal-sub').textContent = '새 ' + label + ' 코드를 등록합니다';
+  var tbody = document.getElementById(CODE_TBODY_BY_CATEGORY[category]);
+  var nextNum = tbody.querySelectorAll('tr').length + 1;
+  document.getElementById('code-id').value = prefix + '-' + String(nextNum).padStart(3, '0');
+  document.getElementById('code-name').value = '';
+  document.getElementById('code-parent').value = '';
+  document.getElementById('code-status').value = 'active';
+  document.getElementById('code-overlay').classList.add('open');
+}
+function closeCodeModal() {
+  document.getElementById('code-overlay').classList.remove('open');
+}
+function submitCode() {
+  var id = document.getElementById('code-id').value.trim();
+  var name = document.getElementById('code-name').value.trim();
+  var parent = document.getElementById('code-parent').value.trim() || '—';
+  var status = document.getElementById('code-status').value;
+
+  if (!id) { alert('Code를 입력하세요.'); return; }
+  if (!name) { alert('명칭을 입력하세요.'); return; }
+
+  var badge = status === 'active' ? '<span class="badge lc-active">활성</span>' : '<span class="badge lc-inactive">비활성</span>';
+  var today = new Date().toISOString().slice(0, 10);
+
+  var tbody = document.getElementById(CODE_TBODY_BY_CATEGORY[codeModalCategory]);
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td>' + id + '</td><td>' + name + '</td><td>' + parent + '</td><td>' + badge + '</td><td class="muted-text">' + today + '</td>';
+  tbody.appendChild(tr);
+
+  closeCodeModal();
+  alert(name + ' 코드가 추가되었습니다.');
 }
 </script>
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>

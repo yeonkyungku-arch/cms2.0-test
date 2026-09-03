@@ -309,7 +309,7 @@
           <div class="table-card">
             <div class="table-header" style="padding:14px 16px;">
               <span class="table-header-title">조직 구조 · 부서 관리</span>
-              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="alert('부서 추가 폼은 준비 중입니다.')">
+              <button class="btn-primary" style="height:32px;font-size:12px;" onclick="openDeptModal()">
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 부서 추가
               </button>
@@ -541,6 +541,45 @@
   </div>
 </div>
 
+<!-- 부서 추가 모달 -->
+<div class="invite-modal-overlay" id="dept-overlay" onclick="if(event.target===this)closeDeptModal()">
+  <div class="invite-modal" style="width:420px;">
+    <div class="invite-modal-head">
+      <div>
+        <div class="invite-modal-title">부서 추가</div>
+        <div class="invite-modal-sub">등록된 부서는 사용자 초대 시 "소속 부서" 목록에 즉시 반영됩니다.</div>
+      </div>
+      <div class="invite-modal-close" onclick="closeDeptModal()">✕</div>
+    </div>
+    <div class="invite-modal-body">
+      <div class="invite-field">
+        <label>부서명 <span class="req">*</span></label>
+        <input id="dept-name" type="text" placeholder="예: 데이터팀">
+      </div>
+      <div class="invite-field">
+        <label>상위 부서</label>
+        <select id="dept-parent">
+          <option value="—">없음 (최상위 부서)</option>
+        </select>
+      </div>
+      <div class="invite-row-2">
+        <div class="invite-field">
+          <label>부서 책임자</label>
+          <input id="dept-lead" type="text" placeholder="예: 홍길동 (미입력 시 담당자 미지정)">
+        </div>
+        <div class="invite-field">
+          <label>소속 인원</label>
+          <input id="dept-count" type="number" min="0" value="1">
+        </div>
+      </div>
+    </div>
+    <div class="invite-modal-foot">
+      <button onclick="submitDept()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;">부서 추가</button>
+      <button onclick="closeDeptModal()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #E5E7EA;background:#fff;color:#596066;">취소</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" style="display:none;position:fixed;bottom:30px;right:24px;background:#24292E;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;"></div>
 
@@ -731,6 +770,48 @@ function submitInvite() {
 
   closeInviteModal();
   showToast(name + '(' + email + ')님에게 초대 메일을 발송했습니다.');
+}
+
+function populateDeptParentOptions() {
+  var sel = document.getElementById('dept-parent');
+  var deptNames = Array.from(document.querySelectorAll('#dept-table-body tr')).map(function(tr) {
+    return tr.children[1].textContent.trim();
+  });
+  sel.innerHTML = '<option value="—">없음 (최상위 부서)</option>' + deptNames.map(function(d) { return '<option>' + d + '</option>'; }).join('');
+}
+function openDeptModal() {
+  populateDeptParentOptions();
+  document.getElementById('dept-name').value = '';
+  document.getElementById('dept-parent').value = '—';
+  document.getElementById('dept-lead').value = '';
+  document.getElementById('dept-count').value = 1;
+  document.getElementById('dept-overlay').classList.add('open');
+}
+function closeDeptModal() {
+  document.getElementById('dept-overlay').classList.remove('open');
+}
+function submitDept() {
+  var name = document.getElementById('dept-name').value.trim();
+  var parent = document.getElementById('dept-parent').value;
+  var lead = document.getElementById('dept-lead').value.trim();
+  var count = document.getElementById('dept-count').value || '0';
+
+  if (!name) { alert('부서명을 입력하세요.'); return; }
+
+  var tbody = document.getElementById('dept-table-body');
+  var nextNum = tbody.querySelectorAll('tr').length + 1;
+  var deptId = 'DEPT-' + String(nextNum).padStart(2, '0');
+
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td class="muted-text">' + deptId + '</td>' +
+    '<td style="font-weight:600;">' + name + '</td>' +
+    '<td class="muted-text">' + parent + '</td>' +
+    '<td' + (lead ? '' : ' class="muted-text"') + '>' + (lead || '담당자 미지정') + '</td>' +
+    '<td class="muted-text">' + count + '명</td>';
+  tbody.appendChild(tr);
+
+  closeDeptModal();
+  showToast(name + ' 부서가 추가되었습니다.');
 }
 </script>
 </body>

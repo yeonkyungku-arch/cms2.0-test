@@ -115,6 +115,30 @@
     /* Save banner */
     .save-banner { position:sticky; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); padding:12px 20px; display:none; align-items:center; justify-content:flex-end; gap:8px; z-index:100; box-shadow:0 -4px 12px rgba(0,0,0,.08); }
     .save-banner.visible { display:flex; }
+    /* 수신자 추가/편집 모달 */
+    .recip-modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(16,24,32,.4); z-index:600;
+      align-items:center; justify-content:center; padding:24px;
+    }
+    .recip-modal-overlay.open { display:flex; }
+    .recip-modal {
+      background:#fff; border-radius:12px; width:420px; max-width:100%;
+      max-height:88vh; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.18);
+    }
+    .recip-modal-head { padding:18px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .recip-modal-title { font-size:16px; font-weight:700; color:var(--dark); }
+    .recip-modal-close { width:32px; height:32px; border-radius:6px; border:1px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; color:#596066; }
+    .recip-modal-body { padding:18px 22px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px; }
+    .recip-field label { font-size:12px; font-weight:600; color:#596066; display:block; margin-bottom:5px; }
+    .recip-field label .req { color:#E97474; margin-left:2px; }
+    .recip-field input, .recip-field select {
+      width:100%; height:36px; border:1px solid #CED2D6; border-radius:6px; padding:0 12px;
+      font-size:13px; color:var(--dark); font-family:inherit; background:#fff;
+    }
+    .recip-field input:focus, .recip-field select:focus { outline:none; border-color:#2D84ED; }
+    .recip-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; }
+    .recip-modal-foot { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:8px; }
   </style>
 </head>
 <body>
@@ -382,7 +406,7 @@
         <div class="card">
           <div class="card-head">
             <span class="card-title">수신자 관리</span>
-            <button class="btn-sm blue" onclick="alert('수신자 추가 폼은 준비 중입니다.')">+ 수신자 추가</button>
+            <button class="btn-sm blue" onclick="openRecipientModal()">+ 수신자 추가</button>
           </div>
           <div class="card-body" style="padding:0;">
             <table>
@@ -397,33 +421,33 @@
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
+              <tbody id="recipient-tbody">
+                <tr id="recip-0">
                   <td style="font-weight:600;">홍길동</td>
                   <td><span style="font-size:11px;background:#EFF6FF;color:#1D6DBF;padding:2px 8px;border-radius:4px;font-weight:600;">Operation Admin</span></td>
                   <td style="font-size:12px;">hong@mnm.co.kr</td>
                   <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label></td>
                   <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label></td>
                   <td style="font-size:12px;color:#596066;">전체</td>
-                  <td><button class="btn-sm" onclick="alert('수신자별 구독 이벤트 편집 폼은 준비 중입니다.')">편집</button></td>
+                  <td><button class="btn-sm" onclick="openRecipientModal('recip-0')">편집</button></td>
                 </tr>
-                <tr>
+                <tr id="recip-1">
                   <td style="font-weight:600;">김영업</td>
                   <td><span style="font-size:11px;background:#F0FDF4;color:#166534;padding:2px 8px;border-radius:4px;font-weight:600;">Sales</span></td>
                   <td style="font-size:12px;">kim@mnm.co.kr</td>
                   <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label></td>
                   <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" onchange="markChanged()"><span class="toggle-slider"></span></label></td>
                   <td style="font-size:12px;color:#596066;">영업·계약</td>
-                  <td><button class="btn-sm" onclick="alert('수신자별 구독 이벤트 편집 폼은 준비 중입니다.')">편집</button></td>
+                  <td><button class="btn-sm" onclick="openRecipientModal('recip-1')">편집</button></td>
                 </tr>
-                <tr>
+                <tr id="recip-2">
                   <td style="font-weight:600;">이기술</td>
                   <td><span style="font-size:11px;background:#FEF2F2;color:#C83434;padding:2px 8px;border-radius:4px;font-weight:600;">System Admin</span></td>
                   <td style="font-size:12px;">lee@mnm.co.kr</td>
                   <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label></td>
                   <td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" checked onchange="markChanged()"><span class="toggle-slider"></span></label></td>
                   <td style="font-size:12px;color:#596066;">PDE·정책, 모니터링</td>
-                  <td><button class="btn-sm" onclick="alert('수신자별 구독 이벤트 편집 폼은 준비 중입니다.')">편집</button></td>
+                  <td><button class="btn-sm" onclick="openRecipientModal('recip-2')">편집</button></td>
                 </tr>
               </tbody>
             </table>
@@ -450,6 +474,50 @@
     </div>
   </div>
 </main>
+
+<!-- 수신자 추가/편집 모달 -->
+<div class="recip-modal-overlay" id="recip-overlay" onclick="if(event.target===this)closeRecipientModal()">
+  <div class="recip-modal">
+    <div class="recip-modal-head">
+      <div class="recip-modal-title" id="recip-modal-title">수신자 추가</div>
+      <div class="recip-modal-close" onclick="closeRecipientModal()">✕</div>
+    </div>
+    <div class="recip-modal-body">
+      <div class="recip-field">
+        <label>이름 <span class="req">*</span></label>
+        <input id="recip-name" type="text" placeholder="예: 박서연">
+      </div>
+      <div class="recip-field">
+        <label>이메일 <span class="req">*</span></label>
+        <input id="recip-email" type="email" placeholder="name@mnm.co.kr">
+      </div>
+      <div class="recip-field">
+        <label>역할</label>
+        <select id="recip-role">
+          <option value="Operation Admin">Operation Admin</option>
+          <option value="Sales">Sales</option>
+          <option value="System Admin">System Admin</option>
+        </select>
+      </div>
+      <div class="recip-field">
+        <label>구독 이벤트</label>
+        <input id="recip-events" type="text" placeholder="예: 전체 / 영업·계약 / PDE·정책, 모니터링">
+      </div>
+      <div class="recip-toggle-row">
+        <span style="font-size:13px;color:var(--dark);font-weight:500;">Push 알림</span>
+        <label class="toggle-switch" style="width:32px;height:18px;"><input id="recip-push" type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="recip-toggle-row">
+        <span style="font-size:13px;color:var(--dark);font-weight:500;">SMS 알림</span>
+        <label class="toggle-switch" style="width:32px;height:18px;"><input id="recip-sms" type="checkbox"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="recip-modal-foot">
+      <button onclick="submitRecipient()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:#2D84ED;color:#fff;flex:1;" id="recip-submit-btn">수신자 추가</button>
+      <button onclick="closeRecipientModal()" style="height:36px;padding:0 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:#596066;">취소</button>
+    </div>
+  </div>
+</div>
 
 <!-- Save banner -->
 <div class="save-banner" id="saveBanner">
@@ -483,6 +551,77 @@ function sendTest() {
   const ev = document.getElementById('testEventSel').value;
   const labels = { incident:'Incident 발생', pde:'PDE 정책 변경', escalation:'Escalation 요청' };
   setTimeout(() => alert(`테스트 알림 발송 완료\n이벤트: ${labels[ev]}\n채널: Email, Slack, Push`), 700);
+}
+
+var RECIP_ROLE_STYLE = {
+  'Operation Admin': 'background:#EFF6FF;color:#1D6DBF;',
+  'Sales': 'background:#F0FDF4;color:#166534;',
+  'System Admin': 'background:#FEF2F2;color:#C83434;'
+};
+var recipModalTarget = null;
+
+function openRecipientModal(rowId) {
+  recipModalTarget = rowId || null;
+  var title = document.getElementById('recip-modal-title');
+  var submitBtn = document.getElementById('recip-submit-btn');
+  if (rowId) {
+    var tr = document.getElementById(rowId);
+    var cells = tr.children;
+    title.textContent = '수신자 편집';
+    submitBtn.textContent = '저장';
+    document.getElementById('recip-name').value = cells[0].textContent.trim();
+    document.getElementById('recip-email').value = cells[2].textContent.trim();
+    document.getElementById('recip-role').value = cells[1].querySelector('span').textContent.trim();
+    document.getElementById('recip-events').value = cells[5].textContent.trim();
+    document.getElementById('recip-push').checked = cells[3].querySelector('input').checked;
+    document.getElementById('recip-sms').checked = cells[4].querySelector('input').checked;
+  } else {
+    title.textContent = '수신자 추가';
+    submitBtn.textContent = '수신자 추가';
+    document.getElementById('recip-name').value = '';
+    document.getElementById('recip-email').value = '';
+    document.getElementById('recip-role').value = 'Operation Admin';
+    document.getElementById('recip-events').value = '전체';
+    document.getElementById('recip-push').checked = true;
+    document.getElementById('recip-sms').checked = false;
+  }
+  document.getElementById('recip-overlay').classList.add('open');
+}
+function closeRecipientModal() {
+  document.getElementById('recip-overlay').classList.remove('open');
+  recipModalTarget = null;
+}
+function submitRecipient() {
+  var name = document.getElementById('recip-name').value.trim();
+  var email = document.getElementById('recip-email').value.trim();
+  var role = document.getElementById('recip-role').value;
+  var events = document.getElementById('recip-events').value.trim() || '전체';
+  var push = document.getElementById('recip-push').checked;
+  var sms = document.getElementById('recip-sms').checked;
+
+  if (!name) { alert('이름을 입력하세요.'); return; }
+  if (!email || !email.includes('@')) { alert('유효한 이메일 형식을 입력하세요.'); return; }
+
+  var roleStyle = RECIP_ROLE_STYLE[role] || RECIP_ROLE_STYLE['Operation Admin'];
+  var rowId = recipModalTarget;
+  var tr = rowId ? document.getElementById(rowId) : document.createElement('tr');
+  if (!rowId) {
+    var tbody = document.getElementById('recipient-tbody');
+    rowId = 'recip-' + tbody.querySelectorAll('tr').length;
+    tr.id = rowId;
+  }
+  tr.innerHTML =
+    '<td style="font-weight:600;">' + name + '</td>' +
+    '<td><span style="font-size:11px;' + roleStyle + 'padding:2px 8px;border-radius:4px;font-weight:600;">' + role + '</span></td>' +
+    '<td style="font-size:12px;">' + email + '</td>' +
+    '<td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" ' + (push ? 'checked ' : '') + 'onchange="markChanged()"><span class="toggle-slider"></span></label></td>' +
+    '<td><label class="toggle-switch" style="width:32px;height:18px;"><input type="checkbox" ' + (sms ? 'checked ' : '') + 'onchange="markChanged()"><span class="toggle-slider"></span></label></td>' +
+    '<td style="font-size:12px;color:#596066;">' + events + '</td>' +
+    '<td><button class="btn-sm" onclick="openRecipientModal(\'' + rowId + '\')">편집</button></td>';
+  if (!recipModalTarget) { document.getElementById('recipient-tbody').appendChild(tr); }
+
+  closeRecipientModal();
+  markChanged();
 }
 </script>
 </body>
