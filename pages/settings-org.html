@@ -50,6 +50,15 @@
     .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
     .info-item label { font-size:11px; font-weight:600; color:#9EA5AD; display:block; margin-bottom:4px; }
     .info-item .val { font-size:13px; color:#24292E; font-weight:500; }
+    .info-item input { width:100%; font-size:13px; color:#24292E; font-weight:500; padding:6px 8px; border:1px solid #CED2D6; border-radius:6px; font-family:inherit; }
+    .info-item input:focus { outline:none; border-color:#2D84ED; }
+    .viewer-role-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; background:#DBEAFE; color:#1D4ED8; cursor:help; }
+    .section-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .section-title-row .section-title { margin-bottom:0; }
+    .btn-edit-org { height:30px; padding:0 12px; font-size:12px; font-weight:600; border-radius:6px; border:1px solid #CED2D6; background:#fff; color:#596066; cursor:pointer; }
+    .btn-edit-org:hover { background:#F6F7F9; }
+    .btn-save-org { height:30px; padding:0 14px; font-size:12px; font-weight:600; border-radius:6px; border:none; background:#2D84ED; color:#fff; cursor:pointer; }
+    .btn-cancel-org { height:30px; padding:0 12px; font-size:12px; font-weight:600; border-radius:6px; border:1px solid #CED2D6; background:#fff; color:#596066; cursor:pointer; }
     /* Table */
     .table-card { background:#fff; border:1px solid #E5E7EA; border-radius:10px; overflow:hidden; }
     .table-scroll { overflow-x:auto; }
@@ -218,7 +227,10 @@
 <main class="content">
   <div class="content-inner">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+        <span class="viewer-role-badge" title="현재 로그인 사용자(홍길동)는 Super Admin 권한으로 설정을 조회·수정하고 있습니다.">Super Admin 권한으로 보는 중</span>
+      </div>
     </div>
 
     <div class="settings-layout">
@@ -264,15 +276,33 @@
 
           <!-- 기본 정보 -->
           <div class="section-card">
-            <div class="section-title">기본 정보</div>
+            <div class="section-title-row">
+              <div class="section-title">기본 정보</div>
+              <div id="org-info-view-actions">
+                <button class="btn-edit-org" onclick="toggleOrgInfoEdit(true)">✎ 조직 정보 수정</button>
+              </div>
+              <div id="org-info-edit-actions" style="display:none;gap:8px;">
+                <button class="btn-cancel-org" onclick="toggleOrgInfoEdit(false)">취소</button>
+                <button class="btn-save-org" onclick="saveOrgInfo()">저장</button>
+              </div>
+            </div>
             <div class="info-grid">
               <div class="info-item"><label>Organization ID</label><div class="val">ORG-0001</div></div>
-              <div class="info-item"><label>미디어사명</label><div class="val">엠앤엠네트웍스</div></div>
-              <div class="info-item"><label>사업자등록번호</label><div class="val">123-45-67890</div></div>
-              <div class="info-item"><label>대표연락처</label><div class="val">02-1234-5678</div></div>
-              <div class="info-item"><label>기본 시간대</label><div class="val">Asia/Seoul (UTC+9)</div></div>
-              <div class="info-item"><label>기본 언어</label><div class="val">한국어 (ko-KR)</div></div>
+              <div class="info-item"><label>미디어사명</label><div class="val" id="oi-view-name">엠앤엠네트웍스</div><input class="oi-edit" id="oi-edit-name" style="display:none;" value="엠앤엠네트웍스"></div>
+              <div class="info-item"><label>사업자등록번호</label><div class="val" id="oi-view-brn">123-45-67890</div><input class="oi-edit" id="oi-edit-brn" style="display:none;" value="123-45-67890"></div>
+              <div class="info-item"><label>대표연락처</label><div class="val" id="oi-view-phone">02-1234-5678</div><input class="oi-edit" id="oi-edit-phone" style="display:none;" value="02-1234-5678"></div>
+              <div class="info-item"><label>기본 시간대</label><div class="val" id="oi-view-tz">Asia/Seoul (UTC+9)</div>
+                <select class="oi-edit" id="oi-edit-tz" style="display:none;width:100%;font-size:13px;padding:6px 8px;border:1px solid #CED2D6;border-radius:6px;">
+                  <option>Asia/Seoul (UTC+9)</option><option>Asia/Tokyo (UTC+9)</option><option>Asia/Shanghai (UTC+8)</option><option>UTC</option>
+                </select>
+              </div>
+              <div class="info-item"><label>기본 언어</label><div class="val" id="oi-view-lang">한국어 (ko-KR)</div>
+                <select class="oi-edit" id="oi-edit-lang" style="display:none;width:100%;font-size:13px;padding:6px 8px;border:1px solid #CED2D6;border-radius:6px;">
+                  <option>한국어 (ko-KR)</option><option>English (en-US)</option><option>日本語 (ja-JP)</option>
+                </select>
+              </div>
             </div>
+            <div style="font-size:11.5px;color:#9EA5AD;margin-top:10px;">조직 정보 수정은 Super Admin(최고 관리자) 권한을 가진 사용자만 수행할 수 있습니다.</div>
           </div>
 
           <!-- 조직 구조 (부서 관리) -->
@@ -552,6 +582,26 @@ function switchSettingsTab(tab) {
   document.querySelectorAll('.settings-tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
   document.getElementById('tab-panel-org').classList.toggle('active', tab === 'org');
   document.getElementById('tab-panel-users').classList.toggle('active', tab === 'users');
+}
+
+var ORG_FIELD_KEYS = ['name', 'brn', 'phone', 'tz', 'lang'];
+function toggleOrgInfoEdit(editing) {
+  ORG_FIELD_KEYS.forEach(function(key) {
+    document.getElementById('oi-view-' + key).style.display = editing ? 'none' : '';
+    var editEl = document.getElementById('oi-edit-' + key);
+    editEl.style.display = editing ? '' : 'none';
+    if (editing && editEl.tagName === 'INPUT') { editEl.value = document.getElementById('oi-view-' + key).textContent; }
+  });
+  document.getElementById('org-info-view-actions').style.display = editing ? 'none' : '';
+  document.getElementById('org-info-edit-actions').style.display = editing ? 'flex' : 'none';
+}
+function saveOrgInfo() {
+  ORG_FIELD_KEYS.forEach(function(key) {
+    var editEl = document.getElementById('oi-edit-' + key);
+    document.getElementById('oi-view-' + key).textContent = editEl.value;
+  });
+  toggleOrgInfoEdit(false);
+  alert('조직 정보가 저장되었습니다.');
 }
 
 var currentUser = {};
