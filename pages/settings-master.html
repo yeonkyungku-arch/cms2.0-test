@@ -18,6 +18,7 @@
     }
     .btn-primary:hover { background:#4ab34f; }
     .settings-layout { display:flex; gap:0; }
+    .viewer-role-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; background:#DBEAFE; color:#1D4ED8; cursor:help; }
     .settings-sidebar {
       width:200px; flex-shrink:0; background:#fff; border:1px solid #E5E7EA;
       border-radius:10px; padding:8px; height:fit-content;
@@ -34,15 +35,15 @@
       letter-spacing: .05em; padding: 6px 12px 4px;
     }
     .settings-main { flex:1; min-width:0; padding-left:20px; }
-    /* Tabs */
-    .tabs { display:flex; gap:0; border-bottom:1px solid #E5E7EA; margin-bottom:16px; }
-    .tab-btn {
-      padding:10px 18px; font-size:13px; font-weight:500; color:#596066;
-      background:none; border:none; border-bottom:2px solid transparent;
-      cursor:pointer; transition:color 0.1s; white-space:nowrap;
+    /* Settings tabs (지역 기준정보 / 업종 분류 / 미디어 유형 / 공통 코드) */
+    .settings-tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid #E5E7EA; }
+    .settings-tab-btn {
+      padding:10px 4px; margin-right:20px; background:none; border:none; border-bottom:2px solid transparent;
+      font-size:14px; font-weight:600; color:#9EA5AD; cursor:pointer;
     }
-    .tab-btn.active { color:#2D84ED; font-weight:700; border-bottom-color:#2D84ED; }
-    .tab-btn:hover:not(.active) { color:#24292E; }
+    .settings-tab-btn.active { color:#24292E; border-bottom-color:#2D84ED; }
+    .settings-tab-panel { display:none; }
+    .settings-tab-panel.active { display:block; }
     .table-card { background:#fff; border:1px solid #E5E7EA; border-radius:10px; overflow:hidden; }
     .table-scroll { overflow-x:auto; }
     table { width:100%; border-collapse:collapse; }
@@ -144,7 +145,10 @@
 <main class="content">
   <div class="content-inner">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+        <span class="viewer-role-badge" title="현재 로그인 사용자(홍길동)는 Super Admin 권한으로 설정을 조회·수정하고 있습니다.">Super Admin 권한으로 보는 중</span>
+      </div>
     </div>
 
     <div class="settings-layout">
@@ -177,15 +181,15 @@
       </nav>
 
       <div class="settings-main">
-        <div class="tabs">
-          <button class="tab-btn active" onclick="switchTab(this,'tab-region')">지역 기준정보</button>
-          <button class="tab-btn" onclick="switchTab(this,'tab-industry')">업종 분류</button>
-          <button class="tab-btn" onclick="switchTab(this,'tab-mediatype')">미디어 유형</button>
-          <button class="tab-btn" onclick="switchTab(this,'tab-code')">공통 코드</button>
+        <div class="settings-tabs">
+          <button class="settings-tab-btn active" data-tab="region" onclick="switchSettingsTab('region')">지역 기준정보</button>
+          <button class="settings-tab-btn" data-tab="industry" onclick="switchSettingsTab('industry')">업종 분류</button>
+          <button class="settings-tab-btn" data-tab="mediatype" onclick="switchSettingsTab('mediatype')">미디어 유형</button>
+          <button class="settings-tab-btn" data-tab="code" onclick="switchSettingsTab('code')">공통 코드</button>
         </div>
 
         <!-- 지역 기준정보 tab -->
-        <div id="tab-region" class="tab-content">
+        <div id="tab-region" class="settings-tab-panel active">
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">지역 기준정보</span>
@@ -211,7 +215,7 @@
         </div>
 
         <!-- 업종 분류 tab (hidden) -->
-        <div id="tab-industry" class="tab-content" style="display:none;">
+        <div id="tab-industry" class="settings-tab-panel">
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">업종 분류</span>
@@ -235,7 +239,7 @@
         </div>
 
         <!-- 미디어 유형 tab (hidden) -->
-        <div id="tab-mediatype" class="tab-content" style="display:none;">
+        <div id="tab-mediatype" class="settings-tab-panel">
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">미디어 유형</span>
@@ -259,7 +263,7 @@
         </div>
 
         <!-- 공통 코드 tab (hidden) -->
-        <div id="tab-code" class="tab-content" style="display:none;">
+        <div id="tab-code" class="settings-tab-panel">
           <div class="table-card">
             <div class="table-toolbar">
               <span style="font-size:13px;font-weight:600;color:#24292E;">공통 코드</span>
@@ -287,11 +291,9 @@
 </main>
 
 <script>
-function switchTab(btn, tabId) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-  btn.classList.add('active');
-  document.getElementById(tabId).style.display = '';
+function switchSettingsTab(tab) {
+  document.querySelectorAll('.settings-tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.settings-tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
 }
 </script>
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>

@@ -12,6 +12,7 @@
       --warn:#F3BE4A; --danger:#E97474; --bg:#F6F7F9; --border:#E5E7EA;
     }
     .settings-layout { display:flex; gap:0; }
+    .viewer-role-badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; background:#DBEAFE; color:#1D4ED8; cursor:help; }
     .settings-sidebar {
       width:200px; flex-shrink:0; background:#fff; border:1px solid var(--border);
       border-radius:10px; padding:8px; height:fit-content;
@@ -183,25 +184,9 @@
 <main class="content">
   <div class="content-inner">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
-    </div>
-
-    <!-- T-SET-07 Scenario banner -->
-    <div class="scenario-banner" style="margin-bottom:16px;">
-      <div class="scenario-banner-left">
-        <div>
-          <div class="scenario-task-label">T-SET-07 · Policy Management</div>
-          <div class="scenario-title-text">PDE 정책 등록 · 검증 · 적용</div>
-          <div class="scenario-steps-row">
-            <span class="s-pill">정책 목록</span><span class="s-arrow">›</span>
-            <span class="s-pill current">정책 상세 · 검증</span><span class="s-arrow">›</span>
-            <span class="s-pill">PDE 적용</span><span class="s-arrow">›</span>
-            <span class="s-pill">영향 Schedule 재검증</span>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-secondary" onclick="openDrawer('POL-2025-003','신규','대기')">정책 상세 보기</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:20px;font-weight:700;color:#24292E;">설정</div>
+        <span class="viewer-role-badge" title="현재 로그인 사용자(홍길동)는 Super Admin 권한으로 설정을 조회·수정하고 있습니다.">Super Admin 권한으로 보는 중</span>
       </div>
     </div>
 
