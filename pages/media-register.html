@@ -1304,41 +1304,51 @@
           </div>
         </div>
 
-        <!-- 3-7. 주변기기(Peripheral) -->
+        <!-- 3-7. 연결 장비 -->
         <div class="form-card">
           <div class="section-head">
             <div>
-              <div class="section-title">주변기기 (Peripheral)</div>
-              <div class="section-desc">연결된 주변 제어 장치와 지원 명령을 선택합니다 (선택)</div>
+              <div class="section-title">연결 장비</div>
+              <div class="section-desc">미디어에 연결된 전원·냉각·제어 등 부가 장비를 선택합니다 (선택)</div>
             </div>
           </div>
           <div class="section-body">
             <div class="form-row">
-              <div class="form-label">주변기기 유형</div>
+              <div class="form-label">전원 장비</div>
               <div class="form-field">
                 <div class="checkbox-cols">
+                  <label><input type="checkbox"> 스마트 PDU</label>
                   <label><input type="checkbox"> 전원 제어기</label>
-                  <label><input type="checkbox"> 조명</label>
-                  <label><input type="checkbox"> 냉각</label>
-                  <label><input type="checkbox"> 도어 잠금</label>
-                  <label><input type="checkbox"> 외부 디스플레이 제어기</label>
-                  <label><input type="checkbox"> 기타</label>
+                  <label><input type="checkbox"> UPS</label>
                 </div>
               </div>
             </div>
             <div class="form-row">
-              <div class="form-label">지원 명령</div>
+              <div class="form-label">냉각 장비</div>
               <div class="form-field">
                 <div class="checkbox-cols">
-                  <label><input type="checkbox"> ON</label>
-                  <label><input type="checkbox"> OFF</label>
-                  <label><input type="checkbox"> 재시작</label>
-                  <label><input type="checkbox"> 열기</label>
-                  <label><input type="checkbox"> 닫기</label>
-                  <label><input type="checkbox"> 단계 제어</label>
-                  <label><input type="checkbox"> 기타</label>
+                  <label><input type="checkbox"> 냉각팬</label>
+                  <label><input type="checkbox"> 에어컨</label>
+                  <label><input type="checkbox"> 냉각 제어기</label>
                 </div>
-                <div class="input-hint">주변기기 유형 선택 후 해당 장치가 지원하는 명령을 선택합니다</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">제어 장비</div>
+              <div class="form-field">
+                <div class="checkbox-cols">
+                  <label><input type="checkbox"> 외부 디스플레이 컨트롤러</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">기타 장비</div>
+              <div class="form-field">
+                <div class="checkbox-cols">
+                  <label><input type="checkbox"> 카메라</label>
+                  <label><input type="checkbox"> 네트워크 장비</label>
+                </div>
+                <div class="input-hint">목록에 없는 장비는 관리자에게 문의해 코드를 추가하세요</div>
               </div>
             </div>
           </div>
