@@ -11,17 +11,17 @@
     .page-hd {
       background: #fff; border: 1px solid #E5E7EA; border-radius: 10px;
       padding: 18px 24px; margin-bottom: 20px;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
     .page-hd-left { display: flex; align-items: center; gap: 12px; }
     .back-link { color: #596066; text-decoration: none; font-size: 13px; display: flex; align-items: center; gap: 5px; }
     .back-link:hover { color: #24292E; }
     .page-hd-title { font-size: 18px; font-weight: 700; color: #24292E; }
-    .page-hd-actions { display: flex; gap: 8px; }
+    .page-hd-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     /* ── 폼 카드 ── */
     .form-card { background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
-    .section-head { padding: 16px 24px 12px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; justify-content: space-between; }
+    .section-head { padding: 16px 24px 12px; border-bottom: 1px solid #E5E7EA; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .section-title { font-size: 14px; font-weight: 600; color: #24292E; }
     .section-desc { font-size: 12px; color: #9EA5AD; margin-top: 2px; }
     .section-body { padding: 20px 24px; }
@@ -64,26 +64,6 @@
     }
     .day-chip-item input:checked + label { background: #58C65D; border-color: #58C65D; color: #fff; }
 
-    /* ── Schedule Item 카드 ── */
-    .sched-item {
-      border: 1px solid #E5E7EA; border-radius: 8px; margin-bottom: 12px; overflow: hidden;
-    }
-    .sched-item-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 16px; background: #F6F7F9; border-bottom: 1px solid #E5E7EA;
-    }
-    .sched-item-num { font-size: 12px; font-weight: 700; color: #596066; }
-    .sched-item-body { padding: 16px; }
-    .sched-item-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .sched-item-field { display: flex; flex-direction: column; gap: 5px; }
-    .sched-item-field.span2 { grid-column: span 2; }
-    .sched-item-label { font-size: 12px; font-weight: 600; color: #596066; }
-    .sched-item-label .req { color: #E97474; margin-left: 2px; }
-    .sched-item-divider { grid-column: span 2; border-top: 1px dashed #E5E7EA; margin: 4px 0; }
-    .sched-item-override-toggle { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #596066; cursor: pointer; }
-    .sched-item-override { display: contents; }
-    .sched-item-override[hidden] { display: none; }
-
     /* ── 조건 광고 규칙 빌더 ── */
     .rule-row {
       display: grid; grid-template-columns: 1fr 1fr 120px 36px; gap: 8px;
@@ -93,26 +73,10 @@
     .rule-del-btn {
       width: 32px; height: 32px; border: 1px solid #E5E7EA; border-radius: 6px;
       background: #fff; cursor: pointer; color: #9EA5AD; font-size: 16px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .rule-del-btn:hover { border-color: #E97474; color: #E97474; }
-
-    /* ── 승인 정보 카드 ── */
-    .approval-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #FFF8E6; border: 1px solid #F3BE4A; border-radius: 6px;
-      padding: 6px 12px; font-size: 13px; color: #B8860B;
-    }
-
-    /* ── 토글 ── */
-    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
-    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
-    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .toggle-slider { position: absolute; inset: 0; background: #CED2D6; border-radius: 11px; cursor: pointer; transition: background .2s; }
-    .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .2s; }
-    .toggle input:checked + .toggle-slider { background: #58C65D; }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
-    .toggle-label { font-size: 13px; color: #24292E; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
 
     /* ── 출처 조건 표시 ── */
     #src-campaign:checked ~ .main-wrap .campaign-only { display: grid; }
@@ -123,15 +87,6 @@
     #mode-hybrid:checked ~ .main-wrap .cond-rules-section { display: block; }
     #mode-rolling:checked ~ .main-wrap .cond-rules-section { display: none; }
 
-    /* ── 콘텐츠 등록 풀 ── */
-    .content-pool-list { display: flex; flex-direction: column; gap: 8px; }
-    .content-pool-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #E5E7EA; border-radius: 8px; background: #FAFBFC; }
-    .content-pool-thumb { width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px; background: #F0F1F3; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .content-pool-info { flex: 1; min-width: 0; }
-    .content-pool-name { font-size: 13px; font-weight: 600; color: #24292E; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .content-pool-meta { font-size: 12px; color: #9EA5AD; margin-top: 2px; display: flex; align-items: center; gap: 6px; }
-    .content-pool-badge { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: #F0F1F3; color: #596066; }
-
     /* ── 하단 액션 바 ── */
     .action-bar {
       position: fixed; bottom: 0; left: 220px; right: 0; height: 60px;
@@ -139,6 +94,113 @@
       display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 0 32px; z-index: 100;
     }
     main.content { padding-bottom: 80px; }
+
+    /* ── 3열 레이아웃: 진행 단계 | 본문 | 요약 ── */
+    .reg-layout { display: grid; grid-template-columns: 168px minmax(0,1fr) 280px; gap: 16px; align-items: start; }
+    @media (max-width: 1100px) { .reg-layout { grid-template-columns: minmax(0,1fr) 280px; } .reg-steps { display: none; } }
+    @media (max-width: 760px) { .reg-layout { grid-template-columns: 1fr; } .reg-summary { position: static; } }
+
+    /* ── 진행 단계 레일 ── */
+    .reg-steps { position: sticky; top: 16px; background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 14px 0; }
+    .reg-step {
+      display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px;
+      color: #9EA5AD; text-decoration: none; font-size: 13px;
+    }
+    .reg-step-num {
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 24px; height: 24px; border-radius: 50%; background: #F0F1F3;
+      font-size: 12px; font-weight: 700; color: #9EA5AD;
+    }
+    .reg-step.active { color: #24292E; font-weight: 700; }
+    .reg-step.active .reg-step-num { background: #58C65D; color: #fff; }
+
+    /* ── 운영 Product 구성 ── */
+    .product-list { display: flex; flex-direction: column; gap: 12px; }
+    .reg-product-card { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
+    .product-summary {
+      display: grid; grid-template-columns: minmax(200px,1.6fr) 1fr 100px 100px 90px;
+      gap: 16px; align-items: center; padding: 14px 16px; background: #fff;
+    }
+    @media (max-width: 900px) { .product-summary { grid-template-columns: minmax(180px,1.4fr) 1fr 90px 90px; } .product-summary .product-status { display: none; } }
+    .product-title-btn { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; background: none; text-align: left; }
+    .toggle-icon { color: #9EA5AD; font-size: 16px; flex-shrink: 0; }
+    .product-title { overflow: hidden; font-weight: 700; color: #24292E; text-overflow: ellipsis; white-space: nowrap; }
+    .product-sub { margin-top: 3px; color: #9EA5AD; font-size: 12px; }
+    .revision-pill { display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 5px; background: #EAF3FF; color: #2D84ED; font-size: 11px; font-weight: 600; }
+    .metric-label { margin-bottom: 3px; color: #9EA5AD; font-size: 11px; }
+    .metric-value { font-weight: 600; color: #24292E; font-size: 13px; }
+    .count-input { width: 68px; height: 34px; padding: 6px 8px; border: 1px solid #CED2D6; border-radius: 7px; font-family: inherit; }
+
+    .pd-badge { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .pd-badge::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
+    .pd-badge-success { background: #E8F8E9; color: #2E9E34; }
+    .pd-badge-warning { background: #FFF8E6; color: #B45309; }
+    .pd-badge-danger  { background: #FEF2F2; color: #B91C1C; }
+
+    .product-body { display: grid; grid-template-columns: 116px minmax(0,1fr); border-top: 1px solid #E5E7EA; background: #fff; }
+    @media (max-width: 760px) { .product-body { display: block; } .product-tabs { display: flex; border-right: 0; border-bottom: 1px solid #E5E7EA; overflow-x: auto; } .product-tab.active { border-left: 0; border-bottom: 2px solid #58C65D; } }
+    .product-tabs { border-right: 1px solid #E5E7EA; background: #F6F7F9; }
+    .product-tab { padding: 12px 14px; color: #9EA5AD; font-size: 12.5px; white-space: nowrap; }
+    .product-tab.active { border-left: 3px solid #58C65D; background: #EAF3FF; color: #2D84ED; font-weight: 700; }
+    .slot-area { min-width: 0; padding: 16px; }
+    .slot-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bulk-select { width: 220px; height: 36px; padding: 6px 8px; border: 1px solid #CED2D6; border-radius: 7px; font-family: inherit; background: #fff; }
+    .slot-table-wrap { overflow-x: auto; border: 1px solid #E5E7EA; border-radius: 8px; }
+    .slot-table { width: 100%; min-width: 680px; border-collapse: collapse; }
+    .slot-table th, .slot-table td { padding: 10px 12px; border-bottom: 1px solid #F0F1F3; text-align: left; font-size: 13px; }
+    .slot-table th { background: #F6F7F9; color: #9EA5AD; font-size: 11px; font-weight: 600; }
+    .slot-table tbody tr:last-child td { border-bottom: 0; }
+    .slot-content-select { width: 100%; min-width: 220px; height: 34px; border: 1px solid #CED2D6; border-radius: 7px; padding: 6px 8px; font-family: inherit; background: #fff; }
+
+    /* ── 요약 사이드바 ── */
+    .reg-summary { position: sticky; top: 16px; background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 18px; }
+    .reg-summary h2 { margin: 0 0 14px; font-size: 15px; color: #24292E; }
+    .reg-summary-list { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+    .reg-summary-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; }
+    .reg-summary-row dt { color: #9EA5AD; margin: 0; }
+    .reg-summary-row dd { margin: 0; text-align: right; font-weight: 600; color: #24292E; }
+    .reg-divider { height: 1px; margin: 16px 0; background: #E5E7EA; }
+    .reg-subhead { font-size: 12px; font-weight: 700; color: #24292E; }
+    .allocation-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .allocation-row { display: flex; justify-content: space-between; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid #F0F1F3; font-size: 12px; color: #596066; }
+    .allocation-row:last-child { border-bottom: 0; }
+    .gate-list { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; font-size: 12.5px; }
+    .gate-row { display: flex; justify-content: space-between; gap: 10px; }
+    .gate-muted { color: #9EA5AD; }
+    .gate-success { color: #2E9E34; font-weight: 700; }
+    .gate-warning { color: #B45309; font-weight: 700; }
+    .gate-danger  { color: #B91C1C; font-weight: 700; }
+    .reg-info-box { margin-top: 16px; padding: 12px; border: 1px solid #BFDBFE; border-radius: 8px; background: #EAF3FF; color: #1D4ED8; font-size: 12px; line-height: 1.6; }
+
+    /* ── 검증 결과 ── */
+    .validation-empty { color: #9EA5AD; font-size: 13px; }
+    .issue-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .issue { padding: 10px 12px; border: 1px solid #FECACA; border-radius: 8px; background: #FEF2F2; color: #B91C1C; font-size: 12.5px; }
+    .validation-success { padding: 12px 14px; border: 1px solid #A7F3AD; border-radius: 8px; background: #E8F8E9; color: #2E9E34; font-size: 13px; }
+
+    /* ── 콘텐츠 등록 Drawer ── */
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 500; display: none; }
+    .drawer-overlay.open { display: block; }
+    .drawer {
+      position: fixed; top: 0; right: -480px; width: 480px; max-width: 100%; height: 100vh;
+      background: #fff; box-shadow: -4px 0 24px rgba(0,0,0,.18); z-index: 501;
+      display: flex; flex-direction: column; transition: right .28s cubic-bezier(.4,0,.2,1);
+    }
+    .drawer.open { right: 0; }
+    .drawer-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #E5E7EA; flex-shrink: 0; }
+    .drawer-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: #24292E; }
+    .drawer-desc { margin-top: 5px; color: #9EA5AD; font-size: 12px; line-height: 1.5; }
+    .drawer-close { width: 32px; height: 32px; border: 1px solid #E5E7EA; border-radius: 6px; background: #fff; cursor: pointer; color: #596066; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .drawer-close:hover { background: #F6F7F9; }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px 22px; }
+    .drawer-footer { padding: 14px 22px; border-top: 1px solid #E5E7EA; display: flex; gap: 8px; flex-shrink: 0; }
+    .drawer-footer .btn { flex: 1; justify-content: center; }
+    .target-box { padding: 10px 12px; border: 1px solid #E5E7EA; border-radius: 8px; background: #F6F7F9; color: #596066; font-size: 12px; line-height: 1.5; margin-bottom: 18px; }
+    .drawer-form { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── Toast ── */
+    #toast { display: none; position: fixed; bottom: 30px; right: 24px; max-width: 420px; background: #24292E; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.2); z-index: 600; }
   </style>
 </head>
 <body>
@@ -250,510 +312,315 @@
         <div class="page-hd-title">스케줄 등록</div>
       </div>
       <div class="page-hd-actions">
-        <button class="btn btn-ghost">임시저장</button>
-        <button class="btn btn-primary">스케줄 등록</button>
+        <button class="btn btn-ghost" id="saveDraftButton">임시 저장</button>
+        <button class="btn btn-ghost" id="validateButton">스케줄 검증</button>
+        <button class="btn btn-primary" id="registerScheduleButton" disabled>등록 요청</button>
       </div>
     </div>
 
-    <!-- ① 기본 정보 -->
-    <div class="form-card">
-      <div class="section-head">
-        <div>
-          <div class="section-title">기본 정보</div>
-          <div class="section-desc">스케줄 식별 및 생성 출처를 설정합니다</div>
+    <div class="reg-layout">
+
+      <!-- 진행 단계 -->
+      <aside class="reg-steps">
+        <a href="#sec-basic" class="reg-step active"><span class="reg-step-num">1</span><span>기본 정보</span></a>
+        <a href="#sec-products" class="reg-step"><span class="reg-step-num">2</span><span>운영 Product 구성</span></a>
+        <a href="#sec-validation" class="reg-step"><span class="reg-step-num">3</span><span>검증 및 요약</span></a>
+        <a href="#" class="reg-step"><span class="reg-step-num">4</span><span>완료</span></a>
+      </aside>
+
+      <!-- 본문 -->
+      <div>
+
+      <!-- ① 기본 정보 -->
+      <div class="form-card" id="sec-basic">
+        <div class="section-head">
+          <div>
+            <div class="section-title">기본 정보</div>
+            <div class="section-desc">스케줄 식별 및 생성 출처를 설정합니다</div>
+          </div>
+        </div>
+        <div class="section-body">
+
+          <!-- schedule.sourceType -->
+          <div class="form-row">
+            <div class="form-label">생성 출처 <span class="req">*</span></div>
+            <div class="form-field">
+              <div class="seg-ctrl">
+                <input type="radio" name="srctype" id="srctype-direct" checked>
+                <label for="srctype-direct" onclick="document.getElementById('src-direct').checked=true">직접 생성</label>
+                <input type="radio" name="srctype" id="srctype-campaign">
+                <label for="srctype-campaign" onclick="document.getElementById('src-campaign').checked=true">캠페인 연계</label>
+              </div>
+              <div class="input-hint">캠페인 연계 시 광고주·기간 정보가 자동 상속됩니다</div>
+            </div>
+          </div>
+
+          <!-- schedule.campaignId (campaign only) -->
+          <div class="form-row campaign-only" style="display:none;">
+            <div class="form-label">연계 캠페인 <span class="req">*</span></div>
+            <div class="form-field">
+              <div style="display:flex;gap:8px;">
+                <select class="select" style="flex:1;">
+                  <option value="">캠페인 검색·선택</option>
+                  <option selected>GAL-2026-S25 | 삼성전자 갤럭시 S25 런칭</option>
+                  <option>CAM-2025-0038 | LG생활건강 추계 캠페인</option>
+                </select>
+                <button class="btn btn-ghost" style="white-space:nowrap;">캠페인 검색</button>
+              </div>
+              <div class="input-hint">연계 후 캠페인 정보는 Read-only로 잠깁니다</div>
+            </div>
+          </div>
+
+          <!-- schedule.name -->
+          <div class="form-row">
+            <div class="form-label">스케줄명 <span class="req">*</span></div>
+            <div class="form-field">
+              <input type="text" class="input" id="scheduleName" placeholder="스케줄명 입력" value="강남역 갤럭시 S25 광고 25Q4">
+              <div class="input-hint">자동 제안: [광고주명] + [기간] + [프로덕트명]</div>
+            </div>
+          </div>
+
+          <!-- schedule.tags -->
+          <div class="form-row">
+            <div class="form-label">태그</div>
+            <div class="form-field">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid #CED2D6;border-radius:6px;min-height:40px;align-items:center;">
+                <span style="display:inline-flex;align-items:center;gap:4px;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:3px 10px;font-size:12px;color:#2E9E34;">강남<button style="background:none;border:none;color:#82C987;cursor:pointer;font-size:13px;padding:0;line-height:1;">×</button></span>
+                <span style="display:inline-flex;align-items:center;gap:4px;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:3px 10px;font-size:12px;color:#2E9E34;">Q4<button style="background:none;border:none;color:#82C987;cursor:pointer;font-size:13px;padding:0;line-height:1;">×</button></span>
+                <input type="text" placeholder="태그 추가 후 Enter" style="border:none;outline:none;font-size:13px;font-family:inherit;flex:1;min-width:100px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- schedule.advertiserId -->
+          <div class="form-row">
+            <div class="form-label">광고주 <span class="req">*</span></div>
+            <div class="form-field">
+              <div style="display:flex;gap:8px;">
+                <select class="select" style="flex:1;" id="scheduleAdvertiser">
+                  <option value="">광고주 검색·선택</option>
+                  <option selected>삼성전자</option>
+                  <option>(주)에이스광고</option>
+                  <option>LG생활건강</option>
+                </select>
+                <button class="btn btn-ghost" style="white-space:nowrap;">신규 등록</button>
+              </div>
+              <div class="input-hint campaign-only" style="color:#58C65D;">캠페인에서 상속됨 — 변경 불가</div>
+            </div>
+          </div>
+
+          <!-- schedule.approval.authority -->
+          <div class="form-row">
+            <div class="form-label">승인 권한 <span class="req">*</span></div>
+            <div class="form-field">
+              <select class="select" style="max-width:300px;">
+                <option value="">승인 담당자 선택</option>
+                <option selected>팀장 승인</option>
+                <option>본부장 승인</option>
+                <option>대표 승인</option>
+              </select>
+              <div class="input-hint">선택된 권한자에게 승인 요청이 발송됩니다</div>
+            </div>
+          </div>
+
         </div>
       </div>
-      <div class="section-body">
 
-        <!-- schedule.sourceType -->
-        <div class="form-row">
-          <div class="form-label">생성 출처 <span class="req">*</span></div>
-          <div class="form-field">
-            <div class="seg-ctrl">
-              <input type="radio" name="srctype" id="srctype-direct" checked>
-              <label for="srctype-direct" onclick="document.getElementById('src-direct').checked=true">직접 생성</label>
-              <input type="radio" name="srctype" id="srctype-campaign">
-              <label for="srctype-campaign" onclick="document.getElementById('src-campaign').checked=true">캠페인 연계</label>
-            </div>
-            <div class="input-hint">캠페인 연계 시 광고주·기간 정보가 자동 상속됩니다</div>
+      <!-- ② 운영 계획 -->
+      <div class="form-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">운영 계획</div>
+            <div class="section-desc">공통 운영 기간·요일·시간을 설정합니다 — 모든 Product의 Slot 편성에 기본 적용됩니다</div>
           </div>
         </div>
-
-        <!-- schedule.campaignId (campaign only) -->
-        <div class="form-row campaign-only" style="display:none;">
-          <div class="form-label">연계 캠페인 <span class="req">*</span></div>
-          <div class="form-field">
-            <div style="display:flex;gap:8px;">
-              <select class="select" style="flex:1;">
-                <option value="">캠페인 검색·선택</option>
-                <option selected>CAM-2025-0041 | 삼성전자 갤럭시 S25 런칭</option>
-                <option>CAM-2025-0038 | LG생활건강 추계 캠페인</option>
-              </select>
-              <button class="btn btn-ghost" style="white-space:nowrap;">캠페인 검색</button>
-            </div>
-            <div class="input-hint">연계 후 캠페인 정보는 Read-only로 잠깁니다</div>
-          </div>
-        </div>
-
-        <!-- schedule.name -->
-        <div class="form-row">
-          <div class="form-label">스케줄명 <span class="req">*</span></div>
-          <div class="form-field">
-            <input type="text" class="input" placeholder="스케줄명 입력" value="강남역 갤럭시 S25 광고 25Q4">
-            <div class="input-hint">자동 제안: [광고주명] + [기간] + [프로덕트명]</div>
-          </div>
-        </div>
-
-        <!-- schedule.tags -->
-        <div class="form-row">
-          <div class="form-label">태그</div>
-          <div class="form-field">
-            <div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid #CED2D6;border-radius:6px;min-height:40px;align-items:center;">
-              <span style="display:inline-flex;align-items:center;gap:4px;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:3px 10px;font-size:12px;color:#2E9E34;">강남<button style="background:none;border:none;color:#82C987;cursor:pointer;font-size:13px;padding:0;line-height:1;">×</button></span>
-              <span style="display:inline-flex;align-items:center;gap:4px;background:#F0F9F1;border:1px solid #C1E9C3;border-radius:12px;padding:3px 10px;font-size:12px;color:#2E9E34;">Q4<button style="background:none;border:none;color:#82C987;cursor:pointer;font-size:13px;padding:0;line-height:1;">×</button></span>
-              <input type="text" placeholder="태그 추가 후 Enter" style="border:none;outline:none;font-size:13px;font-family:inherit;flex:1;min-width:100px;">
+        <div class="section-body">
+          <!-- schedule.startDate / endDate -->
+          <div class="form-row">
+            <div class="form-label">운영 기간 <span class="req">*</span></div>
+            <div class="form-field">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input type="date" class="input" style="width:160px;" id="scheduleStart" value="2026-10-01">
+                <span style="color:#9EA5AD;">~</span>
+                <input type="date" class="input" style="width:160px;" id="scheduleEnd" value="2026-10-31">
+              </div>
+              <div class="input-hint">총 31일</div>
             </div>
           </div>
-        </div>
 
-        <!-- schedule.advertiserId -->
-        <div class="form-row">
-          <div class="form-label">광고주 <span class="req">*</span></div>
-          <div class="form-field">
-            <div style="display:flex;gap:8px;">
-              <select class="select" style="flex:1;">
-                <option value="">광고주 검색·선택</option>
-                <option selected>삼성전자</option>
-                <option>(주)에이스광고</option>
-                <option>LG생활건강</option>
-              </select>
-              <button class="btn btn-ghost" style="white-space:nowrap;">신규 등록</button>
+          <!-- schedule 공통 운영 요일 기본값 -->
+          <div class="form-row">
+            <div class="form-label">운영 요일 <span class="req">*</span></div>
+            <div class="form-field">
+              <div class="day-chips">
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d1" checked><label for="cmn-d1">월</label></div>
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d2" checked><label for="cmn-d2">화</label></div>
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d3" checked><label for="cmn-d3">수</label></div>
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d4" checked><label for="cmn-d4">목</label></div>
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d5" checked><label for="cmn-d5">금</label></div>
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d6" checked><label for="cmn-d6">토</label></div>
+                <div class="day-chip-item"><input type="checkbox" id="cmn-d7"><label for="cmn-d7">일</label></div>
+              </div>
+              <div class="input-hint">모든 Product Slot 편성에 기본 적용됩니다</div>
             </div>
-            <div class="input-hint campaign-only" style="color:#58C65D;">캠페인에서 상속됨 — 변경 불가</div>
+          </div>
+
+          <!-- schedule 공통 운영 시간 기본값 -->
+          <div class="form-row">
+            <div class="form-label">운영 시간 <span class="req">*</span></div>
+            <div class="form-field">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input type="time" class="input" style="width:140px;" value="06:00">
+                <span style="color:#9EA5AD;">~</span>
+                <input type="time" class="input" style="width:140px;" value="24:00">
+              </div>
+              <div class="input-hint">유효 운영일마다 반복 적용되는 일일 운영시간입니다</div>
+            </div>
+          </div>
+
+          <!-- schedule.operationMode -->
+          <div class="form-row">
+            <div class="form-label">운영 방식 <span class="req">*</span></div>
+            <div class="form-field">
+              <div class="seg-ctrl">
+                <input type="radio" name="opmode" id="opmode-rolling" checked>
+                <label for="opmode-rolling" onclick="document.getElementById('mode-rolling').checked=true">Rolling</label>
+                <input type="radio" name="opmode" id="opmode-cond">
+                <label for="opmode-cond" onclick="document.getElementById('mode-cond').checked=true">조건광고</label>
+                <input type="radio" name="opmode" id="opmode-hybrid">
+                <label for="opmode-hybrid" onclick="document.getElementById('mode-hybrid').checked=true">혼합</label>
+              </div>
+              <div class="input-hint">Rolling: 루프 기반 순환 재생 | 조건광고: 트리거 조건 충족 시 재생 | 혼합: 병행</div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- schedule.approval.authority -->
-        <div class="form-row">
-          <div class="form-label">승인 권한 <span class="req">*</span></div>
-          <div class="form-field">
-            <select class="select" style="max-width:300px;">
-              <option value="">승인 담당자 선택</option>
-              <option selected>팀장 승인</option>
-              <option>본부장 승인</option>
-              <option>대표 승인</option>
+      <!-- ③ 운영 Product 구성 -->
+      <div class="form-card" id="sec-products">
+        <div class="section-head">
+          <div>
+            <div class="section-title">운영 Product 구성</div>
+            <div class="section-desc">Product별로 배정 Slot을 설정하고 각 Slot마다 콘텐츠를 독립적으로 편성할 수 있습니다</div>
+          </div>
+          <button class="btn btn-outline" id="addProductButton">+ Product 추가</button>
+        </div>
+        <div class="section-body">
+          <div class="product-list" id="productList"></div>
+        </div>
+      </div>
+
+      <!-- ④ 조건 광고 규칙 (operationMode=조건광고 or 혼합 시 표시) -->
+      <div class="form-card cond-rules-section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">조건 광고 규칙</div>
+            <div class="section-desc">트리거 조건이 충족될 때 재생되는 규칙을 설정합니다</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:13px;" onclick="addRule()">+ 규칙 추가</button>
+        </div>
+        <div class="section-body" id="rulesWrap">
+          <div style="display:grid;grid-template-columns:1fr 1fr 120px 36px;gap:8px;align-items:center;padding:6px 0 10px;border-bottom:1px solid #F0F2F4;margin-bottom:4px;">
+            <div style="font-size:11px;font-weight:600;color:#9EA5AD;">트리거 유형</div>
+            <div style="font-size:11px;font-weight:600;color:#9EA5AD;">트리거 값</div>
+            <div style="font-size:11px;font-weight:600;color:#9EA5AD;">최대 실행</div>
+            <div></div>
+          </div>
+          <!-- Rule 1 -->
+          <div class="rule-row">
+            <select class="select">
+              <option selected>날씨 — 기온</option>
+              <option>날씨 — 날씨 코드</option>
+              <option>요일</option>
+              <option>시간대</option>
+              <option>이벤트 트리거</option>
             </select>
-            <div class="input-hint">선택된 권한자에게 승인 요청이 발송됩니다</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ② 운영 계획 -->
-    <div class="form-card">
-      <div class="section-head">
-        <div>
-          <div class="section-title">운영 계획</div>
-          <div class="section-desc">공통 운영 기간·요일·시간을 설정합니다 — 모든 Schedule Item에 기본 적용되며, 필요한 항목만 개별적으로 재정의할 수 있습니다</div>
-        </div>
-      </div>
-      <div class="section-body">
-        <!-- schedule.startDate / endDate -->
-        <div class="form-row">
-          <div class="form-label">운영 기간 <span class="req">*</span></div>
-          <div class="form-field">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input type="date" class="input" style="width:160px;" value="2025-10-15">
-              <span style="color:#9EA5AD;">~</span>
-              <input type="date" class="input" style="width:160px;" value="2025-12-31">
+            <input type="text" class="input" placeholder="조건 값 입력" value="기온 ≥ 30°C">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <input type="number" class="input" style="width:70px;" value="5">
+              <span style="font-size:12px;color:#596066;">회/일</span>
             </div>
-            <div class="input-hint">총 77일 · Q4 집행</div>
-          </div>
-        </div>
-
-        <!-- schedule.items[].operatingDays 기본값 (공통 적용, Item별 재정의 가능) -->
-        <div class="form-row">
-          <div class="form-label">운영 요일 <span class="req">*</span></div>
-          <div class="form-field">
-            <div class="day-chips">
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d1" checked><label for="cmn-d1">월</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d2" checked><label for="cmn-d2">화</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d3" checked><label for="cmn-d3">수</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d4" checked><label for="cmn-d4">목</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d5" checked><label for="cmn-d5">금</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d6"><label for="cmn-d6">토</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="cmn-d7"><label for="cmn-d7">일</label></div>
-            </div>
-            <div class="input-hint">모든 Schedule Item에 기본 적용됩니다 — 항목별로 다른 요일이 필요하면 해당 Item에서 재정의하세요</div>
-          </div>
-        </div>
-
-        <!-- schedule.items[].dailyStartTime / dailyEndTime 기본값 (공통 적용, Item별 재정의 가능) -->
-        <div class="form-row">
-          <div class="form-label">운영 시간 <span class="req">*</span></div>
-          <div class="form-field">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input type="time" class="input" style="width:140px;" value="09:00">
-              <span style="color:#9EA5AD;">~</span>
-              <input type="time" class="input" style="width:140px;" value="22:00">
-            </div>
-            <div class="input-hint">유효 운영일마다 반복 적용되는 일일 운영시간입니다. 종료시간이 시작시간보다 이르면 익일 종료로 해석됩니다.</div>
-          </div>
-        </div>
-
-        <!-- schedule.operationMode -->
-        <div class="form-row">
-          <div class="form-label">운영 방식 <span class="req">*</span></div>
-          <div class="form-field">
-            <div class="seg-ctrl">
-              <input type="radio" name="opmode" id="opmode-rolling" checked>
-              <label for="opmode-rolling" onclick="document.getElementById('mode-rolling').checked=true">Rolling</label>
-              <input type="radio" name="opmode" id="opmode-cond">
-              <label for="opmode-cond" onclick="document.getElementById('mode-cond').checked=true">조건광고</label>
-              <input type="radio" name="opmode" id="opmode-hybrid">
-              <label for="opmode-hybrid" onclick="document.getElementById('mode-hybrid').checked=true">혼합</label>
-            </div>
-            <div class="input-hint">Rolling: 루프 기반 순환 재생 | 조건광고: 트리거 조건 충족 시 재생 | 혼합: 병행</div>
+            <button class="rule-del-btn">×</button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ③ 콘텐츠 등록 (풀) -->
-    <div class="form-card">
-      <div class="section-head">
-        <div>
-          <div class="section-title">콘텐츠 등록</div>
-          <div class="section-desc">이 스케줄에서 사용할 콘텐츠 소재를 업로드하거나 URL로 등록합니다 — 등록한 콘텐츠는 아래 Schedule Item에 자유롭게 배정할 수 있습니다</div>
+      <!-- ⑤ 검증 결과 -->
+      <div class="form-card" id="sec-validation">
+        <div class="section-head">
+          <div>
+            <div class="section-title">검증 결과</div>
+            <div class="section-desc">Technical Validation → Feasibility → Schedule PDE 순으로 검증합니다</div>
+          </div>
+        </div>
+        <div class="section-body" id="validationResult">
+          <div class="validation-empty">아직 검증하지 않았습니다.</div>
         </div>
       </div>
-      <div class="section-body">
 
-        <div class="seg-ctrl" style="margin-bottom:10px;">
-          <input type="radio" name="pool-src-ui" id="pool-src-file-ui" checked onclick="togglePoolSource('file')">
-          <label for="pool-src-file-ui">파일 업로드</label>
-          <input type="radio" name="pool-src-ui" id="pool-src-url-ui" onclick="togglePoolSource('url')">
-          <label for="pool-src-url-ui">URL 등록</label>
+      <!-- ⑥ Revision 관리 -->
+      <div class="form-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">Revision 관리</div>
+            <div class="section-desc">저장 후 R1이 자동 생성됩니다. 이후 변경 시 새 Revision을 생성합니다.</div>
+          </div>
         </div>
-
-        <div id="poolSrcFileRow" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-          <input type="file" class="input" style="flex:1;min-width:200px;" id="poolFileInput">
-          <input type="text" class="input" placeholder="콘텐츠명 (미입력 시 파일명)" style="width:220px;" id="poolFileName">
-          <button class="btn btn-ghost" type="button" onclick="addPoolItem('file')">+ 풀에 추가</button>
-        </div>
-        <div id="poolSrcUrlRow" style="display:none;gap:8px;flex-wrap:wrap;align-items:center;">
-          <input type="text" class="input" placeholder="외부 URL" style="flex:1;min-width:200px;" id="poolUrlInput">
-          <input type="text" class="input" placeholder="콘텐츠명" style="width:180px;" id="poolUrlName">
-          <input type="number" class="input" placeholder="재생시간(초)" style="width:130px;" id="poolUrlDuration">
-          <button class="btn btn-ghost" type="button" onclick="addPoolItem('url')">+ 풀에 추가</button>
-        </div>
-
-        <div class="input-hint" style="margin:10px 0 14px;">여기서 등록한 콘텐츠는 Draft로 생성됩니다 — 광고 유형·업종·광고주 등 나머지 필수 정보는 콘텐츠 상세에서 입력해야 승인(Approved) 심사를 받을 수 있습니다. 승인 전에는 Schedule Item에 배정만 가능하고, 이 스케줄은 콘텐츠가 승인되기 전까지 확정(Scheduled/Active)되지 않습니다.</div>
-
-        <div class="content-pool-list" id="contentPoolList">
-          <div class="content-pool-item" data-pool-name="신규_캠페인_소재_A.mp4">
-            <div class="content-pool-thumb">🎬</div>
-            <div class="content-pool-info">
-              <div class="content-pool-name">신규_캠페인_소재_A.mp4</div>
-              <div class="content-pool-meta">1920×1080 · 30초 <span class="content-pool-badge">Draft</span></div>
+        <div class="section-body">
+          <div class="form-row">
+            <div class="form-label">현재 Revision</div>
+            <div class="form-field">
+              <input type="text" class="input readonly" value="R1 (신규 등록 — 저장 시 자동 생성)" readonly>
             </div>
-            <button class="rule-del-btn" type="button" onclick="this.closest('.content-pool-item').remove()" title="풀에서 제거">×</button>
           </div>
-          <div class="content-pool-item" data-pool-name="신규_캠페인_소재_B.mp4">
-            <div class="content-pool-thumb">🎬</div>
-            <div class="content-pool-info">
-              <div class="content-pool-name">신규_캠페인_소재_B.mp4</div>
-              <div class="content-pool-meta">3840×2160 · 15초 <span class="content-pool-badge">Draft</span></div>
-            </div>
-            <button class="rule-del-btn" type="button" onclick="this.closest('.content-pool-item').remove()" title="풀에서 제거">×</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ④ Schedule Item 편성 -->
-    <div class="form-card">
-      <div class="section-head">
-        <div>
-          <div class="section-title">Schedule Item 편성</div>
-          <div class="section-desc">프로덕트·슬롯 조합을 항목별로 등록하고, 위에서 등록한 콘텐츠 중 하나를 각 항목에 배정합니다 — 운영 요일·시간은 기본적으로 공통 운영 계획을 따르며 필요한 항목만 재정의합니다</div>
-        </div>
-        <button class="btn btn-ghost" style="font-size:13px;" onclick="addItem()">+ Item 추가</button>
-      </div>
-      <div class="section-body" id="itemsWrap">
-
-        <!-- Item 1 -->
-        <div class="sched-item">
-          <div class="sched-item-head">
-            <span class="sched-item-num">Item 1</span>
-            <button class="rule-del-btn" title="항목 삭제">×</button>
-          </div>
-          <div class="sched-item-body">
-            <div class="sched-item-grid">
-
-              <!-- schedule.items[].targetType -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">대상 유형 <span class="req">*</span></div>
-                <select class="select">
-                  <option selected>프로덕트</option>
-                  <option>패키지 프로덕트</option>
-                </select>
-              </div>
-
-              <!-- schedule.items[].targetRevisionId -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">프로덕트 선택 <span class="req">*</span></div>
-                <div style="display:flex;gap:6px;">
-                  <select class="select" style="flex:1;">
-                    <option value="">프로덕트 검색·선택</option>
-                    <option selected>강남 프리미엄 옥외 (R3)</option>
-                    <option>홍대 입구역 프리미엄 (R2)</option>
-                  </select>
-                </div>
-                <div class="input-hint">Revision이 잠깁니다 — 이후 변경 불가</div>
-              </div>
-
-              <!-- schedule.items[].assignedSlotDuration -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">슬롯 시간 <span class="req">*</span></div>
-                <select class="select">
-                  <option value="">슬롯 선택 (Product Catalog 참조)</option>
-                  <option selected>30초</option>
-                  <option>15초</option>
-                  <option>60초</option>
-                </select>
-              </div>
-
-              <!-- schedule.items[].contentRefType -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div>
-                <select class="select">
-                  <option selected>콘텐츠</option>
-                  <option>콘텐츠 체인</option>
-                </select>
-              </div>
-
-              <!-- schedule.items[].contentRevisionId — 위 콘텐츠 등록 풀 + 기존 승인 콘텐츠 중에서 배정 -->
-              <div class="sched-item-field span2">
-                <div class="sched-item-label">콘텐츠 배정 <span class="req">*</span></div>
-                <div style="display:flex;gap:6px;">
-                  <select class="select" style="flex:1;">
-                    <optgroup label="이번 스케줄에 등록한 콘텐츠">
-                      <option selected>신규_캠페인_소재_A.mp4 — 1920×1080 · 권장 (대상 해상도 일치)</option>
-                      <option>신규_캠페인_소재_B.mp4 — 3840×2160</option>
-                    </optgroup>
-                    <optgroup label="기존 승인된 콘텐츠 검색">
-                      <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
-                      <option>갤럭시 S25 런칭 15초 (R2) — 승인</option>
-                      <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
-                    </optgroup>
-                  </select>
-                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                </div>
-                <div class="input-hint">풀 항목은 Draft이므로 승인 전까지 이 스케줄이 확정되지 않습니다. 승인된 콘텐츠는 선택 즉시 Revision이 잠깁니다.</div>
-              </div>
-
-              <div class="sched-item-divider"></div>
-
-              <!-- Item별 운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
-              <div class="sched-item-field span2">
-                <label class="sched-item-override-toggle">
-                  <input type="checkbox" onclick="toggleItemOverride(this)">
-                  이 항목만 공통 운영 요일·시간과 다르게 설정
-                </label>
-              </div>
-              <div class="sched-item-override" hidden>
-                <!-- schedule.items[].operatingDays (조건부, 공통값 재정의) -->
-                <div class="sched-item-field span2">
-                  <div class="sched-item-label">운영 요일</div>
-                  <div class="day-chips">
-                    <div class="day-chip-item"><input type="checkbox" id="i1d1" checked><label for="i1d1">월</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i1d2" checked><label for="i1d2">화</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i1d3" checked><label for="i1d3">수</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i1d4" checked><label for="i1d4">목</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i1d5" checked><label for="i1d5">금</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i1d6"><label for="i1d6">토</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i1d7"><label for="i1d7">일</label></div>
-                  </div>
-                </div>
-
-                <!-- schedule.items[].dailyStartTime / dailyEndTime (조건부, 공통값 재정의) -->
-                <div class="sched-item-field">
-                  <div class="sched-item-label">운영 시작 시간</div>
-                  <input type="time" class="input" value="09:00">
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">운영 종료 시간</div>
-                  <input type="time" class="input" value="22:00">
-                </div>
-              </div>
-
+          <div class="form-row">
+            <div class="form-label">적용 시작 일시</div>
+            <div class="form-field">
+              <input type="datetime-local" class="input" style="max-width:280px;" value="2026-10-01T00:00">
+              <div class="input-hint">Revision 변경 시 적용 시점을 지정합니다 (신규 등록 시 운영 시작일 자동 설정)</div>
             </div>
           </div>
         </div>
-
-        <!-- Item 2 (example second item) -->
-        <div class="sched-item">
-          <div class="sched-item-head">
-            <span class="sched-item-num">Item 2</span>
-            <button class="rule-del-btn" title="항목 삭제">×</button>
-          </div>
-          <div class="sched-item-body">
-            <div class="sched-item-grid">
-              <div class="sched-item-field">
-                <div class="sched-item-label">대상 유형 <span class="req">*</span></div>
-                <select class="select"><option selected>프로덕트</option><option>패키지 프로덕트</option></select>
-              </div>
-              <div class="sched-item-field">
-                <div class="sched-item-label">프로덕트 선택 <span class="req">*</span></div>
-                <select class="select">
-                  <option value="">프로덕트 검색·선택</option>
-                  <option selected>신촌 역세권 디스플레이 (R1)</option>
-                </select>
-              </div>
-              <div class="sched-item-field">
-                <div class="sched-item-label">슬롯 시간 <span class="req">*</span></div>
-                <select class="select"><option selected>15초</option><option>30초</option></select>
-              </div>
-
-              <!-- schedule.items[].contentRefType -->
-              <div class="sched-item-field">
-                <div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div>
-                <select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select>
-              </div>
-
-              <!-- schedule.items[].contentRevisionId -->
-              <div class="sched-item-field span2">
-                <div class="sched-item-label">콘텐츠 배정 <span class="req">*</span></div>
-                <div style="display:flex;gap:6px;">
-                  <select class="select" style="flex:1;">
-                    <optgroup label="이번 스케줄에 등록한 콘텐츠">
-                      <option>신규_캠페인_소재_A.mp4 — 1920×1080</option>
-                      <option selected>신규_캠페인_소재_B.mp4 — 3840×2160 · 권장 (대상 해상도 일치)</option>
-                    </optgroup>
-                    <optgroup label="기존 승인된 콘텐츠 검색">
-                      <option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>
-                      <option>갤럭시 S25 런칭 15초 (R2) — 승인</option>
-                      <option>갤럭시 S25 런칭 30초 (R1) — 승인</option>
-                    </optgroup>
-                  </select>
-                  <button class="btn btn-ghost" style="white-space:nowrap;">검색</button>
-                </div>
-                <div class="input-hint">풀 항목은 Draft이므로 승인 전까지 이 스케줄이 확정되지 않습니다.</div>
-              </div>
-
-              <div class="sched-item-divider"></div>
-
-              <!-- Item별 운영 요일/시간 재정의 토글 (기본값은 ② 운영 계획의 공통값 상속) -->
-              <div class="sched-item-field span2">
-                <label class="sched-item-override-toggle">
-                  <input type="checkbox" checked onclick="toggleItemOverride(this)">
-                  이 항목만 공통 운영 요일·시간과 다르게 설정
-                </label>
-              </div>
-              <div class="sched-item-override">
-                <div class="sched-item-field span2">
-                  <div class="sched-item-label">운영 요일</div>
-                  <div class="day-chips">
-                    <div class="day-chip-item"><input type="checkbox" id="i2d1" checked><label for="i2d1">월</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i2d2" checked><label for="i2d2">화</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i2d3" checked><label for="i2d3">수</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i2d4" checked><label for="i2d4">목</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i2d5" checked><label for="i2d5">금</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i2d6" checked><label for="i2d6">토</label></div>
-                    <div class="day-chip-item"><input type="checkbox" id="i2d7"><label for="i2d7">일</label></div>
-                  </div>
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">운영 시작 시간</div>
-                  <input type="time" class="input" value="10:00">
-                </div>
-                <div class="sched-item-field">
-                  <div class="sched-item-label">운영 종료 시간</div>
-                  <input type="time" class="input" value="21:00">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </div>
 
-    <!-- ⑤ 조건 광고 규칙 (operationMode=조건광고 or 혼합 시 표시) -->
-    <div class="form-card cond-rules-section">
-      <div class="section-head">
-        <div>
-          <div class="section-title">조건 광고 규칙</div>
-          <div class="section-desc">트리거 조건이 충족될 때 재생되는 규칙을 설정합니다</div>
-        </div>
-        <button class="btn btn-ghost" style="font-size:13px;" onclick="addRule()">+ 규칙 추가</button>
-      </div>
-      <div class="section-body" id="rulesWrap">
-        <div style="display:grid;grid-template-columns:1fr 1fr 120px 36px;gap:8px;align-items:center;padding:6px 0 10px;border-bottom:1px solid #F0F2F4;margin-bottom:4px;">
-          <div style="font-size:11px;font-weight:600;color:#9EA5AD;">트리거 유형</div>
-          <div style="font-size:11px;font-weight:600;color:#9EA5AD;">트리거 값</div>
-          <div style="font-size:11px;font-weight:600;color:#9EA5AD;">최대 실행</div>
-          <div></div>
-        </div>
-        <!-- Rule 1 -->
-        <div class="rule-row">
-          <select class="select">
-            <option selected>날씨 — 기온</option>
-            <option>날씨 — 날씨 코드</option>
-            <option>요일</option>
-            <option>시간대</option>
-            <option>이벤트 트리거</option>
-          </select>
-          <input type="text" class="input" placeholder="조건 값 입력" value="기온 ≥ 30°C">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <input type="number" class="input" style="width:70px;" value="5">
-            <span style="font-size:12px;color:#596066;">회/일</span>
-          </div>
-          <button class="rule-del-btn">×</button>
-        </div>
-        <!-- Rule 2 -->
-        <div class="rule-row">
-          <select class="select">
-            <option>날씨 — 기온</option>
-            <option selected>시간대</option>
-          </select>
-          <input type="text" class="input" placeholder="조건 값 입력" value="18:00 ~ 21:00">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <input type="number" class="input" style="width:70px;" placeholder="무제한">
-            <span style="font-size:12px;color:#596066;">회/일</span>
-          </div>
-          <button class="rule-del-btn">×</button>
-        </div>
-      </div>
-    </div>
+      </div><!-- /본문 -->
 
-    <!-- ⑥ Revision 관리 -->
-    <div class="form-card">
-      <div class="section-head">
-        <div>
-          <div class="section-title">Revision 관리</div>
-          <div class="section-desc">저장 후 R1이 자동 생성됩니다. 이후 변경 시 새 Revision을 생성합니다.</div>
+      <!-- 요약 사이드바 -->
+      <aside class="reg-summary">
+        <h2>스케줄 요약</h2>
+        <dl class="reg-summary-list">
+          <div class="reg-summary-row"><dt>스케줄명</dt><dd id="summaryScheduleName">강남역 갤럭시 S25 광고 25Q4</dd></div>
+          <div class="reg-summary-row"><dt>광고주</dt><dd id="summaryAdvertiser">삼성전자</dd></div>
+          <div class="reg-summary-row"><dt>운영 기간</dt><dd id="summaryPeriod">10.01 ~ 10.31</dd></div>
+          <div class="reg-summary-row"><dt>Product</dt><dd id="summaryProductCount"></dd></div>
+          <div class="reg-summary-row"><dt>총 배정 Slot</dt><dd id="summarySlotCount"></dd></div>
+          <div class="reg-summary-row"><dt>편성 완료</dt><dd id="summaryAssignedCount"></dd></div>
+          <div class="reg-summary-row"><dt>콘텐츠 검수 대기</dt><dd id="summaryPendingCount"></dd></div>
+        </dl>
+
+        <div class="reg-divider"></div>
+        <div class="reg-subhead">Product별 배정</div>
+        <div class="allocation-list" id="allocationSummary"></div>
+
+        <div class="reg-divider"></div>
+        <div class="reg-subhead">검증 상태</div>
+        <div class="gate-list" id="gateList">
+          <div class="gate-row"><span>Technical</span><span class="gate-muted">미실행</span></div>
+          <div class="gate-row"><span>Feasibility</span><span class="gate-muted">미실행</span></div>
+          <div class="gate-row"><span>PDE</span><span class="gate-muted">미실행</span></div>
+          <div class="gate-row"><span>Approval</span><span class="gate-muted">-</span></div>
         </div>
-      </div>
-      <div class="section-body">
-        <div class="form-row">
-          <div class="form-label">현재 Revision</div>
-          <div class="form-field">
-            <input type="text" class="input readonly" value="R1 (신규 등록 — 저장 시 자동 생성)" readonly>
-          </div>
+
+        <button class="btn btn-ghost" style="width:100%;margin-top:16px;justify-content:center;" id="approveContentButton" disabled>
+          검수 대기 콘텐츠 승인 시뮬레이션
+        </button>
+
+        <div class="reg-info-box">
+          Schedule 등록 전 최신 Inventory 기준으로 Capacity / Feasibility와 PDE 정책 적합성을 최종 검증합니다.
         </div>
-        <div class="form-row">
-          <div class="form-label">적용 시작 일시</div>
-          <div class="form-field">
-            <input type="datetime-local" class="input" style="max-width:280px;" value="2025-10-15T00:00">
-            <div class="input-hint">Revision 변경 시 적용 시점을 지정합니다 (신규 등록 시 운영 시작일 자동 설정)</div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </aside>
+
+    </div><!-- /reg-layout -->
 
   </div><!-- .main-wrap -->
 </main>
@@ -761,124 +628,481 @@
 <!-- 하단 고정 액션 바 -->
 <div class="action-bar">
   <button class="btn btn-ghost" onclick="history.back()">취소</button>
-  <button class="btn btn-ghost">임시저장</button>
-  <button class="btn btn-primary">스케줄 등록</button>
+  <button class="btn btn-ghost" onclick="document.getElementById('saveDraftButton').click()">임시저장</button>
+  <button class="btn btn-primary" onclick="document.getElementById('registerScheduleButton').click()">스케줄 등록</button>
 </div>
 
-<script>
-let itemCount = 2;
-let ruleCount = 2;
-let poolCount = 2;
-
-function togglePoolSource(type) {
-  document.getElementById('poolSrcFileRow').style.display = type === 'file' ? 'flex' : 'none';
-  document.getElementById('poolSrcUrlRow').style.display = type === 'url' ? 'flex' : 'none';
-}
-
-function addPoolItem(type) {
-  poolCount++;
-  var name, meta;
-  if (type === 'file') {
-    var fileInput = document.getElementById('poolFileInput');
-    var nameInput = document.getElementById('poolFileName');
-    var fileName = fileInput.files[0] ? fileInput.files[0].name : '';
-    name = nameInput.value.trim() || fileName;
-    if (!name) { alert('파일을 선택하거나 콘텐츠명을 입력하세요.'); return; }
-    meta = '해상도 자동 추출 예정 · 재생시간 자동 추출 예정';
-    fileInput.value = ''; nameInput.value = '';
-  } else {
-    var urlInput = document.getElementById('poolUrlInput');
-    var urlName = document.getElementById('poolUrlName');
-    var urlDuration = document.getElementById('poolUrlDuration');
-    if (!urlInput.value.trim()) { alert('URL을 입력하세요.'); return; }
-    name = urlName.value.trim() || urlInput.value.trim();
-    meta = (urlDuration.value ? urlDuration.value + '초' : '재생시간 미입력') + ' · URL 소스';
-    urlInput.value = ''; urlName.value = ''; urlDuration.value = '';
-  }
-  var el = document.createElement('div');
-  el.className = 'content-pool-item';
-  el.dataset.poolName = name;
-  el.innerHTML = '<div class="content-pool-thumb">🎬</div>'
-    + '<div class="content-pool-info"><div class="content-pool-name">' + name + '</div>'
-    + '<div class="content-pool-meta">' + meta + ' <span class="content-pool-badge">Draft</span></div></div>'
-    + '<button class="rule-del-btn" type="button" onclick="this.closest(\'.content-pool-item\').remove()" title="풀에서 제거">×</button>';
-  document.getElementById('contentPoolList').appendChild(el);
-}
-
-function buildContentOptions() {
-  var poolWrap = document.getElementById('contentPoolList');
-  var poolOptions = '';
-  if (poolWrap) {
-    poolWrap.querySelectorAll('.content-pool-item').forEach(function(item) {
-      var name = item.dataset.poolName || item.querySelector('.content-pool-name').textContent;
-      poolOptions += '<option>' + name + '</option>';
-    });
-  }
-  return '<optgroup label="이번 스케줄에 등록한 콘텐츠">' + (poolOptions || '<option disabled>등록된 콘텐츠 없음</option>') + '</optgroup>'
-    + '<optgroup label="기존 승인된 콘텐츠 검색">'
-    + '<option value="">콘텐츠 검색·선택 (승인 Revision만 표시)</option>'
-    + '<option>갤럭시 S25 런칭 15초 (R2) — 승인</option>'
-    + '<option>갤럭시 S25 런칭 30초 (R1) — 승인</option>'
-    + '</optgroup>';
-}
-
-function addItem() {
-  itemCount++;
-  const wrap = document.getElementById('itemsWrap');
-  const el = document.createElement('div');
-  el.className = 'sched-item';
-  el.innerHTML = `
-    <div class="sched-item-head">
-      <span class="sched-item-num">Item ${itemCount}</span>
-      <button class="rule-del-btn" onclick="this.closest('.sched-item').remove()">×</button>
+<!-- 콘텐츠 등록 Drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="if(event.target===this)closeContentDrawer()">
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="contentDrawerTitle">
+    <div class="drawer-header">
+      <div>
+        <h3 id="contentDrawerTitle">콘텐츠 등록</h3>
+        <div class="drawer-desc">신규 콘텐츠를 등록하고 등록 완료 후 선택한 Slot에 바로 적용할 수 있습니다.</div>
+      </div>
+      <button class="drawer-close" id="closeDrawerButton" aria-label="닫기">✕</button>
     </div>
-    <div class="sched-item-body">
-      <div class="sched-item-grid">
-        <div class="sched-item-field"><div class="sched-item-label">대상 유형 <span class="req">*</span></div><select class="select"><option selected>프로덕트</option><option>패키지 프로덕트</option></select></div>
-        <div class="sched-item-field"><div class="sched-item-label">프로덕트 선택 <span class="req">*</span></div><select class="select"><option value="">프로덕트 검색·선택</option></select></div>
-        <div class="sched-item-field"><div class="sched-item-label">슬롯 시간 <span class="req">*</span></div><select class="select"><option value="">슬롯 선택</option></select></div>
-        <div class="sched-item-field"><div class="sched-item-label">콘텐츠 유형 <span class="req">*</span></div><select class="select"><option selected>콘텐츠</option><option>콘텐츠 체인</option></select></div>
-        <div class="sched-item-field span2">
-          <div class="sched-item-label">콘텐츠 배정 <span class="req">*</span></div>
-          <div style="display:flex;gap:6px;">
-            <select class="select" style="flex:1;">${buildContentOptions()}</select>
-            <button class="btn btn-ghost" style="white-space:nowrap;" type="button">검색</button>
+    <div class="drawer-body">
+      <div class="target-box" id="contentTargetText">적용할 Slot을 선택하세요.</div>
+
+      <form class="drawer-form" id="contentForm">
+        <div class="form-group">
+          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">콘텐츠명 <span class="req">*</span></label>
+          <input class="input" id="newContentName" value="Galaxy_S25_Fall_New" required>
+        </div>
+
+        <div class="form-group">
+          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">콘텐츠 유형 <span class="req">*</span></label>
+          <select class="select" id="newContentType">
+            <option value="file">파일</option>
+            <option value="url">URL</option>
+            <option value="chain">콘텐츠 체인</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">소스 / 파일명 <span class="req">*</span></label>
+          <input class="input" id="newContentSource" value="Galaxy_S25_Fall_New.mp4" required>
+        </div>
+
+        <div class="form-group">
+          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">재생시간(초) <span class="req">*</span></label>
+          <input class="input" id="newContentDuration" type="number" min="1" max="300" value="15" required>
+        </div>
+
+        <div class="form-group">
+          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">태그</label>
+          <input class="input" id="newContentTags" value="갤럭시, 가을 캠페인">
+        </div>
+
+        <div class="reg-info-box" style="margin-top:0;">
+          신규 등록 콘텐츠는 우선 <strong>검수 대기</strong> 상태가 됩니다. 승인 완료 전에는 Schedule 최종 검증을 통과할 수 없습니다.
+        </div>
+
+        <div class="drawer-footer" style="padding:0;border-top:0;">
+          <button class="btn btn-ghost" type="button" id="cancelContentButton">취소</button>
+          <button class="btn btn-primary" type="submit">등록 후 적용</button>
+        </div>
+      </form>
+    </div>
+  </aside>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ----------------------------------
+   Mock Data
+---------------------------------- */
+const contentLibrary = [
+  { id: "content_15_a", name: "Galaxy_S25_버즈_15s", duration: 15, status: "approved" },
+  { id: "content_15_b", name: "Galaxy_S25_Sub_15s", duration: 15, status: "approved" },
+  { id: "content_30_a", name: "Galaxy_S25_런칭_30s", duration: 30, status: "approved" },
+  { id: "content_30_b", name: "Galaxy_S25_Sub_30s", duration: 30, status: "approved" }
+];
+
+const products = [
+  {
+    id: "prd001", name: "강남 프리미엄 옥외", revision: "R3", variant: "Variant A — 황금시간대 집중 노출",
+    slotDuration: 30, availableSlot: 2, totalSlot: 6, open: true,
+    slots: [
+      { contentId: "content_30_a", selected: false },
+      { contentId: "content_30_a", selected: false }
+    ]
+  },
+  {
+    id: "prd005", name: "코엑스몰 스탠다드", revision: "R7", variant: "Rolling · 15초",
+    slotDuration: 15, availableSlot: 3, totalSlot: 4, open: false,
+    slots: [
+      { contentId: "content_15_a", selected: false }
+    ]
+  }
+];
+
+let drawerTargets = [];
+let scheduleValidated = false;
+
+/* ----------------------------------
+   Utilities
+---------------------------------- */
+function getContent(id) { return contentLibrary.find(c => c.id === id); }
+
+function escapeHTML(value) {
+  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  window.clearTimeout(showToast.timeout);
+  showToast.timeout = window.setTimeout(() => { toast.style.display = "none"; }, 4000);
+}
+
+/* ----------------------------------
+   Content Options
+---------------------------------- */
+function createContentOptions(selectedContentId) {
+  let html = `<option value="">콘텐츠 선택</option>`;
+  contentLibrary.forEach(content => {
+    const selected = content.id === selectedContentId ? "selected" : "";
+    const statusText = content.status === "approved" ? "" : " · 검수 대기";
+    html += `<option value="${content.id}" ${selected}>${escapeHTML(content.name)} · ${content.duration}초${statusText}</option>`;
+  });
+  html += `<option value="__new__">＋ 신규 콘텐츠 등록</option>`;
+  return html;
+}
+
+/* ----------------------------------
+   Slot Status
+---------------------------------- */
+function getSlotStatus(product, slot) {
+  if (!slot.contentId) return { label: "미편성", className: "pd-badge-danger" };
+  const content = getContent(slot.contentId);
+  if (!content) return { label: "콘텐츠 없음", className: "pd-badge-danger" };
+  if (content.status !== "approved") return { label: "검수 대기", className: "pd-badge-warning" };
+  if (content.duration !== product.slotDuration) return { label: "시간 불일치", className: "pd-badge-danger" };
+  return { label: "정상", className: "pd-badge-success" };
+}
+
+/* ----------------------------------
+   Render Products
+---------------------------------- */
+function renderProducts() {
+  const productList = document.getElementById("productList");
+  productList.innerHTML = products.map(product => renderProductCard(product)).join("");
+  bindProductEvents();
+  updateSummary();
+}
+
+function renderProductCard(product) {
+  const selectedSlotCount = product.slots.filter(slot => slot.selected).length;
+  const slotRows = product.slots.map((slot, index) => {
+    const status = getSlotStatus(product, slot);
+    return `
+      <tr>
+        <td><input type="checkbox" class="slot-checkbox" data-product="${product.id}" data-slot="${index}" ${slot.selected ? "checked" : ""}></td>
+        <td>Slot ${index + 1}</td>
+        <td>
+          <select class="slot-content-select" data-product="${product.id}" data-slot="${index}">
+            ${createContentOptions(slot.contentId)}
+          </select>
+        </td>
+        <td>${product.slotDuration}초</td>
+        <td><span class="pd-badge ${status.className}">${status.label}</span></td>
+      </tr>`;
+  }).join("");
+
+  return `
+    <article class="reg-product-card">
+      <div class="product-summary">
+        <button type="button" class="product-title-btn toggle-product" data-product="${product.id}">
+          <span class="toggle-icon">${product.open ? "▾" : "▸"}</span>
+          <div style="min-width:0;">
+            <div class="product-title">${escapeHTML(product.name)}<span class="revision-pill">Rev.${product.revision}</span></div>
+            <div class="product-sub">${product.variant}</div>
           </div>
-          <div class="input-hint">풀 항목은 Draft이므로 승인 전까지 이 스케줄이 확정되지 않습니다.</div>
+        </button>
+        <div><div class="metric-label">판매조건</div><div class="metric-value">${product.variant}</div></div>
+        <div><div class="metric-label">가용 Slot</div><div class="metric-value">${product.availableSlot} / ${product.totalSlot}</div></div>
+        <div>
+          <div class="metric-label">배정 Slot</div>
+          <input type="number" class="count-input slot-count-input" data-product="${product.id}" min="0" max="${product.availableSlot}" value="${product.slots.length}">
         </div>
-        <div class="sched-item-divider"></div>
-        <div class="sched-item-field span2">
-          <label class="sched-item-override-toggle">
-            <input type="checkbox" onclick="toggleItemOverride(this)">
-            이 항목만 공통 운영 요일·시간과 다르게 설정
-          </label>
-        </div>
-        <div class="sched-item-override" hidden>
-          <div class="sched-item-field span2">
-            <div class="sched-item-label">운영 요일</div>
-            <div class="day-chips">
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d1" checked><label for="i${itemCount}d1">월</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d2" checked><label for="i${itemCount}d2">화</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d3" checked><label for="i${itemCount}d3">수</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d4" checked><label for="i${itemCount}d4">목</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d5" checked><label for="i${itemCount}d5">금</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d6"><label for="i${itemCount}d6">토</label></div>
-              <div class="day-chip-item"><input type="checkbox" id="i${itemCount}d7"><label for="i${itemCount}d7">일</label></div>
+        <div class="product-status"><span class="pd-badge pd-badge-success">정상</span></div>
+      </div>
+
+      ${product.open ? `
+        <div class="product-body">
+          <nav class="product-tabs">
+            <div class="product-tab active">Slot 편성</div>
+            <div class="product-tab">운영 조건</div>
+            <div class="product-tab">상세 정보</div>
+          </nav>
+          <div class="slot-area">
+            <div class="slot-toolbar">
+              <div>
+                <strong style="font-size:13px;color:#24292E;">Slot 편성 (${product.slots.length})</strong>
+                <div class="section-desc">여러 Slot에 동일 콘텐츠를 일괄 적용하거나 Slot별로 다르게 편성할 수 있습니다.</div>
+              </div>
+              <div class="toolbar-actions">
+                <select class="bulk-select" data-product="${product.id}">${createContentOptions("")}</select>
+                <button class="btn btn-ghost bulk-apply-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 Slot 적용 (${selectedSlotCount})</button>
+                <button class="btn btn-outline new-content-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>+ 콘텐츠 등록</button>
+              </div>
+            </div>
+            <div class="slot-table-wrap">
+              <table class="slot-table">
+                <thead>
+                  <tr>
+                    <th style="width:44px;"></th>
+                    <th style="width:80px;">Slot</th>
+                    <th>콘텐츠 / 콘텐츠 체인</th>
+                    <th style="width:90px;">재생시간</th>
+                    <th style="width:110px;">상태</th>
+                  </tr>
+                </thead>
+                <tbody>${slotRows}</tbody>
+              </table>
             </div>
           </div>
-          <div class="sched-item-field"><div class="sched-item-label">운영 시작 시간</div><input type="time" class="input" value="09:00"></div>
-          <div class="sched-item-field"><div class="sched-item-label">운영 종료 시간</div><input type="time" class="input" value="22:00"></div>
-        </div>
-      </div>
+        </div>` : ""}
+    </article>`;
+}
+
+/* ----------------------------------
+   Bind Product Events
+---------------------------------- */
+function bindProductEvents() {
+  document.querySelectorAll(".toggle-product").forEach(button => {
+    button.addEventListener("click", () => {
+      const product = products.find(p => p.id === button.dataset.product);
+      product.open = !product.open;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".slot-checkbox").forEach(checkbox => {
+    checkbox.addEventListener("change", () => {
+      const product = products.find(p => p.id === checkbox.dataset.product);
+      const slotIndex = Number(checkbox.dataset.slot);
+      product.slots[slotIndex].selected = checkbox.checked;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".slot-content-select").forEach(select => {
+    select.addEventListener("change", () => {
+      const product = products.find(p => p.id === select.dataset.product);
+      const slotIndex = Number(select.dataset.slot);
+      if (select.value === "__new__") {
+        product.slots[slotIndex].selected = true;
+        openContentDrawer([{ productId: product.id, slotIndex }]);
+        return;
+      }
+      product.slots[slotIndex].contentId = select.value;
+      scheduleValidated = false;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".slot-count-input").forEach(input => {
+    input.addEventListener("change", () => {
+      const product = products.find(p => p.id === input.dataset.product);
+      let count = Number(input.value);
+      if (Number.isNaN(count)) count = 0;
+      count = Math.max(0, Math.min(product.availableSlot, count));
+      while (product.slots.length < count) product.slots.push({ contentId: "", selected: false });
+      while (product.slots.length > count) product.slots.pop();
+      scheduleValidated = false;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".bulk-apply-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const product = products.find(p => p.id === button.dataset.product);
+      const select = document.querySelector(`.bulk-select[data-product="${product.id}"]`);
+      if (!select.value) return;
+      if (select.value === "__new__") {
+        const targets = product.slots.map((slot, index) => slot.selected ? { productId: product.id, slotIndex: index } : null).filter(Boolean);
+        openContentDrawer(targets);
+        return;
+      }
+      product.slots.forEach(slot => {
+        if (slot.selected) { slot.contentId = select.value; slot.selected = false; }
+      });
+      scheduleValidated = false;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".new-content-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const product = products.find(p => p.id === button.dataset.product);
+      const targets = product.slots.map((slot, index) => slot.selected ? { productId: product.id, slotIndex: index } : null).filter(Boolean);
+      openContentDrawer(targets);
+    });
+  });
+
+  document.querySelectorAll(".bulk-select").forEach(select => {
+    select.addEventListener("change", () => {
+      if (select.value !== "__new__") return;
+      const product = products.find(p => p.id === select.dataset.product);
+      const targets = product.slots.map((slot, index) => slot.selected ? { productId: product.id, slotIndex: index } : null).filter(Boolean);
+      openContentDrawer(targets);
+    });
+  });
+}
+
+/* ----------------------------------
+   Content Drawer
+---------------------------------- */
+function openContentDrawer(targets) {
+  drawerTargets = targets;
+  const text = targets.map(target => {
+    const product = products.find(p => p.id === target.productId);
+    return `${product.name} · Slot ${target.slotIndex + 1}`;
+  }).join(", ");
+  document.getElementById("contentTargetText").textContent = text ? `등록 후 적용 대상: ${text}` : "콘텐츠 라이브러리에 등록";
+  document.getElementById("drawerOverlay").classList.add("open");
+}
+
+function closeContentDrawer() {
+  document.getElementById("drawerOverlay").classList.remove("open");
+  drawerTargets = [];
+}
+
+document.getElementById("closeDrawerButton").addEventListener("click", closeContentDrawer);
+document.getElementById("cancelContentButton").addEventListener("click", closeContentDrawer);
+
+document.getElementById("contentForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = document.getElementById("newContentName").value.trim();
+  const source = document.getElementById("newContentSource").value.trim();
+  const duration = Number(document.getElementById("newContentDuration").value);
+  if (!name || !source || !duration) { showToast("필수 정보를 입력해주세요."); return; }
+
+  const id = `content_${Date.now()}`;
+  contentLibrary.push({ id, name, source, duration, type: document.getElementById("newContentType").value, tags: document.getElementById("newContentTags").value, status: "pending" });
+
+  drawerTargets.forEach(target => {
+    const product = products.find(p => p.id === target.productId);
+    if (product && product.slots[target.slotIndex]) {
+      product.slots[target.slotIndex].contentId = id;
+      product.slots[target.slotIndex].selected = false;
+    }
+  });
+
+  scheduleValidated = false;
+  closeContentDrawer();
+  renderProducts();
+  showToast(`'${name}' 콘텐츠를 등록했습니다. 현재 검수 대기 상태입니다.`);
+});
+
+/* ----------------------------------
+   + Product 추가 (mock)
+---------------------------------- */
+document.getElementById("addProductButton").addEventListener("click", () => {
+  const n = products.length + 1;
+  products.push({
+    id: `prd_new_${n}`, name: "(신규 Product 선택)", revision: "-", variant: "-",
+    slotDuration: 30, availableSlot: 0, totalSlot: 0, open: true, slots: []
+  });
+  renderProducts();
+});
+
+/* ----------------------------------
+   Summary
+---------------------------------- */
+function updateSummary() {
+  const totalSlots = products.reduce((sum, p) => sum + p.slots.length, 0);
+  const assignedSlots = products.reduce((sum, p) => sum + p.slots.filter(s => Boolean(s.contentId)).length, 0);
+  const usedContentIds = new Set(products.flatMap(p => p.slots.map(s => s.contentId).filter(Boolean)));
+  const pendingContents = [...usedContentIds].filter(id => { const c = getContent(id); return c && c.status === "pending"; });
+
+  document.getElementById("summaryProductCount").textContent = products.length;
+  document.getElementById("summarySlotCount").textContent = totalSlots;
+  document.getElementById("summaryAssignedCount").textContent = `${assignedSlots} / ${totalSlots}`;
+  document.getElementById("summaryPendingCount").textContent = pendingContents.length;
+
+  document.getElementById("allocationSummary").innerHTML = products.map(p =>
+    `<div class="allocation-row"><span>${escapeHTML(p.name)}</span><strong>${p.slots.length} Slot</strong></div>`
+  ).join("");
+
+  document.getElementById("approveContentButton").disabled = pendingContents.length === 0;
+  document.getElementById("registerScheduleButton").disabled = !scheduleValidated;
+}
+
+/* ----------------------------------
+   Content Approval Simulation
+---------------------------------- */
+document.getElementById("approveContentButton").addEventListener("click", () => {
+  const pending = contentLibrary.filter(c => c.status === "pending");
+  pending.forEach(c => { c.status = "approved"; });
+  scheduleValidated = false;
+  renderProducts();
+  showToast(`${pending.length}개 콘텐츠를 승인 상태로 변경했습니다.`);
+});
+
+/* ----------------------------------
+   Schedule Validation
+---------------------------------- */
+function validateSchedule() {
+  const issues = [];
+  products.forEach(product => {
+    if (product.slots.length === 0) { issues.push(`${product.name}: 배정 Slot이 없습니다.`); }
+    product.slots.forEach((slot, index) => {
+      const content = getContent(slot.contentId);
+      if (!content) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠가 편성되지 않았습니다.`); return; }
+      if (content.status !== "approved") { issues.push(`${product.name} / Slot ${index + 1}: '${content.name}' 콘텐츠가 아직 승인되지 않았습니다.`); }
+      if (content.duration !== product.slotDuration) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠 ${content.duration}초와 Slot ${product.slotDuration}초가 일치하지 않습니다.`); }
+    });
+  });
+
+  const validationResult = document.getElementById("validationResult");
+  const gateList = document.getElementById("gateList");
+
+  if (issues.length > 0) {
+    scheduleValidated = false;
+    validationResult.innerHTML = `<div class="issue-list">${issues.map(issue => `<div class="issue">• ${escapeHTML(issue)}</div>`).join("")}</div>`;
+    gateList.innerHTML = `
+      <div class="gate-row"><span>Technical</span><span class="gate-danger">실패</span></div>
+      <div class="gate-row"><span>Feasibility</span><span class="gate-muted">대기</span></div>
+      <div class="gate-row"><span>PDE</span><span class="gate-muted">대기</span></div>
+      <div class="gate-row"><span>Approval</span><span class="gate-muted">-</span></div>`;
+    updateSummary();
+    return;
+  }
+
+  scheduleValidated = true;
+  validationResult.innerHTML = `
+    <div class="validation-success">
+      <strong>검증 완료</strong>
+      <div style="margin-top:5px;">Technical Validation → Feasibility → Schedule PDE를 통과했습니다.</div>
     </div>`;
-  wrap.appendChild(el);
+  gateList.innerHTML = `
+    <div class="gate-row"><span>Technical</span><span class="gate-success">Success</span></div>
+    <div class="gate-row"><span>Feasibility</span><span class="gate-success">Success</span></div>
+    <div class="gate-row"><span>PDE</span><span class="gate-success">Approved</span></div>
+    <div class="gate-row"><span>Approval</span><span class="gate-warning">요청 가능</span></div>`;
+  updateSummary();
 }
 
-function toggleItemOverride(cb) {
-  const override = cb.closest('.sched-item-grid').querySelector('.sched-item-override');
-  override.hidden = !cb.checked;
-}
+document.getElementById("validateButton").addEventListener("click", validateSchedule);
 
+/* ----------------------------------
+   Schedule Actions
+---------------------------------- */
+document.getElementById("saveDraftButton").addEventListener("click", () => {
+  showToast("현재 편성 내용을 Draft로 임시 저장했습니다.");
+});
+
+document.getElementById("registerScheduleButton").addEventListener("click", event => {
+  if (!scheduleValidated) return;
+  event.target.disabled = true;
+  event.target.textContent = "승인 요청 완료";
+  showToast("Schedule 승인 요청을 생성했습니다. 상태: Review Pending");
+});
+
+document.getElementById("scheduleName").addEventListener("input", event => {
+  document.getElementById("summaryScheduleName").textContent = event.target.value;
+});
+document.getElementById("scheduleAdvertiser").addEventListener("change", event => {
+  document.getElementById("summaryAdvertiser").textContent = event.target.value;
+});
+function updatePeriodSummary() {
+  const s = document.getElementById("scheduleStart").value;
+  const e = document.getElementById("scheduleEnd").value;
+  if (s && e) document.getElementById("summaryPeriod").textContent = s.slice(5).replace("-", ".") + " ~ " + e.slice(5).replace("-", ".");
+}
+document.getElementById("scheduleStart").addEventListener("change", updatePeriodSummary);
+document.getElementById("scheduleEnd").addEventListener("change", updatePeriodSummary);
+
+/* ----------------------------------
+   조건 광고 규칙
+---------------------------------- */
+let ruleCount = 1;
 function addRule() {
   ruleCount++;
   const wrap = document.getElementById('rulesWrap');
@@ -891,6 +1115,12 @@ function addRule() {
     <button class="rule-del-btn" onclick="this.closest('.rule-row').remove()">×</button>`;
   wrap.appendChild(el);
 }
+
+/* ----------------------------------
+   Initial Render
+---------------------------------- */
+renderProducts();
+updatePeriodSummary();
 </script>
 <script src="../assets/js/cms.js"></script>
 <a href="scenario-guide" class="sg-float-btn" style="position:fixed;bottom:24px;right:24px;z-index:400;background:#24292E;color:#fff;border:none;border-radius:24px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);text-decoration:none;">📋 시나리오 가이드</a>
