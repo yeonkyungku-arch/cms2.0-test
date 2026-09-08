@@ -101,18 +101,22 @@
     @media (max-width: 760px) { .reg-layout { grid-template-columns: 1fr; } .reg-summary { position: static; } }
 
     /* ── 진행 단계 레일 ── */
-    .reg-steps { position: sticky; top: 16px; background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 14px 0; }
-    .reg-step {
-      display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px;
-      color: #9EA5AD; text-decoration: none; font-size: 13px;
-    }
+    .reg-steps { position: sticky; top: 16px; background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 16px 14px 6px; }
+    .reg-step { display: flex; align-items: flex-start; gap: 10px; text-decoration: none; color: #9EA5AD; }
+    .reg-step-track { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
     .reg-step-num {
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       width: 24px; height: 24px; border-radius: 50%; background: #F0F1F3;
-      font-size: 12px; font-weight: 700; color: #9EA5AD;
+      font-size: 11px; font-weight: 700; color: #9EA5AD; border: 2px solid transparent;
     }
-    .reg-step.active { color: #24292E; font-weight: 700; }
-    .reg-step.active .reg-step-num { background: #58C65D; color: #fff; }
+    .reg-step-line { width: 2px; height: 24px; background: #E5E7EA; margin: 3px 0; }
+    .reg-step-label { font-size: 13px; padding-top: 3px; padding-bottom: 20px; }
+    .reg-step.done { color: #2E9E34; }
+    .reg-step.done .reg-step-num { background: #58C65D; color: #fff; }
+    .reg-step.done .reg-step-line { background: #58C65D; }
+    .reg-step.active { color: #2D84ED; }
+    .reg-step.active .reg-step-num { background: #2D84ED; color: #fff; border-color: #2D84ED; }
+    .reg-step.active .reg-step-label { font-weight: 700; }
 
     /* ── 운영 Product 구성 ── */
     .product-list { display: flex; flex-direction: column; gap: 12px; }
@@ -124,12 +128,16 @@
     @media (max-width: 900px) { .product-summary { grid-template-columns: minmax(180px,1.4fr) 1fr 90px 90px; } .product-summary .product-status { display: none; } }
     .product-title-btn { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; background: none; text-align: left; }
     .toggle-icon { color: #9EA5AD; font-size: 16px; flex-shrink: 0; }
+    .product-thumb { display: flex; align-items: center; justify-content: center; width: 44px; height: 34px; border-radius: 6px; background: #24292E; color: #C1E9C3; font-size: 16px; flex-shrink: 0; }
     .product-title { overflow: hidden; font-weight: 700; color: #24292E; text-overflow: ellipsis; white-space: nowrap; }
     .product-sub { margin-top: 3px; color: #9EA5AD; font-size: 12px; }
     .revision-pill { display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 5px; background: #EAF3FF; color: #2D84ED; font-size: 11px; font-weight: 600; }
     .metric-label { margin-bottom: 3px; color: #9EA5AD; font-size: 11px; }
     .metric-value { font-weight: 600; color: #24292E; font-size: 13px; }
-    .count-input { width: 68px; height: 34px; padding: 6px 8px; border: 1px solid #CED2D6; border-radius: 7px; font-family: inherit; }
+    .metric-value.mono { font-family: monospace; font-weight: 500; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field-item .metric-label { text-transform: none; }
+    @media (max-width: 700px) { .field-grid { grid-template-columns: 1fr; } }
 
     .pd-badge { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
     .pd-badge::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ""; }
@@ -138,9 +146,9 @@
     .pd-badge-danger  { background: #FEF2F2; color: #B91C1C; }
 
     .product-body { display: grid; grid-template-columns: 116px minmax(0,1fr); border-top: 1px solid #E5E7EA; background: #fff; }
-    @media (max-width: 760px) { .product-body { display: block; } .product-tabs { display: flex; border-right: 0; border-bottom: 1px solid #E5E7EA; overflow-x: auto; } .product-tab.active { border-left: 0; border-bottom: 2px solid #58C65D; } }
-    .product-tabs { border-right: 1px solid #E5E7EA; background: #F6F7F9; }
-    .product-tab { padding: 12px 14px; color: #9EA5AD; font-size: 12.5px; white-space: nowrap; }
+    @media (max-width: 760px) { .product-body { display: block; } .product-tabs { display: flex; flex-direction: row; border-right: 0; border-bottom: 1px solid #E5E7EA; overflow-x: auto; } .product-tab.active { border-left: 0; border-bottom: 2px solid #58C65D; } }
+    .product-tabs { display: flex; flex-direction: column; border-right: 1px solid #E5E7EA; background: #F6F7F9; }
+    .product-tab { padding: 12px 14px; color: #9EA5AD; font-size: 12.5px; white-space: nowrap; background: none; border: none; border-left: 3px solid transparent; cursor: pointer; font-family: inherit; text-align: left; }
     .product-tab.active { border-left: 3px solid #58C65D; background: #EAF3FF; color: #2D84ED; font-weight: 700; }
     .slot-area { min-width: 0; padding: 16px; }
     .slot-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -345,7 +353,7 @@
       <div class="page-hd-actions">
         <button class="btn btn-ghost" id="saveDraftButton">임시 저장</button>
         <button class="btn btn-ghost" id="validateButton">스케줄 검증</button>
-        <button class="btn btn-primary" id="registerScheduleButton" disabled>등록 요청</button>
+        <button class="btn btn-primary" id="registerScheduleButton" disabled>등록하기</button>
       </div>
     </div>
 
@@ -353,10 +361,22 @@
 
       <!-- 진행 단계 -->
       <aside class="reg-steps">
-        <a href="#sec-basic" class="reg-step active"><span class="reg-step-num">1</span><span>기본 정보</span></a>
-        <a href="#sec-products" class="reg-step"><span class="reg-step-num">2</span><span>운영 Product 구성</span></a>
-        <a href="#sec-validation" class="reg-step"><span class="reg-step-num">3</span><span>검증 및 요약</span></a>
-        <a href="#" class="reg-step"><span class="reg-step-num">4</span><span>완료</span></a>
+        <a href="#sec-basic" class="reg-step done">
+          <div class="reg-step-track"><span class="reg-step-num">✓</span><span class="reg-step-line"></span></div>
+          <span class="reg-step-label">기본 정보</span>
+        </a>
+        <a href="#sec-products" class="reg-step active">
+          <div class="reg-step-track"><span class="reg-step-num">2</span><span class="reg-step-line"></span></div>
+          <span class="reg-step-label">운영 Product 구성</span>
+        </a>
+        <a href="#sec-validation" class="reg-step">
+          <div class="reg-step-track"><span class="reg-step-num">3</span><span class="reg-step-line"></span></div>
+          <span class="reg-step-label">검증 및 요약</span>
+        </a>
+        <a href="#" class="reg-step">
+          <div class="reg-step-track"><span class="reg-step-num">4</span></div>
+          <span class="reg-step-label">완료</span>
+        </a>
       </aside>
 
       <!-- 본문 -->
@@ -437,6 +457,15 @@
                 <button class="btn btn-ghost" style="white-space:nowrap;">신규 등록</button>
               </div>
               <div class="input-hint campaign-only" style="color:#58C65D;">캠페인에서 상속됨 — 변경 불가</div>
+            </div>
+          </div>
+
+          <!-- schedule.description -->
+          <div class="form-row">
+            <div class="form-label">설명</div>
+            <div class="form-field">
+              <textarea class="textarea" id="scheduleDescription" placeholder="스케줄에 대한 설명을 입력하세요." maxlength="500" rows="3" oninput="document.getElementById('scheduleDescriptionCount').textContent = this.value.length"></textarea>
+              <div class="input-hint" style="text-align:right;"><span id="scheduleDescriptionCount">0</span>/500</div>
             </div>
           </div>
 
@@ -729,10 +758,10 @@
    Mock Data
 ---------------------------------- */
 const contentLibrary = [
-  { id: "content_15_a", name: "Galaxy_S25_버즈_15s", duration: 15, status: "approved" },
-  { id: "content_15_b", name: "Galaxy_S25_Sub_15s", duration: 15, status: "approved" },
-  { id: "content_30_a", name: "Galaxy_S25_런칭_30s", duration: 30, status: "approved" },
-  { id: "content_30_b", name: "Galaxy_S25_Sub_30s", duration: 30, status: "approved" }
+  { id: "content_15_a", name: "Galaxy_S25_버즈_15s", duration: 15, status: "approved", res: "1920 × 1080", size: "98MB" },
+  { id: "content_15_b", name: "Galaxy_S25_Sub_15s", duration: 15, status: "approved", res: "1920 × 1080", size: "92MB" },
+  { id: "content_30_a", name: "Galaxy_S25_런칭_30s", duration: 30, status: "approved", res: "1920 × 1080", size: "120MB" },
+  { id: "content_30_b", name: "Galaxy_S25_Sub_30s", duration: 30, status: "approved", res: "1920 × 1080", size: "115MB" }
 ];
 
 /* schedule.items[].salesConditionVariantId — Variant를 선택하면 Delivery Type/Assigned Slot Duration을 그대로 상속(Read-only Lock) */
@@ -749,7 +778,9 @@ const VARIANT_LIBRARY = {
 const products = [
   {
     id: "prd001", name: "강남 프리미엄 옥외", revision: "R3", variantId: "var_a",
-    availableSlot: 2, totalSlot: 6, open: true,
+    address: "서울 강남구 강남대로 396", type: "옥외 전광판 (LED)",
+    resolution: "1920 × 1080 (FHD)", screenSize: "84인치", installEnv: "실외 (지하철역 출구 앞)",
+    availableSlot: 2, totalSlot: 6, open: true, activeTab: "slot",
     slots: [
       { contentId: "content_30_a", selected: false },
       { contentId: "content_30_a", selected: false }
@@ -757,7 +788,9 @@ const products = [
   },
   {
     id: "prd005", name: "코엑스몰 스탠다드", revision: "R7", variantId: "var_b",
-    availableSlot: 3, totalSlot: 4, open: false,
+    address: "서울 강남구 영동대로 513", type: "실내 스탠드형 사이니지",
+    resolution: "1920 × 1080 (FHD)", screenSize: "55인치", installEnv: "실내 (쇼핑몰 통로)",
+    availableSlot: 3, totalSlot: 4, open: false, activeTab: "slot",
     slots: [
       { contentId: "content_15_a", selected: false }
     ]
@@ -830,13 +863,19 @@ function renderProductCard(product) {
   const variant = getVariant(product);
   const variantOptions = VARIANT_LIBRARY[product.id] || [];
   const selectedSlotCount = product.slots.filter(slot => slot.selected).length;
+  const activeTab = product.activeTab || "slot";
+  const referenceLoop = variant.slotDuration * (product.totalSlot || 0);
+
   const slotRows = product.slots.map((slot, index) => {
     const status = getSlotStatus(product, slot);
     const content = getContent(slot.contentId);
+    const fileInfo = content && (content.res || content.size)
+      ? `${content.res || "-"}<span style="color:#CED2D6;margin:0 6px;">|</span>${content.size || "-"}`
+      : `<span style="color:#9EA5AD;">-</span>`;
     const pendingNote = content && content.status === "pending" ? `
       <tr class="slot-note-row">
         <td></td>
-        <td colspan="4">
+        <td colspan="5">
           <div class="slot-pending-banner">
             <strong>${escapeHTML(content.name)}</strong> · ${content.duration}초 — 신규 등록된 콘텐츠입니다. 승인 완료 후 Schedule 검증이 가능합니다.
           </div>
@@ -851,19 +890,65 @@ function renderProductCard(product) {
             ${createContentOptions(slot.contentId)}
           </select>
         </td>
+        <td style="white-space:nowrap;font-size:12px;color:#596066;">${fileInfo}</td>
         <td>${variant.slotDuration}초</td>
         <td><span class="pd-badge ${status.className}">${status.label}</span></td>
       </tr>${pendingNote}`;
   }).join("");
+
+  const conditionPanel = `
+    <div class="field-grid">
+      <div class="field-item"><div class="metric-label">판매조건</div><div class="metric-value">${escapeHTML(variant.label)}</div></div>
+      <div class="field-item"><div class="metric-label">운영 시간</div><div class="metric-value">06:00 ~ 24:00</div></div>
+      <div class="field-item"><div class="metric-label">운영 요일</div><div class="metric-value">월 · 화 · 수 · 목 · 금 · 토</div></div>
+      <div class="field-item"><div class="metric-label">루프 기준</div><div class="metric-value">${referenceLoop}초 기준 루프</div></div>
+    </div>`;
+  const detailPanel = `
+    <div class="field-grid">
+      <div class="field-item"><div class="metric-label">Product ID</div><div class="metric-value mono">${escapeHTML(product.id)}</div></div>
+      <div class="field-item"><div class="metric-label">해상도</div><div class="metric-value mono">${escapeHTML(product.resolution || "-")}</div></div>
+      <div class="field-item"><div class="metric-label">화면 크기</div><div class="metric-value mono">${escapeHTML(product.screenSize || "-")}</div></div>
+      <div class="field-item"><div class="metric-label">설치 환경</div><div class="metric-value mono">${escapeHTML(product.installEnv || "-")}</div></div>
+    </div>`;
+  const slotPanel = `
+    <div class="slot-toolbar">
+      <div>
+        <strong style="font-size:13px;color:#24292E;">Slot 편성 (${product.slots.length})</strong>
+        <div class="section-desc">여러 Slot에 동일 콘텐츠를 일괄 적용하거나 Slot별로 다르게 편성할 수 있습니다.</div>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn btn-outline add-slot-button" data-product="${product.id}">+ Slot 추가</button>
+        <button class="btn btn-ghost remove-slot-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 삭제</button>
+        <select class="bulk-select" data-product="${product.id}">${createContentOptions("")}</select>
+        <button class="btn btn-ghost bulk-apply-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 Slot에 일괄 적용 (${selectedSlotCount})</button>
+        <button class="btn btn-outline new-content-button" data-product="${product.id}" title="${selectedSlotCount === 0 ? "선택한 Slot 없이 열면 콘텐츠 라이브러리에만 등록됩니다" : "선택한 " + selectedSlotCount + "개 Slot에 등록 후 바로 적용합니다"}">+ 콘텐츠 등록</button>
+      </div>
+    </div>
+    <div class="slot-table-wrap">
+      <table class="slot-table">
+        <thead>
+          <tr>
+            <th style="width:44px;"></th>
+            <th style="width:70px;">Slot</th>
+            <th>콘텐츠 / 콘텐츠 체인</th>
+            <th style="width:150px;">파일 정보</th>
+            <th style="width:90px;">재생시간</th>
+            <th style="width:110px;">상태</th>
+          </tr>
+        </thead>
+        <tbody>${slotRows || `<tr><td colspan="6" style="text-align:center;color:#9EA5AD;padding:20px;">배정된 Slot이 없습니다 — "+ Slot 추가"로 시작하세요.</td></tr>`}</tbody>
+      </table>
+    </div>`;
 
   return `
     <article class="reg-product-card">
       <div class="product-summary">
         <button type="button" class="product-title-btn toggle-product" data-product="${product.id}">
           <span class="toggle-icon">${product.open ? "▾" : "▸"}</span>
+          <span class="product-thumb">🖥</span>
           <div style="min-width:0;">
             <div class="product-title">${escapeHTML(product.name)}<span class="revision-pill">Rev.${product.revision}</span></div>
-            <div class="product-sub">${escapeHTML(variant.label)}</div>
+            <div class="product-sub">${escapeHTML(product.address || "-")} · ${escapeHTML(product.type || "-")}</div>
           </div>
         </button>
         <div>
@@ -873,46 +958,19 @@ function renderProductCard(product) {
           </select>
         </div>
         <div><div class="metric-label">가용 Slot</div><div class="metric-value">${product.availableSlot} / ${product.totalSlot}</div></div>
-        <div>
-          <div class="metric-label">배정 Slot</div>
-          <input type="number" class="count-input slot-count-input" data-product="${product.id}" min="0" max="${product.availableSlot}" value="${product.slots.length}">
-        </div>
+        <div><div class="metric-label">배정 Slot</div><div class="metric-value" style="font-size:16px;">${product.slots.length}</div></div>
         <div class="product-status"><span class="pd-badge pd-badge-success">정상</span></div>
       </div>
 
       ${product.open ? `
         <div class="product-body">
           <nav class="product-tabs">
-            <div class="product-tab active">Slot 편성</div>
-            <div class="product-tab">운영 조건</div>
-            <div class="product-tab">상세 정보</div>
+            <button type="button" class="product-tab switch-product-tab ${activeTab === "slot" ? "active" : ""}" data-product="${product.id}" data-tab="slot">Slot 편성</button>
+            <button type="button" class="product-tab switch-product-tab ${activeTab === "condition" ? "active" : ""}" data-product="${product.id}" data-tab="condition">운영 조건</button>
+            <button type="button" class="product-tab switch-product-tab ${activeTab === "detail" ? "active" : ""}" data-product="${product.id}" data-tab="detail">상세 정보</button>
           </nav>
           <div class="slot-area">
-            <div class="slot-toolbar">
-              <div>
-                <strong style="font-size:13px;color:#24292E;">Slot 편성 (${product.slots.length})</strong>
-                <div class="section-desc">여러 Slot에 동일 콘텐츠를 일괄 적용하거나 Slot별로 다르게 편성할 수 있습니다.</div>
-              </div>
-              <div class="toolbar-actions">
-                <select class="bulk-select" data-product="${product.id}">${createContentOptions("")}</select>
-                <button class="btn btn-ghost bulk-apply-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 Slot에 일괄 적용 (${selectedSlotCount})</button>
-                <button class="btn btn-outline new-content-button" data-product="${product.id}" title="${selectedSlotCount === 0 ? "선택한 Slot 없이 열면 콘텐츠 라이브러리에만 등록됩니다" : "선택한 " + selectedSlotCount + "개 Slot에 등록 후 바로 적용합니다"}">+ 콘텐츠 등록</button>
-              </div>
-            </div>
-            <div class="slot-table-wrap">
-              <table class="slot-table">
-                <thead>
-                  <tr>
-                    <th style="width:44px;"></th>
-                    <th style="width:80px;">Slot</th>
-                    <th>콘텐츠 / 콘텐츠 체인</th>
-                    <th style="width:90px;">재생시간</th>
-                    <th style="width:110px;">상태</th>
-                  </tr>
-                </thead>
-                <tbody>${slotRows}</tbody>
-              </table>
-            </div>
+            ${activeTab === "slot" ? slotPanel : activeTab === "condition" ? conditionPanel : detailPanel}
           </div>
         </div>` : ""}
     </article>`;
@@ -954,14 +1012,28 @@ function bindProductEvents() {
     });
   });
 
-  document.querySelectorAll(".slot-count-input").forEach(input => {
-    input.addEventListener("change", () => {
-      const product = products.find(p => p.id === input.dataset.product);
-      let count = Number(input.value);
-      if (Number.isNaN(count)) count = 0;
-      count = Math.max(0, Math.min(product.availableSlot, count));
-      while (product.slots.length < count) product.slots.push({ contentId: "", selected: false });
-      while (product.slots.length > count) product.slots.pop();
+  document.querySelectorAll(".switch-product-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      const product = products.find(p => p.id === tab.dataset.product);
+      product.activeTab = tab.dataset.tab;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".add-slot-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const product = products.find(p => p.id === button.dataset.product);
+      if (product.slots.length >= product.availableSlot) { showToast("가용 Slot 수를 초과할 수 없습니다."); return; }
+      product.slots.push({ contentId: "", selected: false });
+      scheduleValidated = false;
+      renderProducts();
+    });
+  });
+
+  document.querySelectorAll(".remove-slot-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const product = products.find(p => p.id === button.dataset.product);
+      product.slots = product.slots.filter(slot => !slot.selected);
       scheduleValidated = false;
       renderProducts();
     });
@@ -1145,7 +1217,8 @@ document.getElementById("addProductButton").addEventListener("click", () => {
   const n = products.length + 1;
   products.push({
     id: `prd_new_${n}`, name: "(신규 Product 선택)", revision: "-", variantId: "",
-    availableSlot: 0, totalSlot: 0, open: true, slots: []
+    address: "-", type: "-", resolution: "-", screenSize: "-", installEnv: "-",
+    availableSlot: 0, totalSlot: 0, open: true, activeTab: "slot", slots: []
   });
   renderProducts();
 });
