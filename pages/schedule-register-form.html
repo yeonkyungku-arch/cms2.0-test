@@ -216,7 +216,23 @@
     }
     .upload-box:hover { border-color: #58C65D; background: #F6FEF7; }
     .upload-box.has-file { border-style: solid; border-color: #C1E9C3; background: #F0F9F1; color: #2E9E34; font-weight: 600; }
+    .upload-box.small { min-height: 56px; font-size: 12px; padding: 8px; }
     .drawer-form { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── 소재(Asset) 행 — 콘텐츠 유형=체인일 때 복수 반복 ── */
+    .asset-row { border: 1px solid #E5E7EA; border-radius: 8px; padding: 12px; margin-bottom: 10px; background: #FAFBFC; }
+    .asset-row:last-child { margin-bottom: 0; }
+    .asset-row-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .asset-row-num { font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase; letter-spacing: .04em; }
+    .seg-ctrl-mini { display: inline-flex; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden; }
+    .seg-ctrl-mini input { display: none; }
+    .seg-ctrl-mini label { padding: 4px 10px; font-size: 11px; font-weight: 500; color: #596066; cursor: pointer; border-right: 1px solid #CED2D6; background: #fff; user-select: none; }
+    .seg-ctrl-mini label:last-of-type { border-right: none; }
+    .seg-ctrl-mini input:checked + label { background: #24292E; color: #fff; }
+    .asset-row-duration { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .asset-row-duration label { font-size: 11px; color: #596066; white-space: nowrap; }
+    .asset-row-duration input { width: 90px; height: 30px; padding: 0 8px; border: 1px solid #CED2D6; border-radius: 6px; font-family: inherit; }
+    .asset-row-remove { margin-left: auto; }
 
     /* ── Toast ── */
     #toast { display: none; position: fixed; bottom: 30px; right: 24px; max-width: 420px; background: #24292E; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.2); z-index: 600; }
@@ -654,45 +670,32 @@
     <div class="drawer-body">
       <div class="target-box" id="contentTargetText">적용할 Slot을 선택하세요.</div>
 
+      <input type="file" id="assetFilePicker" style="display:none;" onchange="onAssetFilePicked()">
       <form class="drawer-form" id="contentForm">
         <div class="form-group">
           <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">콘텐츠명 <span class="req">*</span></label>
           <input class="input" id="newContentName" value="Galaxy_S25_Fall_New" required>
         </div>
 
+        <!-- 콘텐츠.소재정보.재생구성(Playback Composition) : 싱글(단일 파일 소재) / 체인(복수 소재 파일) -->
         <div class="form-group">
           <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:600;color:#24292E;">콘텐츠 유형 <span class="req">*</span></label>
           <div class="content-type-radios">
-            <label><input type="radio" name="newContentType" value="file" checked onchange="syncContentTypeUI()"> 파일</label>
-            <label><input type="radio" name="newContentType" value="url" onchange="syncContentTypeUI()"> URL</label>
-            <label><input type="radio" name="newContentType" value="chain" onchange="syncContentTypeUI()"> 콘텐츠 체인</label>
+            <label><input type="radio" name="newCompositionType" value="single" checked onchange="syncCompositionUI()"> 싱글 (단일 파일 소재)</label>
+            <label><input type="radio" name="newCompositionType" value="chain" onchange="syncCompositionUI()"> 체인 (복수 소재 파일)</label>
           </div>
         </div>
 
-        <div class="form-group" id="contentSourceFileGroup">
-          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">파일 <span class="req">*</span></label>
-          <div class="upload-box" id="uploadBox" onclick="document.getElementById('newContentFile').click()">
-            <input type="file" id="newContentFile" style="display:none;" onchange="onContentFilePicked()">
-            <span id="uploadBoxText">파일을 드래그하거나 클릭하여 업로드하세요</span>
-          </div>
-        </div>
-
-        <div class="form-group" id="contentSourceUrlGroup" style="display:none;">
-          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">외부 URL <span class="req">*</span></label>
-          <input class="input" id="newContentUrl" placeholder="https://...">
-        </div>
-
-        <div class="form-group" id="contentSourceChainGroup" style="display:none;">
-          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">콘텐츠 체인 선택 <span class="req">*</span></label>
-          <select class="select" id="newContentChain">
-            <option value="">콘텐츠 체인 검색·선택</option>
-            <option>Galaxy S25 런칭 체인 (3개 콘텐츠)</option>
-          </select>
+        <div class="form-group">
+          <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">소재 <span class="req">*</span></label>
+          <div id="contentAssetRows"></div>
+          <button type="button" class="btn btn-ghost" id="addAssetButton" style="margin-top:8px;display:none;" onclick="addContentAsset()">+ 소재 추가</button>
         </div>
 
         <div class="form-group">
           <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:#24292E;">재생시간(초) <span class="req">*</span></label>
-          <input class="input" id="newContentDuration" type="number" min="1" max="300" value="15" required>
+          <input class="input readonly" id="newContentDuration" readonly>
+          <div class="input-hint" id="durationHint">소재의 재생시간입니다</div>
         </div>
 
         <div class="form-group">
@@ -1002,28 +1005,84 @@ function bindProductEvents() {
 
 /* ----------------------------------
    Content Drawer
+   콘텐츠.소재정보.재생구성(Playback Composition): 싱글(단일 파일 소재) / 체인(복수 소재 파일)
+   — 콘텐츠 체인은 별도 참조 객체가 아니라 콘텐츠 자신의 소재 구성 방식이다.
 ---------------------------------- */
-function getContentType() {
-  return document.querySelector('input[name="newContentType"]:checked').value;
+let contentAssets = [];
+let pendingAssetIndex = null;
+
+function getCompositionType() {
+  return document.querySelector('input[name="newCompositionType"]:checked').value;
 }
 
-function syncContentTypeUI() {
-  const type = getContentType();
-  document.getElementById("contentSourceFileGroup").style.display = type === "file" ? "" : "none";
-  document.getElementById("contentSourceUrlGroup").style.display = type === "url" ? "" : "none";
-  document.getElementById("contentSourceChainGroup").style.display = type === "chain" ? "" : "none";
+function newAsset() { return { type: "file", fileName: "", url: "", duration: 15 }; }
+
+function renderContentAssetRows() {
+  const composition = getCompositionType();
+  document.getElementById("addAssetButton").style.display = composition === "chain" ? "" : "none";
+
+  const wrap = document.getElementById("contentAssetRows");
+  wrap.innerHTML = contentAssets.map((asset, i) => `
+    <div class="asset-row">
+      <div class="asset-row-head">
+        <span class="asset-row-num">${composition === "chain" ? "소재 " + (i + 1) : "소재"}</span>
+        <div class="seg-ctrl-mini">
+          <input type="radio" name="assetType_${i}" id="assetType_${i}_file" ${asset.type === "file" ? "checked" : ""} onchange="setAssetType(${i},'file')"><label for="assetType_${i}_file">파일</label>
+          <input type="radio" name="assetType_${i}" id="assetType_${i}_url" ${asset.type === "url" ? "checked" : ""} onchange="setAssetType(${i},'url')"><label for="assetType_${i}_url">URL</label>
+        </div>
+        ${composition === "chain" && contentAssets.length > 1 ? `<button type="button" class="rule-del-btn asset-row-remove" onclick="removeContentAsset(${i})">×</button>` : ""}
+      </div>
+      ${asset.type === "file"
+        ? `<div class="upload-box small ${asset.fileName ? "has-file" : ""}" onclick="pickAssetFile(${i})">${asset.fileName ? "✓ " + escapeHTML(asset.fileName) : "파일을 드래그하거나 클릭하여 업로드하세요"}</div>`
+        : `<input class="input" placeholder="https://..." value="${escapeHTML(asset.url)}" oninput="setAssetUrl(${i}, this.value)">`}
+      <div class="asset-row-duration"><label>재생시간(초)</label><input type="number" min="1" value="${asset.duration}" oninput="setAssetDuration(${i}, this.value)"></div>
+    </div>`).join("");
+
+  recomputeContentDuration();
 }
 
-function onContentFilePicked() {
-  const fileInput = document.getElementById("newContentFile");
-  const box = document.getElementById("uploadBox");
-  const text = document.getElementById("uploadBoxText");
-  if (fileInput.files[0]) {
-    box.classList.add("has-file");
-    text.textContent = "✓ " + fileInput.files[0].name;
-    const nameField = document.getElementById("newContentName");
-    if (!nameField.value.trim()) nameField.value = fileInput.files[0].name.replace(/\.[^.]+$/, "");
-  }
+function syncCompositionUI() {
+  const composition = getCompositionType();
+  if (composition === "single" && contentAssets.length > 1) contentAssets = contentAssets.slice(0, 1);
+  renderContentAssetRows();
+}
+
+function addContentAsset() {
+  if (contentAssets.length >= 5) { showToast("소재는 최대 5개까지 추가할 수 있습니다."); return; }
+  contentAssets.push(newAsset());
+  renderContentAssetRows();
+}
+
+function removeContentAsset(i) {
+  contentAssets.splice(i, 1);
+  renderContentAssetRows();
+}
+
+function setAssetType(i, type) { contentAssets[i].type = type; renderContentAssetRows(); }
+function setAssetUrl(i, val) { contentAssets[i].url = val; }
+function setAssetDuration(i, val) { contentAssets[i].duration = Number(val) || 0; recomputeContentDuration(); }
+
+function pickAssetFile(i) {
+  pendingAssetIndex = i;
+  document.getElementById("assetFilePicker").click();
+}
+function onAssetFilePicked() {
+  const fileInput = document.getElementById("assetFilePicker");
+  if (pendingAssetIndex === null || !fileInput.files[0]) return;
+  contentAssets[pendingAssetIndex].fileName = fileInput.files[0].name;
+  const nameField = document.getElementById("newContentName");
+  if (!nameField.value.trim()) nameField.value = fileInput.files[0].name.replace(/\.[^.]+$/, "");
+  fileInput.value = "";
+  renderContentAssetRows();
+}
+
+function recomputeContentDuration() {
+  const composition = getCompositionType();
+  const total = contentAssets.reduce((sum, a) => sum + (Number(a.duration) || 0), 0);
+  document.getElementById("newContentDuration").value = total;
+  document.getElementById("durationHint").textContent = composition === "chain"
+    ? `체인 소재 ${contentAssets.length}개의 재생시간 합으로 자동 계산됩니다`
+    : "소재의 재생시간입니다";
 }
 
 function openContentDrawer(targets) {
@@ -1034,11 +1093,9 @@ function openContentDrawer(targets) {
   }).join(", ");
   document.getElementById("contentTargetText").textContent = text ? `등록 후 적용 대상: ${text}` : "콘텐츠 라이브러리에 등록";
   document.getElementById("newContentAdvertiser").value = document.getElementById("scheduleAdvertiser").value;
-  document.querySelector('input[name="newContentType"][value="file"]').checked = true;
-  syncContentTypeUI();
-  document.getElementById("uploadBox").classList.remove("has-file");
-  document.getElementById("uploadBoxText").textContent = "파일을 드래그하거나 클릭하여 업로드하세요";
-  document.getElementById("newContentFile").value = "";
+  document.querySelector('input[name="newCompositionType"][value="single"]').checked = true;
+  contentAssets = [newAsset()];
+  renderContentAssetRows();
   document.getElementById("drawerOverlay").classList.add("open");
 }
 
@@ -1053,15 +1110,19 @@ document.getElementById("cancelContentButton").addEventListener("click", closeCo
 document.getElementById("contentForm").addEventListener("submit", event => {
   event.preventDefault();
   const name = document.getElementById("newContentName").value.trim();
-  const type = getContentType();
-  const source = type === "file" ? (document.getElementById("newContentFile").files[0]?.name || "")
-    : type === "url" ? document.getElementById("newContentUrl").value.trim()
-    : document.getElementById("newContentChain").value;
+  const composition = getCompositionType();
+  const incomplete = contentAssets.some(a => (a.type === "file" && !a.fileName) || (a.type === "url" && !a.url.trim()) || !a.duration);
   const duration = Number(document.getElementById("newContentDuration").value);
-  if (!name || !source || !duration) { showToast("필수 정보를 입력해주세요."); return; }
+  if (!name || incomplete || !duration) { showToast("필수 정보를 입력해주세요."); return; }
 
   const id = `content_${Date.now()}`;
-  contentLibrary.push({ id, name, source, duration, type, advertiser: document.getElementById("newContentAdvertiser").value, tags: document.getElementById("newContentTags").value, status: "pending" });
+  contentLibrary.push({
+    id, name, duration, composition,
+    assets: contentAssets.map(a => ({ type: a.type, source: a.type === "file" ? a.fileName : a.url, duration: a.duration })),
+    advertiser: document.getElementById("newContentAdvertiser").value,
+    tags: document.getElementById("newContentTags").value,
+    status: "pending"
+  });
 
   drawerTargets.forEach(target => {
     const product = products.find(p => p.id === target.productId);
@@ -1074,7 +1135,7 @@ document.getElementById("contentForm").addEventListener("submit", event => {
   scheduleValidated = false;
   closeContentDrawer();
   renderProducts();
-  showToast(`'${name}' 콘텐츠를 등록했습니다. 현재 검수 대기 상태입니다.`);
+  showToast(`'${name}' 콘텐츠(${composition === "chain" ? "체인 " + contentAssets.length + "개 소재" : "싱글"})를 등록했습니다. 현재 검수 대기 상태입니다.`);
 });
 
 /* ----------------------------------
