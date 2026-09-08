@@ -162,7 +162,15 @@
     .slot-note-row td { padding: 0 12px 10px; border-bottom: 1px solid #F0F1F3; }
     .slot-note-row:last-child td { border-bottom: 0; }
     .slot-pending-banner { padding: 9px 12px; border: 1px solid #F3BE4A; border-radius: 6px; background: #FFFBEB; color: #92610A; font-size: 12px; line-height: 1.5; }
-    .slot-content-select { width: 100%; min-width: 220px; height: 34px; border: 1px solid #CED2D6; border-radius: 7px; padding: 6px 8px; font-family: inherit; background: #fff; }
+    .slot-content-select, .cell-select { width: 100%; min-width: 180px; height: 34px; border: 1px solid #CED2D6; border-radius: 7px; padding: 6px 8px; font-family: inherit; background: #fff; }
+
+    /* ── Slot별/Media별/상세 편성 모드 전환 ── */
+    .assign-mode-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+    .assign-mode-btn { height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid #E5E7EA; background: #fff; color: #596066; font-size: 12.5px; font-family: inherit; cursor: pointer; }
+    .assign-mode-btn.active { border-color: #58C65D; background: #EAFAEB; color: #2E9E34; font-weight: 700; }
+    .matrix-table th, .matrix-table td { white-space: nowrap; }
+    .matrix-table thead th:first-child, .matrix-table tbody th { position: sticky; left: 0; background: #F6F7F9; text-align: left; padding: 10px 12px; font-size: 12px; color: #596066; font-weight: 600; border-right: 1px solid #E5E7EA; }
+    .matrix-table td { padding: 6px 8px; min-width: 190px; }
 
     /* ── 요약 사이드바 ── */
     .reg-summary { position: sticky; top: 16px; background: #fff; border: 1px solid #E5E7EA; border-radius: 10px; padding: 18px; }
@@ -779,27 +787,43 @@ const VARIANT_LIBRARY = {
   ]
 };
 
+/* schedule.items[].mediaContents — 이 Schedule Item(Product)이 실제로 참조하는 구성 Media 목록.
+   Product 자신의 정의(구성 Media·Slot 수)는 프로덕트 도메인 그대로이고, 여기서 바뀌는 건
+   "이 Schedule이 어떤 Slot에서 어떤 Media에 어떤 콘텐츠를 배정했는가"를 추적하는 스케줄 쪽 구조뿐이다.
+   product-detail.html·schedule-detail.html과 동일한 MED-001/012/018 데이터를 그대로 재사용. */
+function makeSlot(product, contentId) {
+  const assignments = {};
+  product.media.forEach(m => { assignments[m.id] = contentId || ""; });
+  return { assignments, selected: false };
+}
+
 const products = [
   {
     id: "prd001", name: "강남 프리미엄 옥외", revision: "R3", variantId: "var_a",
     address: "서울 강남구 강남대로 396", type: "옥외 전광판 (LED)",
     resolution: "1920 × 1080 (FHD)", screenSize: "84인치", installEnv: "실외 (지하철역 출구 앞)",
-    availableSlot: 2, totalSlot: 6, open: true, activeTab: "slot",
-    slots: [
-      { contentId: "content_30_a", selected: false },
-      { contentId: "content_30_a", selected: false }
-    ]
+    media: [
+      { id: "MED-001", name: "강남역 1번출구 A" },
+      { id: "MED-012", name: "역삼역 2번출구 B" },
+      { id: "MED-018", name: "선릉역 1번출구 C" }
+    ],
+    availableSlot: 2, totalSlot: 6, open: true, activeTab: "slot", assignMode: "slot",
+    slots: []
   },
   {
     id: "prd005", name: "코엑스몰 스탠다드", revision: "R7", variantId: "var_b",
     address: "서울 강남구 영동대로 513", type: "실내 스탠드형 사이니지",
     resolution: "1920 × 1080 (FHD)", screenSize: "55인치", installEnv: "실내 (쇼핑몰 통로)",
-    availableSlot: 3, totalSlot: 4, open: false, activeTab: "slot",
-    slots: [
-      { contentId: "content_15_a", selected: false }
-    ]
+    media: [
+      { id: "MED-041", name: "코엑스몰 1층 로비" }
+    ],
+    availableSlot: 3, totalSlot: 4, open: false, activeTab: "slot", assignMode: "slot",
+    slots: []
   }
 ];
+products[0].slots = [makeSlot(products[0], "content_30_a"), makeSlot(products[0], "content_30_a")];
+products[0].slots[1].assignments["MED-018"] = "content_30_b"; // 예시: Slot 2는 선릉역 매체만 다른 콘텐츠로 예외 배정
+products[1].slots = [makeSlot(products[1], "content_15_a")];
 
 function getVariant(product) {
   const list = VARIANT_LIBRARY[product.id] || [];
@@ -841,16 +865,28 @@ function createContentOptions(selectedContentId) {
 }
 
 /* ----------------------------------
-   Slot Status
+   Slot / Media / Cell Status
+   콘텐츠 배정은 (Slot, Media) 셀 단위로 저장되며(slot.assignments[mediaId]),
+   Slot별·Media별 조정 모드는 여러 셀을 한 번에 같은 값으로 씀. 상태 배지는
+   "그 행에 속한 모든 셀이 같은 콘텐츠로 정상 배정됐는가"를 기준으로 집계한다.
 ---------------------------------- */
-function getSlotStatus(product, slot) {
-  if (!slot.contentId) return { label: "미편성", className: "pd-badge-danger" };
-  const content = getContent(slot.contentId);
+function getCellStatus(product, contentId) {
+  if (!contentId) return { label: "미편성", className: "pd-badge-danger" };
+  const content = getContent(contentId);
   if (!content) return { label: "콘텐츠 없음", className: "pd-badge-danger" };
   if (content.status !== "approved") return { label: "검수 대기", className: "pd-badge-warning" };
   if (content.duration !== getVariant(product).slotDuration) return { label: "시간 불일치", className: "pd-badge-danger" };
   return { label: "정상", className: "pd-badge-success" };
 }
+
+function getRowStatus(product, contentIds) {
+  const unique = [...new Set(contentIds)];
+  if (unique.length > 1) return { label: "혼합 편성", className: "pd-badge-warning" };
+  return getCellStatus(product, unique[0]);
+}
+
+function getSlotContentIds(product, slot) { return product.media.map(m => slot.assignments[m.id]); }
+function getMediaContentIds(product, mediaId) { return product.slots.map(slot => slot.assignments[mediaId]); }
 
 /* ----------------------------------
    Render Products
@@ -863,42 +899,84 @@ function renderProducts() {
   updateSummary();
 }
 
+function pendingBannerRow(colspan, contentIds) {
+  const pendingIds = [...new Set(contentIds)].map(getContent).filter(c => c && c.status === "pending");
+  if (!pendingIds.length) return "";
+  return pendingIds.map(content => `
+    <tr class="slot-note-row">
+      <td></td>
+      <td colspan="${colspan}">
+        <div class="slot-pending-banner">
+          <strong>${escapeHTML(content.name)}</strong> · ${content.duration}초 — 신규 등록된 콘텐츠입니다. 승인 완료 후 Schedule 검증이 가능합니다.
+        </div>
+      </td>
+    </tr>`).join("");
+}
+
+function renderSlotModeRows(product) {
+  if (product.slots.length === 0) return `<tr><td colspan="5" style="text-align:center;color:#9EA5AD;padding:20px;">배정된 Slot이 없습니다 — "+ Slot 추가"로 시작하세요.</td></tr>`;
+  return product.slots.map((slot, si) => {
+    const contentIds = getSlotContentIds(product, slot);
+    const uniform = new Set(contentIds).size <= 1 ? contentIds[0] : "";
+    const status = getRowStatus(product, contentIds);
+    return `
+      <tr>
+        <td><input type="checkbox" class="slot-checkbox" data-product="${product.id}" data-slot="${si}" ${slot.selected ? "checked" : ""}></td>
+        <td>Slot ${si + 1}<div style="font-size:11px;color:#9EA5AD;font-weight:400;">전체 Media(${product.media.length})에 적용</div></td>
+        <td><select class="cell-select slot-row-select" data-product="${product.id}" data-slot="${si}">${createContentOptions(uniform)}</select></td>
+        <td>${getVariant(product).slotDuration}초</td>
+        <td><span class="pd-badge ${status.className}">${status.label}</span></td>
+      </tr>${pendingBannerRow(4, contentIds)}`;
+  }).join("");
+}
+
+function renderMediaModeRows(product) {
+  if (product.media.length === 0) return `<tr><td colspan="5" style="text-align:center;color:#9EA5AD;padding:20px;">구성 Media가 없습니다.</td></tr>`;
+  if (product.slots.length === 0) return `<tr><td colspan="5" style="text-align:center;color:#9EA5AD;padding:20px;">배정된 Slot이 없습니다 — "+ Slot 추가"로 시작하세요.</td></tr>`;
+  return product.media.map(media => {
+    const contentIds = getMediaContentIds(product, media.id);
+    const uniform = new Set(contentIds).size <= 1 ? contentIds[0] : "";
+    const status = getRowStatus(product, contentIds);
+    return `
+      <tr>
+        <td></td>
+        <td>${escapeHTML(media.name)}<div style="font-size:11px;color:#9EA5AD;font-weight:400;">${media.id} · 전체 Slot(${product.slots.length})에 적용</div></td>
+        <td><select class="cell-select media-row-select" data-product="${product.id}" data-media="${media.id}">${createContentOptions(uniform)}</select></td>
+        <td>${getVariant(product).slotDuration}초</td>
+        <td><span class="pd-badge ${status.className}">${status.label}</span></td>
+      </tr>${pendingBannerRow(4, contentIds)}`;
+  }).join("");
+}
+
+function renderMatrixMode(product) {
+  if (product.media.length === 0 || product.slots.length === 0) {
+    return `<div style="padding:20px;text-align:center;color:#9EA5AD;font-size:13px;">Media와 Slot이 모두 있어야 매트릭스를 편성할 수 있습니다.</div>`;
+  }
+  const head = product.slots.map((_, si) => `<th>Slot ${si + 1}</th>`).join("");
+  const rows = product.media.map(media => {
+    const cells = product.slots.map((slot, si) => `
+      <td><select class="cell-select matrix-cell-select" data-product="${product.id}" data-slot="${si}" data-media="${media.id}">${createContentOptions(slot.assignments[media.id])}</select></td>`).join("");
+    return `<tr><th>${escapeHTML(media.name)}</th>${cells}</tr>`;
+  }).join("");
+  return `
+    <div class="slot-table-wrap">
+      <table class="slot-table matrix-table">
+        <thead><tr><th>Media \\ Slot</th>${head}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
 function renderProductCard(product) {
   const variant = getVariant(product);
   const variantOptions = VARIANT_LIBRARY[product.id] || [];
   const selectedSlotCount = product.slots.filter(slot => slot.selected).length;
   const activeTab = product.activeTab || "slot";
+  const assignMode = product.assignMode || "slot";
   const referenceLoop = variant.slotDuration * (product.totalSlot || 0);
 
-  const slotRows = product.slots.map((slot, index) => {
-    const status = getSlotStatus(product, slot);
-    const content = getContent(slot.contentId);
-    const fileInfo = content && (content.res || content.size)
-      ? `${content.res || "-"}<span style="color:#CED2D6;margin:0 6px;">|</span>${content.size || "-"}`
-      : `<span style="color:#9EA5AD;">-</span>`;
-    const pendingNote = content && content.status === "pending" ? `
-      <tr class="slot-note-row">
-        <td></td>
-        <td colspan="5">
-          <div class="slot-pending-banner">
-            <strong>${escapeHTML(content.name)}</strong> · ${content.duration}초 — 신규 등록된 콘텐츠입니다. 승인 완료 후 Schedule 검증이 가능합니다.
-          </div>
-        </td>
-      </tr>` : "";
-    return `
-      <tr>
-        <td><input type="checkbox" class="slot-checkbox" data-product="${product.id}" data-slot="${index}" ${slot.selected ? "checked" : ""}></td>
-        <td>Slot ${index + 1}</td>
-        <td>
-          <select class="slot-content-select" data-product="${product.id}" data-slot="${index}">
-            ${createContentOptions(slot.contentId)}
-          </select>
-        </td>
-        <td style="white-space:nowrap;font-size:12px;color:#596066;">${fileInfo}</td>
-        <td>${variant.slotDuration}초</td>
-        <td><span class="pd-badge ${status.className}">${status.label}</span></td>
-      </tr>${pendingNote}`;
-  }).join("");
+  const allCellIds = product.slots.flatMap(slot => getSlotContentIds(product, slot));
+  const cardStatus = product.slots.length === 0 ? { label: "미편성", className: "pd-badge-danger" } : getRowStatus(product, allCellIds);
 
   const conditionPanel = `
     <div class="field-grid">
@@ -914,35 +992,36 @@ function renderProductCard(product) {
       <div class="field-item"><div class="metric-label">화면 크기</div><div class="metric-value mono">${escapeHTML(product.screenSize || "-")}</div></div>
       <div class="field-item"><div class="metric-label">설치 환경</div><div class="metric-value mono">${escapeHTML(product.installEnv || "-")}</div></div>
     </div>`;
+
+  const modeTableHeadCols = assignMode === "slot"
+    ? `<th style="width:44px;"></th><th style="width:130px;">Slot</th><th>콘텐츠 / 콘텐츠 체인</th><th style="width:90px;">재생시간</th><th style="width:110px;">상태</th>`
+    : `<th style="width:44px;"></th><th style="width:170px;">Media</th><th>콘텐츠 / 콘텐츠 체인</th><th style="width:90px;">재생시간</th><th style="width:110px;">상태</th>`;
+  const modeBody = assignMode === "matrix" ? renderMatrixMode(product) : `
+    <div class="slot-table-wrap">
+      <table class="slot-table">
+        <thead><tr>${modeTableHeadCols}</tr></thead>
+        <tbody>${assignMode === "slot" ? renderSlotModeRows(product) : renderMediaModeRows(product)}</tbody>
+      </table>
+    </div>`;
+
   const slotPanel = `
     <div class="slot-toolbar">
       <div>
-        <strong style="font-size:13px;color:#24292E;">Slot 편성 (${product.slots.length})</strong>
-        <div class="section-desc">여러 Slot에 동일 콘텐츠를 일괄 적용하거나 Slot별로 다르게 편성할 수 있습니다.</div>
+        <strong style="font-size:13px;color:#24292E;">콘텐츠 편성 (Media ${product.media.length} × Slot ${product.slots.length})</strong>
+        <div class="section-desc">Slot별 조정은 전체 Media에, Media별 조정은 전체 Slot에 동일 콘텐츠를 적용합니다. 특정 Media × Slot만 다르게 하려면 상세 편성을 사용하세요.</div>
       </div>
       <div class="toolbar-actions">
         <button class="btn btn-outline add-slot-button" data-product="${product.id}">+ Slot 추가</button>
         <button class="btn btn-ghost remove-slot-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 삭제</button>
-        <select class="bulk-select" data-product="${product.id}">${createContentOptions("")}</select>
-        <button class="btn btn-ghost bulk-apply-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 Slot에 일괄 적용 (${selectedSlotCount})</button>
-        <button class="btn btn-outline new-content-button" data-product="${product.id}" title="${selectedSlotCount === 0 ? "선택한 Slot 없이 열면 콘텐츠 라이브러리에만 등록됩니다" : "선택한 " + selectedSlotCount + "개 Slot에 등록 후 바로 적용합니다"}">+ 콘텐츠 등록</button>
+        <button class="btn btn-outline new-content-button" data-product="${product.id}" title="새 콘텐츠를 등록해 콘텐츠 라이브러리에 추가합니다">+ 콘텐츠 등록</button>
       </div>
     </div>
-    <div class="slot-table-wrap">
-      <table class="slot-table">
-        <thead>
-          <tr>
-            <th style="width:44px;"></th>
-            <th style="width:70px;">Slot</th>
-            <th>콘텐츠 / 콘텐츠 체인</th>
-            <th style="width:150px;">파일 정보</th>
-            <th style="width:90px;">재생시간</th>
-            <th style="width:110px;">상태</th>
-          </tr>
-        </thead>
-        <tbody>${slotRows || `<tr><td colspan="6" style="text-align:center;color:#9EA5AD;padding:20px;">배정된 Slot이 없습니다 — "+ Slot 추가"로 시작하세요.</td></tr>`}</tbody>
-      </table>
-    </div>`;
+    <div class="assign-mode-tabs">
+      <button type="button" class="assign-mode-btn ${assignMode === "slot" ? "active" : ""}" data-product="${product.id}" data-mode="slot">Slot별 조정</button>
+      <button type="button" class="assign-mode-btn ${assignMode === "media" ? "active" : ""}" data-product="${product.id}" data-mode="media">Media별 조정</button>
+      <button type="button" class="assign-mode-btn ${assignMode === "matrix" ? "active" : ""}" data-product="${product.id}" data-mode="matrix">상세 편성</button>
+    </div>
+    ${modeBody}`;
 
   return `
     <article class="reg-product-card">
@@ -963,7 +1042,7 @@ function renderProductCard(product) {
         </div>
         <div><div class="metric-label">가용 Slot</div><div class="metric-value">${product.availableSlot} / ${product.totalSlot}</div></div>
         <div><div class="metric-label">배정 Slot</div><div class="metric-value" style="font-size:16px;">${product.slots.length}</div></div>
-        <div class="product-status"><span class="pd-badge pd-badge-success">정상</span></div>
+        <div class="product-status"><span class="pd-badge ${cardStatus.className}">${cardStatus.label}</span></div>
       </div>
 
       ${product.open ? `
@@ -1001,21 +1080,6 @@ function bindProductEvents() {
     });
   });
 
-  document.querySelectorAll(".slot-content-select").forEach(select => {
-    select.addEventListener("change", () => {
-      const product = products.find(p => p.id === select.dataset.product);
-      const slotIndex = Number(select.dataset.slot);
-      if (select.value === "__new__") {
-        product.slots[slotIndex].selected = true;
-        openContentDrawer([{ productId: product.id, slotIndex }]);
-        return;
-      }
-      product.slots[slotIndex].contentId = select.value;
-      scheduleValidated = false;
-      renderProducts();
-    });
-  });
-
   document.querySelectorAll(".switch-product-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       const product = products.find(p => p.id === tab.dataset.product);
@@ -1024,11 +1088,19 @@ function bindProductEvents() {
     });
   });
 
+  document.querySelectorAll(".assign-mode-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      const product = products.find(p => p.id === button.dataset.product);
+      product.assignMode = button.dataset.mode;
+      renderProducts();
+    });
+  });
+
   document.querySelectorAll(".add-slot-button").forEach(button => {
     button.addEventListener("click", () => {
       const product = products.find(p => p.id === button.dataset.product);
       if (product.slots.length >= product.availableSlot) { showToast("가용 Slot 수를 초과할 수 없습니다."); return; }
-      product.slots.push({ contentId: "", selected: false });
+      product.slots.push(makeSlot(product, ""));
       scheduleValidated = false;
       renderProducts();
     });
@@ -1043,38 +1115,58 @@ function bindProductEvents() {
     });
   });
 
-  document.querySelectorAll(".bulk-apply-button").forEach(button => {
+  document.querySelectorAll(".new-content-button").forEach(button => {
     button.addEventListener("click", () => {
       const product = products.find(p => p.id === button.dataset.product);
-      const select = document.querySelector(`.bulk-select[data-product="${product.id}"]`);
-      if (!select.value) return;
+      openContentDrawer([]);
+    });
+  });
+
+  // Slot별 조정: 한 Slot 행의 선택값을 그 Product의 모든 Media에 동시 적용
+  document.querySelectorAll(".slot-row-select").forEach(select => {
+    select.addEventListener("change", () => {
+      const product = products.find(p => p.id === select.dataset.product);
+      const slotIndex = Number(select.dataset.slot);
       if (select.value === "__new__") {
-        const targets = product.slots.map((slot, index) => slot.selected ? { productId: product.id, slotIndex: index } : null).filter(Boolean);
+        const targets = product.media.map(m => ({ productId: product.id, slotIndex, mediaId: m.id }));
         openContentDrawer(targets);
         return;
       }
-      product.slots.forEach(slot => {
-        if (slot.selected) { slot.contentId = select.value; slot.selected = false; }
-      });
+      product.media.forEach(m => { product.slots[slotIndex].assignments[m.id] = select.value; });
       scheduleValidated = false;
       renderProducts();
     });
   });
 
-  document.querySelectorAll(".new-content-button").forEach(button => {
-    button.addEventListener("click", () => {
-      const product = products.find(p => p.id === button.dataset.product);
-      const targets = product.slots.map((slot, index) => slot.selected ? { productId: product.id, slotIndex: index } : null).filter(Boolean);
-      openContentDrawer(targets);
+  // Media별 조정: 한 Media 행의 선택값을 그 Product의 모든 Slot에 동시 적용
+  document.querySelectorAll(".media-row-select").forEach(select => {
+    select.addEventListener("change", () => {
+      const product = products.find(p => p.id === select.dataset.product);
+      const mediaId = select.dataset.media;
+      if (select.value === "__new__") {
+        const targets = product.slots.map((slot, si) => ({ productId: product.id, slotIndex: si, mediaId }));
+        openContentDrawer(targets);
+        return;
+      }
+      product.slots.forEach(slot => { slot.assignments[mediaId] = select.value; });
+      scheduleValidated = false;
+      renderProducts();
     });
   });
 
-  document.querySelectorAll(".bulk-select").forEach(select => {
+  // 상세 편성(매트릭스): 단일 (Slot, Media) 셀만 변경
+  document.querySelectorAll(".matrix-cell-select").forEach(select => {
     select.addEventListener("change", () => {
-      if (select.value !== "__new__") return;
       const product = products.find(p => p.id === select.dataset.product);
-      const targets = product.slots.map((slot, index) => slot.selected ? { productId: product.id, slotIndex: index } : null).filter(Boolean);
-      openContentDrawer(targets);
+      const slotIndex = Number(select.dataset.slot);
+      const mediaId = select.dataset.media;
+      if (select.value === "__new__") {
+        openContentDrawer([{ productId: product.id, slotIndex, mediaId }]);
+        return;
+      }
+      product.slots[slotIndex].assignments[mediaId] = select.value;
+      scheduleValidated = false;
+      renderProducts();
     });
   });
 }
@@ -1176,7 +1268,8 @@ function openContentDrawer(targets) {
   drawerTargets = targets;
   const text = targets.map(target => {
     const product = products.find(p => p.id === target.productId);
-    return `${product.name} · Slot ${target.slotIndex + 1}`;
+    const media = product.media.find(m => m.id === target.mediaId);
+    return `${product.name} · Slot ${target.slotIndex + 1} · ${media ? media.name : target.mediaId}`;
   }).join(", ");
   document.getElementById("contentTargetText").textContent = text ? `등록 후 적용 대상: ${text}` : "콘텐츠 라이브러리에 등록";
   document.getElementById("newContentAdvertiser").value = document.getElementById("scheduleAdvertiser").value;
@@ -1215,7 +1308,7 @@ document.getElementById("contentForm").addEventListener("submit", event => {
   drawerTargets.forEach(target => {
     const product = products.find(p => p.id === target.productId);
     if (product && product.slots[target.slotIndex]) {
-      product.slots[target.slotIndex].contentId = id;
+      product.slots[target.slotIndex].assignments[target.mediaId] = id;
       product.slots[target.slotIndex].selected = false;
     }
   });
@@ -1234,7 +1327,7 @@ document.getElementById("addProductButton").addEventListener("click", () => {
   products.push({
     id: `prd_new_${n}`, name: "(신규 Product 선택)", revision: "-", variantId: "",
     address: "-", type: "-", resolution: "-", screenSize: "-", installEnv: "-",
-    availableSlot: 0, totalSlot: 0, open: true, activeTab: "slot", slots: []
+    media: [], availableSlot: 0, totalSlot: 0, open: true, activeTab: "slot", assignMode: "slot", slots: []
   });
   renderProducts();
 });
@@ -1274,13 +1367,14 @@ function updateOperationMode() {
 ---------------------------------- */
 function updateSummary() {
   const totalSlots = products.reduce((sum, p) => sum + p.slots.length, 0);
-  const assignedSlots = products.reduce((sum, p) => sum + p.slots.filter(s => Boolean(s.contentId)).length, 0);
-  const usedContentIds = new Set(products.flatMap(p => p.slots.map(s => s.contentId).filter(Boolean)));
+  const totalCells = products.reduce((sum, p) => sum + p.slots.length * p.media.length, 0);
+  const assignedCells = products.reduce((sum, p) => sum + p.slots.reduce((s, slot) => s + p.media.filter(m => Boolean(slot.assignments[m.id])).length, 0), 0);
+  const usedContentIds = new Set(products.flatMap(p => p.slots.flatMap(s => p.media.map(m => s.assignments[m.id]))).filter(Boolean));
   const pendingContents = [...usedContentIds].filter(id => { const c = getContent(id); return c && c.status === "pending"; });
 
   document.getElementById("summaryProductCount").textContent = products.length;
   document.getElementById("summarySlotCount").textContent = totalSlots;
-  document.getElementById("summaryAssignedCount").textContent = `${assignedSlots} / ${totalSlots}`;
+  document.getElementById("summaryAssignedCount").textContent = `${assignedCells} / ${totalCells}`;
   document.getElementById("summaryPendingCount").textContent = pendingContents.length;
 
   document.getElementById("allocationSummary").innerHTML = products.map(p =>
@@ -1305,8 +1399,8 @@ document.getElementById("approveContentButton").addEventListener("click", () => 
 /* ----------------------------------
    Schedule Validation
 ---------------------------------- */
-function slotValidationLabel(product, slot) {
-  const content = getContent(slot.contentId);
+function cellValidationLabel(product, contentId) {
+  const content = getContent(contentId);
   if (!content) return { text: "⚠ 콘텐츠 없음", cls: "gate-danger", ok: false };
   if (content.status !== "approved") return { text: "⚠ 콘텐츠 검수 대기", cls: "gate-warning", ok: false };
   if (content.duration !== getVariant(product).slotDuration) return { text: "⚠ 재생시간 불일치", cls: "gate-danger", ok: false };
@@ -1317,13 +1411,14 @@ function renderValidationBreakdown() {
   return `<div class="val-breakdown">${products.map(product => `
     <div class="val-product-group">
       <div class="val-product-name">${escapeHTML(product.name)}</div>
-      ${product.slots.length === 0
+      ${product.slots.length === 0 || product.media.length === 0
         ? `<div class="val-slot-row"><span>—</span><span>배정 Slot 없음</span><span class="gate-danger">⚠ 미편성</span></div>`
-        : product.slots.map((slot, index) => {
-            const content = getContent(slot.contentId);
-            const label = slotValidationLabel(product, slot);
-            return `<div class="val-slot-row"><span>Slot ${index + 1}</span><span>${content ? escapeHTML(content.name) : "—"}</span><span class="${label.cls}">${label.text}</span></div>`;
-          }).join("")}
+        : product.slots.map((slot, index) => product.media.map(media => {
+            const contentId = slot.assignments[media.id];
+            const content = getContent(contentId);
+            const label = cellValidationLabel(product, contentId);
+            return `<div class="val-slot-row"><span>Slot ${index + 1} · ${escapeHTML(media.name)}</span><span>${content ? escapeHTML(content.name) : "—"}</span><span class="${label.cls}">${label.text}</span></div>`;
+          }).join("")).join("")}
     </div>`).join("")}</div>`;
 }
 
@@ -1333,10 +1428,14 @@ function validateSchedule() {
   products.forEach(product => {
     if (product.slots.length === 0) { issues.push(`${product.name}: 배정 Slot이 없습니다.`); }
     product.slots.forEach((slot, index) => {
-      const content = getContent(slot.contentId);
-      if (!content) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠가 편성되지 않았습니다.`); return; }
-      if (content.status !== "approved") { issues.push(`${product.name} / Slot ${index + 1}: '${content.name}' 콘텐츠가 아직 승인되지 않았습니다.`); pendingCount++; }
-      if (content.duration !== getVariant(product).slotDuration) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠 ${content.duration}초와 Slot ${getVariant(product).slotDuration}초가 일치하지 않습니다.`); }
+      product.media.forEach(media => {
+        const contentId = slot.assignments[media.id];
+        const content = getContent(contentId);
+        const label = `Slot ${index + 1} · ${media.name}`;
+        if (!content) { issues.push(`${product.name} / ${label}: 콘텐츠가 편성되지 않았습니다.`); return; }
+        if (content.status !== "approved") { issues.push(`${product.name} / ${label}: '${content.name}' 콘텐츠가 아직 승인되지 않았습니다.`); pendingCount++; }
+        if (content.duration !== getVariant(product).slotDuration) { issues.push(`${product.name} / ${label}: 콘텐츠 ${content.duration}초와 Slot ${getVariant(product).slotDuration}초가 일치하지 않습니다.`); }
+      });
     });
   });
 
