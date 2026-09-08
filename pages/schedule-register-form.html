@@ -232,11 +232,6 @@
     .asset-row:last-child { margin-bottom: 0; }
     .asset-row-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .asset-row-num { font-size: 11px; font-weight: 700; color: #9EA5AD; text-transform: uppercase; letter-spacing: .04em; }
-    .seg-ctrl-mini { display: inline-flex; border: 1px solid #CED2D6; border-radius: 6px; overflow: hidden; }
-    .seg-ctrl-mini input { display: none; }
-    .seg-ctrl-mini label { padding: 4px 10px; font-size: 11px; font-weight: 500; color: #596066; cursor: pointer; border-right: 1px solid #CED2D6; background: #fff; user-select: none; }
-    .seg-ctrl-mini label:last-of-type { border-right: none; }
-    .seg-ctrl-mini input:checked + label { background: #24292E; color: #fff; }
     .asset-row-duration { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
     .asset-row-duration label { font-size: 11px; color: #596066; white-space: nowrap; }
     .asset-row-duration input { width: 90px; height: 30px; padding: 0 8px; border: 1px solid #CED2D6; border-radius: 6px; font-family: inherit; }
@@ -706,12 +701,21 @@
           <input class="input" id="newContentName" value="Galaxy_S25_Fall_New" required>
         </div>
 
-        <!-- 콘텐츠.소재정보.재생구성(Playback Composition) : 싱글(단일 파일 소재) / 체인(복수 소재 파일) -->
+        <!-- 콘텐츠.소재정보.업로드 유형(Upload Source Type) : 파일(File) / URL -->
         <div class="form-group">
+          <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:600;color:#24292E;">업로드 유형 <span class="req">*</span></label>
+          <div class="content-type-radios">
+            <label><input type="radio" name="newUploadType" value="file" checked onchange="syncUploadTypeUI()"> 파일</label>
+            <label><input type="radio" name="newUploadType" value="url" onchange="syncUploadTypeUI()"> URL</label>
+          </div>
+        </div>
+
+        <!-- 콘텐츠.소재정보.재생구성(Playback Composition) : 싱글(단일 파일 소재) / 체인(복수 소재 파일) — 업로드 유형=파일일 때만 필요 -->
+        <div class="form-group" id="compositionTypeGroup">
           <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:600;color:#24292E;">콘텐츠 유형 <span class="req">*</span></label>
           <div class="content-type-radios">
             <label><input type="radio" name="newCompositionType" value="single" checked onchange="syncCompositionUI()"> 싱글 (단일 파일 소재)</label>
-            <label><input type="radio" name="newCompositionType" value="chain" onchange="syncCompositionUI()"> 체인 (복수 소재 파일)</label>
+            <label><input type="radio" name="newCompositionType" value="chain" onchange="syncCompositionUI()"> 체인 (복수 파일 소재)</label>
           </div>
         </div>
 
@@ -1077,19 +1081,27 @@ function bindProductEvents() {
 
 /* ----------------------------------
    Content Drawer
-   콘텐츠.소재정보.재생구성(Playback Composition): 싱글(단일 파일 소재) / 체인(복수 소재 파일)
-   — 콘텐츠 체인은 별도 참조 객체가 아니라 콘텐츠 자신의 소재 구성 방식이다.
+   업로드 유형(Upload Source Type): 파일(File) / URL — 소재를 어떻게 소싱하는지
+   콘텐츠 유형/재생구성(Playback Composition): 싱글/체인 — 파일 업로드일 때만 필요.
+   URL은 항상 싱글(외부 URL 1개)이며 체인 개념이 적용되지 않는다.
 ---------------------------------- */
 let contentAssets = [];
 let pendingAssetIndex = null;
 
+function getUploadType() {
+  return document.querySelector('input[name="newUploadType"]:checked').value;
+}
 function getCompositionType() {
-  return document.querySelector('input[name="newCompositionType"]:checked').value;
+  return getUploadType() === "url" ? "single" : document.querySelector('input[name="newCompositionType"]:checked').value;
 }
 
-function newAsset() { return { type: "file", fileName: "", url: "", duration: 15 }; }
+function newAsset() {
+  const uploadType = getUploadType();
+  return { fileName: "", url: "", duration: uploadType === "url" ? 15 : 15 };
+}
 
 function renderContentAssetRows() {
+  const uploadType = getUploadType();
   const composition = getCompositionType();
   document.getElementById("addAssetButton").style.display = composition === "chain" ? "" : "none";
 
@@ -1098,19 +1110,23 @@ function renderContentAssetRows() {
     <div class="asset-row">
       <div class="asset-row-head">
         <span class="asset-row-num">${composition === "chain" ? "소재 " + (i + 1) : "소재"}</span>
-        <div class="seg-ctrl-mini">
-          <input type="radio" name="assetType_${i}" id="assetType_${i}_file" ${asset.type === "file" ? "checked" : ""} onchange="setAssetType(${i},'file')"><label for="assetType_${i}_file">파일</label>
-          <input type="radio" name="assetType_${i}" id="assetType_${i}_url" ${asset.type === "url" ? "checked" : ""} onchange="setAssetType(${i},'url')"><label for="assetType_${i}_url">URL</label>
-        </div>
         ${composition === "chain" && contentAssets.length > 1 ? `<button type="button" class="rule-del-btn asset-row-remove" onclick="removeContentAsset(${i})">×</button>` : ""}
       </div>
-      ${asset.type === "file"
+      ${uploadType === "file"
         ? `<div class="upload-box small ${asset.fileName ? "has-file" : ""}" onclick="pickAssetFile(${i})">${asset.fileName ? "✓ " + escapeHTML(asset.fileName) : "파일을 드래그하거나 클릭하여 업로드하세요"}</div>`
         : `<input class="input" placeholder="https://..." value="${escapeHTML(asset.url)}" oninput="setAssetUrl(${i}, this.value)">`}
       <div class="asset-row-duration"><label>재생시간(초)</label><input type="number" min="1" value="${asset.duration}" oninput="setAssetDuration(${i}, this.value)"></div>
     </div>`).join("");
 
   recomputeContentDuration();
+}
+
+function syncUploadTypeUI() {
+  const uploadType = getUploadType();
+  document.getElementById("compositionTypeGroup").style.display = uploadType === "file" ? "" : "none";
+  if (uploadType === "url") document.querySelector('input[name="newCompositionType"][value="single"]').checked = true;
+  contentAssets = [newAsset()];
+  renderContentAssetRows();
 }
 
 function syncCompositionUI() {
@@ -1130,7 +1146,6 @@ function removeContentAsset(i) {
   renderContentAssetRows();
 }
 
-function setAssetType(i, type) { contentAssets[i].type = type; renderContentAssetRows(); }
 function setAssetUrl(i, val) { contentAssets[i].url = val; }
 function setAssetDuration(i, val) { contentAssets[i].duration = Number(val) || 0; recomputeContentDuration(); }
 
@@ -1165,9 +1180,9 @@ function openContentDrawer(targets) {
   }).join(", ");
   document.getElementById("contentTargetText").textContent = text ? `등록 후 적용 대상: ${text}` : "콘텐츠 라이브러리에 등록";
   document.getElementById("newContentAdvertiser").value = document.getElementById("scheduleAdvertiser").value;
+  document.querySelector('input[name="newUploadType"][value="file"]').checked = true;
   document.querySelector('input[name="newCompositionType"][value="single"]').checked = true;
-  contentAssets = [newAsset()];
-  renderContentAssetRows();
+  syncUploadTypeUI();
   document.getElementById("drawerOverlay").classList.add("open");
 }
 
@@ -1182,15 +1197,16 @@ document.getElementById("cancelContentButton").addEventListener("click", closeCo
 document.getElementById("contentForm").addEventListener("submit", event => {
   event.preventDefault();
   const name = document.getElementById("newContentName").value.trim();
+  const uploadType = getUploadType();
   const composition = getCompositionType();
-  const incomplete = contentAssets.some(a => (a.type === "file" && !a.fileName) || (a.type === "url" && !a.url.trim()) || !a.duration);
+  const incomplete = contentAssets.some(a => (uploadType === "file" && !a.fileName) || (uploadType === "url" && !a.url.trim()) || !a.duration);
   const duration = Number(document.getElementById("newContentDuration").value);
   if (!name || incomplete || !duration) { showToast("필수 정보를 입력해주세요."); return; }
 
   const id = `content_${Date.now()}`;
   contentLibrary.push({
-    id, name, duration, composition,
-    assets: contentAssets.map(a => ({ type: a.type, source: a.type === "file" ? a.fileName : a.url, duration: a.duration })),
+    id, name, duration, uploadType, composition,
+    assets: contentAssets.map(a => ({ source: uploadType === "file" ? a.fileName : a.url, duration: a.duration })),
     advertiser: document.getElementById("newContentAdvertiser").value,
     tags: document.getElementById("newContentTags").value,
     status: "pending"
