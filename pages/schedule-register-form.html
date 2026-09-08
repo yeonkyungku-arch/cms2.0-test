@@ -119,6 +119,12 @@
     .reg-step.active .reg-step-label { font-weight: 700; }
 
     /* ── 운영 Product 구성 ── */
+    .common-content-bar {
+      display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;
+      padding: 14px 16px; margin-bottom: 14px; background: #F3FAF3; border: 1px solid #C1E9C3; border-radius: 8px;
+    }
+    .common-content-bar > div:first-child { flex: 1; min-width: 220px; }
+    .common-content-title { font-weight: 700; font-size: 13px; color: #24292E; margin-bottom: 3px; }
     .product-list { display: flex; flex-direction: column; gap: 12px; }
     .reg-product-card { border: 1px solid #E5E7EA; border-radius: 8px; overflow: hidden; }
     .product-summary {
@@ -563,6 +569,14 @@
           <button class="btn btn-outline" id="addProductButton">+ Product 추가</button>
         </div>
         <div class="section-body">
+          <div class="common-content-bar">
+            <div>
+              <div class="common-content-title">공통 콘텐츠 적용</div>
+              <div class="section-desc">가장 많이 사용할 콘텐츠를 먼저 적용합니다 — 재생시간이 맞는 Product에만 전체 Media × Slot 일괄 적용되고, 이후 다른 부분만 Product별로 조정합니다.</div>
+            </div>
+            <select class="input" id="globalContentSelect" style="min-width:220px;"></select>
+            <button type="button" class="btn btn-primary" id="applyGlobalContentButton">전체 Product에 적용</button>
+          </div>
           <div class="product-list" id="productList"></div>
         </div>
       </div>
@@ -895,8 +909,20 @@ function renderProducts() {
   const productList = document.getElementById("productList");
   productList.innerHTML = products.map(product => renderProductCard(product)).join("");
   bindProductEvents();
+  renderGlobalContentSelect();
   updateOperationMode();
   updateSummary();
+}
+
+/* ----------------------------------
+   공통 콘텐츠 적용 — 재생시간이 맞는 Product에만 전체 Media × Slot을 일괄 적용
+---------------------------------- */
+function renderGlobalContentSelect() {
+  const select = document.getElementById("globalContentSelect");
+  if (!select) return;
+  const current = select.value;
+  select.innerHTML = createContentOptions("");
+  if ([...select.options].some(o => o.value === current)) select.value = current;
 }
 
 function pendingBannerRow(colspan, contentIds) {
@@ -1317,6 +1343,37 @@ document.getElementById("contentForm").addEventListener("submit", event => {
   closeContentDrawer();
   renderProducts();
   showToast(`'${name}' 콘텐츠(${composition === "chain" ? "체인 " + contentAssets.length + "개 소재" : "싱글"})를 등록했습니다. 현재 검수 대기 상태입니다.`);
+});
+
+/* ----------------------------------
+   공통 콘텐츠 적용 (top-level, productList 재렌더 대상이 아니므로 한 번만 바인딩)
+---------------------------------- */
+document.getElementById("globalContentSelect").addEventListener("change", event => {
+  if (event.target.value !== "__new__") return;
+  openContentDrawer([]);
+  event.target.value = "";
+});
+
+document.getElementById("applyGlobalContentButton").addEventListener("click", () => {
+  const select = document.getElementById("globalContentSelect");
+  const id = select.value;
+  if (!id || id === "__new__") { showToast("적용할 콘텐츠를 선택해주세요."); return; }
+  const content = getContent(id);
+  if (!content) return;
+
+  let applied = 0;
+  products.forEach(product => {
+    if (product.media.length === 0 || product.slots.length === 0) return;
+    if (content.duration !== getVariant(product).slotDuration) return;
+    product.slots.forEach(slot => { product.media.forEach(m => { slot.assignments[m.id] = id; }); });
+    applied++;
+  });
+
+  scheduleValidated = false;
+  renderProducts();
+  showToast(applied > 0
+    ? `'${content.name}' 콘텐츠를 재생시간이 일치하는 ${applied}개 Product에 적용했습니다.`
+    : "재생시간이 일치하는 Product가 없어 적용되지 않았습니다.");
 });
 
 /* ----------------------------------
