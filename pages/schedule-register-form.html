@@ -82,10 +82,10 @@
     #src-campaign:checked ~ .main-wrap .campaign-only { display: grid; }
     #src-direct:checked ~ .main-wrap .campaign-only { display: none; }
 
-    /* ── 운영 모드 조건 표시 ── */
-    #mode-cond:checked ~ .main-wrap .cond-rules-section,
-    #mode-hybrid:checked ~ .main-wrap .cond-rules-section { display: block; }
-    #mode-rolling:checked ~ .main-wrap .cond-rules-section { display: none; }
+    /* ── 운영 방식(시스템 파생) ── */
+    .derived-mode-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; background: #EAF3FF; color: #2D84ED; }
+    .cond-rules-section[hidden] { display: none; }
+    .variant-select { width: 100%; height: 30px; padding: 0 6px; border: 1px solid #CED2D6; border-radius: 6px; font-size: 12px; font-family: inherit; background: #fff; }
 
     /* ── 하단 액션 바 ── */
     .action-bar {
@@ -227,10 +227,6 @@
 <!-- CSS State: sourceType -->
 <input class="state" type="radio" name="src-type" id="src-direct" checked>
 <input class="state" type="radio" name="src-type" id="src-campaign">
-<!-- CSS State: operationMode -->
-<input class="state" type="radio" name="op-mode" id="mode-rolling" checked>
-<input class="state" type="radio" name="op-mode" id="mode-cond">
-<input class="state" type="radio" name="op-mode" id="mode-hybrid">
 <!-- GNB -->
 <nav class="gnb">
   <div class="gnb-logo"><svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#58C65D"/><text x="7" y="22" font-size="14" font-weight="800" fill="#fff" font-family="sans-serif">D'</text></svg></div>
@@ -433,11 +429,12 @@
             <div class="form-label">승인 권한 <span class="req">*</span></div>
             <div class="form-field">
               <select class="select" style="max-width:300px;">
-                <option value="">승인 담당자 선택</option>
-                <option selected>팀장 승인</option>
-                <option>본부장 승인</option>
-                <option>대표 승인</option>
+                <option value="">승인 주체 선택</option>
+                <option selected>관리자(Admin)</option>
+                <option>광고주(Advertiser)</option>
+                <option>지정 승인자(Designated Approver)</option>
               </select>
+              <div class="input-hint">v1.1은 승인 주체 1개만 허용됩니다 — 국가·미디어사·계약 정책과 일치해야 합니다</div>
               <div class="input-hint">선택된 권한자에게 승인 요청이 발송됩니다</div>
             </div>
           </div>
@@ -497,19 +494,12 @@
             </div>
           </div>
 
-          <!-- schedule.operationMode -->
+          <!-- schedule.operationMode : 시스템 파생(Read-only) — Item의 Sales Condition Variant Delivery Type에서 자동 계산 -->
           <div class="form-row">
-            <div class="form-label">운영 방식 <span class="req">*</span></div>
+            <div class="form-label">운영 방식</div>
             <div class="form-field">
-              <div class="seg-ctrl">
-                <input type="radio" name="opmode" id="opmode-rolling" checked>
-                <label for="opmode-rolling" onclick="document.getElementById('mode-rolling').checked=true">Rolling</label>
-                <input type="radio" name="opmode" id="opmode-cond">
-                <label for="opmode-cond" onclick="document.getElementById('mode-cond').checked=true">조건광고</label>
-                <input type="radio" name="opmode" id="opmode-hybrid">
-                <label for="opmode-hybrid" onclick="document.getElementById('mode-hybrid').checked=true">혼합</label>
-              </div>
-              <div class="input-hint">Rolling: 루프 기반 순환 재생 | 조건광고: 트리거 조건 충족 시 재생 | 혼합: 병행</div>
+              <span class="derived-mode-badge" id="derivedOpModeBadge">Rolling</span>
+              <div class="input-hint" id="derivedOpModeHint">운영 Product 구성에서 선택한 판매조건 Variant를 기준으로 자동 계산됩니다 — 모든 Item이 동일 유형이면 해당 유형, 유형이 섞이면 혼합(Hybrid)으로 표시됩니다.</div>
             </div>
           </div>
         </div>
@@ -530,7 +520,7 @@
       </div>
 
       <!-- ④ 조건 광고 규칙 (operationMode=조건광고 or 혼합 시 표시) -->
-      <div class="form-card cond-rules-section">
+      <div class="form-card cond-rules-section" id="condRulesSection" hidden>
         <div class="section-head">
           <div>
             <div class="section-title">조건 광고 규칙</div>
@@ -742,23 +732,39 @@ const contentLibrary = [
   { id: "content_30_b", name: "Galaxy_S25_Sub_30s", duration: 30, status: "approved" }
 ];
 
+/* schedule.items[].salesConditionVariantId — Variant를 선택하면 Delivery Type/Assigned Slot Duration을 그대로 상속(Read-only Lock) */
+const VARIANT_LIBRARY = {
+  prd001: [
+    { id: "var_a", label: "Variant A — 황금시간대 집중 노출", deliveryType: "rolling", slotDuration: 30 },
+    { id: "var_c", label: "Variant C — 기온 30℃ 이상 조건 트리거", deliveryType: "conditional", slotDuration: 30 }
+  ],
+  prd005: [
+    { id: "var_b", label: "Rolling · 15초", deliveryType: "rolling", slotDuration: 15 }
+  ]
+};
+
 const products = [
   {
-    id: "prd001", name: "강남 프리미엄 옥외", revision: "R3", variant: "Variant A — 황금시간대 집중 노출",
-    slotDuration: 30, availableSlot: 2, totalSlot: 6, open: true,
+    id: "prd001", name: "강남 프리미엄 옥외", revision: "R3", variantId: "var_a",
+    availableSlot: 2, totalSlot: 6, open: true,
     slots: [
       { contentId: "content_30_a", selected: false },
       { contentId: "content_30_a", selected: false }
     ]
   },
   {
-    id: "prd005", name: "코엑스몰 스탠다드", revision: "R7", variant: "Rolling · 15초",
-    slotDuration: 15, availableSlot: 3, totalSlot: 4, open: false,
+    id: "prd005", name: "코엑스몰 스탠다드", revision: "R7", variantId: "var_b",
+    availableSlot: 3, totalSlot: 4, open: false,
     slots: [
       { contentId: "content_15_a", selected: false }
     ]
   }
 ];
+
+function getVariant(product) {
+  const list = VARIANT_LIBRARY[product.id] || [];
+  return list.find(v => v.id === product.variantId) || list[0] || { id: "", label: "-", deliveryType: "rolling", slotDuration: 30 };
+}
 
 let drawerTargets = [];
 let scheduleValidated = false;
@@ -802,7 +808,7 @@ function getSlotStatus(product, slot) {
   const content = getContent(slot.contentId);
   if (!content) return { label: "콘텐츠 없음", className: "pd-badge-danger" };
   if (content.status !== "approved") return { label: "검수 대기", className: "pd-badge-warning" };
-  if (content.duration !== product.slotDuration) return { label: "시간 불일치", className: "pd-badge-danger" };
+  if (content.duration !== getVariant(product).slotDuration) return { label: "시간 불일치", className: "pd-badge-danger" };
   return { label: "정상", className: "pd-badge-success" };
 }
 
@@ -813,10 +819,13 @@ function renderProducts() {
   const productList = document.getElementById("productList");
   productList.innerHTML = products.map(product => renderProductCard(product)).join("");
   bindProductEvents();
+  updateOperationMode();
   updateSummary();
 }
 
 function renderProductCard(product) {
+  const variant = getVariant(product);
+  const variantOptions = VARIANT_LIBRARY[product.id] || [];
   const selectedSlotCount = product.slots.filter(slot => slot.selected).length;
   const slotRows = product.slots.map((slot, index) => {
     const status = getSlotStatus(product, slot);
@@ -839,7 +848,7 @@ function renderProductCard(product) {
             ${createContentOptions(slot.contentId)}
           </select>
         </td>
-        <td>${product.slotDuration}초</td>
+        <td>${variant.slotDuration}초</td>
         <td><span class="pd-badge ${status.className}">${status.label}</span></td>
       </tr>${pendingNote}`;
   }).join("");
@@ -851,10 +860,15 @@ function renderProductCard(product) {
           <span class="toggle-icon">${product.open ? "▾" : "▸"}</span>
           <div style="min-width:0;">
             <div class="product-title">${escapeHTML(product.name)}<span class="revision-pill">Rev.${product.revision}</span></div>
-            <div class="product-sub">${product.variant}</div>
+            <div class="product-sub">${escapeHTML(variant.label)}</div>
           </div>
         </button>
-        <div><div class="metric-label">판매조건</div><div class="metric-value">${product.variant}</div></div>
+        <div>
+          <div class="metric-label">판매조건 Variant</div>
+          <select class="variant-select" data-product="${product.id}" onchange="changeVariant('${product.id}', this.value)">
+            ${variantOptions.map(v => `<option value="${v.id}" ${v.id === product.variantId ? "selected" : ""}>${escapeHTML(v.label)}</option>`).join("")}
+          </select>
+        </div>
         <div><div class="metric-label">가용 Slot</div><div class="metric-value">${product.availableSlot} / ${product.totalSlot}</div></div>
         <div>
           <div class="metric-label">배정 Slot</div>
@@ -1069,11 +1083,41 @@ document.getElementById("contentForm").addEventListener("submit", event => {
 document.getElementById("addProductButton").addEventListener("click", () => {
   const n = products.length + 1;
   products.push({
-    id: `prd_new_${n}`, name: "(신규 Product 선택)", revision: "-", variant: "-",
-    slotDuration: 30, availableSlot: 0, totalSlot: 0, open: true, slots: []
+    id: `prd_new_${n}`, name: "(신규 Product 선택)", revision: "-", variantId: "",
+    availableSlot: 0, totalSlot: 0, open: true, slots: []
   });
   renderProducts();
 });
+
+/* ----------------------------------
+   판매조건 Variant 변경 (schedule.items[].salesConditionVariantId)
+   — Delivery Type/Assigned Slot Duration은 Variant에서 그대로 상속(Read-only Lock)
+---------------------------------- */
+function changeVariant(productId, variantId) {
+  const product = products.find(p => p.id === productId);
+  if (!product) return;
+  product.variantId = variantId;
+  scheduleValidated = false;
+  renderProducts();
+}
+
+/* ----------------------------------
+   schedule.operationMode : 시스템 파생(Read-only)
+   모든 Item의 Variant Delivery Type이 같으면 해당 유형, 섞이면 Hybrid
+---------------------------------- */
+function updateOperationMode() {
+  const types = [...new Set(products.map(p => getVariant(p).deliveryType))];
+  const mode = types.length === 0 ? "rolling" : types.length === 1 ? types[0] : "hybrid";
+  const labels = { rolling: "Rolling", conditional: "조건광고", hybrid: "혼합 (Hybrid)" };
+  const hints = {
+    rolling: "모든 Item이 Rolling Variant를 사용합니다 — 루프 기반 순환 재생.",
+    conditional: "모든 Item이 조건 트리거 Variant를 사용합니다 — 트리거 조건 충족 시 재생.",
+    hybrid: "Item마다 Delivery Type이 달라 혼합(Hybrid)으로 파생되었습니다 — Rolling Item과 조건광고 Item이 병행 운영됩니다."
+  };
+  document.getElementById("derivedOpModeBadge").textContent = labels[mode];
+  document.getElementById("derivedOpModeHint").textContent = hints[mode];
+  document.getElementById("condRulesSection").hidden = mode === "rolling";
+}
 
 /* ----------------------------------
    Summary
@@ -1115,7 +1159,7 @@ function slotValidationLabel(product, slot) {
   const content = getContent(slot.contentId);
   if (!content) return { text: "⚠ 콘텐츠 없음", cls: "gate-danger", ok: false };
   if (content.status !== "approved") return { text: "⚠ 콘텐츠 검수 대기", cls: "gate-warning", ok: false };
-  if (content.duration !== product.slotDuration) return { text: "⚠ 재생시간 불일치", cls: "gate-danger", ok: false };
+  if (content.duration !== getVariant(product).slotDuration) return { text: "⚠ 재생시간 불일치", cls: "gate-danger", ok: false };
   return { text: "정상", cls: "gate-success", ok: true };
 }
 
@@ -1142,7 +1186,7 @@ function validateSchedule() {
       const content = getContent(slot.contentId);
       if (!content) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠가 편성되지 않았습니다.`); return; }
       if (content.status !== "approved") { issues.push(`${product.name} / Slot ${index + 1}: '${content.name}' 콘텐츠가 아직 승인되지 않았습니다.`); pendingCount++; }
-      if (content.duration !== product.slotDuration) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠 ${content.duration}초와 Slot ${product.slotDuration}초가 일치하지 않습니다.`); }
+      if (content.duration !== getVariant(product).slotDuration) { issues.push(`${product.name} / Slot ${index + 1}: 콘텐츠 ${content.duration}초와 Slot ${getVariant(product).slotDuration}초가 일치하지 않습니다.`); }
     });
   });
 
