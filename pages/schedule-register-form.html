@@ -896,7 +896,7 @@ function renderProductCard(product) {
               <div class="toolbar-actions">
                 <select class="bulk-select" data-product="${product.id}">${createContentOptions("")}</select>
                 <button class="btn btn-ghost bulk-apply-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>선택 Slot에 일괄 적용 (${selectedSlotCount})</button>
-                <button class="btn btn-outline new-content-button" data-product="${product.id}" ${selectedSlotCount === 0 ? "disabled" : ""}>+ 콘텐츠 등록</button>
+                <button class="btn btn-outline new-content-button" data-product="${product.id}" title="${selectedSlotCount === 0 ? "선택한 Slot 없이 열면 콘텐츠 라이브러리에만 등록됩니다" : "선택한 " + selectedSlotCount + "개 Slot에 등록 후 바로 적용합니다"}">+ 콘텐츠 등록</button>
               </div>
             </div>
             <div class="slot-table-wrap">
